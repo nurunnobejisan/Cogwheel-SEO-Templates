@@ -6,12 +6,12 @@ import { groupFromFilename } from "./normalize";
 export type CanonicalColumn = "keyword" | "volume" | "kd" | "cpc" | "intent" | "group";
 
 const COLUMN_ALIASES: Record<CanonicalColumn, string[]> = {
-  keyword: ["keyword", "keywords", "query", "search term", "search terms"],
-  volume: ["volume", "search volume", "avg. monthly searches", "avg monthly searches", "sv", "monthly volume"],
-  kd: ["keyword difficulty", "kd", "kd %", "kd%", "difficulty", "keyword difficulty index"],
+  keyword: ["keyword", "keywords", "top queries", "query", "queries", "search term", "search terms", "phrase", "term"],
+  volume: ["volume", "search volume", "monthly search volume", "avg. monthly searches", "avg monthly searches", "sv", "monthly volume", "searches", "impressions", "clicks"],
+  kd: ["keyword difficulty", "kw difficulty", "kd", "kd %", "kd%", "difficulty", "keyword difficulty index", "competition (indexed value)", "competition"],
   cpc: ["cpc", "cpc (usd)", "cpc usd", "cost per click"],
   intent: ["intent", "intents", "search intent"],
-  group: ["group", "topic", "keyword group", "keyword groups", "groups", "topics"],
+  group: ["group", "topic", "keyword group", "keyword groups", "groups", "topics", "bucket", "category"],
 };
 
 export interface ParsedRow {
@@ -95,24 +95,97 @@ export function matrixToFile(fileName: string, matrix: unknown[][]): ParsedFile 
 export function parseCsvText(fileName: string, text: string): ParsedFile {
   const result = Papa.parse<string[]>(text.replace(/^\uFEFF/, ""), {
     skipEmptyLines: "greedy",
-    // Semrush sometimes exports ; or tab separated files.
     delimitersToGuess: [",", ";", "\t", "|"],
   });
-  return matrixToFile(fileName, result.data as unknown[][]);
+  const matrix = result.data as unknown[][];
+  try {
+    return matrixToFile(fileName, matrix);
+  } catch {
+    // Fallback for headerless plain-text or single-column keyword lists.
+    const fileGroup = groupFromFilename(fileName);
+    const rows: ParsedRow[] = [];
+    for (const row of matrix) {
+      const kw = String(row[0] ?? "").trim();
+      if (!kw) continue;
+      rows.push({
+        keyword: kw,
+        volume: row[1] ?? 0,
+        kd: row[2] ?? null,
+        cpc: null,
+        intent: null,
+        group: null,
+      });
+    }
+    if (rows.length === 0) throw new Error(`No keywords found in ${fileName}`);
+    return { fileName, rows, sourceGroup: fileGroup, usedGroupColumn: false };
+  }
 }
 
 export function parseXlsxBuffer(fileName: string, buffer: ArrayBuffer | Uint8Array): ParsedFile {
   const wb = XLSX.read(buffer, { type: "array" });
-  const sheetName = wb.SheetNames[0];
-  if (!sheetName) throw new Error(`Workbook ${fileName} has no sheets`);
-  const matrix = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets[sheetName], { header: 1, defval: "", raw: true });
-  return matrixToFile(fileName, matrix);
+  if (!wb.SheetNames.length) throw new Error(`Workbook ${fileName} has no sheets`);
+
+  const allRows: ParsedRow[] = [];
+  let usedGroupColumn = false;
+  const multiSheet = wb.SheetNames.length > 1;
+
+  for (const sheetName of wb.SheetNames) {
+    const matrix = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets[sheetName], { header: 1, defval: "", raw: true });
+    try {
+      const parsed = matrixToFile(fileName, matrix);
+      if (parsed.usedGroupColumn) usedGroupColumn = true;
+      for (const r of parsed.rows) {
+        allRows.push({
+          ...r,
+          group: r.group ?? (multiSheet && !/^sheet\d+$/i.test(sheetName) ? sheetName : null),
+        });
+      }
+    } catch {
+      // Skip cover/summary sheets that don't have a Keyword table.
+    }
+  }
+
+  if (allRows.length === 0) {
+    throw new Error(`No "Keyword" column found in any sheet of ${fileName}`);
+  }
+  return {
+    fileName,
+    rows: allRows,
+    sourceGroup: groupFromFilename(fileName),
+    usedGroupColumn: usedGroupColumn || multiSheet,
+  };
+}
+
+export function parseJsonText(fileName: string, text: string): ParsedFile {
+  const raw = JSON.parse(text);
+  const arr = Array.isArray(raw) ? raw : Array.isArray(raw?.keywords) ? raw.keywords : null;
+  if (!arr) throw new Error(`JSON file ${fileName} must be an array of keyword objects`);
+  const rows: ParsedRow[] = arr
+    .map((item: Record<string, unknown>) => ({
+      keyword: String(item.keyword ?? item.query ?? item.term ?? "").trim(),
+      volume: item.volume ?? item.sv ?? item.searchVolume ?? 0,
+      kd: item.kd ?? item.difficulty ?? null,
+      cpc: item.cpc ?? null,
+      intent: item.intent ?? null,
+      group: item.group ? String(item.group) : item.bucket ? String(item.bucket) : null,
+    }))
+    .filter((r: ParsedRow) => Boolean(r.keyword));
+  if (rows.length === 0) throw new Error(`No keywords found in ${fileName}`);
+  return {
+    fileName,
+    rows,
+    sourceGroup: groupFromFilename(fileName),
+    usedGroupColumn: rows.some((r) => Boolean(r.group)),
+  };
 }
 
 export async function parseUpload(fileName: string, data: ArrayBuffer): Promise<ParsedFile> {
   const lower = fileName.toLowerCase();
   if (lower.endsWith(".xlsx") || lower.endsWith(".xls")) {
     return parseXlsxBuffer(fileName, new Uint8Array(data));
+  }
+  if (lower.endsWith(".json")) {
+    return parseJsonText(fileName, new TextDecoder("utf-8").decode(data));
   }
   if (lower.endsWith(".csv") || lower.endsWith(".tsv") || lower.endsWith(".txt")) {
     return parseCsvText(fileName, new TextDecoder("utf-8").decode(data));

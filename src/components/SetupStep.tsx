@@ -180,23 +180,39 @@ export function Dropzone({
 }) {
   const [over, setOver] = useState(false);
   const [showDrive, setShowDrive] = useState(false);
+  const [showPaste, setShowPaste] = useState(false);
+  const [pasteBucket, setPasteBucket] = useState("");
+  const [pasteText, setPasteText] = useState("");
   const [driveFolder, setDriveFolder] = useState("");
   const max = DEFAULT_RULES.maxFiles;
 
   const addFiles = (list: FileList | null) => {
     if (!list) return;
-    const accepted = Array.from(list).filter((f) => /\.(csv|xlsx|xls|tsv)$/i.test(f.name));
+    const accepted = Array.from(list).filter((f) => /\.(csv|xlsx|xls|tsv|txt|json)$/i.test(f.name));
     const byName = new Map(files.map((f) => [f.name, f]));
     accepted.forEach((f) => byName.set(f.name, f));
     onChange([...byName.values()].slice(0, max));
   };
 
+  const addPastedData = () => {
+    if (!pasteText.trim()) return;
+    const baseName = (pasteBucket.trim() || `pasted-${files.length + 1}`).replace(/[^a-z0-9_-]+/gi, "_");
+    const file = new File([pasteText], `${baseName}.csv`, { type: "text/csv" });
+    onChange([...files.filter((f) => f.name !== file.name), file].slice(0, max));
+    setPasteText("");
+    setPasteBucket("");
+    setShowPaste(false);
+  };
+
   return (
     <Card
-      title="Semrush Exports"
-      subtitle={`Up to ${max} CSV/XLSX files, Google Drive folder (01-semrush/), or Semrush API pull.`}
+      title="Keyword Data Sources"
+      subtitle={`Drop up to ${max} CSV/XLSX/TSV/TXT/JSON files, paste raw keywords, sync Google Drive, or pull Semrush API.`}
       actions={
         <div className="flex flex-wrap gap-2">
+          <Button variant="secondary" className="px-3 py-1.5 text-xs" onClick={() => setShowPaste((v) => !v)}>
+            Paste Data
+          </Button>
           {onDriveSync && (
             <Button variant="secondary" className="px-3 py-1.5 text-xs" onClick={() => setShowDrive((v) => !v)}>
               Sync Google Drive
@@ -216,6 +232,27 @@ export function Dropzone({
         </div>
       }
     >
+      {showPaste && (
+        <div className="mb-4 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <input
+            className="input py-1.5 text-xs"
+            value={pasteBucket}
+            onChange={(e) => setPasteBucket(e.target.value)}
+            placeholder="Bucket / Group name (optional — e.g. Rooftop Bar Denver)"
+          />
+          <textarea
+            className="input min-h-[84px] font-mono text-xs"
+            value={pasteText}
+            onChange={(e) => setPasteText(e.target.value)}
+            placeholder={"Paste CSV/TSV rows or 1 keyword per line…\nKeyword,Volume,KD\nrooftop bar denver,1900,23"}
+          />
+          <div className="flex justify-end">
+            <Button className="px-3 py-1.5 text-xs" disabled={!pasteText.trim()} onClick={addPastedData}>
+              Add Pasted Data
+            </Button>
+          </div>
+        </div>
+      )}
       {showDrive && onDriveSync && (
         <div className="mb-4 flex gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
           <input
@@ -252,7 +289,7 @@ export function Dropzone({
               : "border-dashed border-slate-200 bg-white hover:-translate-y-1 hover:border-brand hover:shadow-card"
         }`}
       >
-        <input type="file" multiple accept=".csv,.xlsx,.xls,.tsv" className="hidden" onChange={(e) => addFiles(e.target.files)} />
+        <input type="file" multiple accept=".csv,.xlsx,.xls,.tsv,.txt,.json" className="hidden" onChange={(e) => addFiles(e.target.files)} />
         <div className="flex w-full items-center justify-between">
           <span className="font-display text-xs font-bold uppercase tracking-wider text-slate-400">Multi-CSV</span>
           <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[11px] font-semibold text-white">Required</span>
