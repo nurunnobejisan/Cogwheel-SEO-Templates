@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import sitemap from "@/config/sitemap.json";
 import { postFormData, postJson } from "@/lib/api";
+import { analyzeGeoSeo } from "@/lib/engine/geo-seo";
 import {
   addToPool,
   assignKeyword,
@@ -12,7 +13,7 @@ import {
   updatePoolKeyword,
   type MatrixState,
 } from "@/lib/engine/matrix";
-import { downloadText, matrixToCsv, poolToCsv } from "@/lib/export";
+import { downloadExcelReport, downloadText, matrixToCsv, poolToCsv } from "@/lib/export";
 import type { Allocation, BucketSummary, IngestResult, KeywordRecord, MatrixRow, Property, SitemapPage, TemplateId } from "@/lib/types";
 import { ApprovalMatrix } from "./ApprovalMatrix";
 import { ContentStudio } from "./ContentStudio";
@@ -70,6 +71,10 @@ export default function Studio() {
   const setupValid = propReady && hasKeywordsSource;
   const stale = !!state && !!builtFor && (builtFor.template !== template || builtFor.pagesKey !== pagesKey);
   const allApproved = !!state && state.matrix.length > 0 && state.matrix.every((r) => r.status === "approved");
+  const geoSeoInsights = useMemo(
+    () => analyzeGeoSeo(bucketed, state?.matrix ?? [], pages, property),
+    [bucketed, state?.matrix, pages, property],
+  );
 
   async function handleCrawlProperty() {
     if (!property.url?.trim()) return;
@@ -445,7 +450,12 @@ export default function Studio() {
 
         {step === 2 && (
           <>
-            <TemplateSelector value={template} onChange={setTemplate} />
+            <TemplateSelector
+              value={template}
+              onChange={setTemplate}
+              masterTemplateUrl={property.templateDocUrl}
+              onMasterTemplateUrlChange={(url) => setProperty((prev) => ({ ...prev, templateDocUrl: url }))}
+            />
             <div className="flex justify-between">
               <Button variant="secondary" onClick={() => setStep(1)}>← Back</Button>
               <Button onClick={state && !stale ? () => setStep(3) : ingest ? () => runBucketAndSelect().then(() => setStep(3)) : runIngest} disabled={!setupValid || !!busy}>
@@ -517,8 +527,18 @@ export default function Studio() {
             {reportDoc && (
               <ReportResultCard
                 reportDoc={reportDoc}
+                property={property}
                 template={builtFor?.template ?? template}
                 matrix={state.matrix}
+                insights={geoSeoInsights}
+                onExportExcel={() =>
+                  downloadExcelReport({
+                    property,
+                    matrix: state.matrix,
+                    allocation: state.allocation,
+                    insights: geoSeoInsights,
+                  })
+                }
               />
             )}
 
@@ -529,6 +549,19 @@ export default function Studio() {
                 </Button>
                 <Button variant="secondary" onClick={() => downloadText(`${slug}-78-keyword-pool.csv`, poolToCsv(state.allocation))}>
                   Export pool CSV
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() =>
+                    downloadExcelReport({
+                      property,
+                      matrix: state.matrix,
+                      allocation: state.allocation,
+                      insights: geoSeoInsights,
+                    })
+                  }
+                >
+                  Export Excel (.xlsx)
                 </Button>
                 <Button variant="secondary" onClick={saveRun} disabled={!!busy}>
                   Save run

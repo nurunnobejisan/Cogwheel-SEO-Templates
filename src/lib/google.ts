@@ -59,6 +59,19 @@ export interface KeywordDocResult {
   docId: string;
   docUrl: string;
   usedTemplateCopy: boolean;
+  preservedTemplateDesign?: boolean;
+  unresolvedPlaceholders?: string[];
+}
+
+export interface TemplateInspection {
+  docId: string;
+  title: string;
+  headings: Array<{ level: number; text: string }>;
+  tableCount: number;
+  paragraphCount: number;
+  hasHeader: boolean;
+  hasFooter: boolean;
+  placeholders: string[];
 }
 
 type TableSpec = { rows: string[][] };
@@ -175,6 +188,87 @@ export function extractGoogleDocId(urlOrId?: string): string | undefined {
   return /^[a-zA-Z0-9_-]{20,}$/.test(s) ? s : undefined;
 }
 
+function collectDocText(doc: docs_v1.Schema$Document): string {
+  const chunks: string[] = [];
+  const walkElements = (elements?: docs_v1.Schema$StructuralElement[]) => {
+    for (const el of elements ?? []) {
+      if (el.paragraph) {
+        for (const pe of el.paragraph.elements ?? []) {
+          if (pe.textRun?.content) chunks.push(pe.textRun.content);
+        }
+      } else if (el.table) {
+        for (const row of el.table.tableRows ?? []) {
+          for (const cell of row.tableCells ?? []) {
+            walkElements(cell.content);
+          }
+        }
+      }
+    }
+  };
+  walkElements(doc.body?.content);
+  for (const h of Object.values(doc.headers ?? {})) walkElements(h.content);
+  for (const f of Object.values(doc.footers ?? {})) walkElements(f.content);
+  return chunks.join("");
+}
+
+export function extractPlaceholdersFromDoc(doc: docs_v1.Schema$Document): string[] {
+  const text = collectDocText(doc);
+  return [...new Set([...text.matchAll(/\{\{([A-Z0-9_]+)\}\}/g)].map((m) => `{{${m[1]}}}`))];
+}
+
+export async function inspectGoogleDocTemplate(urlOrId: string): Promise<TemplateInspection> {
+  const docId = extractGoogleDocId(urlOrId);
+  if (!docId) throw new Error("Invalid Google Docs URL or document ID.");
+  const { docs } = getGoogleClients();
+  const res = await docs.documents.get({ documentId: docId });
+  const doc = res.data;
+
+  const headings: Array<{ level: number; text: string }> = [];
+  let tableCount = 0;
+  let paragraphCount = 0;
+
+  for (const el of doc.body?.content ?? []) {
+    if (el.table) {
+      tableCount++;
+    } else if (el.paragraph) {
+      paragraphCount++;
+      const named = el.paragraph.paragraphStyle?.namedStyleType ?? "";
+      const match = named.match(/^HEADING_(\d)$/);
+      if (match) {
+        const text = (el.paragraph.elements ?? [])
+          .map((e) => e.textRun?.content ?? "")
+          .join("")
+          .trim();
+        if (text) headings.push({ level: Number(match[1]), text });
+      }
+    }
+  }
+
+  return {
+    docId,
+    title: doc.title ?? "Untitled Template",
+    headings,
+    tableCount,
+    paragraphCount,
+    hasHeader: Object.keys(doc.headers ?? {}).length > 0,
+    hasFooter: Object.keys(doc.footers ?? {}).length > 0,
+    placeholders: extractPlaceholdersFromDoc(doc),
+  };
+}
+
+export async function exportGoogleDoc(docId: string, format: "pdf" | "docx"): Promise<Buffer> {
+  const { drive } = getGoogleClients();
+  const mimeType =
+    format === "pdf"
+      ? "application/pdf"
+      : "application/vnd.openxmlformats-officedocument.wordprocessingml.document";
+  const res = await drive.files.export(
+    { fileId: docId, mimeType },
+    { responseType: "arraybuffer" },
+  );
+  return Buffer.from(res.data as ArrayBuffer);
+}
+
 export function extractGoogleFolderId(urlOrId?: string): string | undefined {
   const s = (urlOrId ?? "").trim();
   if (!s) return undefined;
@@ -289,13 +383,73 @@ export async function createKeywordReportDoc(input: KeywordDocInput): Promise<Ke
     }
   }
 
-  const blocks = buildDocumentBlocks(input);
   const existing = await docs.documents.get({ documentId: docId });
+  const templatePlaceholders = usedTemplateCopy ? extractPlaceholdersFromDoc(existing.data) : [];
+
+  if (usedTemplateCopy && templatePlaceholders.length > 0) {
+    const today = new Date().toISOString().slice(0, 10);
+    const primarySummary = input.matrix
+      .filter((r) => r.primary)
+      .map((r) => `${r.title} (${r.path}): ${r.primary!.keyword} — SV ${r.primary!.volume.toLocaleString()}, KD ${r.primary!.kd ?? "N/A"}`)
+      .join("\n");
+    const secondarySummary = input.matrix
+      .filter((r) => r.secondary)
+      .map((r) => `${r.title}: ${r.secondary!.keyword} — SV ${r.secondary!.volume.toLocaleString()}, KD ${r.secondary!.kd ?? "N/A"}`)
+      .join("\n");
+    const rationalesText = input.rationales.map((r) => `${r.title}\n${r.text}`).join("\n\n");
+
+    const placeholderValues: Record<string, string> = {
+      "{{HOTEL_NAME}}": input.property.name,
+      "{{PROPERTY_NAME}}": input.property.name,
+      "{{WEBSITE_URL}}": input.property.url ?? "",
+      "{{BRAND}}": input.property.brand ?? "",
+      "{{MARKET}}": `${input.property.city}, ${input.property.state}`,
+      "{{CITY}}": input.property.city,
+      "{{STATE}}": input.property.state,
+      "{{REPORT_DATE}}": today,
+      "{{PROPERTY_OVERVIEW}}": `${input.property.name} in ${input.property.city}, ${input.property.state}${input.property.url ? ` (${input.property.url})` : ""}`,
+      "{{EXECUTIVE_SUMMARY}}": `Keyword research and mapping across ${input.matrix.length} active pages and ${input.pool.length} pooled keywords for ${input.property.name}.`,
+      "{{KEYWORD_RESEARCH}}": `${input.pool.length} keywords selected across ${BUCKETS.length} buckets.`,
+      "{{PRIMARY_KEYWORDS}}": primarySummary || "None",
+      "{{SECONDARY_KEYWORDS}}": secondarySummary || "None",
+      "{{KEYWORD_MAPPING_TABLE}}": primarySummary || "None",
+      "{{PAGE_RECOMMENDATIONS}}": rationalesText,
+      "{{LOCAL_SEO_ANALYSIS}}": `Market: ${input.property.city}, ${input.property.state}. Allowed locations: ${input.property.allowedLocations.join(", ") || "Default"}.`,
+      "{{GEO_RECOMMENDATIONS}}": rationalesText,
+      "{{FINAL_RECOMMENDATIONS}}": rationalesText,
+    };
+
+    const requests: docs_v1.Schema$Request[] = Object.entries(placeholderValues)
+      .filter(([token]) => templatePlaceholders.includes(token))
+      .map(([token, value]) => ({
+        replaceAllText: {
+          containsText: { text: token, matchCase: true },
+          replaceText: value,
+        },
+      }));
+
+    if (requests.length > 0) {
+      await docs.documents.batchUpdate({ documentId: docId, requestBody: { requests } });
+    }
+
+    const verified = await docs.documents.get({ documentId: docId });
+    const unresolvedPlaceholders = extractPlaceholdersFromDoc(verified.data);
+
+    return {
+      docId,
+      docUrl: `https://docs.google.com/document/d/${docId}/edit`,
+      usedTemplateCopy: true,
+      preservedTemplateDesign: true,
+      unresolvedPlaceholders,
+    };
+  }
+
+  const blocks = buildDocumentBlocks(input);
   const bodyContent = existing.data.body?.content ?? [];
   const lastEnd = bodyContent[bodyContent.length - 1]?.endIndex ?? 1;
   let cursor = Math.max(1, lastEnd - 1);
 
-  // If copying a template with existing content, clear body (keep trailing newline) before populating
+  // If copying a template with existing content (and no {{PLACEHOLDERS}}), clear body before populating
   const pass1: docs_v1.Schema$Request[] = [];
   if (usedTemplateCopy && cursor > 1) {
     pass1.push({ deleteContentRange: { range: { startIndex: 1, endIndex: cursor } } });

@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { TEMPLATES } from "@/config/templates";
+import { runDocumentQualityCheck } from "@/lib/doc-quality";
 import { createKeywordReportDoc, isGoogleConfigured, type RationaleEntry } from "@/lib/google";
 import { generateText } from "@/lib/llm";
 import { keywordSchema, pageSchema, propertySchema, templateSchema } from "@/lib/schemas";
@@ -219,9 +220,6 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!process.env.ANTHROPIC_API_KEY) {
-    return NextResponse.json({ error: "ANTHROPIC_API_KEY is not configured." }, { status: 503 });
-  }
   if (!isGoogleConfigured()) {
     return NextResponse.json(
       { error: "Google Workspace credentials are not configured (GOOGLE_SERVICE_ACCOUNT_B64)." },
@@ -229,13 +227,38 @@ export async function POST(req: Request) {
     );
   }
 
+  const preCheck = runDocumentQualityCheck({
+    property: run.property,
+    pages: run.pages,
+    matrix: run.matrix,
+    pool: run.pool,
+  });
+  if (preCheck.overall === "failed") {
+    return NextResponse.json(
+      { error: "Document quality check failed before generation.", qualityReport: preCheck },
+      { status: 400 },
+    );
+  }
+
   let rationales: RationaleEntry[];
-  try {
-    const { system, prompt } = buildRationalePrompt(run);
-    const raw = await generateText({ system, prompt, maxTokens: 3000 });
-    rationales = parseRationales(raw, run.matrix);
-  } catch (e) {
-    return NextResponse.json({ error: `Rationale generation failed: ${(e as Error).message}` }, { status: 502 });
+  let usedAi = false;
+  if (process.env.ANTHROPIC_API_KEY) {
+    try {
+      const { system, prompt } = buildRationalePrompt(run);
+      const raw = await generateText({ system, prompt, maxTokens: 3000 });
+      rationales = parseRationales(raw, run.matrix);
+      usedAi = true;
+    } catch (e) {
+      return NextResponse.json({ error: `Rationale generation failed: ${(e as Error).message}` }, { status: 502 });
+    }
+  } else {
+    rationales = run.matrix.map((m) => ({
+      pageId: m.pageId,
+      title: m.title,
+      text: m.primary
+        ? `Target "${m.primary.keyword}" (${m.primary.volume.toLocaleString()} monthly searches, KD ${m.primary.kd ?? "N/A"}) on ${m.title} (${m.path})${m.secondary ? `, paired with secondary keyword "${m.secondary.keyword}" (${m.secondary.volume.toLocaleString()} SV)` : ""}.`
+        : `No primary keyword assigned for ${m.title} (${m.path}).`,
+    }));
   }
 
   try {
@@ -248,6 +271,14 @@ export async function POST(req: Request) {
       rationales,
     });
 
+    const qualityReport = runDocumentQualityCheck({
+      property: run.property,
+      pages: run.pages,
+      matrix: run.matrix,
+      pool: run.pool,
+      unresolvedPlaceholders: doc.unresolvedPlaceholders,
+    });
+
     if (run.runId && isSupabaseConfigured()) {
       await getSupabase().from("runs").update({ status: "report_generated" }).eq("id", run.runId);
     }
@@ -256,8 +287,11 @@ export async function POST(req: Request) {
       docId: doc.docId,
       docUrl: doc.docUrl,
       usedTemplateCopy: doc.usedTemplateCopy,
+      preservedTemplateDesign: doc.preservedTemplateDesign ?? false,
+      usedAi,
       template: run.template,
       rationales,
+      qualityReport,
     });
   } catch (e) {
     return NextResponse.json({ error: `Google Docs generation failed: ${(e as Error).message}` }, { status: 502 });

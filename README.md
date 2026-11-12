@@ -41,3 +41,4 @@ npm run lint       # Run ESLint (next lint)
 npm test           # Run Vitest unit tests
 npm run build      # Production build
 ```
+
