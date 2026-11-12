@@ -19,6 +19,7 @@ interface PortfolioEntry {
   city?: string;
   state?: string;
   seoAssignee?: string;
+  slidesUrl?: string;
 }
 
 const PORTFOLIO = portfolioProperties as PortfolioEntry[];
@@ -103,6 +104,19 @@ export function PropertySetup({
             </option>
           ))}
         </select>
+        {PORTFOLIO.find((p) => p.name === property.name)?.slidesUrl && (
+          <div className="mt-2 text-xs text-slate-600">
+            Reference Audit:{" "}
+            <a
+              href={PORTFOLIO.find((p) => p.name === property.name)?.slidesUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="font-semibold text-indigo-600 hover:underline"
+            >
+              Open Duplicate Content Audit Slides ↗
+            </a>
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
         <div className="md:col-span-3">
