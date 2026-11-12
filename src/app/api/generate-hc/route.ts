@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { isHalfAndHalfEligible, SECTION_RULES, type HiltonSectionId } from "@/config/hilton-rules";
+import { isHalfAndHalfEligible, keywordForSection, SECTION_RULES, type HiltonSectionId } from "@/config/hilton-rules";
 import { createHiltonContentDoc, isGoogleConfigured } from "@/lib/google";
 import { validateSection, type SectionValidationResult } from "@/lib/hilton-validator";
 import { generateText } from "@/lib/llm";
@@ -47,33 +47,27 @@ const requestSchema = z.object({
   generateDoc: z.boolean().default(true),
 });
 
-function keywordForSection(
-  sectionId: HiltonSectionId,
-  matrix: z.infer<typeof requestSchema>["matrix"],
-): string {
-  const find = (ids: string[]) =>
-    matrix.find((m) => ids.includes(m.pageId))?.primary?.keyword ?? "";
-  switch (sectionId) {
-    case "home-headline":
-    case "home-description":
-      return find(["home"]);
-    case "location":
-      return find(["location"]);
-    case "dining-main":
-    case "dining-outlet":
-      return find(["dining", "bar"]);
-    case "rooms":
-      return find(["rooms"]);
-    case "suites":
-      return find(["suites", "rooms"]);
-    case "events":
-      return find(["events", "meetings", "weddings"]);
-    default:
-      return "";
-  }
-}
-
 const MAX_RETRIES = 2;
+const SECTION_CONCURRENCY = 4;
+
+async function mapWithConcurrency<T, R>(
+  items: readonly T[],
+  limit: number,
+  worker: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results = new Array<R>(items.length);
+  let cursor = 0;
+
+  async function runNext(): Promise<void> {
+    while (cursor < items.length) {
+      const idx = cursor++;
+      results[idx] = await worker(items[idx]);
+    }
+  }
+
+  await Promise.all(Array.from({ length: Math.min(limit, items.length) }, () => runNext()));
+  return results;
+}
 
 async function generateSectionCopy(opts: {
   sectionId: HiltonSectionId;
@@ -151,11 +145,7 @@ export async function POST(req: Request) {
   const { property, matrix, discoveryNotes, liveCopy, grandfatheredOutlet, generateDoc, runId } = parsed.data;
   const usps = discoveryNotes.usps.map((u) => u.trim()).filter(Boolean);
 
-  const sections: Record<string, string> = {};
-  const validation: Record<string, SectionValidationResult> = {};
-  const retries: Record<string, number> = {};
-
-  for (const sectionId of SECTION_IDS) {
+  const generated = await mapWithConcurrency(SECTION_IDS, SECTION_CONCURRENCY, async (sectionId) => {
     const rule = SECTION_RULES[sectionId];
     const keyword = keywordForSection(sectionId, matrix);
     const current = liveCopy[sectionId] ?? "";
@@ -165,18 +155,22 @@ export async function POST(req: Request) {
       const val = eligible
         ? `Yes — ${property.brand} is eligible for Half & Half.`
         : `No — ${property.brand || "this brand"} is not on the Half & Half list.`;
-      sections[sectionId] = val;
-      validation[sectionId] = validateSection({ sectionId, text: val, brand: property.brand });
-      retries[sectionId] = 0;
-      continue;
+      return {
+        sectionId,
+        text: val,
+        validation: validateSection({ sectionId, text: val, brand: property.brand }),
+        retries: 0,
+      };
     }
 
     if (rule.mode === "boilerplate") {
       const val = current || `[Fixed Hilton boilerplate for ${rule.label} — no generation]`;
-      sections[sectionId] = val;
-      validation[sectionId] = validateSection({ sectionId, text: val });
-      retries[sectionId] = 0;
-      continue;
+      return {
+        sectionId,
+        text: val,
+        validation: validateSection({ sectionId, text: val }),
+        retries: 0,
+      };
     }
 
     let attempt = 0;
@@ -210,9 +204,16 @@ export async function POST(req: Request) {
       feedback = check.violations;
     }
 
-    sections[sectionId] = draft;
-    validation[sectionId] = check;
-    retries[sectionId] = attempt;
+    return { sectionId, text: draft, validation: check, retries: attempt };
+  });
+
+  const sections: Record<string, string> = {};
+  const validation: Record<string, SectionValidationResult> = {};
+  const retries: Record<string, number> = {};
+  for (const item of generated) {
+    sections[item.sectionId] = item.text;
+    validation[item.sectionId] = item.validation;
+    retries[item.sectionId] = item.retries;
   }
 
   let docId: string | null = null;
@@ -225,19 +226,23 @@ export async function POST(req: Request) {
     if (!isGoogleConfigured()) {
       googleWarning = "Google Workspace credentials are not configured (GOOGLE_SERVICE_ACCOUNT_B64); skipped Doc creation.";
     } else {
-      const doc = await createHiltonContentDoc({
-        property,
-        sections: SECTION_IDS.map((id) => ({
-          id,
-          label: SECTION_RULES[id].label,
-          keyword: keywordForSection(id, matrix) || undefined,
-          content: sections[id],
-        })),
-      });
-      docId = doc.docId;
-      docUrl = doc.docUrl;
-      usedTemplateCopy = doc.usedTemplateCopy;
-      strippedInstructionsCount = doc.strippedInstructionsCount;
+      try {
+        const doc = await createHiltonContentDoc({
+          property,
+          sections: SECTION_IDS.map((id) => ({
+            id,
+            label: SECTION_RULES[id].label,
+            keyword: keywordForSection(id, matrix) || undefined,
+            content: sections[id],
+          })),
+        });
+        docId = doc.docId;
+        docUrl = doc.docUrl;
+        usedTemplateCopy = doc.usedTemplateCopy;
+        strippedInstructionsCount = doc.strippedInstructionsCount;
+      } catch (e) {
+        googleWarning = `Google Doc creation failed (copy was still generated below): ${(e as Error).message}`;
+      }
     }
   }
 

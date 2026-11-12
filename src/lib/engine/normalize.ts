@@ -71,7 +71,7 @@ export function parseNumberOrNull(value: unknown): number | null {
 export function groupFromFilename(fileName: string): string {
   const base = fileName.split(/[\\/]/).pop() ?? fileName;
   return base
-    .replace(/\.(csv|xlsx|xls|tsv)$/i, "")
+    .replace(/\.(csv|xlsx|xls|tsv|txt|json)$/i, "")
     .replace(/[_-](broad|phrase|exact|related)[-_]match.*$/i, "")
     .replace(/[_-](us|uk|ca|au)[_-]\d{4}-\d{2}-\d{2}.*$/i, "")
     .replace(/[_-]\d{4}-\d{2}-\d{2}.*$/i, "")

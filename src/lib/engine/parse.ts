@@ -69,10 +69,13 @@ export function matrixToFile(fileName: string, matrix: unknown[][]): ParsedFile 
   if (!columns || headerIdx === -1) {
     throw new Error(`No "Keyword" column found in ${fileName}`);
   }
-  const usedGroupColumn = columns.group !== undefined;
+  const detected = columns;
+  const usedGroupColumn = detected.group !== undefined;
   const fileGroup = groupFromFilename(fileName);
-  const get = (row: unknown[], col: CanonicalColumn) =>
-    columns![col] === undefined ? undefined : row[columns![col] as number];
+  const get = (row: unknown[], col: CanonicalColumn) => {
+    const idx = detected[col];
+    return idx === undefined ? undefined : row[idx];
+  };
 
   const rows: ParsedRow[] = [];
   for (let i = headerIdx + 1; i < matrix.length; i++) {

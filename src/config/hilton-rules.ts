@@ -110,6 +110,27 @@ export function isHalfAndHalfEligible(brand: string): boolean {
   return HALF_AND_HALF_BRANDS.some((x) => b.includes(x.toLowerCase()));
 }
 
+const SECTION_PAGE_IDS: Partial<Record<HiltonSectionId, string[]>> = {
+  "home-headline": ["home"],
+  "home-description": ["home"],
+  location: ["location"],
+  "dining-main": ["dining", "bar"],
+  "dining-outlet": ["dining", "bar"],
+  rooms: ["rooms"],
+  suites: ["suites", "rooms"],
+  events: ["events", "meetings", "weddings"],
+};
+
+/** Resolve the approved primary keyword for a Hilton content section. */
+export function keywordForSection(
+  sectionId: HiltonSectionId,
+  matrix: ReadonlyArray<{ pageId: string; primary: { keyword: string } | null }>,
+): string {
+  const ids = SECTION_PAGE_IDS[sectionId];
+  if (!ids) return "";
+  return matrix.find((m) => ids.includes(m.pageId))?.primary?.keyword ?? "";
+}
+
 /** All LLM calls must use this temperature. */
 export const LLM_TEMPERATURE = 0.2;
 

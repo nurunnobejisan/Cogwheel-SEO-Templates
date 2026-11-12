@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import sitemap from "@/config/sitemap.json";
-import { TEMPLATES } from "@/config/templates";
+import { postFormData, postJson } from "@/lib/api";
 import {
   addToPool,
   assignKeyword,
@@ -17,6 +17,7 @@ import type { Allocation, BucketSummary, IngestResult, KeywordRecord, MatrixRow,
 import { ApprovalMatrix } from "./ApprovalMatrix";
 import { ContentStudio } from "./ContentStudio";
 import { KeywordPool } from "./KeywordPool";
+import { ReportResultCard, type ReportDocResult } from "./ReportResultCard";
 import { Dropzone, PagesEditor, PropertySetup } from "./SetupStep";
 import { TemplateSelector } from "./TemplateSelector";
 import { Button, Card, Spinner, Stat } from "./ui";
@@ -44,13 +45,6 @@ const EMPTY_PROPERTY: Property = {
   excludedLocations: [],
 };
 
-async function postJson<T>(url: string, body: unknown): Promise<T> {
-  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error ?? `${url} failed (${res.status})`);
-  return data as T;
-}
-
 export default function Studio() {
   const [step, setStep] = useState<Step>(1);
   const [property, setProperty] = useState<Property>(EMPTY_PROPERTY);
@@ -68,11 +62,7 @@ export default function Studio() {
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [savedRunId, setSavedRunId] = useState<string | null>(null);
-  const [reportDoc, setReportDoc] = useState<{
-    docId: string;
-    docUrl: string;
-    rationales: Array<{ pageId: string; title: string; text: string }>;
-  } | null>(null);
+  const [reportDoc, setReportDoc] = useState<ReportDocResult | null>(null);
 
   const pagesKey = useMemo(() => JSON.stringify(pages), [pages]);
   const propReady = Boolean(property.name.trim() && property.city.trim() && property.state.trim().length === 2);
@@ -155,50 +145,50 @@ export default function Studio() {
     }
   }
 
+  async function uploadAndIngest(): Promise<IngestResult> {
+    const form = new FormData();
+    files.forEach((f) => form.append("files", f));
+    form.append("property", JSON.stringify(property));
+    const data = await postFormData<IngestResult>("/api/ingest", form);
+    setIngest(data);
+    return data;
+  }
+
+  async function bucketAndSelect(source: IngestResult, autoApprove = false): Promise<MatrixState> {
+    const b = await postJson<{ keywords: KeywordRecord[]; summary: BucketSummary[]; allocation: Allocation }>("/api/bucket", {
+      keywords: source.keywords,
+      pages,
+      template,
+    });
+    setBucketed(b.keywords);
+    setSummary(b.summary);
+
+    const s = await postJson<{ matrix: MatrixRow[]; allocation: Allocation }>("/api/select-kw", {
+      keywords: b.keywords,
+      pages,
+      template,
+    });
+    const matrix = autoApprove ? s.matrix.map((r) => ({ ...r, status: "approved" as const })) : s.matrix;
+    const nextState: MatrixState = { matrix, allocation: s.allocation };
+    setState(nextState);
+    setBuiltFor({ template, pagesKey });
+    setSavedRunId(null);
+    return nextState;
+  }
+
   async function autoGenerateFullReport() {
     if (!setupValid) return;
     setError(null);
     setBusy("Zero-Touch Auto-Generate: Ingest → Bucket → Select → Generate Google Doc…");
     try {
-      let currentIngest = ingest;
-      if (!currentIngest) {
-        const form = new FormData();
-        files.forEach((f) => form.append("files", f));
-        form.append("property", JSON.stringify(property));
-        const res = await fetch("/api/ingest", { method: "POST", body: form });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error ?? "Ingest failed");
-        currentIngest = data as IngestResult;
-        setIngest(currentIngest);
-      }
-
-      const b = await postJson<{ keywords: KeywordRecord[]; summary: BucketSummary[]; allocation: Allocation }>("/api/bucket", {
-        keywords: currentIngest.keywords,
-        pages,
-        template,
-      });
-      setBucketed(b.keywords);
-      setSummary(b.summary);
-
-      const s = await postJson<{ matrix: MatrixRow[]; allocation: Allocation }>("/api/select-kw", {
-        keywords: b.keywords,
-        pages,
-        template,
-      });
-      const autoApprovedMatrix = s.matrix.map((r) => ({ ...r, status: "approved" as const }));
-      setState({ matrix: autoApprovedMatrix, allocation: s.allocation });
-      setBuiltFor({ template, pagesKey });
-
-      const doc = await postJson<{
-        docId: string;
-        docUrl: string;
-        rationales: Array<{ pageId: string; title: string; text: string }>;
-      }>("/api/generate-kr", {
+      const currentIngest = ingest ?? (await uploadAndIngest());
+      const nextState = await bucketAndSelect(currentIngest, true);
+      const doc = await postJson<ReportDocResult>("/api/generate-kr", {
         property,
         pages,
         template,
-        allocation: { pool: s.allocation.pool },
-        matrix: autoApprovedMatrix,
+        allocation: { pool: nextState.allocation.pool },
+        matrix: nextState.matrix,
       });
       setReportDoc(doc);
       setStep(3);
@@ -214,14 +204,8 @@ export default function Studio() {
     setError(null);
     setBusy("Parsing, deduplicating and filtering exports…");
     try {
-      const form = new FormData();
-      files.forEach((f) => form.append("files", f));
-      form.append("property", JSON.stringify(property));
-      const res = await fetch("/api/ingest", { method: "POST", body: form });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error ?? "Ingest failed");
-      setIngest(data as IngestResult);
-      await runBucketAndSelect(data as IngestResult);
+      const data = await uploadAndIngest();
+      await bucketAndSelect(data);
       setStep(3);
     } catch (e) {
       setError((e as Error).message);
@@ -235,21 +219,7 @@ export default function Studio() {
     setError(null);
     setBusy("Bucketing keywords and allocating the 78-keyword pool…");
     try {
-      const b = await postJson<{ keywords: KeywordRecord[]; summary: BucketSummary[]; allocation: Allocation }>("/api/bucket", {
-        keywords: source.keywords,
-        pages,
-        template,
-      });
-      setBucketed(b.keywords);
-      setSummary(b.summary);
-      setBusy("Matching pages to keywords…");
-      const s = await postJson<{ matrix: MatrixRow[]; allocation: Allocation }>("/api/select-kw", {
-        keywords: b.keywords,
-        pages,
-        template,
-      });
-      setState({ matrix: s.matrix, allocation: s.allocation });
-      setBuiltFor({ template, pagesKey });
+      await bucketAndSelect(source);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -261,6 +231,7 @@ export default function Studio() {
     if (!state) return;
     try {
       setError(null);
+      setSavedRunId(null);
       setState(fn(state));
     } catch (e) {
       setError((e as Error).message);
@@ -431,6 +402,7 @@ export default function Studio() {
                     setFiles(next);
                     setIngest(null);
                     setState(null);
+                    setSavedRunId(null);
                     setReportDoc(null);
                   }}
                   onDriveSync={handleDriveSync}
@@ -543,46 +515,11 @@ export default function Studio() {
             />
 
             {reportDoc && (
-              <Card
-                title="Keyword Report Generated"
-                subtitle={`Template ${builtFor?.template ?? template} — ${TEMPLATES[builtFor?.template ?? template].rationaleHeading}`}
-                actions={
-                  <a
-                    href={reportDoc.docUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
-                  >
-                    Open Google Doc →
-                  </a>
-                }
-              >
-                <div className="space-y-4">
-                  {state.matrix.some((m) => m.flags.length > 0) && (
-                    <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
-                      <div className="text-xs font-bold uppercase tracking-wider text-amber-800">
-                        Flag Summary ({state.matrix.filter((m) => m.flags.length > 0).length} pages need review)
-                      </div>
-                      <ul className="mt-2 space-y-1 text-xs text-amber-900">
-                        {state.matrix
-                          .filter((m) => m.flags.length > 0)
-                          .map((m) => (
-                            <li key={m.pageId}>
-                              <strong>{m.title}:</strong> {m.primary?.keyword ?? "—"} ({m.flags.join(", ")})
-                            </li>
-                          ))}
-                      </ul>
-                    </div>
-                  )}
-                  <ul className="space-y-2 text-sm text-slate-700">
-                    {reportDoc.rationales.map((r) => (
-                      <li key={r.pageId}>
-                        <strong>{r.title}:</strong> {r.text}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </Card>
+              <ReportResultCard
+                reportDoc={reportDoc}
+                template={builtFor?.template ?? template}
+                matrix={state.matrix}
+              />
             )}
 
             <div className="flex flex-wrap items-center justify-between gap-3">

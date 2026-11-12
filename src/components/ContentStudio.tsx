@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import {
   HILTON_BRANDS,
   isHalfAndHalfEligible,
+  keywordForSection,
   SECTION_RULES,
   type HiltonSectionId,
 } from "@/config/hilton-rules";
@@ -28,28 +29,6 @@ interface Props {
   onPropertyChange: (p: Property) => void;
   matrix: MatrixRow[];
   runId: string | null;
-}
-
-function keywordFor(sectionId: HiltonSectionId, matrix: MatrixRow[]): string {
-  const find = (ids: string[]) => matrix.find((m) => ids.includes(m.pageId))?.primary?.keyword ?? "";
-  switch (sectionId) {
-    case "home-headline":
-    case "home-description":
-      return find(["home"]);
-    case "location":
-      return find(["location"]);
-    case "dining-main":
-    case "dining-outlet":
-      return find(["dining", "bar"]);
-    case "rooms":
-      return find(["rooms"]);
-    case "suites":
-      return find(["suites", "rooms"]);
-    case "events":
-      return find(["events", "meetings", "weddings"]);
-    default:
-      return "";
-  }
 }
 
 function DiffPreview({ text }: { text: string }) {
@@ -247,7 +226,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
 
       {EDITABLE_SECTIONS.map((sectionId) => {
         const rule = SECTION_RULES[sectionId];
-        const keyword = keywordFor(sectionId, matrix);
+        const keyword = keywordForSection(sectionId, matrix);
         const current = liveCopy[sectionId] ?? "";
         const proposed = proposedCopy[sectionId] ?? "";
         const check = validateSection({
