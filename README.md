@@ -1,6 +1,6 @@
-# Keyword Research & Hilton SEO Studio
+# Keyword Research
 
-Automated keyword research, 78-keyword pool allocation, Google Docs report generation, and Hilton SEO/GEO content drafting studio.
+Automated keyword research, 78-keyword pool allocation, Google Docs report generation, and SEO/GEO content drafting studio.
 
 ## Features
 
