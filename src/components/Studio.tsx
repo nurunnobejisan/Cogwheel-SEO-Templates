@@ -427,7 +427,12 @@ export default function Studio() {
               <div className="lg:col-span-2">
                 <Dropzone
                   files={files}
-                  onChange={setFiles}
+                  onChange={(next) => {
+                    setFiles(next);
+                    setIngest(null);
+                    setState(null);
+                    setReportDoc(null);
+                  }}
                   onDriveSync={handleDriveSync}
                   onSemrushPull={handleSemrushPull}
                   syncing={!!busy}

@@ -173,8 +173,9 @@ function buildRationalePrompt(run: ResolvedRun): { system: string; prompt: strin
 }
 
 function parseRationales(raw: string, matrix: MatrixRow[]): RationaleEntry[] {
-  const cleaned = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
-  const parsed = JSON.parse(cleaned) as { rationales?: RationaleEntry[] };
+  const withoutFences = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "").trim();
+  const jsonText = withoutFences.match(/\{[\s\S]*\}/)?.[0] ?? withoutFences;
+  const parsed = JSON.parse(jsonText) as { rationales?: RationaleEntry[] };
   if (!Array.isArray(parsed.rationales)) throw new Error("LLM response missing rationales array");
   const byId = new Map(parsed.rationales.map((r) => [r.pageId, r]));
   return matrix.map((m) => {

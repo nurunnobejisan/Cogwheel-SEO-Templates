@@ -141,6 +141,7 @@ export function PropertySetup({
         <div className="md:col-span-3">
           <label className="label">Allowed locations</label>
           <textarea
+            key={`allowed-${property.allowedLocations.join(",")}`}
             className="input min-h-[72px]"
             defaultValue={property.allowedLocations.join(", ")}
             onBlur={(e) => set("allowedLocations", splitList(e.target.value))}
@@ -151,6 +152,7 @@ export function PropertySetup({
         <div className="md:col-span-3">
           <label className="label">Excluded locations</label>
           <textarea
+            key={`excluded-${property.excludedLocations.join(",")}`}
             className="input min-h-[72px]"
             defaultValue={property.excludedLocations.join(", ")}
             onBlur={(e) => set("excludedLocations", splitList(e.target.value))}
