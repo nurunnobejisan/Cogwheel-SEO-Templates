@@ -120,7 +120,7 @@ export default function Studio() {
     try {
       const data = await postJson<IngestResult>("/api/drive-sync", { folderUrlOrId, property });
       setIngest(data);
-      await runBucketAndSelect(data);
+      await bucketAndSelect(data);
       setStep(3);
       setNotice(`Synced ${data.stats.files} file(s) from Google Drive.`);
     } catch (e) {
@@ -140,7 +140,7 @@ export default function Studio() {
     try {
       const data = await postJson<IngestResult>("/api/semrush-pull", { property });
       setIngest(data);
-      await runBucketAndSelect(data);
+      await bucketAndSelect(data);
       setStep(3);
       setNotice(`Pulled ${data.stats.kept} keywords across ${data.stats.files} buckets from Semrush API.`);
     } catch (e) {
@@ -219,14 +219,16 @@ export default function Studio() {
     }
   }
 
-  async function runBucketAndSelect(source: IngestResult | null = ingest) {
-    if (!source) return;
+  async function runBucketAndSelect(source: IngestResult | null = ingest): Promise<boolean> {
+    if (!source) return false;
     setError(null);
     setBusy("Bucketing keywords and allocating the 78-keyword pool…");
     try {
       await bucketAndSelect(source);
+      return true;
     } catch (e) {
       setError((e as Error).message);
+      return false;
     } finally {
       setBusy(null);
     }
@@ -458,7 +460,7 @@ export default function Studio() {
             />
             <div className="flex justify-between">
               <Button variant="secondary" onClick={() => setStep(1)}>← Back</Button>
-              <Button onClick={state && !stale ? () => setStep(3) : ingest ? () => runBucketAndSelect().then(() => setStep(3)) : runIngest} disabled={!setupValid || !!busy}>
+              <Button onClick={state && !stale ? () => setStep(3) : ingest ? () => runBucketAndSelect().then((ok) => ok && setStep(3)) : runIngest} disabled={!setupValid || !!busy}>
                 {busy ? <Spinner /> : null}
                 {state && !stale ? "Continue to matrix →" : ingest ? "Rebuild pool & matrix →" : "Build 78-keyword pool →"}
               </Button>

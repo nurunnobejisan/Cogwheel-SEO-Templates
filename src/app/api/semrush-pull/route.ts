@@ -59,32 +59,37 @@ export async function POST(req: Request) {
     ? BUCKETS.filter((b) => bucketIds.includes(b.id))
     : BUCKETS.slice(0, 12);
 
-  const parsedFiles: ParsedFile[] = [];
-  for (const b of selectedBuckets) {
-    const seed = `${b.terms[0] ?? b.name} ${property.city}`.trim();
-    const url = new URL("https://api.semrush.com/");
-    url.searchParams.set("type", "phrase_related");
-    url.searchParams.set("key", apiKey);
-    url.searchParams.set("phrase", seed);
-    url.searchParams.set("database", database);
-    url.searchParams.set("export_columns", "Ph,Nq,Kd,Cp");
-    url.searchParams.set("display_limit", String(limitPerBucket));
+  const results = await Promise.allSettled(
+    selectedBuckets.map(async (b): Promise<ParsedFile | null> => {
+      const seed = `${b.terms[0] ?? b.name} ${property.city}`.trim();
+      const url = new URL("https://api.semrush.com/");
+      url.searchParams.set("type", "phrase_related");
+      url.searchParams.set("key", apiKey);
+      url.searchParams.set("phrase", seed);
+      url.searchParams.set("database", database);
+      url.searchParams.set("export_columns", "Ph,Nq,Kd,Cp");
+      url.searchParams.set("display_limit", String(limitPerBucket));
 
-    const res = await fetch(url.toString(), { signal: AbortSignal.timeout(10_000) });
-    if (!res.ok) continue;
-    const text = await res.text();
-    if (text.startsWith("ERROR")) continue;
+      const res = await fetch(url.toString(), { signal: AbortSignal.timeout(10_000) });
+      if (!res.ok) return null;
+      const text = await res.text();
+      if (text.startsWith("ERROR")) return null;
 
-    const rows = parseSemrushTsv(text, b.name);
-    if (rows.length > 0) {
-      parsedFiles.push({
+      const rows = parseSemrushTsv(text, b.name);
+      if (rows.length === 0) return null;
+      return {
         fileName: `semrush-api-${b.id}.csv`,
         rows,
         sourceGroup: b.name,
         usedGroupColumn: true,
-      });
-    }
-  }
+      };
+    }),
+  );
+
+  const parsedFiles: ParsedFile[] = results
+    .filter((r): r is PromiseFulfilledResult<ParsedFile | null> => r.status === "fulfilled")
+    .map((r) => r.value)
+    .filter((f): f is ParsedFile => f !== null);
 
   if (parsedFiles.length === 0) {
     return NextResponse.json({ error: "Semrush API returned no keyword rows." }, { status: 502 });

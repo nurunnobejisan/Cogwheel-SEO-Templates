@@ -322,7 +322,7 @@ export async function listAndDownloadDriveExports(folderUrlOrId: string): Promis
         });
 
   const exportFiles = (listRes.data.files ?? []).filter((f) =>
-    /\.(csv|xlsx|xls|tsv)$/i.test(f.name ?? ""),
+    /\.(csv|xlsx|xls|tsv|txt|json)$/i.test(f.name ?? ""),
   );
 
   const files: DriveSyncedFile[] = [];
