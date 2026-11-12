@@ -216,14 +216,14 @@ export default function Studio() {
               className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-brand font-display text-[19px] font-black text-slate-900 shadow-sm"
               style={{ letterSpacing: "-1px" }}
             >
-              HS
+              KR
             </div>
             <div className="flex flex-col justify-center">
               <span className="font-display text-[18px] font-black uppercase leading-none tracking-tight text-slate-900">
-                HILTON SEO/GEO
+                KEYWORD RESEARCH
               </span>
               <span className="mt-1 font-display text-[11px] font-light uppercase leading-none tracking-[0.24em] text-slate-600">
-                CONTENT STUDIO
+                SEO/GEO STUDIO
               </span>
             </div>
           </div>

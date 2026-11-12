@@ -1,4 +1,4 @@
-# Hilton SEO/GEO Keyword & Content Studio — Specification
+# Keyword Research — SEO/GEO & Content Studio Specification
 
 > Source of truth for the product. Business rules live in code under `src/config/*` and are referenced here.
 > Status: **Phase 1 (Ingest → Bucket → 78-KW Pool → Page Matrix) implemented.** Phases 2–3 are specified, not built.

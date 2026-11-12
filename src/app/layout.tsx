@@ -6,7 +6,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-jakarta" });
 
 export const metadata: Metadata = {
-  title: "Hilton SEO/GEO Studio | Razib Marketing",
+  title: "Keyword Research | SEO/GEO Studio",
   description: "78-keyword pool builder, page-to-keyword approval matrix and Hilton content studio.",
 };
 
