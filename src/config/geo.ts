@@ -78,3 +78,10 @@ export const COMPETITOR_CHAIN_BRANDS = [
   "montage", "auberge", "oxford suites", "shilo inn",
 ] as const;
 
+/** OTA / booking sites & non-hotel noise terms found in Catbird / Reitz exports. */
+export const OTA_AND_NOISE_TERMS = [
+  "expedia", "hotel tonight", "hoteltonight", "booking.com", "hotels.com",
+  "trivago", "kayak", "priceline", "agoda", "orbitz", "travelocity", "tripadvisor",
+  "escape room", "deck builder", "rooftop deck builder",
+] as const;
+

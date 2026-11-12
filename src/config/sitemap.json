@@ -1,8 +1,8 @@
 {
   "_comment": "Default Hilton brand-site sitemap. `buckets` = bucket ids eligible for that page's primary keyword. Pages are matched in this order (earlier pages get first pick).",
   "pages": [
-    { "id": "home", "path": "/", "title": "Home", "buckets": ["hotel", "boutique", "luxury", "stay", "accommodation", "lodging"], "active": true },
-    { "id": "rooms", "path": "/rooms/", "title": "Rooms", "buckets": ["rooms", "lofted-studios", "accommodation"], "active": true },
+    { "id": "home", "path": "/", "title": "Home", "buckets": ["hotel", "boutique", "luxury", "stay", "accommodation", "lodging"], "active": true, "ignoreKdLimit": true },
+    { "id": "rooms", "path": "/rooms/", "title": "Rooms", "buckets": ["rooms", "lofted-studios", "accommodation"], "active": true, "ignoreKdLimit": true },
     { "id": "suites", "path": "/rooms/suites/", "title": "Suites", "buckets": ["suites", "lofted-studios"], "active": true },
     { "id": "dining", "path": "/dining/", "title": "Dining", "buckets": ["restaurants", "dining", "bar", "rooftop-bar"], "active": true },
     { "id": "bar", "path": "/dining/bar/", "title": "Bar / Rooftop", "buckets": ["rooftop-bar", "bar"], "active": false },

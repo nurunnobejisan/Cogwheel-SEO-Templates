@@ -80,6 +80,39 @@ export function PropertySetup({
           </div>
         </div>
         <div className="md:col-span-6">
+          <label className="label">Google Doc Template URL or ID (optional — defaults to Catbird/Hilton Master)</label>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
+            <div className="md:col-span-3">
+              <input
+                className="input"
+                value={property.templateDocUrl ?? ""}
+                onChange={(e) => set("templateDocUrl", e.target.value)}
+                placeholder="https://docs.google.com/document/d/1TIGp2n1UAfz_UKGyJl4ZK-jdcITxsjO6EgqRvy1CVSw/edit"
+              />
+            </div>
+            <div className="md:col-span-2">
+              <select
+                className="input"
+                value={property.rationaleStyle ?? (template === "B" ? "reitz" : "catbird")}
+                onChange={(e) => set("rationaleStyle", e.target.value as Property["rationaleStyle"])}
+              >
+                <option value="catbird">Rationale: Catbird (with supporting KWs)</option>
+                <option value="arrive">Rationale: Arrive (short &amp; direct)</option>
+                <option value="reitz">Rationale: Reitz / Cogwheel (qualitative)</option>
+              </select>
+            </div>
+            <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 md:col-span-1">
+              <input
+                type="checkbox"
+                className="h-4 w-4 accent-slate-900"
+                checked={property.petFriendly !== false}
+                onChange={(e) => set("petFriendly", e.target.checked)}
+              />
+              Pet Friendly
+            </label>
+          </div>
+        </div>
+        <div className="md:col-span-6">
           <label className="label">Property Notes</label>
           <textarea
             className="input min-h-[68px]"

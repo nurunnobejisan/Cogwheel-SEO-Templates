@@ -1,4 +1,4 @@
-import { COMPETITOR_CHAIN_BRANDS } from "@/config/geo";
+import { COMPETITOR_CHAIN_BRANDS, OTA_AND_NOISE_TERMS } from "@/config/geo";
 import { resolveRules, type RulesOverride } from "@/config/rules";
 import type { DroppedRow, FileStat, IngestResult, KeywordFlag, KeywordRecord, Property } from "@/lib/types";
 import { knownBucketFor } from "./bucket";
@@ -118,6 +118,33 @@ export function ingestParsedFiles(
         sourceFile: sourceFiles.join(", "),
         reason: "geo",
         detail: `competitor brand: ${compBrand}`,
+      });
+      continue;
+    }
+
+    // OTA / booking sites & non-hotel noise terms (Catbird / Reitz audit)
+    const noise = OTA_AND_NOISE_TERMS.find((t) => containsPhrase(norm, t));
+    if (noise) {
+      dropped.push({
+        keyword: norm,
+        volume: best.volume,
+        kd,
+        sourceFile: sourceFiles.join(", "),
+        reason: "geo",
+        detail: `noise/OTA: ${noise}`,
+      });
+      continue;
+    }
+
+    // Pet policy gate: skip pet/dog terms when property does not accommodate pets
+    if (property.petFriendly === false && /\b(pet|pets|dog|dogs)\b/i.test(norm)) {
+      dropped.push({
+        keyword: norm,
+        volume: best.volume,
+        kd,
+        sourceFile: sourceFiles.join(", "),
+        reason: "geo",
+        detail: "pet policy: not pet friendly",
       });
       continue;
     }

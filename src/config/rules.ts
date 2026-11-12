@@ -33,7 +33,7 @@ export const DEFAULT_RULES: EngineRules = {
   kdPreferredMax: 45,
   highVolumeException: { multiplier: 2, minVolume: 500 },
   maxPerBucket: null,
-  alternativesPerPage: 5,
+  alternativesPerPage: 10,
   includeUnassignedInPool: false,
   localDemandBuckets: [
     "event-space",

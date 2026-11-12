@@ -1,5 +1,7 @@
 export type TemplateId = "A" | "B";
 
+export type RationaleStyle = "arrive" | "catbird" | "reitz";
+
 export interface Property {
   name: string;
   url?: string;
@@ -8,6 +10,10 @@ export interface Property {
   /** 2-letter USPS code */
   state: string;
   notes?: string;
+  petFriendly?: boolean;
+  attractions?: string[];
+  rationaleStyle?: RationaleStyle;
+  templateDocUrl?: string;
   allowedLocations: string[];
   excludedLocations: string[];
 }
@@ -19,6 +25,8 @@ export interface SitemapPage {
   /** Ordered bucket ids eligible for this page's primary keyword. */
   buckets: string[];
   active: boolean;
+  /** Home & Rooms ignore the KD < 45 cap so top head terms are selected. */
+  ignoreKdLimit?: boolean;
 }
 
 export type KeywordFlag =

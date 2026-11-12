@@ -27,7 +27,8 @@ export function kdFlags(kd: number | null, kdMax: number): KeywordFlag[] {
   return t === 1 ? ["kd-unknown"] : t === 2 ? ["kd-exception"] : [];
 }
 
-function rankCandidates(cands: KeywordRecord[], kdMax: number): KeywordRecord[] {
+function rankCandidates(cands: KeywordRecord[], kdMax: number, ignoreKdLimit = false): KeywordRecord[] {
+  if (ignoreKdLimit) return [...cands].sort(compareByVolume);
   return [...cands].sort((a, b) => kdTier(a.kd, kdMax) - kdTier(b.kd, kdMax) || compareByVolume(a, b));
 }
 
@@ -64,7 +65,7 @@ export function matchPages(
         }
       }
     }
-    return rankCandidates(out, kdMax);
+    return rankCandidates(out, kdMax, page.ignoreKdLimit);
   };
 
   // Pass 1: primaries.

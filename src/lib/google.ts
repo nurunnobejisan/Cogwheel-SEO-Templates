@@ -167,13 +167,22 @@ function buildDocumentBlocks(input: KeywordDocInput): DocBlock[] {
   return blocks;
 }
 
+export function extractGoogleDocId(urlOrId?: string): string | undefined {
+  const s = (urlOrId ?? "").trim();
+  if (!s) return undefined;
+  const m = s.match(/\/document\/d\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  return /^[a-zA-Z0-9_-]{20,}$/.test(s) ? s : undefined;
+}
+
 export async function createKeywordReportDoc(input: KeywordDocInput): Promise<KeywordDocResult> {
   const { drive, docs } = getGoogleClients();
   const folderId = process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID || undefined;
   const templateId =
-    input.template === "A"
-      ? process.env.GOOGLE_TEMPLATE_DOC_ID_A
-      : process.env.GOOGLE_TEMPLATE_DOC_ID_B;
+    extractGoogleDocId(input.property.templateDocUrl) ??
+    (input.template === "A"
+      ? process.env.GOOGLE_TEMPLATE_DOC_ID_A || "1TIGp2n1UAfz_UKGyJl4ZK-jdcITxsjO6EgqRvy1CVSw"
+      : process.env.GOOGLE_TEMPLATE_DOC_ID_B);
 
   const docTitle = `${input.property.name} — Keyword Report (Format ${input.template})`;
   let docId: string;

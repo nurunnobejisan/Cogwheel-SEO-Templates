@@ -11,6 +11,10 @@ export const propertySchema = z.object({
     .length(2, "State must be a 2-letter code")
     .transform((s) => s.toUpperCase()),
   notes: z.string().trim().optional().default(""),
+  petFriendly: z.boolean().optional().default(true),
+  attractions: z.array(z.string()).optional().default([]),
+  rationaleStyle: z.enum(["arrive", "catbird", "reitz"]).optional().default("catbird"),
+  templateDocUrl: z.string().trim().optional().default(""),
   allowedLocations: z.array(z.string()).default([]),
   excludedLocations: z.array(z.string()).default([]),
 });
@@ -21,6 +25,7 @@ export const pageSchema = z.object({
   title: z.string().min(1),
   buckets: z.array(z.string()),
   active: z.boolean(),
+  ignoreKdLimit: z.boolean().optional(),
 });
 
 const flagSchema = z.enum([

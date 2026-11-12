@@ -30,7 +30,19 @@ const STEPS: Array<[Step, string]> = [
   [4, "Content Studio"],
 ];
 
-const EMPTY_PROPERTY: Property = { name: "", url: "", brand: "", city: "", state: "", notes: "", allowedLocations: [], excludedLocations: [] };
+const EMPTY_PROPERTY: Property = {
+  name: "",
+  url: "",
+  brand: "",
+  city: "",
+  state: "",
+  notes: "",
+  petFriendly: true,
+  rationaleStyle: "catbird",
+  templateDocUrl: "https://docs.google.com/document/d/1TIGp2n1UAfz_UKGyJl4ZK-jdcITxsjO6EgqRvy1CVSw/edit?usp=sharing",
+  allowedLocations: [],
+  excludedLocations: [],
+};
 
 async function postJson<T>(url: string, body: unknown): Promise<T> {
   const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
