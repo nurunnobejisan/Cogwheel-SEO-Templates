@@ -16,11 +16,11 @@ export function TemplateSelector({ value, onChange }: { value: TemplateId; onCha
               key={id}
               type="button"
               onClick={() => onChange(id)}
-              className={`rounded-lg border-2 p-4 text-left transition ${selected ? "border-hilton bg-hilton-light/60" : "border-slate-200 hover:border-slate-300"}`}
+              className={`rounded-2xl border-2 p-5 text-left transition-all ${selected ? "border-brand bg-brand-50 shadow-sm" : "border-slate-200 hover:border-brand/60"}`}
             >
               <div className="flex items-center justify-between">
-                <div className="font-semibold">{t.name}</div>
-                <span className={`h-4 w-4 rounded-full border-2 ${selected ? "border-hilton bg-hilton" : "border-slate-300"}`} />
+                <div className="font-display font-bold text-slate-900">{t.name}</div>
+                <span className={`h-4 w-4 rounded-full border-2 ${selected ? "border-slate-900 bg-brand" : "border-slate-300"}`} />
               </div>
               <div className="text-xs text-slate-500">{t.clients}</div>
               <p className="mt-2 text-sm text-slate-600">{t.description}</p>

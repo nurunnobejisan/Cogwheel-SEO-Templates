@@ -47,5 +47,34 @@ export const MAJOR_CITIES: Array<[string, string]> = [
   ["syracuse", "NY"], ["ann arbor", "MI"], ["grand rapids", "MI"], ["madison wi", "WI"], ["santa fe", "NM"],
   ["santa barbara", "CA"], ["palm springs", "CA"], ["napa", "CA"], ["sedona", "AZ"], ["aspen", "CO"],
   ["boulder", "CO"], ["park city", "UT"], ["washington dc", "DC"],
+  ["florence", "AL"], ["fairhope", "AL"], ["boerne", "TX"], ["cary", "NC"], ["alexandria", "VA"],
+  ["bloomington", "MN"], ["novi", "MI"], ["arlington", "TX"], ["tahoe", "CA"], ["sonoma", "CA"],
+  ["monterey", "CA"], ["carmel", "CA"], ["irvine", "CA"], ["newport beach", "CA"], ["santa monica", "CA"],
+  ["beverly hills", "CA"], ["pasadena", "CA"], ["waikiki", "HI"], ["maui", "HI"], ["kauai", "HI"],
+  ["west palm beach", "FL"], ["boca raton", "FL"],
 ];
+
+/**
+ * Competitor hotel chains & common misspellings (trained on Razib Marketing / Cogwheel SEO rules).
+ * Used to filter out non-Hilton competitor brand queries during ingest.
+ */
+export const COMPETITOR_CHAIN_BRANDS = [
+  "marriott", "mariott", "marriot", "bonvoy", "ihg", "hyatt",
+  "edition", "ritz carlton", "ritz-carlton", "luxury collection", "st regis", "st. regis",
+  "w hotels", "w hotel", "sheraton", "delta hotels", "westin", "le meridien", "le méridien",
+  "renaissance", "renassance", "renaisance", "autograph collection", "tribute portfolio",
+  "gaylord", "courtyard", "four points", "springhill suites", "fairfield inn", "ac hotels",
+  "ac hotel", "citizenm", "aloft", "moxy", "residence inn", "towneplace suites", "element",
+  "six senses", "regent", "intercontinental", "kimpton", "hotel indigo", "crowne plaza",
+  "even hotels", "voco", "holiday inn", "avid hotels", "staybridge suites", "candlewood suites",
+  "park hyatt", "alila", "miraval", "andaz", "thompson", "dream hotels", "grand hyatt",
+  "hyatt regency", "hyatt centric", "hyatt place", "hyatt house",
+  "best western", "wyndham", "baymont", "days inn", "super 8", "la quinta", "ramada",
+  "comfort inn", "comfort suites", "quality inn", "sleep inn", "clarion", "econo lodge",
+  "rodeway inn", "cambria", "radisson", "country inn", "sonesta", "red roof", "motel 6",
+  "drury", "omni", "loews", "four seasons", "fairmont", "sofitel", "novotel", "ibis",
+  "mercure", "mandarin oriental", "peninsula", "rosewood", "langham", "hard rock",
+  "margaritaville", "virgin hotels", "ace hotel", "1 hotel", "proper hotel", "pendry",
+  "montage", "auberge", "oxford suites", "shilo inn",
+] as const;
 

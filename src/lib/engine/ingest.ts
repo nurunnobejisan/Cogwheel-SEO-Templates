@@ -1,8 +1,9 @@
+import { COMPETITOR_CHAIN_BRANDS } from "@/config/geo";
 import { resolveRules, type RulesOverride } from "@/config/rules";
 import type { DroppedRow, FileStat, IngestResult, KeywordFlag, KeywordRecord, Property } from "@/lib/types";
 import { knownBucketFor } from "./bucket";
 import { buildGeoFilter } from "./geo";
-import { keywordId, normalizeKeyword, parseKd, parseNumberOrNull, parseVolume } from "./normalize";
+import { containsPhrase, keywordId, normalizeKeyword, parseKd, parseNumberOrNull, parseVolume } from "./normalize";
 import type { ParsedFile } from "./parse";
 import { compareByVolume } from "./sort";
 
@@ -90,6 +91,33 @@ export function ingestParsedFiles(
         sourceFile: sourceFiles.join(", "),
         reason: "geo",
         detail: `${verdict.kind}: ${verdict.term}`,
+      });
+      continue;
+    }
+
+    // Physical street addresses (e.g. "10 hightower pl florence al 35630")
+    if (/^\d{1,5}\s+[a-z0-9\s]+\b(st|street|ave|avenue|blvd|boulevard|rd|road|dr|drive|pl|place|ln|lane|way|ct|court|pkwy|hwy)\b/i.test(norm) || /\b\d{5}(?:-\d{4})?\b/.test(norm)) {
+      dropped.push({
+        keyword: norm,
+        volume: best.volume,
+        kd,
+        sourceFile: sourceFiles.join(", "),
+        reason: "geo",
+        detail: "physical address",
+      });
+      continue;
+    }
+
+    // Competitor chain brands (trained on Razib Marketing / Cogwheel SEO exclusion list)
+    const compBrand = COMPETITOR_CHAIN_BRANDS.find((b) => containsPhrase(norm, b));
+    if (compBrand) {
+      dropped.push({
+        keyword: norm,
+        volume: best.volume,
+        kd,
+        sourceFile: sourceFiles.join(", "),
+        reason: "geo",
+        detail: `competitor brand: ${compBrand}`,
       });
       continue;
     }

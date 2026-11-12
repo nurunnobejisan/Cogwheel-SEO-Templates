@@ -176,36 +176,89 @@ export default function Studio() {
 
   const slug = (property.name || "property").toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
+  function resetAll() {
+    setProperty(EMPTY_PROPERTY);
+    setPages(sitemap.pages as SitemapPage[]);
+    setFiles([]);
+    setTemplate("A");
+    setIngest(null);
+    setBucketed([]);
+    setSummary([]);
+    setState(null);
+    setBuiltFor(null);
+    setSavedRunId(null);
+    setReportDoc(null);
+    setError(null);
+    setNotice(null);
+    setStep(1);
+  }
+
+  const propReady = Boolean(property.name.trim() && property.city.trim() && property.state.trim().length === 2);
+
   return (
-    <div className="min-h-screen">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
-          <div>
-            <h1 className="text-lg font-semibold text-hilton-dark">Hilton SEO/GEO Studio</h1>
-            <p className="text-xs text-slate-500">Phase 1 · Ingest → Bucket → 78-Keyword Pool → Page Matrix</p>
+    <div className="flex min-h-screen flex-col">
+      <header className="glass-nav sticky top-0 z-30 border-b border-slate-200/80">
+        <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-6">
+          <div className="flex items-center gap-3">
+            <div
+              className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-brand font-display text-[19px] font-black text-slate-900 shadow-sm"
+              style={{ letterSpacing: "-1px" }}
+            >
+              HS
+            </div>
+            <div className="flex flex-col justify-center">
+              <span className="font-display text-[18px] font-black uppercase leading-none tracking-tight text-slate-900">
+                HILTON SEO/GEO
+              </span>
+              <span className="mt-1 font-display text-[11px] font-light uppercase leading-none tracking-[0.24em] text-slate-600">
+                CONTENT STUDIO
+              </span>
+            </div>
           </div>
-          <nav className="flex items-center gap-1">
-            {STEPS.map(([n, label]) => {
-              const enabled = n === 1 || n === 2 || (n === 3 && !!state) || (n === 4 && allApproved);
-              return (
-                <button
-                  key={n}
-                  disabled={!enabled}
-                  onClick={() => setStep(n)}
-                  className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm transition ${
-                    step === n ? "bg-hilton text-white" : enabled ? "text-slate-600 hover:bg-slate-100" : "text-slate-300"
-                  }`}
-                >
-                  <span className={`flex h-5 w-5 items-center justify-center rounded-full text-xs ${step === n ? "bg-white/20" : "bg-slate-100"}`}>{n}</span>
-                  <span className="hidden md:inline">{label}</span>
-                </button>
-              );
-            })}
-          </nav>
+
+          <div className="flex items-center gap-2">
+            <nav className="flex items-center gap-1 rounded-full border border-slate-200/80 bg-slate-100/80 p-1">
+              {STEPS.map(([n, label]) => {
+                const enabled = n === 1 || n === 2 || (n === 3 && !!state) || (n === 4 && allApproved);
+                return (
+                  <button
+                    key={n}
+                    disabled={!enabled}
+                    onClick={() => setStep(n)}
+                    className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                      step === n
+                        ? "bg-slate-900 text-white shadow-sm"
+                        : enabled
+                          ? "text-slate-600 hover:text-slate-900"
+                          : "text-slate-300"
+                    }`}
+                  >
+                    <span
+                      className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold ${
+                        step === n ? "bg-brand text-slate-900" : "bg-white text-slate-500"
+                      }`}
+                    >
+                      {n}
+                    </span>
+                    <span className="hidden md:inline">{label}</span>
+                  </button>
+                );
+              })}
+            </nav>
+            {(propReady || files.length > 0 || state) && (
+              <button
+                type="button"
+                onClick={resetAll}
+                className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+              >
+                Reset All
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl space-y-6 px-6 py-6">
+      <main className="mx-auto w-full max-w-7xl flex-grow space-y-6 px-6 py-8">
         {error && (
           <div className="flex items-start justify-between rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             <span>{error}</span>
@@ -230,9 +283,23 @@ export default function Studio() {
                 <PagesEditor pages={pages} onChange={setPages} />
               </div>
             </div>
-            <div className="flex justify-end">
-              <Button onClick={() => setStep(2)} disabled={!setupValid}>
-                Next: choose template →
+            <div className="flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-lg lg:flex-row">
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium ${propReady ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" : "border-slate-700 bg-slate-800 text-slate-400"}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${propReady ? "bg-emerald-400" : "bg-slate-500"}`} />
+                  Property {propReady ? "✓" : "Required"}
+                </span>
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium ${files.length > 0 ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" : "border-slate-700 bg-slate-800 text-slate-400"}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${files.length > 0 ? "bg-emerald-400" : "bg-slate-500"}`} />
+                  Exports ({files.length}) {files.length > 0 ? "✓" : "Required"}
+                </span>
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/15 px-3 py-1.5 font-medium text-brand-light">
+                  <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                  Format {template} ✓
+                </span>
+              </div>
+              <Button onClick={() => setStep(2)} disabled={!setupValid} className="w-full lg:w-auto px-6 py-3">
+                Next: Review Template &amp; Build Pool →
               </Button>
             </div>
           </>

@@ -60,21 +60,21 @@ export function PropertySetup({
             <button
               type="button"
               onClick={() => onTemplateChange("A")}
-              className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
-                template === "A" ? "border-hilton bg-hilton-light/70 font-medium text-hilton-dark" : "border-slate-200 hover:border-slate-300"
+              className={`rounded-2xl border-2 px-4 py-3 text-left text-sm transition-all ${
+                template === "A" ? "border-brand bg-brand-50 font-semibold text-slate-900 shadow-sm" : "border-slate-200 hover:border-brand/60"
               }`}
             >
-              <div>Standard Catbird / Arrive (Format A)</div>
+              <div className="font-display">Standard Catbird / Arrive (Format A)</div>
               <div className="text-xs font-normal text-slate-500">2-col table (Page | Keyword) + Why did we do this? bullets</div>
             </button>
             <button
               type="button"
               onClick={() => onTemplateChange("B")}
-              className={`rounded-lg border px-3 py-2 text-left text-sm transition ${
-                template === "B" ? "border-hilton bg-hilton-light/70 font-medium text-hilton-dark" : "border-slate-200 hover:border-slate-300"
+              className={`rounded-2xl border-2 px-4 py-3 text-left text-sm transition-all ${
+                template === "B" ? "border-brand bg-brand-50 font-semibold text-slate-900 shadow-sm" : "border-slate-200 hover:border-brand/60"
               }`}
             >
-              <div>Cogwheel Reitz Union (Format B)</div>
+              <div className="font-display">Cogwheel Reitz Union (Format B)</div>
               <div className="text-xs font-normal text-slate-500">Current Sitemap + 3-col table (Primary &amp; Secondary) + Comments</div>
             </button>
           </div>
@@ -146,15 +146,28 @@ export function Dropzone({ files, onChange }: { files: File[]; onChange: (f: Fil
           setOver(false);
           addFiles(e.dataTransfer.files);
         }}
-        className={`flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed px-6 py-10 text-center transition ${
-          over ? "border-hilton bg-hilton-light" : "border-slate-300 hover:border-hilton/60"
+        className={`flex min-h-[210px] cursor-pointer flex-col justify-between rounded-2xl border-2 p-6 text-center transition-all duration-300 ${
+          files.length > 0
+            ? "border-brand bg-brand-50 shadow-md"
+            : over
+              ? "scale-[1.02] border-brand bg-brand-50/60 shadow-lg"
+              : "border-dashed border-slate-200 bg-white hover:-translate-y-1 hover:border-brand hover:shadow-card"
         }`}
       >
         <input type="file" multiple accept=".csv,.xlsx,.xls,.tsv" className="hidden" onChange={(e) => addFiles(e.target.files)} />
-        <div className="text-sm font-medium text-slate-700">Drop Semrush exports here or click to browse</div>
-        <div className="mt-1 text-xs text-slate-500">
-          {files.length}/{max} files selected
+        <div className="flex w-full items-center justify-between">
+          <span className="font-display text-xs font-bold uppercase tracking-wider text-slate-400">Multi-CSV</span>
+          <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[11px] font-semibold text-white">Required</span>
         </div>
+        <div className="my-auto py-4">
+          <div className="font-display text-base font-bold text-slate-800">
+            {files.length > 0 ? `${files.length} export${files.length === 1 ? "" : "s"} ready` : "Drop Semrush exports here"}
+          </div>
+          <div className="mt-1 text-xs text-slate-500">
+            or click to browse · {files.length}/{max} files selected
+          </div>
+        </div>
+        <div className="text-[11px] font-medium text-slate-400">CSV, XLSX, XLS, TSV</div>
       </label>
       {files.length > 0 && (
         <ul className="mt-4 max-h-56 divide-y divide-slate-100 overflow-auto rounded-md border border-slate-200">
