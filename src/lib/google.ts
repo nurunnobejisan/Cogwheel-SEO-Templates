@@ -175,6 +175,79 @@ export function extractGoogleDocId(urlOrId?: string): string | undefined {
   return /^[a-zA-Z0-9_-]{20,}$/.test(s) ? s : undefined;
 }
 
+export function extractGoogleFolderId(urlOrId?: string): string | undefined {
+  const s = (urlOrId ?? "").trim();
+  if (!s) return undefined;
+  const m = s.match(/\/folders\/([a-zA-Z0-9_-]+)/);
+  if (m) return m[1];
+  return /^[a-zA-Z0-9_-]{15,}$/.test(s) ? s : undefined;
+}
+
+export interface DriveSyncedFile {
+  fileName: string;
+  buffer: ArrayBuffer;
+}
+
+/**
+ * Read all CSV/XLSX/XLS/TSV files from a property's Google Drive folder.
+ * If a `01-semrush` subfolder exists, reads from it; also resolves `03-output` if present.
+ */
+export async function listAndDownloadDriveExports(folderUrlOrId: string): Promise<{
+  files: DriveSyncedFile[];
+  semrushFolderId: string;
+  outputFolderId?: string;
+}> {
+  const rootId = extractGoogleFolderId(folderUrlOrId);
+  if (!rootId) throw new Error("Invalid Google Drive folder URL or ID");
+
+  const { drive } = getGoogleClients();
+  const children = await drive.files.list({
+    q: `'${rootId}' in parents and trashed = false`,
+    fields: "files(id, name, mimeType)",
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+    pageSize: 100,
+  });
+
+  const folders = (children.data.files ?? []).filter(
+    (f) => f.mimeType === "application/vnd.google-apps.folder",
+  );
+  const semrushSub = folders.find((f) => /^01[-_\s]?semrush/i.test(f.name ?? ""));
+  const outputSub = folders.find((f) => /^03[-_\s]?output/i.test(f.name ?? ""));
+  const semrushFolderId = semrushSub?.id ?? rootId;
+
+  const listRes =
+    semrushFolderId === rootId
+      ? children
+      : await drive.files.list({
+          q: `'${semrushFolderId}' in parents and trashed = false`,
+          fields: "files(id, name, mimeType)",
+          supportsAllDrives: true,
+          includeItemsFromAllDrives: true,
+          pageSize: 100,
+        });
+
+  const exportFiles = (listRes.data.files ?? []).filter((f) =>
+    /\.(csv|xlsx|xls|tsv)$/i.test(f.name ?? ""),
+  );
+
+  const files: DriveSyncedFile[] = [];
+  for (const f of exportFiles) {
+    if (!f.id || !f.name) continue;
+    const media = await drive.files.get(
+      { fileId: f.id, alt: "media", supportsAllDrives: true },
+      { responseType: "arraybuffer" },
+    );
+    files.push({ fileName: f.name, buffer: media.data as ArrayBuffer });
+  }
+
+  return {
+    files,
+    semrushFolderId,
+    outputFolderId: outputSub?.id ?? undefined,
+  };
+}
+
 export async function createKeywordReportDoc(input: KeywordDocInput): Promise<KeywordDocResult> {
   const { drive, docs } = getGoogleClients();
   const folderId = process.env.GOOGLE_DRIVE_ROOT_FOLDER_ID || undefined;

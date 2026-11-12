@@ -14,11 +14,15 @@ export function PropertySetup({
   onChange,
   template,
   onTemplateChange,
+  onCrawlUrl,
+  crawling,
 }: {
   property: Property;
   onChange: (p: Property) => void;
   template: TemplateId;
   onTemplateChange: (t: TemplateId) => void;
+  onCrawlUrl?: () => void;
+  crawling?: boolean;
 }) {
   const set = <K extends keyof Property>(k: K, v: Property[K]) => onChange({ ...property, [k]: v });
   return (
@@ -30,7 +34,20 @@ export function PropertySetup({
         </div>
         <div className="md:col-span-3">
           <label className="label">Property URL</label>
-          <input className="input" type="url" value={property.url ?? ""} onChange={(e) => set("url", e.target.value)} placeholder="https://www.hilton.com/en/hotels/..." />
+          <div className="flex gap-2">
+            <input className="input" type="url" value={property.url ?? ""} onChange={(e) => set("url", e.target.value)} placeholder="https://www.hilton.com/en/hotels/..." />
+            {onCrawlUrl && (
+              <Button
+                variant="secondary"
+                className="shrink-0 px-3 text-xs"
+                disabled={!property.url?.trim() || crawling}
+                onClick={onCrawlUrl}
+                title="Auto-detect City, State, Pet Policy & Sitemap Pages from URL"
+              >
+                {crawling ? "Scanning…" : "Auto-Discover"}
+              </Button>
+            )}
+          </div>
         </div>
         <div className="md:col-span-2">
           <label className="label">Brand</label>
@@ -146,8 +163,24 @@ export function PropertySetup({
   );
 }
 
-export function Dropzone({ files, onChange }: { files: File[]; onChange: (f: File[]) => void }) {
+export function Dropzone({
+  files,
+  onChange,
+  onDriveSync,
+  onSemrushPull,
+  syncing,
+  canPullSemrush,
+}: {
+  files: File[];
+  onChange: (f: File[]) => void;
+  onDriveSync?: (folderUrlOrId: string) => void;
+  onSemrushPull?: () => void;
+  syncing?: boolean;
+  canPullSemrush?: boolean;
+}) {
   const [over, setOver] = useState(false);
+  const [showDrive, setShowDrive] = useState(false);
+  const [driveFolder, setDriveFolder] = useState("");
   const max = DEFAULT_RULES.maxFiles;
 
   const addFiles = (list: FileList | null) => {
@@ -161,13 +194,45 @@ export function Dropzone({ files, onChange }: { files: File[]; onChange: (f: Fil
   return (
     <Card
       title="Semrush Exports"
-      subtitle={`Up to ${max} CSV/XLSX files. No Group/Topic column? The filename becomes the bucket name.`}
+      subtitle={`Up to ${max} CSV/XLSX files, Google Drive folder (01-semrush/), or Semrush API pull.`}
       actions={
-        <Button variant="secondary" disabled title="Ships in Phase 2">
-          Sync Google Drive folder
-        </Button>
+        <div className="flex flex-wrap gap-2">
+          {onDriveSync && (
+            <Button variant="secondary" className="px-3 py-1.5 text-xs" onClick={() => setShowDrive((v) => !v)}>
+              Sync Google Drive
+            </Button>
+          )}
+          {onSemrushPull && (
+            <Button
+              variant="secondary"
+              className="px-3 py-1.5 text-xs"
+              disabled={!canPullSemrush || syncing}
+              onClick={onSemrushPull}
+              title="Pull keywords directly via SEMRUSH_API_KEY"
+            >
+              Pull Semrush API
+            </Button>
+          )}
+        </div>
       }
     >
+      {showDrive && onDriveSync && (
+        <div className="mb-4 flex gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+          <input
+            className="input py-1.5 text-xs"
+            value={driveFolder}
+            onChange={(e) => setDriveFolder(e.target.value)}
+            placeholder="Paste Google Drive folder URL or ID (reads 01-semrush/ automatically)…"
+          />
+          <Button
+            className="shrink-0 px-3 py-1.5 text-xs"
+            disabled={!driveFolder.trim() || syncing}
+            onClick={() => onDriveSync(driveFolder)}
+          >
+            {syncing ? "Syncing…" : "Sync"}
+          </Button>
+        </div>
+      )}
       <label
         onDragOver={(e) => {
           e.preventDefault();

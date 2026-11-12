@@ -75,9 +75,140 @@ export default function Studio() {
   } | null>(null);
 
   const pagesKey = useMemo(() => JSON.stringify(pages), [pages]);
-  const setupValid = property.name.trim() && property.city.trim() && property.state.trim().length === 2 && files.length > 0;
+  const propReady = Boolean(property.name.trim() && property.city.trim() && property.state.trim().length === 2);
+  const hasKeywordsSource = files.length > 0 || ingest !== null;
+  const setupValid = propReady && hasKeywordsSource;
   const stale = !!state && !!builtFor && (builtFor.template !== template || builtFor.pagesKey !== pagesKey);
   const allApproved = !!state && state.matrix.length > 0 && state.matrix.every((r) => r.status === "approved");
+
+  async function handleCrawlProperty() {
+    if (!property.url?.trim()) return;
+    setError(null);
+    setBusy("Auto-discovering sitemap, city/state, and pet policy from URL…");
+    try {
+      const res = await postJson<{
+        blocked: boolean;
+        title: string;
+        city: string;
+        state: string;
+        petFriendly: boolean | null;
+        pages?: SitemapPage[];
+        warnings: string[];
+      }>("/api/crawl-property", { url: property.url });
+
+      setProperty((prev) => ({
+        ...prev,
+        city: prev.city || res.city || prev.city,
+        state: prev.state || res.state || prev.state,
+        petFriendly: res.petFriendly !== null ? res.petFriendly : prev.petFriendly,
+      }));
+      if (res.pages?.length) setPages(res.pages);
+      setNotice(
+        res.warnings.length > 0
+          ? `URL scan complete (${res.warnings.join(" ")})`
+          : `Auto-discovered ${res.city}, ${res.state} and active sitemap pages.`,
+      );
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleDriveSync(folderUrlOrId: string) {
+    if (!propReady) {
+      setError("Enter Property Name, City, and 2-letter State before syncing Drive.");
+      return;
+    }
+    setError(null);
+    setBusy("Syncing Semrush exports from Google Drive folder…");
+    try {
+      const data = await postJson<IngestResult>("/api/drive-sync", { folderUrlOrId, property });
+      setIngest(data);
+      await runBucketAndSelect(data);
+      setStep(3);
+      setNotice(`Synced ${data.stats.files} file(s) from Google Drive.`);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function handleSemrushPull() {
+    if (!propReady) {
+      setError("Enter Property Name, City, and 2-letter State before pulling from Semrush API.");
+      return;
+    }
+    setError(null);
+    setBusy("Pulling keywords directly from Semrush API…");
+    try {
+      const data = await postJson<IngestResult>("/api/semrush-pull", { property });
+      setIngest(data);
+      await runBucketAndSelect(data);
+      setStep(3);
+      setNotice(`Pulled ${data.stats.kept} keywords across ${data.stats.files} buckets from Semrush API.`);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function autoGenerateFullReport() {
+    if (!setupValid) return;
+    setError(null);
+    setBusy("Zero-Touch Auto-Generate: Ingest → Bucket → Select → Generate Google Doc…");
+    try {
+      let currentIngest = ingest;
+      if (!currentIngest) {
+        const form = new FormData();
+        files.forEach((f) => form.append("files", f));
+        form.append("property", JSON.stringify(property));
+        const res = await fetch("/api/ingest", { method: "POST", body: form });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error ?? "Ingest failed");
+        currentIngest = data as IngestResult;
+        setIngest(currentIngest);
+      }
+
+      const b = await postJson<{ keywords: KeywordRecord[]; summary: BucketSummary[]; allocation: Allocation }>("/api/bucket", {
+        keywords: currentIngest.keywords,
+        pages,
+        template,
+      });
+      setBucketed(b.keywords);
+      setSummary(b.summary);
+
+      const s = await postJson<{ matrix: MatrixRow[]; allocation: Allocation }>("/api/select-kw", {
+        keywords: b.keywords,
+        pages,
+        template,
+      });
+      const autoApprovedMatrix = s.matrix.map((r) => ({ ...r, status: "approved" as const }));
+      setState({ matrix: autoApprovedMatrix, allocation: s.allocation });
+      setBuiltFor({ template, pagesKey });
+
+      const doc = await postJson<{
+        docId: string;
+        docUrl: string;
+        rationales: Array<{ pageId: string; title: string; text: string }>;
+      }>("/api/generate-kr", {
+        property,
+        pages,
+        template,
+        allocation: { pool: s.allocation.pool },
+        matrix: autoApprovedMatrix,
+      });
+      setReportDoc(doc);
+      setStep(3);
+      setNotice("Zero-Touch Report generated! Review the Google Doc link and Flag Summary below.");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
 
   async function runIngest() {
     setError(null);
@@ -205,8 +336,6 @@ export default function Studio() {
     setStep(1);
   }
 
-  const propReady = Boolean(property.name.trim() && property.city.trim() && property.state.trim().length === 2);
-
   return (
     <div className="flex min-h-screen flex-col">
       <header className="glass-nav sticky top-0 z-30 border-b border-slate-200/80">
@@ -286,10 +415,24 @@ export default function Studio() {
 
         {step === 1 && (
           <>
-            <PropertySetup property={property} onChange={setProperty} template={template} onTemplateChange={setTemplate} />
+            <PropertySetup
+              property={property}
+              onChange={setProperty}
+              template={template}
+              onTemplateChange={setTemplate}
+              onCrawlUrl={handleCrawlProperty}
+              crawling={!!busy}
+            />
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
               <div className="lg:col-span-2">
-                <Dropzone files={files} onChange={setFiles} />
+                <Dropzone
+                  files={files}
+                  onChange={setFiles}
+                  onDriveSync={handleDriveSync}
+                  onSemrushPull={handleSemrushPull}
+                  syncing={!!busy}
+                  canPullSemrush={propReady}
+                />
               </div>
               <div className="lg:col-span-3">
                 <PagesEditor pages={pages} onChange={setPages} />
@@ -301,18 +444,24 @@ export default function Studio() {
                   <span className={`h-1.5 w-1.5 rounded-full ${propReady ? "bg-emerald-400" : "bg-slate-500"}`} />
                   Property {propReady ? "✓" : "Required"}
                 </span>
-                <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium ${files.length > 0 ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" : "border-slate-700 bg-slate-800 text-slate-400"}`}>
-                  <span className={`h-1.5 w-1.5 rounded-full ${files.length > 0 ? "bg-emerald-400" : "bg-slate-500"}`} />
-                  Exports ({files.length}) {files.length > 0 ? "✓" : "Required"}
+                <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium ${hasKeywordsSource ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" : "border-slate-700 bg-slate-800 text-slate-400"}`}>
+                  <span className={`h-1.5 w-1.5 rounded-full ${hasKeywordsSource ? "bg-emerald-400" : "bg-slate-500"}`} />
+                  Exports ({files.length || ingest?.stats.files || 0}) {hasKeywordsSource ? "✓" : "Required"}
                 </span>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/30 bg-brand/15 px-3 py-1.5 font-medium text-brand-light">
                   <span className="h-1.5 w-1.5 rounded-full bg-brand" />
                   Format {template} ✓
                 </span>
               </div>
-              <Button onClick={() => setStep(2)} disabled={!setupValid} className="w-full lg:w-auto px-6 py-3">
-                Next: Review Template &amp; Build Pool →
-              </Button>
+              <div className="flex w-full flex-wrap justify-end gap-2 lg:w-auto">
+                <Button variant="secondary" onClick={() => setStep(2)} disabled={!setupValid} className="px-4 py-3">
+                  Review Mode →
+                </Button>
+                <Button onClick={autoGenerateFullReport} disabled={!setupValid || !!busy} className="px-6 py-3">
+                  {busy ? <Spinner /> : null}
+                  Auto-Generate (Skip Checkpoint)
+                </Button>
+              </div>
             </div>
           </>
         )}
@@ -403,13 +552,31 @@ export default function Studio() {
                   </a>
                 }
               >
-                <ul className="space-y-2 text-sm text-slate-700">
-                  {reportDoc.rationales.map((r) => (
-                    <li key={r.pageId}>
-                      <strong>{r.title}:</strong> {r.text}
-                    </li>
-                  ))}
-                </ul>
+                <div className="space-y-4">
+                  {state.matrix.some((m) => m.flags.length > 0) && (
+                    <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
+                      <div className="text-xs font-bold uppercase tracking-wider text-amber-800">
+                        Flag Summary ({state.matrix.filter((m) => m.flags.length > 0).length} pages need review)
+                      </div>
+                      <ul className="mt-2 space-y-1 text-xs text-amber-900">
+                        {state.matrix
+                          .filter((m) => m.flags.length > 0)
+                          .map((m) => (
+                            <li key={m.pageId}>
+                              <strong>{m.title}:</strong> {m.primary?.keyword ?? "—"} ({m.flags.join(", ")})
+                            </li>
+                          ))}
+                      </ul>
+                    </div>
+                  )}
+                  <ul className="space-y-2 text-sm text-slate-700">
+                    {reportDoc.rationales.map((r) => (
+                      <li key={r.pageId}>
+                        <strong>{r.title}:</strong> {r.text}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </Card>
             )}
 
