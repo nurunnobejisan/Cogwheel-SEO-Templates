@@ -20,6 +20,7 @@ interface PortfolioEntry {
   state?: string;
   seoAssignee?: string;
   slidesUrl?: string;
+  backlinkSlidesUrl?: string;
 }
 
 const PORTFOLIO = portfolioProperties as PortfolioEntry[];
@@ -104,19 +105,24 @@ export function PropertySetup({
             </option>
           ))}
         </select>
-        {PORTFOLIO.find((p) => p.name === property.name)?.slidesUrl && (
-          <div className="mt-2 text-xs text-slate-600">
-            Reference Audit:{" "}
-            <a
-              href={PORTFOLIO.find((p) => p.name === property.name)?.slidesUrl}
-              target="_blank"
-              rel="noreferrer"
-              className="font-semibold text-indigo-600 hover:underline"
-            >
-              Open Duplicate Content Audit Slides ↗
-            </a>
-          </div>
-        )}
+        {(() => {
+          const activeEntry = PORTFOLIO.find((p) => p.name === property.name);
+          if (!activeEntry?.slidesUrl && !activeEntry?.backlinkSlidesUrl) return null;
+          return (
+            <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-600">
+              {activeEntry.slidesUrl && (
+                <a href={activeEntry.slidesUrl} target="_blank" rel="noreferrer" className="font-semibold text-indigo-600 hover:underline">
+                  Duplicate Content Audit Slides ↗
+                </a>
+              )}
+              {activeEntry.backlinkSlidesUrl && (
+                <a href={activeEntry.backlinkSlidesUrl} target="_blank" rel="noreferrer" className="font-semibold text-indigo-600 hover:underline">
+                  Backlinking Strategy Slides ↗
+                </a>
+              )}
+            </div>
+          );
+        })()}
       </div>
       <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
         <div className="md:col-span-3">
