@@ -1,0 +1,21 @@
+{
+  "_comment": "Default Hilton brand-site sitemap. `buckets` = bucket ids eligible for that page's primary keyword. Pages are matched in this order (earlier pages get first pick).",
+  "pages": [
+    { "id": "home", "path": "/", "title": "Home", "buckets": ["hotel", "boutique", "luxury", "stay", "accommodation", "lodging"], "active": true },
+    { "id": "rooms", "path": "/rooms/", "title": "Rooms", "buckets": ["rooms", "lofted-studios", "accommodation"], "active": true },
+    { "id": "suites", "path": "/rooms/suites/", "title": "Suites", "buckets": ["suites", "lofted-studios"], "active": true },
+    { "id": "dining", "path": "/dining/", "title": "Dining", "buckets": ["restaurants", "dining", "bar", "rooftop-bar"], "active": true },
+    { "id": "bar", "path": "/dining/bar/", "title": "Bar / Rooftop", "buckets": ["rooftop-bar", "bar"], "active": false },
+    { "id": "events", "path": "/events/", "title": "Events", "buckets": ["event-space", "venues", "meeting"], "active": true },
+    { "id": "meetings", "path": "/events/meetings/", "title": "Meetings", "buckets": ["meeting", "event-space"], "active": true },
+    { "id": "weddings", "path": "/events/weddings/", "title": "Weddings", "buckets": ["wedding", "venues"], "active": true },
+    { "id": "offers", "path": "/offers/", "title": "Offers", "buckets": ["special-offers", "deals", "extended-stay"], "active": true },
+    { "id": "extended-stay", "path": "/offers/extended-stay/", "title": "Extended Stay", "buckets": ["extended-stay"], "active": false },
+    { "id": "location", "path": "/location/", "title": "Location", "buckets": ["things-to-do", "local-attractions", "near-me", "map"], "active": true },
+    { "id": "amenities", "path": "/amenities/", "title": "Amenities", "buckets": ["pool", "pet-friendly", "dog-friendly"], "active": true },
+    { "id": "pets", "path": "/hotel-info/pets/", "title": "Pet Policy", "buckets": ["dog-friendly", "pet-friendly"], "active": false },
+    { "id": "hotel-info", "path": "/hotel-info/", "title": "Hotel Info", "buckets": ["near-me", "map", "hotel"], "active": true },
+    { "id": "gallery", "path": "/gallery/", "title": "Gallery", "buckets": [], "active": false }
+  ]
+}
+

@@ -1,0 +1,381 @@
+"use client";
+
+import { useMemo, useState } from "react";
+import sitemap from "@/config/sitemap.json";
+import { TEMPLATES } from "@/config/templates";
+import {
+  addToPool,
+  assignKeyword,
+  inlineEditMatrixKeyword,
+  removeFromPool,
+  setRowStatus,
+  updatePoolKeyword,
+  type MatrixState,
+} from "@/lib/engine/matrix";
+import { downloadText, matrixToCsv, poolToCsv } from "@/lib/export";
+import type { Allocation, BucketSummary, IngestResult, KeywordRecord, MatrixRow, Property, SitemapPage, TemplateId } from "@/lib/types";
+import { ApprovalMatrix } from "./ApprovalMatrix";
+import { ContentStudio } from "./ContentStudio";
+import { KeywordPool } from "./KeywordPool";
+import { Dropzone, PagesEditor, PropertySetup } from "./SetupStep";
+import { TemplateSelector } from "./TemplateSelector";
+import { Button, Card, Spinner, Stat } from "./ui";
+
+type Step = 1 | 2 | 3 | 4;
+
+const STEPS: Array<[Step, string]> = [
+  [1, "Property & Files"],
+  [2, "Template"],
+  [3, "78-KW Pool & Matrix"],
+  [4, "Content Studio"],
+];
+
+const EMPTY_PROPERTY: Property = { name: "", url: "", brand: "", city: "", state: "", notes: "", allowedLocations: [], excludedLocations: [] };
+
+async function postJson<T>(url: string, body: unknown): Promise<T> {
+  const res = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error ?? `${url} failed (${res.status})`);
+  return data as T;
+}
+
+export default function Studio() {
+  const [step, setStep] = useState<Step>(1);
+  const [property, setProperty] = useState<Property>(EMPTY_PROPERTY);
+  const [pages, setPages] = useState<SitemapPage[]>(sitemap.pages as SitemapPage[]);
+  const [files, setFiles] = useState<File[]>([]);
+  const [template, setTemplate] = useState<TemplateId>("A");
+
+  const [ingest, setIngest] = useState<IngestResult | null>(null);
+  const [bucketed, setBucketed] = useState<KeywordRecord[]>([]);
+  const [summary, setSummary] = useState<BucketSummary[]>([]);
+  const [state, setState] = useState<MatrixState | null>(null);
+  const [builtFor, setBuiltFor] = useState<{ template: TemplateId; pagesKey: string } | null>(null);
+
+  const [busy, setBusy] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [savedRunId, setSavedRunId] = useState<string | null>(null);
+  const [reportDoc, setReportDoc] = useState<{
+    docId: string;
+    docUrl: string;
+    rationales: Array<{ pageId: string; title: string; text: string }>;
+  } | null>(null);
+
+  const pagesKey = useMemo(() => JSON.stringify(pages), [pages]);
+  const setupValid = property.name.trim() && property.city.trim() && property.state.trim().length === 2 && files.length > 0;
+  const stale = !!state && !!builtFor && (builtFor.template !== template || builtFor.pagesKey !== pagesKey);
+  const allApproved = !!state && state.matrix.length > 0 && state.matrix.every((r) => r.status === "approved");
+
+  async function runIngest() {
+    setError(null);
+    setBusy("Parsing, deduplicating and filtering exports…");
+    try {
+      const form = new FormData();
+      files.forEach((f) => form.append("files", f));
+      form.append("property", JSON.stringify(property));
+      const res = await fetch("/api/ingest", { method: "POST", body: form });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error ?? "Ingest failed");
+      setIngest(data as IngestResult);
+      await runBucketAndSelect(data as IngestResult);
+      setStep(3);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function runBucketAndSelect(source: IngestResult | null = ingest) {
+    if (!source) return;
+    setError(null);
+    setBusy("Bucketing keywords and allocating the 78-keyword pool…");
+    try {
+      const b = await postJson<{ keywords: KeywordRecord[]; summary: BucketSummary[]; allocation: Allocation }>("/api/bucket", {
+        keywords: source.keywords,
+        pages,
+        template,
+      });
+      setBucketed(b.keywords);
+      setSummary(b.summary);
+      setBusy("Matching pages to keywords…");
+      const s = await postJson<{ matrix: MatrixRow[]; allocation: Allocation }>("/api/select-kw", {
+        keywords: b.keywords,
+        pages,
+        template,
+      });
+      setState({ matrix: s.matrix, allocation: s.allocation });
+      setBuiltFor({ template, pagesKey });
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  function mutate(fn: (s: MatrixState) => MatrixState) {
+    if (!state) return;
+    try {
+      setError(null);
+      setState(fn(state));
+    } catch (e) {
+      setError((e as Error).message);
+    }
+  }
+
+  async function saveRun() {
+    if (!state || !ingest) return;
+    setBusy("Saving run to Supabase…");
+    setError(null);
+    try {
+      const r = await postJson<{ runId: string; status: string }>("/api/runs", {
+        property,
+        pages,
+        template,
+        stats: ingest.stats,
+        allocation: { pool: state.allocation.pool },
+        matrix: state.matrix,
+      });
+      setSavedRunId(r.runId);
+      setNotice(`Run saved (${r.status}) — id ${r.runId}`);
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function generateKeywordReport() {
+    if (!state || !allApproved) return;
+    setBusy("Generating rationales (Claude) and building Google Doc…");
+    setError(null);
+    try {
+      const payload = savedRunId
+        ? { runId: savedRunId }
+        : {
+            property,
+            pages,
+            template: builtFor?.template ?? template,
+            allocation: { pool: state.allocation.pool },
+            matrix: state.matrix,
+          };
+      const res = await postJson<{
+        docId: string;
+        docUrl: string;
+        rationales: Array<{ pageId: string; title: string; text: string }>;
+      }>("/api/generate-kr", payload);
+      setReportDoc(res);
+      setNotice("Keyword Report Google Doc generated!");
+    } catch (e) {
+      setError((e as Error).message);
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const slug = (property.name || "property").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+  return (
+    <div className="min-h-screen">
+      <header className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
+          <div>
+            <h1 className="text-lg font-semibold text-hilton-dark">Hilton SEO/GEO Studio</h1>
+            <p className="text-xs text-slate-500">Phase 1 · Ingest → Bucket → 78-Keyword Pool → Page Matrix</p>
+          </div>
+          <nav className="flex items-center gap-1">
+            {STEPS.map(([n, label]) => {
+              const enabled = n === 1 || n === 2 || (n === 3 && !!state) || (n === 4 && allApproved);
+              return (
+                <button
+                  key={n}
+                  disabled={!enabled}
+                  onClick={() => setStep(n)}
+                  className={`flex items-center gap-2 rounded-full px-3 py-1.5 text-sm transition ${
+                    step === n ? "bg-hilton text-white" : enabled ? "text-slate-600 hover:bg-slate-100" : "text-slate-300"
+                  }`}
+                >
+                  <span className={`flex h-5 w-5 items-center justify-center rounded-full text-xs ${step === n ? "bg-white/20" : "bg-slate-100"}`}>{n}</span>
+                  <span className="hidden md:inline">{label}</span>
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-7xl space-y-6 px-6 py-6">
+        {error && (
+          <div className="flex items-start justify-between rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <span>{error}</span>
+            <button onClick={() => setError(null)} className="ml-4 text-red-400 hover:text-red-700">×</button>
+          </div>
+        )}
+        {notice && (
+          <div className="flex items-start justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            <span>{notice}</span>
+            <button onClick={() => setNotice(null)} className="ml-4 text-emerald-500">×</button>
+          </div>
+        )}
+
+        {step === 1 && (
+          <>
+            <PropertySetup property={property} onChange={setProperty} template={template} onTemplateChange={setTemplate} />
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
+              <div className="lg:col-span-2">
+                <Dropzone files={files} onChange={setFiles} />
+              </div>
+              <div className="lg:col-span-3">
+                <PagesEditor pages={pages} onChange={setPages} />
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button onClick={() => setStep(2)} disabled={!setupValid}>
+                Next: choose template →
+              </Button>
+            </div>
+          </>
+        )}
+
+        {step === 2 && (
+          <>
+            <TemplateSelector value={template} onChange={setTemplate} />
+            <div className="flex justify-between">
+              <Button variant="secondary" onClick={() => setStep(1)}>← Back</Button>
+              <Button onClick={state && !stale ? () => setStep(3) : ingest ? () => runBucketAndSelect().then(() => setStep(3)) : runIngest} disabled={!setupValid || !!busy}>
+                {busy ? <Spinner /> : null}
+                {state && !stale ? "Continue to matrix →" : ingest ? "Rebuild pool & matrix →" : "Build 78-keyword pool →"}
+              </Button>
+            </div>
+          </>
+        )}
+
+        {step === 3 && state && ingest && (
+          <>
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-8">
+              <Stat label="Files" value={ingest.stats.files} />
+              <Stat label="Raw rows" value={ingest.stats.rawRows.toLocaleString()} />
+              <Stat label="Dupes merged" value={ingest.stats.duplicatesMerged.toLocaleString()} />
+              <Stat label="KD N/A cleaned" value={ingest.stats.kdCleaned} />
+              <Stat label="Geo dropped" value={ingest.stats.dropped.geo} tone="warn" />
+              <Stat label="Low-SV dropped" value={ingest.stats.dropped["low-volume"]} tone="warn" />
+              <Stat label="Eligible" value={bucketed.length.toLocaleString()} />
+              <Stat
+                label="Pool"
+                value={`${state.allocation.pool.length}/${state.allocation.quota}`}
+                tone={state.allocation.pool.length === state.allocation.quota ? "good" : "warn"}
+              />
+            </div>
+
+            {ingest.files.some((f) => f.error) && (
+              <Card title="File errors">
+                <ul className="list-disc pl-5 text-sm text-red-700">
+                  {ingest.files.filter((f) => f.error).map((f) => (
+                    <li key={f.fileName}>
+                      <strong>{f.fileName}</strong>: {f.error}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
+
+            {stale && (
+              <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+                <span>Template or sitemap changed since this matrix was built. Rebuilding discards manual edits.</span>
+                <Button variant="secondary" onClick={() => runBucketAndSelect()}>Rebuild</Button>
+              </div>
+            )}
+
+            <ApprovalMatrix
+              matrix={state.matrix}
+              pages={pages}
+              pool={state.allocation.pool}
+              reserve={state.allocation.reserve}
+              template={builtFor?.template ?? template}
+              onAssign={(pageId, slot, id) => mutate((s) => assignKeyword(s, pageId, slot, id))}
+              onInlineEdit={(pageId, slot, patch) => mutate((s) => inlineEditMatrixKeyword(s, pageId, slot, patch))}
+              onApprove={(pageId, ok) => mutate((s) => setRowStatus(s, pageId, ok))}
+            />
+
+            <KeywordPool
+              pool={state.allocation.pool}
+              reserve={state.allocation.reserve}
+              quota={state.allocation.quota}
+              summary={summary}
+              dropped={ingest.dropped}
+              onRemove={(id) => mutate((s) => removeFromPool(s, id))}
+              onAdd={(id) => mutate((s) => addToPool(s, id))}
+              onUpdateKeyword={(id, patch) => mutate((s) => updatePoolKeyword(s, id, patch))}
+            />
+
+            {reportDoc && (
+              <Card
+                title="Keyword Report Generated"
+                subtitle={`Template ${builtFor?.template ?? template} — ${TEMPLATES[builtFor?.template ?? template].rationaleHeading}`}
+                actions={
+                  <a
+                    href={reportDoc.docUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+                  >
+                    Open Google Doc →
+                  </a>
+                }
+              >
+                <ul className="space-y-2 text-sm text-slate-700">
+                  {reportDoc.rationales.map((r) => (
+                    <li key={r.pageId}>
+                      <strong>{r.title}:</strong> {r.text}
+                    </li>
+                  ))}
+                </ul>
+              </Card>
+            )}
+
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-wrap gap-2">
+                <Button variant="secondary" onClick={() => downloadText(`${slug}-matrix.csv`, matrixToCsv(state.matrix, builtFor?.template ?? template))}>
+                  Export matrix CSV
+                </Button>
+                <Button variant="secondary" onClick={() => downloadText(`${slug}-78-keyword-pool.csv`, poolToCsv(state.allocation))}>
+                  Export pool CSV
+                </Button>
+                <Button variant="secondary" onClick={saveRun} disabled={!!busy}>
+                  Save run
+                </Button>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button onClick={generateKeywordReport} disabled={!allApproved || !!busy}>
+                  {busy ? <Spinner /> : null}
+                  {allApproved ? "Generate Keyword Report (Google Doc)" : "Approve every page to generate"}
+                </Button>
+                <Button variant="secondary" onClick={() => setStep(4)} disabled={!allApproved}>
+                  Content Studio →
+                </Button>
+              </div>
+            </div>
+          </>
+        )}
+
+        {step === 4 && state && (
+          <ContentStudio
+            property={property}
+            onPropertyChange={setProperty}
+            matrix={state.matrix}
+            runId={savedRunId}
+          />
+        )}
+      </main>
+
+      {busy && (
+        <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-lg bg-slate-900 px-4 py-3 text-sm text-white shadow-lg">
+          <Spinner />
+          {busy}
+        </div>
+      )}
+    </div>
+  );
+}
+
