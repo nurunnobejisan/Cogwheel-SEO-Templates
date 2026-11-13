@@ -26,6 +26,8 @@ import threading
 import time
 import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
+import zipfile
 import zlib
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -2003,6 +2005,105 @@ def _remove_slide(prs: Presentation, slide_index: int) -> None:
     sldIdLst.remove(sldId)
 
 
+def strip_pptx_comments(pptx_source: Path | bytes) -> bytes:
+    """Completely and permanently remove all comments (legacy & modern) from a PPTX file."""
+    if isinstance(pptx_source, Path):
+        data = pptx_source.read_bytes()
+    else:
+        data = pptx_source
+
+    in_buf = io.BytesIO(data)
+    out_buf = io.BytesIO()
+
+    try:
+        with zipfile.ZipFile(in_buf, "r") as zin, zipfile.ZipFile(out_buf, "w", compression=zipfile.ZIP_DEFLATED) as zout:
+            for item in zin.infolist():
+                filename = item.filename
+
+                # 1. Skip all comment parts, author lists, and comment tags
+                if re.search(r"ppt/(?:modernComments|comments)/", filename, re.IGNORECASE):
+                    continue
+                if re.search(r"ppt/.*comment.*authors?.*\.xml", filename, re.IGNORECASE):
+                    continue
+                if re.search(r"ppt/tags/.*comment.*\.xml", filename, re.IGNORECASE):
+                    continue
+
+                content = zin.read(filename)
+
+                # 2. Clean [Content_Types].xml (remove comment content types)
+                if filename == "[Content_Types].xml":
+                    try:
+                        root = ET.fromstring(content)
+                        to_remove = []
+                        for child in root:
+                            part_name = child.attrib.get("PartName", "").lower()
+                            content_type = child.attrib.get("ContentType", "").lower()
+                            if "comment" in part_name or "comment" in content_type:
+                                to_remove.append(child)
+                        for el in to_remove:
+                            root.remove(el)
+                        content = ET.tostring(root, xml_declaration=True, encoding="utf-8")
+                    except Exception:
+                        pass
+
+                # 3. Clean .rels files (remove comment relationships)
+                elif filename.endswith(".rels"):
+                    try:
+                        root = ET.fromstring(content)
+                        to_remove = []
+                        for child in root:
+                            target = child.attrib.get("Target", "").lower()
+                            rel_type = child.attrib.get("Type", "").lower()
+                            if "comment" in target or "comment" in rel_type:
+                                to_remove.append(child)
+                        for el in to_remove:
+                            root.remove(el)
+                        content = ET.tostring(root, xml_declaration=True, encoding="utf-8")
+                    except Exception:
+                        pass
+
+                # 4. Clean slide XML files (remove comment anchors, pins, and comment lists)
+                elif re.search(r"ppt/slides/slide\d+\.xml", filename, re.IGNORECASE):
+                    try:
+                        text = content.decode("utf-8", errors="ignore")
+                        # Strip legacy/modern comment lists and author references
+                        text = re.sub(
+                            r"<(?:\w+:)?(?:cmLst|commentList|cmAuthorLst|cmAuthorList)[^>]*>.*?</(?:\w+:)?(?:cmLst|commentList|cmAuthorLst|cmAuthorList)>",
+                            "",
+                            text,
+                            flags=re.DOTALL,
+                        )
+                        # Strip comment position/relation/tag elements
+                        text = re.sub(r"<(?:\w+:)?(?:cmPos|commentRel|cmTag)[^>]*/>", "", text)
+                        text = re.sub(
+                            r"<(?:\w+:)?(?:cmPos|commentRel|cmTag)[^>]*>.*?</(?:\w+:)?(?:cmPos|commentRel|cmTag)>",
+                            "",
+                            text,
+                            flags=re.DOTALL,
+                        )
+                        content = text.encode("utf-8")
+                    except Exception:
+                        pass
+
+                zout.writestr(item, content)
+
+        return out_buf.getvalue()
+    except Exception as exc:
+        print(f"Warning: error during strip_pptx_comments: {exc}", file=sys.stderr)
+        return data
+
+
+def strip_pptx_comments_file(path: Path) -> None:
+    """In-place comment stripper for PPTX files."""
+    if not path.is_file():
+        return
+    try:
+        cleaned = strip_pptx_comments(path)
+        path.write_bytes(cleaned)
+    except Exception as exc:
+        print(f"Warning: could not strip comments from {path}: {exc}", file=sys.stderr)
+
+
 def build(
     template: Path,
     pdf: Path | None,
@@ -2012,6 +2113,8 @@ def build(
     target_url: str = "",
     has_vanity_site: bool | None = None,
 ) -> None:
+    # Ensure template is stripped of any existing comments before opening
+    strip_pptx_comments_file(template)
     audit_data = None
     used_pdf_tracked = False
     wb_profile = extract_workbook_profile(xlsx)
@@ -2164,6 +2267,7 @@ def build(
 
     output.parent.mkdir(parents=True, exist_ok=True)
     prs.save(str(output))
+    strip_pptx_comments_file(output)
     print(f"Created: {output}")
     print(f"Property: {name} | Tracked keywords: {len(tracked)} | Additional keywords: {len(ancillary)}")
 

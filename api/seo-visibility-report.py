@@ -32,6 +32,8 @@ try:
         property_name,
         property_name_from_xlsx,
         pymupdf,
+        strip_pptx_comments,
+        strip_pptx_comments_file,
     )
 except ImportError:
     from seo_visibility_report import (
@@ -43,6 +45,8 @@ except ImportError:
         property_name,
         property_name_from_xlsx,
         pymupdf,
+        strip_pptx_comments,
+        strip_pptx_comments_file,
     )
 
 LOG_LEVEL = os.environ.get("LOG_LEVEL", "INFO").upper()
@@ -415,6 +419,8 @@ def _handle_generate():
         )
 
         template_path = _save_validated_upload(template, temp_dir, ".pptx", (b"PK\x03\x04",), "PowerPoint Template")
+        # Strip all comments from the uploaded template immediately
+        strip_pptx_comments_file(template_path)
         xlsx_path = _save_validated_upload(xlsx, temp_dir, ".xlsx", (b"PK\x03\x04",), "Keywords Workbook")
 
         pdf_path = None
@@ -466,6 +472,7 @@ def _handle_generate():
             target_url=target_url,
             has_vanity_site=has_vanity_site,
         )
+        strip_pptx_comments_file(out_temp)
         pptx_bytes = out_temp.read_bytes()
         _write_cache_bytes(cache_key, pptx_bytes)
 
