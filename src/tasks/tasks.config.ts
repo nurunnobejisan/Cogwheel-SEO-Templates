@@ -137,6 +137,18 @@ export const TASKS_CONFIG: TaskConfig[] = [
 
   // ── Technical ───────────────────────────────────────────────────────────────
   {
+    id: "site-crawl",
+    section: "Technical",
+    name: "Site Crawl",
+    templateId: "GOOGLE_TEMPLATE_TECH_AUDIT_SHEET_ID",
+    outputType: "json",
+    dataSources: ["property", "crawl"],
+    dependsOn: [],
+    phase: 1,
+    status: "Done",
+    description: "Crawl property URL respecting robots.txt and sitemap.xml, storing per-page and site-wide facts.",
+  },
+  {
     id: "technical-audit",
     section: "Technical",
     name: "Technical Audit",

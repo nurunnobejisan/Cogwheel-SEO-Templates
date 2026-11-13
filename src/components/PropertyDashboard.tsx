@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
+import { SiteCrawlCard } from "./SiteCrawlCard";
 import Studio from "./Studio";
 import { Button, Card } from "./ui";
 
@@ -26,39 +27,40 @@ export default function PropertyDashboard() {
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
+  const [showSiteCrawl, setShowSiteCrawl] = useState(false);
+
+  async function refreshRuns() {
+    const implemented = TASKS_CONFIG.filter((t) => t.phase === 1);
+    const entries = await Promise.all(
+      implemented.map(async (task) => {
+        try {
+          const res = await fetch(`/api/tasks/${task.id}/runs`);
+          if (!res.ok) return null;
+          const data = (await res.json()) as { runs?: TaskRunSummary[] };
+          const latest = data.runs?.[0];
+          return latest ? ([task.id, latest] as const) : null;
+        } catch {
+          return null;
+        }
+      }),
+    );
+    const map: Record<string, TaskRunSummary> = {};
+    for (const entry of entries) {
+      if (entry) map[entry[0]] = entry[1];
+    }
+    setLatestRuns(map);
+  }
 
   useEffect(() => {
-    let cancelled = false;
-    async function loadImplementedRuns() {
-      const implemented = TASKS_CONFIG.filter((t) => t.phase === 1);
-      const entries = await Promise.all(
-        implemented.map(async (task) => {
-          try {
-            const res = await fetch(`/api/tasks/${task.id}/runs`);
-            if (!res.ok) return null;
-            const data = (await res.json()) as { runs?: TaskRunSummary[] };
-            const latest = data.runs?.[0];
-            return latest ? ([task.id, latest] as const) : null;
-          } catch {
-            return null;
-          }
-        }),
-      );
-      if (cancelled) return;
-      const map: Record<string, TaskRunSummary> = {};
-      for (const entry of entries) {
-        if (entry) map[entry[0]] = entry[1];
-      }
-      setLatestRuns(map);
-    }
-    loadImplementedRuns();
-    return () => {
-      cancelled = true;
-    };
+    void refreshRuns();
   }, [view]);
 
   function handleRunTask(task: TaskConfig) {
     if (task.phase !== 1) return;
+    if (task.id === "site-crawl") {
+      setShowSiteCrawl(true);
+      return;
+    }
     if (task.id === "usp-headline-optimization") {
       setStudioStep(4);
     } else {
@@ -125,6 +127,10 @@ export default function PropertyDashboard() {
               );
             })}
           </nav>
+
+          {(activeTab === "Technical" || showSiteCrawl) && (
+            <SiteCrawlCard onCompleted={() => void refreshRuns()} />
+          )}
 
           <Card
             title={`${activeTab} Tasks`}
