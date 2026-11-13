@@ -35,6 +35,7 @@ const SeoVisibilityReportModal = dynamic(() =>
   import("./SeoVisibilityReportModal").then((m) => m.SeoVisibilityReportModal),
 );
 const RunHistoryDrawer = dynamic(() => import("./RunHistoryDrawer").then((m) => m.RunHistoryDrawer));
+const AutoPilotModal = dynamic(() => import("./AutoPilotModal").then((m) => m.AutoPilotModal));
 
 const CRAWL_TASK_IDS = new Set([
   "title-meta",
@@ -104,6 +105,7 @@ export default function PropertyDashboard() {
   const [showAiTraining, setShowAiTraining] = useState(false);
   const [showBaselineModal, setShowBaselineModal] = useState(false);
   const [showVisibilityReport, setShowVisibilityReport] = useState(false);
+  const [showAutoPilot, setShowAutoPilot] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
   const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
   const [activeProperty, setActiveProperty] = useState({
@@ -129,6 +131,7 @@ export default function PropertyDashboard() {
         setShowAiTraining(false);
         setShowBaselineModal(false);
         setShowVisibilityReport(false);
+        setShowAutoPilot(false);
         setActiveCrawlTask(null);
         setHistoryTask(null);
       }
@@ -392,14 +395,98 @@ export default function PropertyDashboard() {
                 <p className="text-sm text-slate-300">
                   Run grounded site crawls, 78-keyword research matrices, on-page optimizations, and monthly PowerPoint visibility reports from one unified workspace.
                 </p>
-                <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-medium text-slate-300">
-                  <span className="rounded-lg bg-white/10 px-2.5 py-1">1. Site Crawl</span>
+                <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-semibold">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab("Technical");
+                      setShowSiteCrawl(true);
+                    }}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 transition ${
+                      latestRuns["site-crawl"]
+                        ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        latestRuns["site-crawl"] ? "bg-emerald-400" : "bg-slate-400"
+                      }`}
+                    />
+                    1. Site Crawl
+                  </button>
                   <span className="text-slate-500">&rarr;</span>
-                  <span className="rounded-lg bg-white/10 px-2.5 py-1">2. Keyword Matrix</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setStudioStep(1);
+                      setView("studio");
+                    }}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 transition ${
+                      latestRuns["keyword-research"]
+                        ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        latestRuns["keyword-research"] ? "bg-emerald-400" : "bg-slate-400"
+                      }`}
+                    />
+                    2. Keyword Matrix
+                  </button>
                   <span className="text-slate-500">&rarr;</span>
-                  <span className="rounded-lg bg-white/10 px-2.5 py-1">3. On-Page &amp; Technical</span>
+                  <button
+                    type="button"
+                    onClick={() => setShowAutoPilot(true)}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 transition ${
+                      Array.from(CRAWL_TASK_IDS).some((id) => Boolean(latestRuns[id]))
+                        ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30"
+                        : "bg-white/10 text-slate-200 hover:bg-white/20"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        Array.from(CRAWL_TASK_IDS).some((id) => Boolean(latestRuns[id]))
+                          ? "bg-emerald-400"
+                          : "bg-brand"
+                      }`}
+                    />
+                    3. On-Page &amp; Technical (
+                    {Array.from(CRAWL_TASK_IDS).filter((id) => Boolean(latestRuns[id])).length}/
+                    {CRAWL_TASK_IDS.size})
+                  </button>
                   <span className="text-slate-500">&rarr;</span>
-                  <span className="rounded-lg bg-brand/20 px-2.5 py-1 text-brand-light">4. Visibility Deck</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveTab("Reporting");
+                      setShowVisibilityReport(true);
+                    }}
+                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 transition ${
+                      latestRuns["seo-baseline-ai-visibility"] ||
+                      latestRuns["seo-only-visibility-report"]
+                        ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30"
+                        : "bg-brand/20 text-brand-light hover:bg-brand/30"
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        latestRuns["seo-baseline-ai-visibility"] ||
+                        latestRuns["seo-only-visibility-report"]
+                          ? "bg-emerald-400"
+                          : "bg-brand"
+                      }`}
+                    />
+                    4. Visibility Deck
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowAutoPilot(true)}
+                    className="ml-1 inline-flex items-center gap-1.5 rounded-lg bg-brand px-3 py-1 text-[11px] font-bold text-slate-900 shadow-sm transition hover:bg-brand-light"
+                  >
+                    Auto-Run Pipeline
+                  </button>
                 </div>
               </div>
               <div className="flex shrink-0 flex-wrap gap-3">
@@ -859,7 +946,7 @@ export default function PropertyDashboard() {
             <SiteCrawlCard defaultUrl={activeProperty.url} onCompleted={() => void refreshRuns()} />
           )}
 
-          {(activeCrawlTask || showAiTraining || showBaselineModal || showVisibilityReport || historyTask) && (
+          {(activeCrawlTask || showAiTraining || showBaselineModal || showVisibilityReport || showAutoPilot || historyTask) && (
             <div
               className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 pt-10 backdrop-blur-sm"
               onClick={(e) => {
@@ -868,6 +955,7 @@ export default function PropertyDashboard() {
                   setShowAiTraining(false);
                   setShowBaselineModal(false);
                   setShowVisibilityReport(false);
+                  setShowAutoPilot(false);
                   setHistoryTask(null);
                 }
               }}
@@ -956,6 +1044,24 @@ export default function PropertyDashboard() {
                   <SeoVisibilityReportModal
                     onClose={() => setShowVisibilityReport(false)}
                     onCompleted={() => void refreshRuns()}
+                  />
+                )}
+
+                {showAutoPilot && (
+                  <AutoPilotModal
+                    activeProperty={activeProperty}
+                    onClose={() => setShowAutoPilot(false)}
+                    onCompleted={() => void refreshRuns()}
+                    onOpenStudio={() => {
+                      setShowAutoPilot(false);
+                      setStudioStep(1);
+                      setView("studio");
+                    }}
+                    onOpenVisibilityDeck={() => {
+                      setShowAutoPilot(false);
+                      setActiveTab("Reporting");
+                      setShowVisibilityReport(true);
+                    }}
                   />
                 )}
 
