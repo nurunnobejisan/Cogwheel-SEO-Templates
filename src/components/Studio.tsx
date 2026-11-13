@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import sitemap from "@/config/sitemap.json";
 import { postFormData, postJson } from "@/lib/api";
 import { analyzeGeoSeo } from "@/lib/engine/geo-seo";
@@ -46,9 +46,34 @@ const EMPTY_PROPERTY: Property = {
   excludedLocations: [],
 };
 
-export default function Studio({ initialStep = 1 }: { initialStep?: Step }) {
+export default function Studio({
+  initialStep = 1,
+  initialProperty,
+}: {
+  initialStep?: Step;
+  initialProperty?: Partial<Pick<Property, "name" | "url" | "brand" | "city" | "state">>;
+}) {
   const [step, setStep] = useState<Step>(initialStep);
-  const [property, setProperty] = useState<Property>(EMPTY_PROPERTY);
+  const [property, setProperty] = useState<Property>(() => ({
+    ...EMPTY_PROPERTY,
+    name: initialProperty?.name ?? "",
+    url: initialProperty?.url ?? "",
+    brand: initialProperty?.brand ?? "",
+    city: initialProperty?.city ?? "",
+    state: initialProperty?.state ?? "",
+  }));
+
+  useEffect(() => {
+    if (!initialProperty) return;
+    setProperty((prev) => ({
+      ...prev,
+      name: prev.name || initialProperty.name || "",
+      url: prev.url || initialProperty.url || "",
+      brand: prev.brand || initialProperty.brand || "",
+      city: prev.city || initialProperty.city || "",
+      state: prev.state || initialProperty.state || "",
+    }));
+  }, [initialProperty]);
   const [pages, setPages] = useState<SitemapPage[]>(sitemap.pages as SitemapPage[]);
   const [files, setFiles] = useState<File[]>([]);
   const [template, setTemplate] = useState<TemplateId>("A");
@@ -316,7 +341,7 @@ export default function Studio({ initialStep = 1 }: { initialStep?: Step }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <header className="glass-nav sticky top-0 z-30 border-b border-slate-200/80">
+      <header className="glass-nav relative z-10 border-b border-slate-200/80">
         <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-6">
           <div className="flex items-center gap-3">
             <div

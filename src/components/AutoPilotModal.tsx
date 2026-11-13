@@ -190,25 +190,26 @@ export function AutoPilotModal({
           });
           const json = (await res.json()) as {
             error?: string;
+            status?: string;
+            outputUrl?: string | null;
+            flags?: Array<{ message: string }>;
             data?: {
-              status?: string;
-              outputUrl?: string | null;
-              flags?: Array<{ message: string }>;
-              output?: { xlsxBase64?: string; combinedJsonLdScript?: string };
+              xlsxBase64?: string;
+              combinedJsonLdScript?: string;
             };
           };
           if (!res.ok || !json.data) {
             throw new Error(json.error || `${step.label} failed`);
           }
-          const isFlagged = json.data.status === "Flagged" || (json.data.flags?.length ?? 0) > 0;
+          const isFlagged = json.status === "Flagged" || (json.flags?.length ?? 0) > 0;
           updateStep(step.id, {
             status: isFlagged ? "flagged" : "done",
             detail: isFlagged
-              ? `${json.data.flags?.length ?? 1} flag(s) noted`
+              ? `${json.flags?.length ?? 1} flag(s) noted`
               : "Validated with 0 flags",
-            outputUrl: json.data.outputUrl ?? null,
-            xlsxBase64: json.data.output?.xlsxBase64 ?? null,
-            jsonLdScript: json.data.output?.combinedJsonLdScript ?? null,
+            outputUrl: json.outputUrl ?? null,
+            xlsxBase64: json.data.xlsxBase64 ?? null,
+            jsonLdScript: json.data.combinedJsonLdScript ?? null,
           });
         } catch (stepErr) {
           updateStep(step.id, {

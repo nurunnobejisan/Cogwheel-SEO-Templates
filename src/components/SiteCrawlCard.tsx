@@ -35,10 +35,10 @@ export function SiteCrawlCard({
   const [runState, setRunState] = useState<SiteCrawlRunState | null>(null);
 
   useEffect(() => {
-    if (defaultUrl && !url) {
+    if (defaultUrl) {
       setUrl(defaultUrl);
     }
-  }, [defaultUrl, url]);
+  }, [defaultUrl]);
 
   async function startCrawl() {
     if (!url.trim()) {

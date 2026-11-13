@@ -243,10 +243,10 @@ export default function PropertyDashboard() {
     if (CRAWL_TASK_IDS.has(task.id)) {
       setTmError(null);
       setTmProp({
-        name: tmProp.name || activeProperty.name,
-        brand: tmProp.brand || activeProperty.brand,
-        city: tmProp.city || activeProperty.city,
-        state: tmProp.state || activeProperty.state,
+        name: activeProperty.name || tmProp.name,
+        brand: activeProperty.brand || tmProp.brand,
+        city: activeProperty.city || tmProp.city,
+        state: activeProperty.state || tmProp.state,
       });
       setActiveCrawlTask(task);
       return;
@@ -390,7 +390,7 @@ export default function PropertyDashboard() {
       </header>
 
       {mainTab === "studio" ? (
-        <Studio key={studioStep} initialStep={studioStep} />
+        <Studio key={studioStep} initialStep={studioStep} initialProperty={activeProperty} />
       ) : (
         <main className="mx-auto max-w-6xl space-y-6 px-6 py-7">
           {mainTab === "home" && (
@@ -894,132 +894,6 @@ export default function PropertyDashboard() {
           </>
           )}
 
-          {(activeCrawlTask || showAiTraining || showBaselineModal || showVisibilityReport || showAutoPilot || historyTask) && (
-            <div
-              className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 pt-10 backdrop-blur-sm"
-              onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                  setActiveCrawlTask(null);
-                  setShowAiTraining(false);
-                  setShowBaselineModal(false);
-                  setShowVisibilityReport(false);
-                  setShowAutoPilot(false);
-                  setHistoryTask(null);
-                }
-              }}
-            >
-              <div className="w-full max-w-4xl">
-                {activeCrawlTask && (
-                  <Card
-                    title={activeCrawlTask.name}
-                    subtitle="Uses the latest Site Crawl run and approved Keyword Research keywords."
-                    actions={
-                      <Button variant="ghost" onClick={() => setActiveCrawlTask(null)}>
-                        Close
-                      </Button>
-                    }
-                  >
-                    <div className="space-y-4">
-                      {tmProp.name && tmProp.brand && tmProp.city && tmProp.state ? (
-                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 text-xs text-emerald-900">
-                          <span>
-                            Ready for <strong>{tmProp.name}</strong> ({tmProp.brand} · {tmProp.city}, {tmProp.state})
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setTmProp({ name: "", brand: "", city: "", state: "" })}
-                            className="font-semibold underline underline-offset-2 hover:text-emerald-700"
-                          >
-                            Change Property
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="grid gap-3 sm:grid-cols-4">
-                          <input
-                            type="text"
-                            placeholder="Property Name"
-                            value={tmProp.name}
-                            onChange={(e) => setTmProp({ ...tmProp, name: e.target.value })}
-                            className="input text-xs"
-                          />
-                          <input
-                            type="text"
-                            placeholder="Brand (e.g. Tapestry Collection)"
-                            value={tmProp.brand}
-                            onChange={(e) => setTmProp({ ...tmProp, brand: e.target.value })}
-                            className="input text-xs"
-                          />
-                          <input
-                            type="text"
-                            placeholder="City"
-                            value={tmProp.city}
-                            onChange={(e) => setTmProp({ ...tmProp, city: e.target.value })}
-                            className="input text-xs"
-                          />
-                          <input
-                            type="text"
-                            maxLength={2}
-                            placeholder="State (2-letter)"
-                            value={tmProp.state}
-                            onChange={(e) => setTmProp({ ...tmProp, state: e.target.value.toUpperCase() })}
-                            className="input text-xs uppercase"
-                          />
-                        </div>
-                      )}
-                      {tmError && (
-                        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700">
-                          {tmError}
-                        </div>
-                      )}
-                      <Button variant="primary" disabled={tmBusy} onClick={() => void runCrawlBasedTask()}>
-                        {tmBusy ? "Generating..." : `Run ${activeCrawlTask.name}`}
-                      </Button>
-                    </div>
-                  </Card>
-                )}
-
-                {showAiTraining && <AiTrainingModal onClose={() => setShowAiTraining(false)} />}
-
-                {showBaselineModal && (
-                  <SeoBaselineModal
-                    defaultProperty={{ name: activeProperty.name, url: activeProperty.url }}
-                    onClose={() => setShowBaselineModal(false)}
-                    onCompleted={() => void refreshRuns()}
-                  />
-                )}
-
-                {showVisibilityReport && (
-                  <SeoVisibilityReportModal
-                    onClose={() => setShowVisibilityReport(false)}
-                    onCompleted={() => void refreshRuns()}
-                  />
-                )}
-
-                {showAutoPilot && (
-                  <AutoPilotModal
-                    activeProperty={activeProperty}
-                    onClose={() => setShowAutoPilot(false)}
-                    onCompleted={() => void refreshRuns()}
-                    onOpenStudio={() => {
-                      setShowAutoPilot(false);
-                      setStudioStep(1);
-                      setMainTab("studio");
-                    }}
-                    onOpenVisibilityDeck={() => {
-                      setShowAutoPilot(false);
-                      setActiveTab("Reporting");
-                      setShowVisibilityReport(true);
-                    }}
-                  />
-                )}
-
-                {historyTask && (
-                  <RunHistoryDrawer task={historyTask} onClose={() => setHistoryTask(null)} />
-                )}
-              </div>
-            </div>
-          )}
-
           <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-xs text-slate-500">
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-brand" />
@@ -1037,6 +911,132 @@ export default function PropertyDashboard() {
             </a>
           </footer>
         </main>
+      )}
+
+      {(activeCrawlTask || showAiTraining || showBaselineModal || showVisibilityReport || showAutoPilot || historyTask) && (
+        <div
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 pt-10 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setActiveCrawlTask(null);
+              setShowAiTraining(false);
+              setShowBaselineModal(false);
+              setShowVisibilityReport(false);
+              setShowAutoPilot(false);
+              setHistoryTask(null);
+            }
+          }}
+        >
+          <div className="w-full max-w-4xl">
+            {activeCrawlTask && (
+              <Card
+                title={activeCrawlTask.name}
+                subtitle="Uses the latest Site Crawl run and approved Keyword Research keywords."
+                actions={
+                  <Button variant="ghost" onClick={() => setActiveCrawlTask(null)}>
+                    Close
+                  </Button>
+                }
+              >
+                <div className="space-y-4">
+                  {tmProp.name && tmProp.brand && tmProp.city && tmProp.state ? (
+                    <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 text-xs text-emerald-900">
+                      <span>
+                        Ready for <strong>{tmProp.name}</strong> ({tmProp.brand} · {tmProp.city}, {tmProp.state})
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setTmProp({ name: "", brand: "", city: "", state: "" })}
+                        className="font-semibold underline underline-offset-2 hover:text-emerald-700"
+                      >
+                        Change Property
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="grid gap-3 sm:grid-cols-4">
+                      <input
+                        type="text"
+                        placeholder="Property Name"
+                        value={tmProp.name}
+                        onChange={(e) => setTmProp({ ...tmProp, name: e.target.value })}
+                        className="input text-xs"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Brand (e.g. Tapestry Collection)"
+                        value={tmProp.brand}
+                        onChange={(e) => setTmProp({ ...tmProp, brand: e.target.value })}
+                        className="input text-xs"
+                      />
+                      <input
+                        type="text"
+                        placeholder="City"
+                        value={tmProp.city}
+                        onChange={(e) => setTmProp({ ...tmProp, city: e.target.value })}
+                        className="input text-xs"
+                      />
+                      <input
+                        type="text"
+                        maxLength={2}
+                        placeholder="State (2-letter)"
+                        value={tmProp.state}
+                        onChange={(e) => setTmProp({ ...tmProp, state: e.target.value.toUpperCase() })}
+                        className="input text-xs uppercase"
+                      />
+                    </div>
+                  )}
+                  {tmError && (
+                    <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700">
+                      {tmError}
+                    </div>
+                  )}
+                  <Button variant="primary" disabled={tmBusy} onClick={() => void runCrawlBasedTask()}>
+                    {tmBusy ? "Generating..." : `Run ${activeCrawlTask.name}`}
+                  </Button>
+                </div>
+              </Card>
+            )}
+
+            {showAiTraining && <AiTrainingModal onClose={() => setShowAiTraining(false)} />}
+
+            {showBaselineModal && (
+              <SeoBaselineModal
+                defaultProperty={{ name: activeProperty.name, url: activeProperty.url }}
+                onClose={() => setShowBaselineModal(false)}
+                onCompleted={() => void refreshRuns()}
+              />
+            )}
+
+            {showVisibilityReport && (
+              <SeoVisibilityReportModal
+                onClose={() => setShowVisibilityReport(false)}
+                onCompleted={() => void refreshRuns()}
+              />
+            )}
+
+            {showAutoPilot && (
+              <AutoPilotModal
+                activeProperty={activeProperty}
+                onClose={() => setShowAutoPilot(false)}
+                onCompleted={() => void refreshRuns()}
+                onOpenStudio={() => {
+                  setShowAutoPilot(false);
+                  setStudioStep(1);
+                  setMainTab("studio");
+                }}
+                onOpenVisibilityDeck={() => {
+                  setShowAutoPilot(false);
+                  setActiveTab("Reporting");
+                  setShowVisibilityReport(true);
+                }}
+              />
+            )}
+
+            {historyTask && (
+              <RunHistoryDrawer task={historyTask} onClose={() => setHistoryTask(null)} />
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

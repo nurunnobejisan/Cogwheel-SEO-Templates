@@ -85,6 +85,11 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
         method: "POST",
         body: form,
       });
+      if (res.status === 404) {
+        throw new Error(
+          "Website inspection (/api/seo-visibility-report) runs on Vercel Python runtime or `vercel dev`.",
+        );
+      }
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Website inspection failed.");
       setCrawlInfo(json as CrawlPreview);
@@ -118,6 +123,11 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
         body: form,
       });
 
+      if (res.status === 404) {
+        throw new Error(
+          "PPTX report builder (/api/seo-visibility-report) runs on Vercel Python runtime or `vercel dev`.",
+        );
+      }
       if (!res.ok) {
         const errJson = await res.json().catch(() => ({}));
         throw new Error(errJson.error || `Report generation failed (${res.status}).`);
@@ -160,7 +170,7 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
         });
         if (taskRes.ok) {
           const taskJson = await taskRes.json();
-          setNarrative(taskJson.output?.executiveSummary ?? null);
+          setNarrative(taskJson.data?.executiveSummary ?? taskJson.output?.executiveSummary ?? null);
           setFlags(taskJson.flags ?? []);
           onCompleted();
         }
