@@ -402,13 +402,14 @@ export default function PropertyDashboard() {
           {mainTab === "home" && (
             <>
               <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card">
-                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                  <div className="space-y-1.5">
+                <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between lg:items-center">
+                  {/* Left: label + title + preset row */}
+                  <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+                      <span className="shrink-0 rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light">
                         Active Property
                       </span>
-                      <span className="text-sm font-bold text-slate-900">
+                      <span className="min-w-0 truncate text-sm font-bold text-slate-900">
                         {activeProperty.name
                           ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
                               activeProperty.city
@@ -436,7 +437,7 @@ export default function PropertyDashboard() {
                             setAutofillError(null);
                           }
                         }}
-                        className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:border-brand focus:outline-none"
+                        className="h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 focus:border-brand focus:outline-none"
                       >
                         <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
                         {TRAINED_PROPERTIES.map((p) => (
@@ -456,10 +457,10 @@ export default function PropertyDashboard() {
                             setAutofillUrl(preset.url);
                             setAutofillError(null);
                           }}
-                          className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                          className={`h-8 rounded-lg border px-2.5 text-xs font-semibold transition ${
                             activeProperty.name === preset.name
-                            ? "border-brand bg-brand-50 text-slate-900"
-                            : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900"
+                              ? "border-brand bg-brand-50 text-slate-900"
+                              : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900"
                           }`}
                         >
                           {preset.name}
@@ -468,25 +469,27 @@ export default function PropertyDashboard() {
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap items-center gap-2">
+                  {/* Right: URL input + Auto-Fill + Edit — always a tight single row */}
+                  <div className="flex shrink-0 items-center gap-2">
                     <input
                       type="url"
                       placeholder="Paste hotel URL..."
                       value={autofillUrl}
                       onChange={(e) => setAutofillUrl(e.target.value)}
-                      className="w-56 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none"
+                      className="h-8 w-44 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none sm:w-52"
                     />
                     <Button
                       variant="primary"
                       disabled={autofillBusy}
                       onClick={() => void handleAutoDetectProperty()}
+                      className="h-8 shrink-0 py-0 text-xs"
                     >
                       {autofillBusy ? "Detecting..." : "Auto-Fill"}
                     </Button>
                     <button
                       type="button"
                       onClick={() => setShowPropertyDetails((v) => !v)}
-                      className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                      className="h-8 shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50"
                     >
                       {showPropertyDetails ? "Hide" : "Edit"}
                     </button>
