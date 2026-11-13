@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import trainedPropertiesData from "@/data/trained-properties.json";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
+import { AuthButton } from "./AuthButton";
 import { Button, Card } from "./ui";
 
 interface TrainedProperty {
@@ -386,6 +387,7 @@ export default function PropertyDashboard() {
               Train AI ({aiStatus.activeRules})
             </button>
           </nav>
+          <AuthButton />
         </div>
       </header>
 
