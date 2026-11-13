@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Card, Stat } from "./ui";
 
 interface SiteCrawlSummaryData {
@@ -20,13 +20,25 @@ interface SiteCrawlRunState {
   siteSummary: SiteCrawlSummaryData;
 }
 
-export function SiteCrawlCard({ onCompleted }: { onCompleted?: () => void }) {
-  const [url, setUrl] = useState("");
+export function SiteCrawlCard({
+  defaultUrl,
+  onCompleted,
+}: {
+  defaultUrl?: string;
+  onCompleted?: () => void;
+}) {
+  const [url, setUrl] = useState(defaultUrl ?? "");
   const [maxPages, setMaxPages] = useState(150);
   const [crawlDepth, setCrawlDepth] = useState(4);
   const [running, setRunning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [runState, setRunState] = useState<SiteCrawlRunState | null>(null);
+
+  useEffect(() => {
+    if (defaultUrl && !url) {
+      setUrl(defaultUrl);
+    }
+  }, [defaultUrl, url]);
 
   async function startCrawl() {
     if (!url.trim()) {

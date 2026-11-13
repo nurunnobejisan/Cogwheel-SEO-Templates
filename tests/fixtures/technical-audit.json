@@ -1,0 +1,30 @@
+{
+  "property": {
+    "name": "The Harborview Hotel",
+    "brand": "Curio Collection",
+    "city": "Charleston",
+    "state": "SC",
+    "url": "https://harborview.example.com"
+  },
+  "rows": [
+    {
+      "url": "https://harborview.example.com/old-packages",
+      "category": "broken-link",
+      "severity": "high",
+      "issue": "HTTP status 404 returned for /old-packages",
+      "recommendation": "301 redirect /old-packages to /offers or remove internal links pointing to it.",
+      "owner": "Dev",
+      "impact": "Recovers crawl budget and eliminates broken user journeys."
+    },
+    {
+      "url": "https://harborview.example.com/rooms",
+      "category": "canonical",
+      "severity": "medium",
+      "issue": "Missing <link rel='canonical'> tag",
+      "recommendation": "Add self-referencing canonical tag pointing to https://harborview.example.com/rooms.",
+      "owner": "Dev",
+      "impact": "Prevents parameter-based duplicate indexing on room pages."
+    }
+  ]
+}
+

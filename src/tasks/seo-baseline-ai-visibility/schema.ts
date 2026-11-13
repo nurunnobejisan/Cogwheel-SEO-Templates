@@ -57,3 +57,4 @@ export interface SeoBaselineDraft {
   compSetTakeaway: string;
   aiVisibilityTakeaway: string;
 }
+

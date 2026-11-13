@@ -1,0 +1,20 @@
+{
+  "property": {
+    "name": "The Harborview Hotel",
+    "brand": "Curio Collection",
+    "city": "Charleston",
+    "state": "SC",
+    "url": "https://harborview.example.com"
+  },
+  "rows": [
+    {
+      "pageUrl": "https://harborview.example.com/rooms",
+      "imageSrc": "https://harborview.example.com/images/king-suite.jpg",
+      "currentAlt": "",
+      "proposedAlt": "Harborview King Suite bedroom with balcony at The Harborview Hotel Charleston",
+      "issue": "Missing alt attribute; Legacy JPEG/PNG format",
+      "recommendation": "Add descriptive alt text and serve WebP with explicit width/height attributes."
+    }
+  ]
+}
+

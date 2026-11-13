@@ -1,0 +1,30 @@
+{
+  "property": {
+    "name": "The Harborview Hotel",
+    "brand": "Curio Collection",
+    "city": "Charleston",
+    "state": "SC",
+    "url": "https://harborview.example.com"
+  },
+  "items": [
+    {
+      "pageUrl": "https://harborview.example.com/",
+      "schemaType": "Hotel",
+      "existingTypes": [],
+      "status": "missing",
+      "jsonLd": {
+        "@context": "https://schema.org",
+        "@type": "Hotel",
+        "name": "The Harborview Hotel",
+        "url": "https://harborview.example.com/",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Charleston",
+          "addressRegion": "SC"
+        }
+      },
+      "notes": "Add Hotel JSON-LD to homepage head; verify streetAddress and telephone before deployment."
+    }
+  ]
+}
+

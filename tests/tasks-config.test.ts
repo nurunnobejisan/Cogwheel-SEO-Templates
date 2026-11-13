@@ -26,11 +26,15 @@ describe("tasks.config.ts", () => {
   it("marks implemented tasks as Done and remaining Phase 2/3 tasks as Not started", () => {
     const doneTasks = TASKS_CONFIG.filter((t) => t.status === "Done");
     expect(doneTasks.map((t) => t.id).sort()).toEqual([
+      "duplicate-content-audit",
       "heading-structure",
+      "image-optimization",
       "keyword-research",
+      "schema-markup",
       "seo-baseline-ai-visibility",
       "seo-only-visibility-report",
       "site-crawl",
+      "technical-audit",
       "title-meta",
       "usp-headline-optimization",
     ]);

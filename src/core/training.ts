@@ -169,3 +169,4 @@ export async function formatTrainingContext(taskId?: string): Promise<string> {
 
   return `\n\nTEAM TRAINING RULES & FEEDBACK (MUST FOLLOW):\n${lines.join("\n")}`;
 }
+

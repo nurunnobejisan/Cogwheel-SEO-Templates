@@ -73,3 +73,4 @@ describe("seo-baseline-ai-visibility task module", () => {
     expect(result.output.flagSummary.hasWarnings).toBe(true);
   });
 });
+

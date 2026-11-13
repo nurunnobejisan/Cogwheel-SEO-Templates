@@ -261,3 +261,4 @@ export function AiTrainingModal({ onClose }: { onClose: () => void }) {
     </Card>
   );
 }
+

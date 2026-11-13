@@ -14,3 +14,4 @@ create index if not exists ai_training_rules_task_idx
   on public.ai_training_rules(task_id, active, created_at desc);
 
 alter table public.ai_training_rules enable row level security;
+

@@ -58,3 +58,4 @@ export function parseSeoBaselineDraft(raw: string): SeoBaselineDraft {
     aiVisibilityTakeaway: String(parsed.aiVisibilityTakeaway ?? "").trim(),
   };
 }
+

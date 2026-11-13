@@ -19,6 +19,18 @@ const SeoBaselineModal = dynamic(() => import("./SeoBaselineModal").then((m) => 
 const SeoVisibilityReportModal = dynamic(() =>
   import("./SeoVisibilityReportModal").then((m) => m.SeoVisibilityReportModal),
 );
+const RunHistoryDrawer = dynamic(() => import("./RunHistoryDrawer").then((m) => m.RunHistoryDrawer));
+
+const CRAWL_TASK_IDS = new Set([
+  "title-meta",
+  "heading-structure",
+  "technical-audit",
+  "image-optimization",
+  "duplicate-content-audit",
+  "schema-markup",
+]);
+
+const ACTIVE_PROPERTY_KEY = "razib_active_property_v1";
 
 interface TaskRunSummary {
   id: string;
@@ -45,12 +57,44 @@ export default function PropertyDashboard() {
   const [showAiTraining, setShowAiTraining] = useState(false);
   const [showBaselineModal, setShowBaselineModal] = useState(false);
   const [showVisibilityReport, setShowVisibilityReport] = useState(false);
-  const [activeCrawlTask, setActiveCrawlTask] = useState<"title-meta" | "heading-structure" | null>(null);
+  const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
+  const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
+  const [activeProperty, setActiveProperty] = useState({
+    name: "",
+    brand: "",
+    city: "",
+    state: "",
+    url: "",
+  });
   const [tmProp, setTmProp] = useState({ name: "", brand: "", city: "", state: "" });
   const [tmBusy, setTmBusy] = useState(false);
   const [tmError, setTmError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterMode, setFilterMode] = useState<"all" | "ready" | "upcoming">("all");
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(ACTIVE_PROPERTY_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved) as Partial<typeof activeProperty>;
+        setActiveProperty((prev) => ({ ...prev, ...parsed }));
+      }
+    } catch {
+      // ignore invalid localStorage
+    }
+  }, []);
+
+  const updateActiveProperty = (patch: Partial<typeof activeProperty>) => {
+    setActiveProperty((prev) => {
+      const next = { ...prev, ...patch };
+      try {
+        window.localStorage.setItem(ACTIVE_PROPERTY_KEY, JSON.stringify(next));
+      } catch {
+        // ignore storage quota errors
+      }
+      return next;
+    });
+  };
 
   const refreshRuns = useCallback(async () => {
     try {
@@ -81,8 +125,15 @@ export default function PropertyDashboard() {
       setShowSiteCrawl(true);
       return;
     }
-    if (task.id === "title-meta" || task.id === "heading-structure") {
-      setActiveCrawlTask(task.id);
+    if (CRAWL_TASK_IDS.has(task.id)) {
+      setTmError(null);
+      setTmProp({
+        name: tmProp.name || activeProperty.name,
+        brand: tmProp.brand || activeProperty.brand,
+        city: tmProp.city || activeProperty.city,
+        state: tmProp.state || activeProperty.state,
+      });
+      setActiveCrawlTask(task);
       return;
     }
     if (task.id === "usp-headline-optimization") {
@@ -98,7 +149,7 @@ export default function PropertyDashboard() {
     setTmError(null);
     setTmBusy(true);
     try {
-      const res = await fetch(`/api/tasks/${activeCrawlTask}/run`, {
+      const res = await fetch(`/api/tasks/${activeCrawlTask.id}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -107,6 +158,7 @@ export default function PropertyDashboard() {
             brand: tmProp.brand.trim(),
             city: tmProp.city.trim(),
             state: tmProp.state.trim().toUpperCase(),
+            ...(activeProperty.url.trim() ? { url: activeProperty.url.trim() } : {}),
             allowedLocations: [],
             excludedLocations: [],
           },
@@ -115,7 +167,9 @@ export default function PropertyDashboard() {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Task execution failed.");
       await refreshRuns();
+      const completedTask = activeCrawlTask;
       setActiveCrawlTask(null);
+      setHistoryTask(completedTask);
     } catch (e) {
       setTmError((e as Error).message);
     } finally {
@@ -277,6 +331,74 @@ export default function PropertyDashboard() {
             </div>
           </section>
 
+          <section className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
+            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Active Property Profile
+                </span>
+                <p className="text-xs text-slate-500">
+                  Pin a hotel once to auto-prefill Site Crawl, SEO Baseline, and all crawl-backed audits.
+                </p>
+              </div>
+              {activeProperty.name && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cleared = { name: "", brand: "", city: "", state: "", url: "" };
+                    setActiveProperty(cleared);
+                    try {
+                      window.localStorage.removeItem(ACTIVE_PROPERTY_KEY);
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                  className="text-xs font-medium text-slate-400 hover:text-slate-700"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
+              <input
+                type="text"
+                placeholder="Property Name"
+                value={activeProperty.name}
+                onChange={(e) => updateActiveProperty({ name: e.target.value })}
+                className="input text-xs"
+              />
+              <input
+                type="text"
+                placeholder="Brand (e.g. Curio Collection)"
+                value={activeProperty.brand}
+                onChange={(e) => updateActiveProperty({ brand: e.target.value })}
+                className="input text-xs"
+              />
+              <input
+                type="text"
+                placeholder="City"
+                value={activeProperty.city}
+                onChange={(e) => updateActiveProperty({ city: e.target.value })}
+                className="input text-xs"
+              />
+              <input
+                type="text"
+                maxLength={2}
+                placeholder="State (2-letter)"
+                value={activeProperty.state}
+                onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
+                className="input text-xs uppercase"
+              />
+              <input
+                type="url"
+                placeholder="https://property-url.com"
+                value={activeProperty.url}
+                onChange={(e) => updateActiveProperty({ url: e.target.value })}
+                className="input text-xs"
+              />
+            </div>
+          </section>
+
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
@@ -334,6 +456,74 @@ export default function PropertyDashboard() {
             </div>
           </section>
 
+          <section className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
+            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Active Property Profile
+                </span>
+                <p className="text-xs text-slate-500">
+                  Pin a hotel once to auto-prefill Site Crawl, SEO Baseline, and all crawl-backed audits.
+                </p>
+              </div>
+              {activeProperty.name && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    const cleared = { name: "", brand: "", city: "", state: "", url: "" };
+                    setActiveProperty(cleared);
+                    try {
+                      window.localStorage.removeItem(ACTIVE_PROPERTY_KEY);
+                    } catch {
+                      // ignore
+                    }
+                  }}
+                  className="text-xs font-medium text-slate-400 hover:text-slate-700"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
+              <input
+                type="text"
+                placeholder="Property Name"
+                value={activeProperty.name}
+                onChange={(e) => updateActiveProperty({ name: e.target.value })}
+                className="input text-xs"
+              />
+              <input
+                type="text"
+                placeholder="Brand (e.g. Curio Collection)"
+                value={activeProperty.brand}
+                onChange={(e) => updateActiveProperty({ brand: e.target.value })}
+                className="input text-xs"
+              />
+              <input
+                type="text"
+                placeholder="City"
+                value={activeProperty.city}
+                onChange={(e) => updateActiveProperty({ city: e.target.value })}
+                className="input text-xs"
+              />
+              <input
+                type="text"
+                maxLength={2}
+                placeholder="State (2-letter)"
+                value={activeProperty.state}
+                onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
+                className="input text-xs uppercase"
+              />
+              <input
+                type="url"
+                placeholder="https://property-url.com"
+                value={activeProperty.url}
+                onChange={(e) => updateActiveProperty({ url: e.target.value })}
+                className="input text-xs"
+              />
+            </div>
+          </section>
+
           <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between">
             <nav aria-label="Task Sections" className="flex flex-wrap gap-2">
               {TASK_SECTIONS.map((section) => {
@@ -387,13 +577,13 @@ export default function PropertyDashboard() {
           </div>
 
           {(activeTab === "Technical" || showSiteCrawl) && (
-            <SiteCrawlCard onCompleted={() => void refreshRuns()} />
+            <SiteCrawlCard defaultUrl={activeProperty.url} onCompleted={() => void refreshRuns()} />
           )}
 
           {activeCrawlTask && (
             <Card
-              title={activeCrawlTask === "title-meta" ? "Title_Meta Description" : "Heading Structure Optimization"}
-              subtitle="Uses the latest Site Crawl run and approved Keyword Research keywords."
+              title={activeCrawlTask.name}
+              subtitle="Uses the latest Site Crawl run (and approved Keyword Research keywords where applicable)."
               actions={
                 <Button variant="ghost" onClick={() => setActiveCrawlTask(null)}>
                   Close
@@ -448,6 +638,7 @@ export default function PropertyDashboard() {
 
           {showBaselineModal && (
             <SeoBaselineModal
+              defaultProperty={{ name: activeProperty.name, url: activeProperty.url }}
               onClose={() => setShowBaselineModal(false)}
               onCompleted={() => void refreshRuns()}
             />
@@ -458,6 +649,10 @@ export default function PropertyDashboard() {
               onClose={() => setShowVisibilityReport(false)}
               onCompleted={() => void refreshRuns()}
             />
+          )}
+
+          {historyTask && (
+            <RunHistoryDrawer task={historyTask} onClose={() => setHistoryTask(null)} />
           )}
 
           <Card
@@ -545,14 +740,25 @@ export default function PropertyDashboard() {
                           </span>
                         )}
                       </div>
-                      <Button
-                        variant={disabled ? "secondary" : "primary"}
-                        disabled={disabled}
-                        onClick={() => handleRunTask(task)}
-                        title={disabled ? `Scheduled for Phase ${task.phase}` : `Run ${task.name}`}
-                      >
-                        {disabled ? `Phase ${task.phase}` : "Run Task"}
-                      </Button>
+                      <div className="flex items-center gap-2">
+                        {isImplemented && (
+                          <button
+                            type="button"
+                            onClick={() => setHistoryTask(task)}
+                            className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                          >
+                            History
+                          </button>
+                        )}
+                        <Button
+                          variant={disabled ? "secondary" : "primary"}
+                          disabled={disabled}
+                          onClick={() => handleRunTask(task)}
+                          title={disabled ? `Scheduled for Phase ${task.phase}` : `Run ${task.name}`}
+                        >
+                          {disabled ? `Phase ${task.phase}` : "Run Task"}
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 );

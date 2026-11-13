@@ -17,15 +17,15 @@ describe("API /api/tasks/[taskId]", () => {
 
   it("returns 501 for Phase 2/3 tasks that are registered as Not started", async () => {
     const res = await runTaskPost(
-      new Request("http://localhost/api/tasks/technical-audit/run", {
+      new Request("http://localhost/api/tasks/sitemap-navigation-optimization/run", {
         method: "POST",
         body: JSON.stringify({}),
       }),
-      { params: { taskId: "technical-audit" } },
+      { params: { taskId: "sitemap-navigation-optimization" } },
     );
     expect(res.status).toBe(501);
     const json = await res.json();
-    expect(json.taskId).toBe("technical-audit");
+    expect(json.taskId).toBe("sitemap-navigation-optimization");
     expect(json.phase).toBe(2);
   });
 

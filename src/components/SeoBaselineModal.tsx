@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button, Card } from "./ui";
 
 interface SlidePreview {
@@ -21,6 +21,7 @@ interface BaselineResult {
 }
 
 interface Props {
+  defaultProperty?: { name?: string; url?: string };
   onClose: () => void;
   onCompleted: () => void;
 }
@@ -28,9 +29,9 @@ interface Props {
 const DEFAULT_TEMPLATE_URL =
   "https://docs.google.com/presentation/d/1EfhGAw3vIcJroTvhi8LBz3E6MzSSQbG2cC0BZOBrjn4/edit?usp=sharing";
 
-export function SeoBaselineModal({ onClose, onCompleted }: Props) {
-  const [name, setName] = useState("");
-  const [url, setUrl] = useState("");
+export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Props) {
+  const [name, setName] = useState(defaultProperty?.name ?? "");
+  const [url, setUrl] = useState(defaultProperty?.url ?? "");
   const [templateId, setTemplateId] = useState(DEFAULT_TEMPLATE_URL);
   const [organicTraffic, setOrganicTraffic] = useState("");
   const [nonBrandKeywords, setNonBrandKeywords] = useState("");
@@ -38,6 +39,38 @@ export function SeoBaselineModal({ onClose, onCompleted }: Props) {
   const [referringDomains, setReferringDomains] = useState("");
   const [backlinks, setBacklinks] = useState("");
   const [indexedPages, setIndexedPages] = useState("");
+  const [crawlPrefilled, setCrawlPrefilled] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadLatestCrawlCount() {
+      try {
+        const res = await fetch("/api/tasks/site-crawl/runs", { cache: "no-store" });
+        if (!res.ok) return;
+        const json = (await res.json()) as {
+          runs?: Array<{
+            status: string;
+            output?: { progress?: { crawled?: number }; pagesCrawled?: number };
+          }>;
+        };
+        const latest = json.runs?.find((r) => r.status === "Done" || r.status === "Flagged");
+        const count = latest?.output?.progress?.crawled ?? latest?.output?.pagesCrawled;
+        if (!cancelled && typeof count === "number" && count > 0) {
+          setIndexedPages((prev) => {
+            if (prev) return prev;
+            setCrawlPrefilled(true);
+            return String(count);
+          });
+        }
+      } catch {
+        // ignore
+      }
+    }
+    void loadLatestCrawlCount();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const [keywordReportUrl, setKeywordReportUrl] = useState("");
   const [compSetNotes, setCompSetNotes] = useState("");
   const [visibilityScore, setVisibilityScore] = useState("");
@@ -196,13 +229,23 @@ export function SeoBaselineModal({ onClose, onCompleted }: Props) {
               onChange={(e) => setBacklinks(e.target.value)}
               className="input"
             />
-            <input
-              type="number"
-              placeholder="Indexed Pages"
-              value={indexedPages}
-              onChange={(e) => setIndexedPages(e.target.value)}
-              className="input"
-            />
+            <div className="relative">
+              <input
+                type="number"
+                placeholder="Indexed Pages"
+                value={indexedPages}
+                onChange={(e) => {
+                  setIndexedPages(e.target.value);
+                  setCrawlPrefilled(false);
+                }}
+                className="input w-full"
+              />
+              {crawlPrefilled && (
+                <span className="mt-1 block text-[10px] font-medium text-emerald-700">
+                  Prefilled from latest Site Crawl
+                </span>
+              )}
+            </div>
           </div>
           <input
             type="url"

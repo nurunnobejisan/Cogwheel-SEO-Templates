@@ -1,0 +1,33 @@
+{
+  "property": {
+    "name": "The Harborview Hotel",
+    "brand": "Curio Collection",
+    "city": "Charleston",
+    "state": "SC",
+    "url": "https://harborview.example.com"
+  },
+  "rows": [
+    {
+      "clusterType": "exact-duplicate",
+      "primaryUrl": "https://harborview.example.com/dining",
+      "affectedUrls": [
+        "https://harborview.example.com/dining",
+        "https://harborview.example.com/restaurants"
+      ],
+      "severity": "high",
+      "recommendedAction": "301-redirect",
+      "rationale": "Both URLs share identical contentHash and title; consolidate equity to /dining."
+    },
+    {
+      "clusterType": "thin-content",
+      "primaryUrl": "https://harborview.example.com/faq",
+      "affectedUrls": [
+        "https://harborview.example.com/faq"
+      ],
+      "severity": "medium",
+      "recommendedAction": "expand-content",
+      "rationale": "Page has only 110 words; expand with property check-in, parking, and amenity FAQs."
+    }
+  ]
+}
+

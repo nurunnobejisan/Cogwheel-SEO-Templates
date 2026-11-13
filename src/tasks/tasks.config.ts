@@ -131,7 +131,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "crawl", "prior_runs"],
     dependsOn: ["keyword-research"],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Audit image alt text, filenames, and compression opportunities across active pages.",
   },
 
@@ -157,7 +157,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "crawl", "gsc"],
     dependsOn: [],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Crawlability, indexation, status codes, canonicals, and Core Web Vitals audit.",
   },
   {
@@ -181,7 +181,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "crawl"],
     dependsOn: ["technical-audit"],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Identify duplicate titles, meta descriptions, thin pages, and canonical conflicts.",
   },
   {
@@ -193,7 +193,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "crawl"],
     dependsOn: [],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Generate grounded Hotel, LodgingBusiness, Restaurant, and FAQPage JSON-LD markup.",
   },
   {

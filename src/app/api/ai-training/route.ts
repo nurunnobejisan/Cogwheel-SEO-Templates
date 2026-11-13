@@ -65,3 +65,4 @@ export async function DELETE(req: Request) {
   const deleted = await deleteTrainingRule(id);
   return NextResponse.json({ deleted });
 }
+
