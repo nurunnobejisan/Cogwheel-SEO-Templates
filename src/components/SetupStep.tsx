@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { HILTON_BRANDS, isHalfAndHalfEligible } from "@/config/hilton-rules";
-import portfolioProperties from "@/config/properties.json";
+import portfolioProperties from "@/data/trained-properties.json";
 import { DEFAULT_RULES } from "@/config/rules";
 import { BUCKETS } from "@/lib/engine/bucket";
 import type { Property, SitemapPage, TemplateId } from "@/lib/types";
@@ -14,6 +14,7 @@ interface PortfolioEntry {
   name: string;
   url: string;
   propertyType?: string;
+  category?: string;
   managementGroup?: string;
   brand?: string;
   city?: string;
@@ -48,7 +49,8 @@ export function PropertySetup({
       (p) =>
         p.name.toLowerCase().includes(q) ||
         p.url.toLowerCase().includes(q) ||
-        (p.managementGroup ?? "").toLowerCase().includes(q) ||
+        (p.category ?? "").toLowerCase().includes(q) ||
+        (p.brand ?? "").toLowerCase().includes(q) ||
         (p.city ?? "").toLowerCase().includes(q),
     );
   }, [portfolioFilter]);
@@ -59,9 +61,8 @@ export function PropertySetup({
     const picked = PORTFOLIO.find((p) => p.name === name);
     if (!picked) return;
     const metaNotes = [
-      picked.propertyType ? `Type: ${picked.propertyType}` : "",
-      picked.managementGroup ? `Group: ${picked.managementGroup}` : "",
-      picked.seoAssignee ? `SEO: ${picked.seoAssignee}` : "",
+      picked.propertyType || picked.category ? `Type: ${picked.propertyType || picked.category}` : "",
+      picked.brand ? `Brand: ${picked.brand}` : "",
     ]
       .filter(Boolean)
       .join(" | ");
@@ -77,7 +78,7 @@ export function PropertySetup({
   }
 
   return (
-    <Card title="1. Property Setup" subtitle="Quick-pick from your 91-property portfolio or enter details manually.">
+    <Card title="1. Property Setup" subtitle="Quick-pick from your 132 trained client properties or enter details manually.">
       <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
@@ -87,7 +88,7 @@ export function PropertySetup({
             type="search"
             value={portfolioFilter}
             onChange={(e) => setPortfolioFilter(e.target.value)}
-            placeholder="Filter by name, city, Sage, Palisociety…"
+            placeholder="Filter by name, city, brand, soft vanity…"
             className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs sm:w-64"
           />
         </div>
@@ -96,11 +97,11 @@ export function PropertySetup({
           value={PORTFOLIO.some((p) => p.name === property.name) ? property.name : ""}
           onChange={(e) => selectPortfolioProperty(e.target.value)}
         >
-          <option value="">Select a property from portfolio…</option>
+          <option value="">Select a property from portfolio ({PORTFOLIO.length})…</option>
           {filteredPortfolio.map((p) => (
             <option key={`${p.name}-${p.url}`} value={p.name}>
               {p.name}
-              {p.propertyType ? ` [${p.propertyType}]` : ""}
+              {p.category || p.propertyType ? ` [${p.category || p.propertyType}]` : ""}
               {p.city && p.state ? ` — ${p.city}, ${p.state}` : ""}
             </option>
           ))}

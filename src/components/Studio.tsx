@@ -64,16 +64,16 @@ export default function Studio({
   }));
 
   useEffect(() => {
-    if (!initialProperty) return;
+    if (!initialProperty?.name) return;
     setProperty((prev) => ({
       ...prev,
-      name: prev.name || initialProperty.name || "",
-      url: prev.url || initialProperty.url || "",
-      brand: prev.brand || initialProperty.brand || "",
-      city: prev.city || initialProperty.city || "",
-      state: prev.state || initialProperty.state || "",
+      name: initialProperty.name ?? prev.name,
+      url: initialProperty.url ?? prev.url,
+      brand: initialProperty.brand ?? prev.brand,
+      city: initialProperty.city ?? prev.city,
+      state: initialProperty.state ?? prev.state,
     }));
-  }, [initialProperty]);
+  }, [initialProperty?.name, initialProperty?.url, initialProperty?.brand, initialProperty?.city, initialProperty?.state]);
   const [pages, setPages] = useState<SitemapPage[]>(sitemap.pages as SitemapPage[]);
   const [files, setFiles] = useState<File[]>([]);
   const [template, setTemplate] = useState<TemplateId>("A");

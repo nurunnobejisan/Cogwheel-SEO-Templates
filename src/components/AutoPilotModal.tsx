@@ -356,9 +356,36 @@ export function AutoPilotModal({
         )}
 
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
-          <Button variant="primary" disabled={running || !canRun} onClick={() => void startAutoPilot()}>
-            {running ? "Running Auto-Pilot..." : finished ? "Re-Run Auto-Pilot" : "Start Auto-Pilot"}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Button variant="primary" disabled={running || !canRun} onClick={() => void startAutoPilot()}>
+              {running ? "Running Auto-Pilot..." : finished ? "Re-Run Auto-Pilot" : "Start Auto-Pilot"}
+            </Button>
+            {finished && (
+              <button
+                type="button"
+                onClick={() => {
+                  const propertySlug = (activeProperty.name || "hotel").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+                  for (const s of steps) {
+                    if (s.xlsxBase64) {
+                      downloadXlsx(s.xlsxBase64, `${propertySlug}-${s.id}.xlsx`);
+                    }
+                    if (s.jsonLdScript) {
+                      const blob = new Blob([s.jsonLdScript], { type: "application/ld+json" });
+                      const url = URL.createObjectURL(blob);
+                      const a = document.createElement("a");
+                      a.href = url;
+                      a.download = `${propertySlug}-schema-markup.json`;
+                      a.click();
+                      URL.revokeObjectURL(url);
+                    }
+                  }
+                }}
+                className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 shadow-sm"
+              >
+                📦 Download All Audit Deliverables
+              </button>
+            )}
+          </div>
           <div className="flex flex-wrap gap-2">
             <Button variant="secondary" onClick={onOpenStudio}>
               Next: Keyword Matrix &rarr;
