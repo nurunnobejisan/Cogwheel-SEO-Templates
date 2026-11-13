@@ -35,6 +35,9 @@ const ClientDeliverablesModal = dynamic(() =>
 );
 const RunHistoryDrawer = dynamic(() => import("./RunHistoryDrawer").then((m) => m.RunHistoryDrawer));
 const AutoPilotModal = dynamic(() => import("./AutoPilotModal").then((m) => m.AutoPilotModal));
+const ComingSoonModal = dynamic(() =>
+  import("./ComingSoonModal").then((m) => m.ComingSoonModal),
+);
 
 const CRAWL_TASK_IDS = new Set([
   "title-meta",
@@ -105,6 +108,7 @@ export default function PropertyDashboard() {
   const [showAutoPilot, setShowAutoPilot] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
   const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
+  const [comingSoonTask, setComingSoonTask] = useState<TaskConfig | null>(null);
   const [activeProperty, setActiveProperty] = useState({
     name: "",
     brand: "",
@@ -134,6 +138,7 @@ export default function PropertyDashboard() {
         setShowAutoPilot(false);
         setActiveCrawlTask(null);
         setHistoryTask(null);
+        setComingSoonTask(null);
       }
     };
     window.addEventListener("keydown", onKeyDown);
@@ -224,7 +229,11 @@ export default function PropertyDashboard() {
   }, [mainTab, refreshRuns]);
 
   function handleRunTask(task: TaskConfig) {
-    if (task.phase !== 1 && task.status !== "Done") return;
+    const isImplemented = task.phase === 1 || task.status === "Done";
+    if (!isImplemented) {
+      setComingSoonTask(task);
+      return;
+    }
     if (task.id === "seo-baseline-ai-visibility") {
       setDeliverablesTab("slides");
       return;
@@ -874,11 +883,10 @@ export default function PropertyDashboard() {
                         )}
                         <Button
                           variant={disabled ? "secondary" : "primary"}
-                          disabled={disabled}
                           onClick={() => handleRunTask(task)}
-                          title={disabled ? `Scheduled for Phase ${task.phase}` : `Run ${task.name}`}
+                          title={disabled ? `Coming Soon (Phase ${task.phase})` : `Run ${task.name}`}
                         >
-                          {disabled ? `Phase ${task.phase}` : "Run Task"}
+                          {disabled ? `Coming Soon (Phase ${task.phase})` : "Run Task"}
                         </Button>
                       </div>
                     </div>
@@ -910,7 +918,7 @@ export default function PropertyDashboard() {
         </main>
       )}
 
-      {(activeCrawlTask || showAiTraining || deliverablesTab || showAutoPilot || historyTask) && (
+      {(activeCrawlTask || showAiTraining || deliverablesTab || showAutoPilot || historyTask || comingSoonTask) && (
         <div
           className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 pt-10 backdrop-blur-sm"
           onClick={(e) => {
@@ -920,6 +928,7 @@ export default function PropertyDashboard() {
               setDeliverablesTab(null);
               setShowAutoPilot(false);
               setHistoryTask(null);
+              setComingSoonTask(null);
             }
           }}
         >
@@ -1024,6 +1033,14 @@ export default function PropertyDashboard() {
 
             {historyTask && (
               <RunHistoryDrawer task={historyTask} onClose={() => setHistoryTask(null)} />
+            )}
+
+            {comingSoonTask && (
+              <ComingSoonModal
+                task={comingSoonTask}
+                onClose={() => setComingSoonTask(null)}
+                onPrioritized={() => void refreshRuns()}
+              />
             )}
           </div>
         </div>
