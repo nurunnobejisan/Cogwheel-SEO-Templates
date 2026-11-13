@@ -215,3 +215,31 @@ RLS enabled on all tables; server routes use the service-role key only on the se
   direct-to-Supabase-Storage upload or Drive folder sync.
 - **Secrets:** never exposed to the client (`SUPABASE_SERVICE_ROLE_KEY`, `ANTHROPIC_API_KEY`, Google service account).
 
+---
+
+## 11. Module Contract
+
+Every task module under `src/tasks/<task-id>/` must conform to the shared module contract (types in `src/tasks/contract.ts`, enforced by `tests/module-contract.test.ts`):
+
+### Required Folder Layout
+- `schema.ts` — Zod input schema (`InputSchema` / inferred input type)
+- `prompt.ts` — Claude prompt builder (or explicit `NO_CLAUDE_PROMPT_REASON` marker for deterministic-only tasks such as `site-crawl`)
+- `validator.ts` — Hard validation rules and deterministic checks
+- `render.ts` — Fixed-template fill / output renderer (Google Doc/Sheet/Slide, `.xlsx`/`.docx`/`.pptx`, or JSON)
+- `index.ts` — Task runner entry point registered in `src/tasks/registry.ts`
+- `<task-id>.test.ts` — Unit/integration tests using fixture data in `tests/fixtures/`
+
+### Standard Pipeline
+`Inputs -> Load dependency runs -> Deterministic checks (no Claude) -> Claude draft (temperature 0.2) -> Validate (auto-retry up to 2x, then flag) -> Fill template -> Save task_run -> Return output link + Flag Summary`
+
+### Module Rules
+1. **Fixed templates:** Templates are never structurally altered. Fill strictly by placeholders, named ranges, or cell maps.
+2. **Grounded facts only:** Claude uses only crawled, ingested, API, or property-profile data. Unsupported claims are recorded in the Flag Summary and never invented.
+3. **Dependencies:** Missing required dependency runs return a clear `MissingDependencyError` naming the task to run first. Optional dependencies are flagged, not fatal.
+4. **Flag Summary:** Every output carries a Flag Summary detailing what was flagged, why, and which page or row is affected.
+5. **Deterministic checks first:** Deterministic checks run before Claude and their results are passed to Claude as facts.
+6. **Clean outputs:** No placeholder text or `"REMOVE THESE INSTRUCTIONS"` blocks may remain in any output.
+7. **External APIs:** All external API calls are rate-limited, retried twice, and cached for 24 hours.
+8. **Preservation:** Existing working module behavior must not be altered when adding or updating other modules.
+
+
