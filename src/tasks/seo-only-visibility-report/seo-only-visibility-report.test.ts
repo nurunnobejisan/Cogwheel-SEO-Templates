@@ -20,6 +20,16 @@ describe("seo-only-visibility-report task module", () => {
     expect(findings.some((line) => line.includes("8 keyword(s) currently rank in positions 1-10"))).toBe(true);
   });
 
+  it("flags mismatch when a soft brand with a vanity site omits Slide 5", () => {
+    const parsed = seoVisibilityReportInputSchema.parse({
+      ...fixture,
+      hasVanitySite: true,
+      summary: { ...fixture.summary, is_brand_hosted: true, slide_count: 4 },
+    });
+    const { flags } = runDeterministicReportChecks(parsed.summary, parsed);
+    expect(flags.some((f) => f.code === "VANITY_SITE_SLIDE5_MISMATCH")).toBe(true);
+  });
+
   it("rejects placeholder text in executive narrative", () => {
     const parsed = seoVisibilityReportInputSchema.parse(fixture);
     const outcome = validateSeoVisibilityDraft(

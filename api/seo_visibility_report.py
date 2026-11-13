@@ -1940,35 +1940,50 @@ BRAND_HOSTED_DOMAINS = {
 }
 
 
+def _is_brand_domain_url(raw_url: str) -> bool:
+    try:
+        u_norm = raw_url if "://" in raw_url else f"https://{raw_url}"
+        netloc = urllib.parse.urlparse(u_norm).netloc.lower().lstrip("www.")
+        return any(netloc == dom or netloc.endswith("." + dom) for dom in BRAND_HOSTED_DOMAINS)
+    except Exception:
+        return False
+
+
 def is_brand_hosted_hotel(
     prop_name: str,
     target_url: str = "",
     workbook_urls: list[str] | None = None,
     audit_data: dict | None = None,
+    has_vanity_site: bool | None = None,
 ) -> bool:
-    """Return True if the property is a brand-hosted hotel (where SEO Errors Report slide must be removed)."""
-    candidate_urls: list[str] = []
-    if target_url:
-        candidate_urls.append(target_url)
-    if audit_data and audit_data.get("audited_url"):
-        candidate_urls.append(audit_data["audited_url"])
-    if workbook_urls:
-        candidate_urls.extend(workbook_urls[:20])
+    """Return True if the property has NO standalone/vanity site (Slide 5 SEO Errors is removed).
 
-    for u in candidate_urls:
-        try:
-            u_norm = u if "://" in u else f"https://{u}"
-            netloc = urllib.parse.urlparse(u_norm).netloc.lower().lstrip("www.")
-            if any(netloc == dom or netloc.endswith("." + dom) for dom in BRAND_HOSTED_DOMAINS):
-                return True
-        except Exception:
-            pass
-
-    # If a stand-alone domain was explicitly detected, keep the SEO Errors Report slide
-    if candidate_urls:
+    Rule: "Standalone sites for soft brands or independents" means a vanity site.
+    Not all soft brands have vanity sites:
+    - If a soft brand or independent HAS a vanity site -> Slide 5 applies (returns False).
+    - If a soft brand or chain hotel is brand-hosted only (no vanity site) -> Slide 5 is removed (returns True).
+    """
+    if has_vanity_site is True:
         return False
+    if has_vanity_site is False:
+        return True
 
-    # Fallback when no URL is available: check if property name is a major chain brand
+    # 1. Explicit target_url or audited_url is the strongest signal of a vanity site vs brand-hosted URL
+    primary_urls = [u for u in (target_url, audit_data.get("audited_url", "") if audit_data else "") if u]
+    if primary_urls:
+        for u in primary_urls:
+            if not _is_brand_domain_url(u):
+                return False  # Vanity site detected (soft brand with vanity site or independent)
+        return True
+
+    # 2. Otherwise inspect workbook URLs
+    wb_urls = [u for u in (workbook_urls or [])[:20] if u]
+    if wb_urls:
+        if any(not _is_brand_domain_url(u) for u in wb_urls):
+            return False
+        return True
+
+    # 3. Fallback when no URL is available: check if property name is a major chain/soft brand without a vanity site
     prop_low = re.sub(r"[^a-z0-9\s]", " ", (prop_name or "").lower())
     for brand in ALL_CHAIN_BRANDS:
         brand_low = re.sub(r"[^a-z0-9\s]", " ", brand.lower()).strip()

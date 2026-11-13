@@ -26,6 +26,26 @@ export function runDeterministicReportChecks(
     findings.push("No Semrush Site Audit PDF uploaded.");
   }
 
+  // Rule: Standalone sites for soft brands or independents = vanity site.
+  // If a soft brand has a vanity site (hasVanitySite: true), Slide 5 (5+ slides) applies.
+  if (input.hasVanitySite === true && summary.is_brand_hosted) {
+    flags.push({
+      code: "VANITY_SITE_SLIDE5_MISMATCH",
+      message:
+        "Property is marked as having a vanity site, so Slide 5 (SEO Errors) applies, but deck was flagged as brand-hosted (Slide 5 omitted).",
+      severity: "warning",
+      section: "Slide 5",
+    });
+  } else if (input.hasVanitySite === false && !summary.is_brand_hosted) {
+    flags.push({
+      code: "BRAND_HOSTED_SLIDE5_MISMATCH",
+      message:
+        "Property is marked as having no vanity site (brand-hosted soft brand/chain), so Slide 5 (SEO Errors) should be omitted.",
+      severity: "warning",
+      section: "Slide 5",
+    });
+  }
+
   if (summary.tracked_count === 0) {
     flags.push({
       code: "NO_TRACKED_KEYWORDS",

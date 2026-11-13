@@ -46,6 +46,7 @@ export const seoVisibilityReportInputSchema = z.object({
   propertyId: z.string().uuid().optional(),
   property: propertySummaryInputSchema.optional(),
   targetUrl: z.string().url().optional().or(z.literal("")),
+  hasVanitySite: z.boolean().optional(),
   templateFileName: z.string().optional(),
   xlsxFileName: z.string().optional(),
   pdfFileName: z.string().optional(),

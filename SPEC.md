@@ -241,5 +241,6 @@ Every task module under `src/tasks/<task-id>/` must conform to the shared module
 6. **Clean outputs:** No placeholder text or `"REMOVE THESE INSTRUCTIONS"` blocks may remain in any output.
 7. **External APIs:** All external API calls are rate-limited, retried twice, and cached for 24 hours.
 8. **Preservation:** Existing working module behavior must not be altered when adding or updating other modules.
+9. **SEO Only Visibility Report — Vanity Site Rule (Slide 5):** "Standalone sites for soft brands or independents" refers to properties with a **vanity site**. Not all soft brands have vanity sites: if a soft brand has a vanity site (e.g., `thenines.com`), Slide 5 (SEO Errors Report) applies; if a soft brand is brand-hosted only with no vanity site (e.g., only `hilton.com` / `marriott.com`), Slide 5 is omitted.
 
 
