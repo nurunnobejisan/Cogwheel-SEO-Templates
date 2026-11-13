@@ -1,0 +1,36 @@
+{
+  "property": {
+    "name": "The Nines, a Luxury Collection Hotel, Portland",
+    "url": "https://thenines.com/",
+    "brand": "Luxury Collection",
+    "city": "Portland",
+    "state": "OR"
+  },
+  "semrushSummary": {
+    "organicTraffic": 14200,
+    "totalRankingKeywords": 678,
+    "nonBrandKeywords": 579,
+    "brandKeywords": 99,
+    "referringDomains": 412,
+    "backlinks": 3890,
+    "indexedPages": 48,
+    "keywordReportUrl": "https://docs.google.com/spreadsheets/d/example-keyword-report/edit"
+  },
+  "mobileTrends": {
+    "trafficNote": "Mobile organic traffic remained steady year-over-year.",
+    "keywordNote": "Minor April dip in informational queries; core room and dining terms held."
+  },
+  "desktopTrends": {
+    "trafficNote": "Desktop sessions held steady with strong branded demand.",
+    "keywordNote": "Non-brand rankings concentrated in positions 4-15."
+  },
+  "compSetNotes": "Comp set captures more non-brand downtown Portland luxury queries while our branded demand remains strong.",
+  "aiVisibility": {
+    "visibilityScore": 24,
+    "brandSentiment": 68,
+    "brandMentions": 19,
+    "pagesCited": 11,
+    "shareOfVoice": 28,
+    "topCitedDomains": ["thenines.com", "tripadvisor.com", "marriott.com", "reddit.com"]
+  }
+}

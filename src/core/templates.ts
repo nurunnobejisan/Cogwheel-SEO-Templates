@@ -1,5 +1,5 @@
 import "server-only";
-import { extractGoogleDocId, getDocsClient, getDriveClient, getSheetsClient } from "@/core/google";
+import { extractGoogleDocId, getDocsClient, getDriveClient, getSheetsClient, getSlidesClient } from "@/core/google";
 
 /**
  * Resolves a Google template ID from an environment variable key,
@@ -82,6 +82,30 @@ export async function fillSheetNamedRanges(
       data: updates.map((u) => ({
         range: u.range,
         values: u.values,
+      })),
+    },
+  });
+}
+
+/**
+ * Replaces placeholder tokens in a cloned Google Slides presentation without altering slide structure.
+ */
+export async function fillSlidesPlaceholders(
+  presentationId: string,
+  replacements: Record<string, string>,
+): Promise<void> {
+  const entries = Object.entries(replacements);
+  if (entries.length === 0) return;
+
+  const slides = getSlidesClient();
+  await slides.presentations.batchUpdate({
+    presentationId,
+    requestBody: {
+      requests: entries.map(([placeholder, value]) => ({
+        replaceAllText: {
+          containsText: { text: placeholder, matchCase: false },
+          replaceText: value,
+        },
       })),
     },
   });

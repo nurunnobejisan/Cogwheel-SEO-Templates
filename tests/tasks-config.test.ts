@@ -28,6 +28,7 @@ describe("tasks.config.ts", () => {
     expect(doneTasks.map((t) => t.id).sort()).toEqual([
       "heading-structure",
       "keyword-research",
+      "seo-baseline-ai-visibility",
       "seo-only-visibility-report",
       "site-crawl",
       "title-meta",

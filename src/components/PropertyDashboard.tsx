@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
 import { SiteCrawlCard } from "./SiteCrawlCard";
+import { SeoBaselineModal } from "./SeoBaselineModal";
 import { SeoVisibilityReportModal } from "./SeoVisibilityReportModal";
 import Studio from "./Studio";
 import { Button, Card } from "./ui";
@@ -30,6 +31,7 @@ export default function PropertyDashboard() {
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
   const [showSiteCrawl, setShowSiteCrawl] = useState(false);
+  const [showBaselineModal, setShowBaselineModal] = useState(false);
   const [showVisibilityReport, setShowVisibilityReport] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<"title-meta" | "heading-structure" | null>(null);
   const [tmProp, setTmProp] = useState({ name: "", brand: "", city: "", state: "" });
@@ -64,6 +66,10 @@ export default function PropertyDashboard() {
 
   function handleRunTask(task: TaskConfig) {
     if (task.phase !== 1 && task.status !== "Done") return;
+    if (task.id === "seo-baseline-ai-visibility") {
+      setShowBaselineModal(true);
+      return;
+    }
     if (task.id === "seo-only-visibility-report") {
       setShowVisibilityReport(true);
       return;
@@ -376,6 +382,13 @@ export default function PropertyDashboard() {
                 </Button>
               </div>
             </Card>
+          )}
+
+          {showBaselineModal && (
+            <SeoBaselineModal
+              onClose={() => setShowBaselineModal(false)}
+              onCompleted={() => void refreshRuns()}
+            />
           )}
 
           {showVisibilityReport && (
