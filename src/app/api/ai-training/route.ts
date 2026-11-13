@@ -7,6 +7,13 @@ import {
   listTrainingRules,
   toggleTrainingRule,
 } from "@/core/training";
+import {
+  getDesignSettings,
+  listChangeHistory,
+  processTrainingFeedback,
+  recordLegacyRuleHistory,
+  revertTrainingChange,
+} from "@/core/training-feedback";
 
 export const dynamic = "force-dynamic";
 
@@ -16,6 +23,28 @@ const createRuleSchema = z.object({
   ruleText: z.string().min(5, "Rule or feedback text is required"),
   exampleBad: z.string().optional(),
   exampleGood: z.string().optional(),
+  authorName: z.string().optional(),
+});
+
+const feedbackSchema = z.object({
+  authorName: z.string().min(1, "Your name is required"),
+  category: z.enum(["seo", "design"]),
+  feedbackText: z.string().min(3, "Please describe what you want to change"),
+  taskId: z.string().nullable().optional(),
+  designPatch: z
+    .object({
+      accentTheme: z.enum(["lime", "sky", "emerald", "indigo", "amber"]).optional(),
+      density: z.enum(["comfortable", "compact"]).optional(),
+      defaultTab: z.enum(["home", "tasks", "crawl", "studio"]).optional(),
+      showSummaryCards: z.boolean().optional(),
+      workspaceSubtitle: z.string().optional(),
+    })
+    .optional(),
+});
+
+const revertSchema = z.object({
+  action: z.literal("revert"),
+  historyId: z.string().min(1),
 });
 
 const toggleRuleSchema = z.object({
@@ -30,15 +59,55 @@ export async function GET(req: Request) {
   return NextResponse.json({
     rules,
     provider: getActiveAiProviderLabel(),
+    designSettings: getDesignSettings(),
+    history: listChangeHistory(),
   });
 }
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
+    const body = (await req.json()) as Record<string, unknown>;
+
+    if (body && body.action === "revert") {
+      const parsed = revertSchema.parse(body);
+      const { reverted, designSettings } = await revertTrainingChange(parsed.historyId);
+      if (!reverted) {
+        return NextResponse.json({ error: "Change entry not found or already reverted" }, { status: 404 });
+      }
+      const rules = await listTrainingRules();
+      return NextResponse.json({
+        reverted,
+        rules,
+        designSettings,
+        history: listChangeHistory(),
+      });
+    }
+
+    if (body && ("feedbackText" in body || "category" in body)) {
+      const parsed = feedbackSchema.parse(body);
+      const outcome = await processTrainingFeedback(parsed);
+      const rules = await listTrainingRules();
+      return NextResponse.json(
+        {
+          ...outcome,
+          rules,
+          history: listChangeHistory(),
+        },
+        { status: outcome.status === "blocked" ? 200 : 201 },
+      );
+    }
+
     const parsed = createRuleSchema.parse(body);
     const rule = await addTrainingRule(parsed);
-    return NextResponse.json({ rule }, { status: 201 });
+    const entry = recordLegacyRuleHistory(parsed.authorName?.trim() || "SEO Team", rule);
+    return NextResponse.json(
+      {
+        rule,
+        entry,
+        history: listChangeHistory(),
+      },
+      { status: 201 },
+    );
   } catch (err) {
     const message = err instanceof Error ? err.message : "Invalid training rule";
     return NextResponse.json({ error: message }, { status: 400 });
@@ -69,4 +138,3 @@ export async function DELETE(req: Request) {
   const deleted = await deleteTrainingRule(id);
   return NextResponse.json({ deleted });
 }
-
