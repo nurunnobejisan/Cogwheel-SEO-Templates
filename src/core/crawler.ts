@@ -588,3 +588,4 @@ export async function crawlTargetWebsite(targetUrl: string, options: CrawlOption
 export const defaultCrawler: Crawler = {
   crawl: crawlTargetWebsite,
 };
+

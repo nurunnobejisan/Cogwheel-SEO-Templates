@@ -63,3 +63,4 @@ export function getSheetsClient(): sheets_v4.Sheets {
 export function getSlidesClient(): slides_v1.Slides {
   return google.slides({ version: "v1", auth: getWorkspaceAuth() });
 }
+

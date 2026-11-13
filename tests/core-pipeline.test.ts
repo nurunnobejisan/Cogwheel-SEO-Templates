@@ -76,3 +76,4 @@ describe("core/pipeline", () => {
     expect(result.flags[0].code).toBe("rule-violation");
   });
 });
+

@@ -63,3 +63,4 @@ describe("core/crawler", () => {
     expect(extracted.text).not.toContain("ignore me");
   });
 });
+

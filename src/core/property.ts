@@ -62,3 +62,4 @@ export async function getPropertyProfile(propertyId: string): Promise<PropertyRe
     excludedLocations: (data.excluded_locations as string[]) ?? [],
   };
 }
+

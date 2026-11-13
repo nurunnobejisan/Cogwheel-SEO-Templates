@@ -86,3 +86,4 @@ describe("tasks/keyword-research", () => {
     expect(validateKeywordResearchDraft(SAMPLE_RUN, { rationales: [{ pageId: "home", title: "Home", text: "  " }], usedAi: true }).valid).toBe(false);
   });
 });
+

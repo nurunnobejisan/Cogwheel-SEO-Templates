@@ -311,3 +311,4 @@ export function getTaskConfig(taskId: string): TaskConfig | undefined {
 export function getTasksBySection(section: TaskSection): TaskConfig[] {
   return TASKS_CONFIG.filter((t) => t.section === section);
 }
+

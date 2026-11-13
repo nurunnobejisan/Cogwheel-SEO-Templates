@@ -155,3 +155,4 @@ function mapRowToRecord(row: Record<string, unknown>): TaskRunRecord {
     updatedAt: row.updated_at as string,
   };
 }
+

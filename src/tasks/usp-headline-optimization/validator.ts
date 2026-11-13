@@ -50,3 +50,4 @@ export function collectSectionFlags(draft: GeneratedSectionsDraft): ValidationOu
     flags,
   };
 }
+

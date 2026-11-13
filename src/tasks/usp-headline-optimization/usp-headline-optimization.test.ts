@@ -68,3 +68,4 @@ describe("tasks/usp-headline-optimization", () => {
     expect(outcome.flags[0].section).toBe("home-headline");
   });
 });
+

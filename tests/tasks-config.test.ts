@@ -35,3 +35,4 @@ describe("tasks.config.ts", () => {
     expect(getTaskConfig("usp-headline-optimization")?.outputType).toBe("doc");
   });
 });
+

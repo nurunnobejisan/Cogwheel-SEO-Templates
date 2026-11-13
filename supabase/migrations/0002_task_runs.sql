@@ -21,3 +21,4 @@ create index if not exists task_runs_task_created_idx
   on public.task_runs(task_id, created_at desc);
 
 alter table public.task_runs enable row level security;
+
