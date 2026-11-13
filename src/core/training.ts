@@ -34,6 +34,37 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
     active: true,
     createdAt: "2026-11-13T00:00:00.000Z",
   },
+  {
+    id: "seed-rm-property-taxonomy",
+    taskId: null,
+    title: "Razib Marketing Property Taxonomy (2026 Portfolio)",
+    ruleText:
+      "Classify properties accurately using the agency portfolio taxonomy: Full Flag Brand (e.g. Embassy Suites, Courtyard, Hilton Garden Inn, Fairfield, Residence Inn, Hyatt Place), Soft Brand.com (brand-hosted soft-brand URL), Soft Vanity / Vanity Site (standalone domain such as thenines.com, thecurtis.com, morrisonhouse.com, thealexandrian.com, grand1847.com, hotellajolla.com), Large/SMB Independent (e.g. Arrive Hotels, Senza, La Fonda, Coachman), and Restaurant.",
+    exampleGood: "Treat The Nines Portland (Soft Vanity: thenines.com) separately from The Nines Portland (Branded: Soft Brand.com).",
+    exampleBad: "Merging Soft Brand.com and Soft Vanity deliverables into one generic template.",
+    active: true,
+    createdAt: "2026-11-13T00:00:00.000Z",
+  },
+  {
+    id: "seed-rm-deliverable-naming",
+    taskId: "seo-baseline-ai-visibility",
+    title: "Agency Deliverable Naming & Audit Tiers",
+    ruleText:
+      "Follow standard agency deliverable naming: '<Property Name> - SEO Baseline Overview' for baselines, '<Property Name> - Backlinking Strategy & Execution' for outreach, and align technical audits with 20/30/40 Points Audit and Technical Optimization checklists.",
+    exampleGood: "The Nines Hotel Portland - SEO Baseline Overview",
+    exampleBad: "Untitled SEO Report v1",
+    active: true,
+    createdAt: "2026-11-13T00:00:00.000Z",
+  },
+  {
+    id: "seed-rm-ai-visibility-geo",
+    taskId: "seo-baseline-ai-visibility",
+    title: "AI Visibility & GEO Prompt Readiness",
+    ruleText:
+      "For Full Flag Brand, Soft Brand.com, Soft Vanity, and Large Independent properties, always evaluate AI Visibility / GEO prompt coverage, cited domains, brand sentiment, and direct-booking share of voice.",
+    active: true,
+    createdAt: "2026-11-13T00:00:00.000Z",
+  },
 ];
 
 const memoryRules: AiTrainingRule[] = [...DEFAULT_SEED_RULES];

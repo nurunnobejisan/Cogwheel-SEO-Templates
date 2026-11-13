@@ -3,8 +3,23 @@
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import trainedPropertiesData from "@/data/trained-properties.json";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
 import { Button, Card } from "./ui";
+
+interface TrainedProperty {
+  name: string;
+  brand: string;
+  city: string;
+  state: string;
+  url: string;
+  propertyType: string;
+  category: string;
+  projectType: string;
+  status: string;
+}
+
+const TRAINED_PROPERTIES = trainedPropertiesData as TrainedProperty[];
 
 const Studio = dynamic(() => import("./Studio"), {
   loading: () => (
@@ -427,7 +442,35 @@ export default function PropertyDashboard() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                  <span className="text-[11px] font-medium text-slate-400">1-Click Presets:</span>
+                  <select
+                    aria-label="Pick Trained Client Property"
+                    value=""
+                    onChange={(e) => {
+                      const picked = TRAINED_PROPERTIES.find((p) => p.name === e.target.value);
+                      if (picked) {
+                        updateActiveProperty({
+                          name: picked.name,
+                          brand: picked.brand,
+                          city: picked.city,
+                          state: picked.state,
+                          url: picked.url,
+                        });
+                        setAutofillUrl(picked.url);
+                        setAutofillError(null);
+                      }
+                    }}
+                    className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 focus:border-brand focus:outline-none"
+                  >
+                    <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
+                    {TRAINED_PROPERTIES.map((p) => (
+                      <option key={`${p.name}-${p.category}`} value={p.name}>
+                        {p.name}
+                        {p.category ? ` [${p.category}]` : ""}
+                        {p.url ? " • URL" : ""}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-[11px] font-medium text-slate-400">or Quick:</span>
                   {QUICK_PROPERTY_PRESETS.map((preset) => {
                     const isSelected = activeProperty.name === preset.name;
                     return (
@@ -616,7 +659,35 @@ export default function PropertyDashboard() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                  <span className="text-[11px] font-medium text-slate-400">1-Click Presets:</span>
+                  <select
+                    aria-label="Pick Trained Client Property"
+                    value=""
+                    onChange={(e) => {
+                      const picked = TRAINED_PROPERTIES.find((p) => p.name === e.target.value);
+                      if (picked) {
+                        updateActiveProperty({
+                          name: picked.name,
+                          brand: picked.brand,
+                          city: picked.city,
+                          state: picked.state,
+                          url: picked.url,
+                        });
+                        setAutofillUrl(picked.url);
+                        setAutofillError(null);
+                      }
+                    }}
+                    className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 focus:border-brand focus:outline-none"
+                  >
+                    <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
+                    {TRAINED_PROPERTIES.map((p) => (
+                      <option key={`${p.name}-${p.category}`} value={p.name}>
+                        {p.name}
+                        {p.category ? ` [${p.category}]` : ""}
+                        {p.url ? " • URL" : ""}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="text-[11px] font-medium text-slate-400">or Quick:</span>
                   {QUICK_PROPERTY_PRESETS.map((preset) => {
                     const isSelected = activeProperty.name === preset.name;
                     return (
