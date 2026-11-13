@@ -87,54 +87,72 @@ export function SiteCrawlCard({ onCompleted }: { onCompleted?: () => void }) {
 
   return (
     <Card
-      title="Site Crawl (Shared Infrastructure)"
+      className="animate-fade-in"
+      title={
+        <div className="flex items-center gap-2.5">
+          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+            Crawler
+          </span>
+          <span>Site Crawl (Shared Infrastructure)</span>
+        </div>
+      }
       subtitle="Respects robots.txt and sitemap.xml, rate-limited at 2 req/s, and stores per-page facts for downstream tasks."
     >
-      <div className="space-y-4">
+      <div className="space-y-5">
         <div className="grid gap-3 sm:grid-cols-4">
           <div className="sm:col-span-2">
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Property URL</label>
+            <label className="label">Property URL</label>
             <input
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               placeholder="https://example-hotel.com/"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none"
+              className="input"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Max Pages</label>
+            <label className="label">Max Pages</label>
             <input
               type="number"
               min={1}
               max={1000}
               value={maxPages}
               onChange={(e) => setMaxPages(Number(e.target.value) || 150)}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none"
+              className="input"
             />
           </div>
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-600">Max Depth</label>
+            <label className="label">Max Depth</label>
             <input
               type="number"
               min={0}
               max={10}
               value={crawlDepth}
               onChange={(e) => setCrawlDepth(Number(e.target.value) || 4)}
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-900 focus:border-slate-400 focus:outline-none"
+              className="input"
             />
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-slate-950 p-4 text-white">
           <Button variant="primary" disabled={running} onClick={startCrawl}>
-            {running ? "Crawling..." : "Run Site Crawl"}
+            {running ? "Crawling Property..." : "Run Site Crawl"}
           </Button>
-          {runState && (
-            <span className="text-xs font-medium text-slate-600">
-              {runState.progress.crawled} / {runState.progress.discovered} pages ({pct}%)
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+              <span className={`h-1.5 w-1.5 rounded-full ${url.trim() ? "bg-brand" : "bg-slate-500"}`} />
+              robots.txt Respected
             </span>
-          )}
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+              <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+              2 req/sec Rate Limit
+            </span>
+            {runState && (
+              <span className="rounded-full bg-brand/20 px-3 py-1 font-semibold text-brand-light">
+                {runState.progress.crawled} / {runState.progress.discovered} pages ({pct}%)
+              </span>
+            )}
+          </div>
         </div>
 
         {error && (

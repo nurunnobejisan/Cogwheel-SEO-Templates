@@ -276,9 +276,25 @@ export function SeoBaselineModal({ onClose, onCompleted }: Props) {
           </div>
         )}
 
-        <Button onClick={() => void handleRun()} disabled={busy}>
-          {busy ? "Generating Baseline Deck..." : "Generate SEO Baseline & AI Visibility"}
-        </Button>
+        <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-slate-950 p-4 text-white">
+          <Button onClick={() => void handleRun()} disabled={busy}>
+            {busy ? "Generating Baseline Deck..." : "Generate SEO Baseline & AI Visibility"}
+          </Button>
+          <div className="flex flex-wrap items-center gap-2 text-xs">
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+              <span className={`h-1.5 w-1.5 rounded-full ${name.trim() && url.trim() ? "bg-brand" : "bg-slate-500"}`} />
+              Property Required
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+              <span className={`h-1.5 w-1.5 rounded-full ${organicTraffic ? "bg-brand" : "bg-slate-500"}`} />
+              Semrush Optional
+            </span>
+            <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+              <span className={`h-1.5 w-1.5 rounded-full ${visibilityScore ? "bg-brand" : "bg-slate-500"}`} />
+              AI Visibility Optional
+            </span>
+          </div>
+        </div>
 
         {result && (
           <div className="space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-xs">
@@ -320,3 +336,4 @@ export function SeoBaselineModal({ onClose, onCompleted }: Props) {
     </Card>
   );
 }
+
