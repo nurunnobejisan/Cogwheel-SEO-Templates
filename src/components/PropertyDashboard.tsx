@@ -14,6 +14,7 @@ const Studio = dynamic(() => import("./Studio"), {
   ),
 });
 const SiteCrawlCard = dynamic(() => import("./SiteCrawlCard").then((m) => m.SiteCrawlCard));
+const AiTrainingModal = dynamic(() => import("./AiTrainingModal").then((m) => m.AiTrainingModal));
 const SeoBaselineModal = dynamic(() => import("./SeoBaselineModal").then((m) => m.SeoBaselineModal));
 const SeoVisibilityReportModal = dynamic(() =>
   import("./SeoVisibilityReportModal").then((m) => m.SeoVisibilityReportModal),
@@ -41,6 +42,7 @@ export default function PropertyDashboard() {
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
   const [showSiteCrawl, setShowSiteCrawl] = useState(false);
+  const [showAiTraining, setShowAiTraining] = useState(false);
   const [showBaselineModal, setShowBaselineModal] = useState(false);
   const [showVisibilityReport, setShowVisibilityReport] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<"title-meta" | "heading-structure" | null>(null);
@@ -201,6 +203,20 @@ export default function PropertyDashboard() {
               }`}
             >
               Keyword &amp; Content Studio
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setView("dashboard");
+                setShowAiTraining((v) => !v);
+              }}
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                showAiTraining
+                  ? "bg-slate-900 text-brand-light shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
+            >
+              Train AI
             </button>
           </div>
         </div>
@@ -427,6 +443,8 @@ export default function PropertyDashboard() {
               </div>
             </Card>
           )}
+
+          {showAiTraining && <AiTrainingModal onClose={() => setShowAiTraining(false)} />}
 
           {showBaselineModal && (
             <SeoBaselineModal

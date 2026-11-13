@@ -1,5 +1,6 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
+import { formatTrainingContext } from "@/core/training";
 
 /** Pinned temperature for all grounded SEO/GEO drafting calls. */
 export const CLAUDE_TEMPERATURE = 0.2 as const;
@@ -29,12 +30,14 @@ export async function generateClaudeText(opts: {
   system: string;
   prompt: string;
   maxTokens?: number;
+  taskId?: string;
 }): Promise<string> {
+  const trainingAppendix = await formatTrainingContext(opts.taskId);
   const res = await getClient().messages.create({
     model: DEFAULT_CLAUDE_MODEL,
     max_tokens: opts.maxTokens ?? 2048,
     temperature: CLAUDE_TEMPERATURE,
-    system: opts.system,
+    system: `${opts.system}${trainingAppendix}`,
     messages: [{ role: "user", content: opts.prompt }],
   });
   return res.content
