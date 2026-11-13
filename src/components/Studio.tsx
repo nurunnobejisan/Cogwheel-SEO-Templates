@@ -21,6 +21,7 @@ import { KeywordPool } from "./KeywordPool";
 import { ReportResultCard, type ReportDocResult } from "./ReportResultCard";
 import { Dropzone, PagesEditor, PropertySetup } from "./SetupStep";
 import { TemplateSelector } from "./TemplateSelector";
+import { GenerationProgressModal } from "./GenerationProgressModal";
 import { Button, Card, Spinner, Stat } from "./ui";
 
 type Step = 1 | 2 | 3 | 4;
@@ -617,12 +618,13 @@ export default function Studio({
         )}
       </main>
 
-      {busy && (
-        <div className="fixed bottom-6 right-6 flex items-center gap-3 rounded-lg bg-slate-900 px-4 py-3 text-sm text-white shadow-lg">
-          <Spinner />
-          {busy}
-        </div>
-      )}
+      <GenerationProgressModal
+        isOpen={!!busy}
+        title="Keyword Studio Generating"
+        subtitle={busy || "Processing SEO workflow..."}
+        targetName={property.name}
+        estimatedSeconds={6}
+      />
     </div>
   );
 }

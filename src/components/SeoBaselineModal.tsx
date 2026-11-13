@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { GenerationProgressModal } from "./GenerationProgressModal";
 import { Button, Card } from "./ui";
 
 interface SlidePreview {
@@ -383,6 +384,14 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
           );
         })()}
       </div>
+
+      <GenerationProgressModal
+        isOpen={busy}
+        title="Generating SEO Baseline & AI Visibility Deck"
+        subtitle="Extracting search performance, baseline rankings & AI summary..."
+        targetName={name || url}
+        estimatedSeconds={8}
+      />
     </Card>
   );
 }

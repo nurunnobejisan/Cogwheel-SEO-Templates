@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { downloadBlobWithCountdown } from "@/lib/download-manager";
+import { GenerationProgressModal } from "./GenerationProgressModal";
 import { Card } from "./ui";
 
 interface ReportSummary {
@@ -475,6 +476,15 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
           )}
         </div>
       )}
+
+      {/* Generation Countdown & Visual Progress Modal */}
+      <GenerationProgressModal
+        isOpen={busy}
+        title="Generating SEO Visibility Deck"
+        subtitle="Building presentation from Semrush audit & keyword workbook..."
+        targetName={summary?.property_name || (xlsxFile?.name ? xlsxFile.name.replace(/\.[^/.]+$/, "") : targetUrl)}
+        estimatedSeconds={10}
+      />
     </Card>
   );
 }
