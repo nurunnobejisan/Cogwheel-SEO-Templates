@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
 import { SiteCrawlCard } from "./SiteCrawlCard";
@@ -114,35 +115,72 @@ export default function PropertyDashboard() {
   }
 
   const sectionTasks = TASKS_CONFIG.filter((t) => t.section === activeTab);
+  const readyCount = TASKS_CONFIG.filter((t) => t.phase === 1 || t.status === "Done").length;
+  const runList = Object.values(latestRuns);
+  const flaggedCount = runList.filter((r) => r.flags.length > 0 || r.status === "Flagged").length;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-800">
-      <header className="border-b border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
-          <div>
-            <h1 className="font-display text-xl font-bold tracking-tight text-slate-900">
-              Hotel SEO Automation Studio
-            </h1>
-            <p className="text-xs text-slate-500">
-              Unified property workflow across On Page, Technical, Off Page, Local, and Reporting
-            </p>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-800">
+      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-3.5">
+          <div className="flex items-center gap-4">
+            <a
+              href="https://razibmarketing.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center transition-opacity hover:opacity-90"
+              title="Razib Marketing"
+            >
+              <Image
+                src="/razib-marketing-logo.png"
+                alt="Razib Marketing"
+                width={172}
+                height={42}
+                priority
+                className="h-9 w-auto object-contain"
+              />
+            </a>
+            <div className="hidden h-7 w-px bg-slate-200 sm:block" />
+            <div className="hidden sm:block">
+              <div className="flex items-center gap-2">
+                <h1 className="font-display text-base font-bold tracking-tight text-slate-900">
+                  Hotel SEO &amp; GEO Studio
+                </h1>
+                <span className="rounded-full border border-brand/40 bg-brand-50 px-2.5 py-0.5 text-[11px] font-semibold text-slate-800">
+                  Hospitality Automation
+                </span>
+              </div>
+              <p className="text-[11px] text-slate-500">
+                Direct-booking growth workflows across On Page, Technical, Off Page, Local &amp; Reporting
+              </p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={view === "dashboard" ? "primary" : "secondary"}
+          <div className="flex items-center gap-2 rounded-xl bg-slate-100 p-1">
+            <button
+              type="button"
               onClick={() => setView("dashboard")}
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                view === "dashboard"
+                  ? "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
             >
               Property Dashboard
-            </Button>
-            <Button
-              variant={view === "studio" ? "primary" : "secondary"}
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 setStudioStep(1);
                 setView("studio");
               }}
+              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                view === "studio"
+                  ? "bg-brand text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              }`}
             >
               Keyword &amp; Content Studio
-            </Button>
+            </button>
           </div>
         </div>
       </header>
@@ -151,6 +189,63 @@ export default function PropertyDashboard() {
         <Studio key={studioStep} initialStep={studioStep} />
       ) : (
         <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
+          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                Active Modules
+              </div>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="font-display text-2xl font-extrabold text-slate-900">{readyCount}</span>
+                <span className="text-xs text-slate-500">/ {TASKS_CONFIG.length} tasks</span>
+              </div>
+              <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="h-full rounded-full bg-brand"
+                  style={{ width: `${Math.round((readyCount / TASKS_CONFIG.length) * 100)}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                Recorded Runs
+              </div>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="font-display text-2xl font-extrabold text-slate-900">{runList.length}</span>
+                <span className="text-xs text-slate-500">latest executions</span>
+              </div>
+              <p className="mt-2 text-[11px] text-slate-500">Synced with task history &amp; audit trail</p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                Attention Needed
+              </div>
+              <div className="mt-1 flex items-baseline gap-2">
+                <span className="font-display text-2xl font-extrabold text-slate-900">{flaggedCount}</span>
+                <span className="text-xs text-slate-500">flagged runs</span>
+              </div>
+              <p className="mt-2 text-[11px] text-slate-500">Auto-validated with Flag Summaries</p>
+            </div>
+
+            <div className="rounded-2xl border border-brand/40 bg-gradient-to-br from-brand-50 via-white to-hilton-light/40 p-4 shadow-card">
+              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">
+                Razib Marketing Focus
+              </div>
+              <div className="mt-1 font-display text-sm font-bold text-slate-900">
+                Direct Bookings &amp; AI/GEO Readiness
+              </div>
+              <a
+                href="https://razibmarketing.com/"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-2 inline-block text-xs font-semibold text-hilton underline decoration-hilton/40 underline-offset-2 hover:text-hilton-dark"
+              >
+                razibmarketing.com
+              </a>
+            </div>
+          </section>
+
           <nav aria-label="Task Sections" className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
             {TASK_SECTIONS.map((section) => {
               const count = TASKS_CONFIG.filter((t) => t.section === section).length;
@@ -160,13 +255,15 @@ export default function PropertyDashboard() {
                   key={section}
                   type="button"
                   onClick={() => setActiveTab(section)}
-                  className={`rounded-xl px-4 py-2 text-sm font-semibold transition-colors ${
+                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
                     isActive
-                      ? "bg-slate-900 text-white"
-                      : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
+                      ? "bg-slate-900 text-white shadow-sm"
+                      : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
                   }`}
                 >
-                  {section} <span className="ml-1 text-xs opacity-75">({count})</span>
+                  {isActive && <span className="h-2 w-2 rounded-full bg-brand" />}
+                  <span>{section}</span>
+                  <span className="text-xs opacity-75">({count})</span>
                 </button>
               );
             })}
@@ -307,6 +404,23 @@ export default function PropertyDashboard() {
               })}
             </div>
           </Card>
+
+          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-xs text-slate-500">
+            <div className="flex items-center gap-2">
+              <span className="inline-block h-2 w-2 rounded-full bg-brand" />
+              <span>
+                Powered by <strong className="text-slate-700">Razib Marketing</strong> — Digital Marketing &amp; SEO Automation for Hotels
+              </span>
+            </div>
+            <a
+              href="https://razibmarketing.com/"
+              target="_blank"
+              rel="noreferrer"
+              className="font-medium text-slate-600 underline decoration-slate-300 underline-offset-2 hover:text-slate-900"
+            >
+              razibmarketing.com
+            </a>
+          </footer>
         </main>
       )}
     </div>

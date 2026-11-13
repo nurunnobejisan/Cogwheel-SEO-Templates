@@ -6,8 +6,12 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-jakarta" });
 
 export const metadata: Metadata = {
-  title: "Keyword Research",
-  description: "78-keyword pool builder, page-to-keyword approval matrix, Google Docs report generator, and content studio.",
+  title: "Razib Marketing — Hotel SEO & GEO Automation Studio",
+  description:
+    "Digital marketing, SEO, and GEO visibility automation studio for independent and branded hotels by Razib Marketing.",
+  icons: {
+    icon: "/razib-marketing-logo.png",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
