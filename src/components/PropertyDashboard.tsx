@@ -32,6 +32,38 @@ const CRAWL_TASK_IDS = new Set([
 
 const ACTIVE_PROPERTY_KEY = "razib_active_property_v1";
 
+const QUICK_PROPERTY_PRESETS = [
+  {
+    name: "The Harborview Hotel",
+    brand: "Curio Collection",
+    city: "Charleston",
+    state: "SC",
+    url: "https://www.hilton.com/en/hotels/chshvqq-the-harborview-hotel/",
+  },
+  {
+    name: "The Driskill",
+    brand: "Unbound Collection",
+    city: "Austin",
+    state: "TX",
+    url: "https://www.thedriskill.com/",
+  },
+  {
+    name: "Hotel Zachary",
+    brand: "Tribute Portfolio",
+    city: "Chicago",
+    state: "IL",
+    url: "https://www.hotelzachary.com/",
+  },
+];
+
+const OUTPUT_BADGE_STYLES: Record<string, string> = {
+  slides: "bg-amber-50 text-amber-800 border-amber-200/80",
+  pptx: "bg-orange-50 text-orange-800 border-orange-200/80",
+  sheet: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
+  doc: "bg-sky-50 text-sky-800 border-sky-200/80",
+  json: "bg-violet-50 text-violet-800 border-violet-200/80",
+};
+
 interface TaskRunSummary {
   id: string;
   taskId: string;
@@ -66,6 +98,10 @@ export default function PropertyDashboard() {
     state: "",
     url: "",
   });
+  const [autofillUrl, setAutofillUrl] = useState("");
+  const [autofillBusy, setAutofillBusy] = useState(false);
+  const [autofillError, setAutofillError] = useState<string | null>(null);
+  const [showPropertyDetails, setShowPropertyDetails] = useState(false);
   const [tmProp, setTmProp] = useState({ name: "", brand: "", city: "", state: "" });
   const [tmBusy, setTmBusy] = useState(false);
   const [tmError, setTmError] = useState<string | null>(null);
@@ -95,6 +131,36 @@ export default function PropertyDashboard() {
       return next;
     });
   };
+
+  async function handleAutoDetectProperty() {
+    const target = autofillUrl.trim() || activeProperty.url.trim();
+    if (!target) {
+      setAutofillError("Paste a hotel URL first.");
+      return;
+    }
+    setAutofillError(null);
+    setAutofillBusy(true);
+    try {
+      const res = await fetch("/api/property-autofill", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: target }),
+      });
+      const json = (await res.json()) as {
+        error?: string;
+        property?: { name: string; brand: string; city: string; state: string; url: string };
+      };
+      if (!res.ok || !json.property) {
+        throw new Error(json.error || "Could not auto-detect property.");
+      }
+      updateActiveProperty(json.property);
+      setAutofillUrl(json.property.url);
+    } catch (err) {
+      setAutofillError((err as Error).message);
+    } finally {
+      setAutofillBusy(false);
+    }
+  }
 
   const refreshRuns = useCallback(async () => {
     try {
@@ -332,71 +398,135 @@ export default function PropertyDashboard() {
           </section>
 
           <section className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  Active Property Profile
-                </span>
-                <p className="text-xs text-slate-500">
-                  Pin a hotel once to auto-prefill Site Crawl, SEO Baseline, and all crawl-backed audits.
-                </p>
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+                    Zero-Type Workspace
+                  </span>
+                  <span className="text-xs font-semibold text-slate-800">
+                    {activeProperty.name
+                      ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
+                          activeProperty.city ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}` : ""
+                        }`
+                      : "Pick a preset or paste a hotel URL to auto-fill everything"}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="text-[11px] font-medium text-slate-400">1-Click Presets:</span>
+                  {QUICK_PROPERTY_PRESETS.map((preset) => {
+                    const isSelected = activeProperty.name === preset.name;
+                    return (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => {
+                          updateActiveProperty(preset);
+                          setAutofillUrl(preset.url);
+                          setAutofillError(null);
+                        }}
+                        className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
+                          isSelected
+                            ? "border-brand bg-brand-50 text-slate-900"
+                            : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:bg-white hover:text-slate-900"
+                        }`}
+                      >
+                        {preset.name}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              {activeProperty.name && (
+
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="url"
+                  placeholder="Paste hotel URL & click Auto-Fill..."
+                  value={autofillUrl}
+                  onChange={(e) => setAutofillUrl(e.target.value)}
+                  className="w-64 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/25"
+                />
+                <Button
+                  variant="primary"
+                  disabled={autofillBusy}
+                  onClick={() => void handleAutoDetectProperty()}
+                >
+                  {autofillBusy ? "Detecting..." : "Auto-Fill"}
+                </Button>
                 <button
                   type="button"
-                  onClick={() => {
-                    const cleared = { name: "", brand: "", city: "", state: "", url: "" };
-                    setActiveProperty(cleared);
-                    try {
-                      window.localStorage.removeItem(ACTIVE_PROPERTY_KEY);
-                    } catch {
-                      // ignore
-                    }
-                  }}
-                  className="text-xs font-medium text-slate-400 hover:text-slate-700"
+                  onClick={() => setShowPropertyDetails((v) => !v)}
+                  className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 >
-                  Clear
+                  {showPropertyDetails ? "Hide Fields" : "Edit"}
                 </button>
-              )}
+                {activeProperty.name && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cleared = { name: "", brand: "", city: "", state: "", url: "" };
+                      setActiveProperty(cleared);
+                      setAutofillUrl("");
+                      try {
+                        window.localStorage.removeItem(ACTIVE_PROPERTY_KEY);
+                      } catch {
+                        // ignore
+                      }
+                    }}
+                    className="text-xs font-medium text-slate-400 hover:text-slate-700"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
-              <input
-                type="text"
-                placeholder="Property Name"
-                value={activeProperty.name}
-                onChange={(e) => updateActiveProperty({ name: e.target.value })}
-                className="input text-xs"
-              />
-              <input
-                type="text"
-                placeholder="Brand (e.g. Curio Collection)"
-                value={activeProperty.brand}
-                onChange={(e) => updateActiveProperty({ brand: e.target.value })}
-                className="input text-xs"
-              />
-              <input
-                type="text"
-                placeholder="City"
-                value={activeProperty.city}
-                onChange={(e) => updateActiveProperty({ city: e.target.value })}
-                className="input text-xs"
-              />
-              <input
-                type="text"
-                maxLength={2}
-                placeholder="State (2-letter)"
-                value={activeProperty.state}
-                onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
-                className="input text-xs uppercase"
-              />
-              <input
-                type="url"
-                placeholder="https://property-url.com"
-                value={activeProperty.url}
-                onChange={(e) => updateActiveProperty({ url: e.target.value })}
-                className="input text-xs"
-              />
-            </div>
+
+            {autofillError && (
+              <div className="mt-2.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
+                {autofillError}
+              </div>
+            )}
+
+            {showPropertyDetails && (
+              <div className="mt-3 grid gap-2.5 border-t border-slate-100 pt-3 sm:grid-cols-2 lg:grid-cols-5">
+                <input
+                  type="text"
+                  placeholder="Property Name"
+                  value={activeProperty.name}
+                  onChange={(e) => updateActiveProperty({ name: e.target.value })}
+                  className="input text-xs"
+                />
+                <input
+                  type="text"
+                  placeholder="Brand (e.g. Curio Collection)"
+                  value={activeProperty.brand}
+                  onChange={(e) => updateActiveProperty({ brand: e.target.value })}
+                  className="input text-xs"
+                />
+                <input
+                  type="text"
+                  placeholder="City"
+                  value={activeProperty.city}
+                  onChange={(e) => updateActiveProperty({ city: e.target.value })}
+                  className="input text-xs"
+                />
+                <input
+                  type="text"
+                  maxLength={2}
+                  placeholder="State (2-letter)"
+                  value={activeProperty.state}
+                  onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
+                  className="input text-xs uppercase"
+                />
+                <input
+                  type="url"
+                  placeholder="https://property-url.com"
+                  value={activeProperty.url}
+                  onChange={(e) => updateActiveProperty({ url: e.target.value })}
+                  className="input text-xs"
+                />
+              </div>
+            )}
           </section>
 
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -457,71 +587,135 @@ export default function PropertyDashboard() {
           </section>
 
           <section className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-            <div className="mb-2.5 flex flex-wrap items-center justify-between gap-2">
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
-                  Active Property Profile
-                </span>
-                <p className="text-xs text-slate-500">
-                  Pin a hotel once to auto-prefill Site Crawl, SEO Baseline, and all crawl-backed audits.
-                </p>
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="space-y-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+                    Zero-Type Workspace
+                  </span>
+                  <span className="text-xs font-semibold text-slate-800">
+                    {activeProperty.name
+                      ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
+                          activeProperty.city ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}` : ""
+                        }`
+                      : "Pick a preset or paste a hotel URL to auto-fill everything"}
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                  <span className="text-[11px] font-medium text-slate-400">1-Click Presets:</span>
+                  {QUICK_PROPERTY_PRESETS.map((preset) => {
+                    const isSelected = activeProperty.name === preset.name;
+                    return (
+                      <button
+                        key={preset.name}
+                        type="button"
+                        onClick={() => {
+                          updateActiveProperty(preset);
+                          setAutofillUrl(preset.url);
+                          setAutofillError(null);
+                        }}
+                        className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
+                          isSelected
+                            ? "border-brand bg-brand-50 text-slate-900"
+                            : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:bg-white hover:text-slate-900"
+                        }`}
+                      >
+                        {preset.name}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-              {activeProperty.name && (
+
+              <div className="flex flex-wrap items-center gap-2">
+                <input
+                  type="url"
+                  placeholder="Paste hotel URL & click Auto-Fill..."
+                  value={autofillUrl}
+                  onChange={(e) => setAutofillUrl(e.target.value)}
+                  className="w-64 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/25"
+                />
+                <Button
+                  variant="primary"
+                  disabled={autofillBusy}
+                  onClick={() => void handleAutoDetectProperty()}
+                >
+                  {autofillBusy ? "Detecting..." : "Auto-Fill"}
+                </Button>
                 <button
                   type="button"
-                  onClick={() => {
-                    const cleared = { name: "", brand: "", city: "", state: "", url: "" };
-                    setActiveProperty(cleared);
-                    try {
-                      window.localStorage.removeItem(ACTIVE_PROPERTY_KEY);
-                    } catch {
-                      // ignore
-                    }
-                  }}
-                  className="text-xs font-medium text-slate-400 hover:text-slate-700"
+                  onClick={() => setShowPropertyDetails((v) => !v)}
+                  className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                 >
-                  Clear
+                  {showPropertyDetails ? "Hide Fields" : "Edit"}
                 </button>
-              )}
+                {activeProperty.name && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const cleared = { name: "", brand: "", city: "", state: "", url: "" };
+                      setActiveProperty(cleared);
+                      setAutofillUrl("");
+                      try {
+                        window.localStorage.removeItem(ACTIVE_PROPERTY_KEY);
+                      } catch {
+                        // ignore
+                      }
+                    }}
+                    className="text-xs font-medium text-slate-400 hover:text-slate-700"
+                  >
+                    Clear
+                  </button>
+                )}
+              </div>
             </div>
-            <div className="grid gap-2.5 sm:grid-cols-2 lg:grid-cols-5">
-              <input
-                type="text"
-                placeholder="Property Name"
-                value={activeProperty.name}
-                onChange={(e) => updateActiveProperty({ name: e.target.value })}
-                className="input text-xs"
-              />
-              <input
-                type="text"
-                placeholder="Brand (e.g. Curio Collection)"
-                value={activeProperty.brand}
-                onChange={(e) => updateActiveProperty({ brand: e.target.value })}
-                className="input text-xs"
-              />
-              <input
-                type="text"
-                placeholder="City"
-                value={activeProperty.city}
-                onChange={(e) => updateActiveProperty({ city: e.target.value })}
-                className="input text-xs"
-              />
-              <input
-                type="text"
-                maxLength={2}
-                placeholder="State (2-letter)"
-                value={activeProperty.state}
-                onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
-                className="input text-xs uppercase"
-              />
-              <input
-                type="url"
-                placeholder="https://property-url.com"
-                value={activeProperty.url}
-                onChange={(e) => updateActiveProperty({ url: e.target.value })}
-                className="input text-xs"
-              />
-            </div>
+
+            {autofillError && (
+              <div className="mt-2.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
+                {autofillError}
+              </div>
+            )}
+
+            {showPropertyDetails && (
+              <div className="mt-3 grid gap-2.5 border-t border-slate-100 pt-3 sm:grid-cols-2 lg:grid-cols-5">
+                <input
+                  type="text"
+                  placeholder="Property Name"
+                  value={activeProperty.name}
+                  onChange={(e) => updateActiveProperty({ name: e.target.value })}
+                  className="input text-xs"
+                />
+                <input
+                  type="text"
+                  placeholder="Brand (e.g. Curio Collection)"
+                  value={activeProperty.brand}
+                  onChange={(e) => updateActiveProperty({ brand: e.target.value })}
+                  className="input text-xs"
+                />
+                <input
+                  type="text"
+                  placeholder="City"
+                  value={activeProperty.city}
+                  onChange={(e) => updateActiveProperty({ city: e.target.value })}
+                  className="input text-xs"
+                />
+                <input
+                  type="text"
+                  maxLength={2}
+                  placeholder="State (2-letter)"
+                  value={activeProperty.state}
+                  onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
+                  className="input text-xs uppercase"
+                />
+                <input
+                  type="url"
+                  placeholder="https://property-url.com"
+                  value={activeProperty.url}
+                  onChange={(e) => updateActiveProperty({ url: e.target.value })}
+                  className="input text-xs"
+                />
+              </div>
+            )}
           </section>
 
           <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between">
@@ -672,7 +866,11 @@ export default function PropertyDashboard() {
                     className={`animate-fade-in flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${
                       disabled
                         ? "border-slate-200/70 bg-slate-50/60 opacity-80"
-                        : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                        : effectiveStatus === "Flagged"
+                          ? "border-slate-200 border-l-4 border-l-amber-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                          : effectiveStatus === "Done"
+                            ? "border-slate-200 border-l-4 border-l-emerald-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                            : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
                     }`}
                   >
                     <div className="space-y-2.5">
@@ -695,7 +893,11 @@ export default function PropertyDashboard() {
                             />
                             {effectiveStatus}
                           </span>
-                          <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600">
+                          <span
+                            className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                              OUTPUT_BADGE_STYLES[task.outputType] ?? "border-slate-200 bg-slate-100 text-slate-600"
+                            }`}
+                          >
                             {task.outputType}
                           </span>
                         </div>

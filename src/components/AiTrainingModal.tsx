@@ -15,6 +15,41 @@ interface TrainingRule {
   createdAt: string;
 }
 
+const QUICK_RULE_PRESETS = [
+  {
+    taskId: "seo-only-visibility-report",
+    title: "Soft Brand Vanity Site Rule",
+    ruleText:
+      "When it says 'standalone sites for soft brands or independents', it means the vanity site. Not all soft brands have vanity sites. Only include that slide if the soft brand has a vanity site.",
+    exampleGood: "Include standalone slide when has_vanity_site is true.",
+    exampleBad: "Assuming every Curio/Tapestry/Autograph property has a vanity site.",
+  },
+  {
+    taskId: "",
+    title: "Strict Crawl Grounding",
+    ruleText:
+      "Never invent amenities, dining venues, room counts, ratings, or street addresses not found in the property profile or crawled pages.",
+    exampleGood: "Use verified H1/title/JSON-LD facts from Site Crawl.",
+    exampleBad: "Guessing 'rooftop bar' or '4.8 star rating' without crawl evidence.",
+  },
+  {
+    taskId: "title-meta",
+    title: "Title & Meta Character Limits",
+    ruleText:
+      "Keep all proposed SEO title tags <= 60 characters and meta descriptions <= 155 characters with a direct-booking value proposition.",
+    exampleGood: "Oceanfront Suites in Charleston | Book Direct",
+    exampleBad: "75-character truncated title tags with generic filler.",
+  },
+  {
+    taskId: "usp-headline-optimization",
+    title: "Direct-Booking USP Tone",
+    ruleText:
+      "Lead with unique property differentiators (location, architecture, dining, suites) and encourage direct booking without hype or unverified superlatives.",
+    exampleGood: "Steps from Historic King Street with Courtyard Dining",
+    exampleBad: "The #1 Best Luxury Hotel in the World!",
+  },
+];
+
 export function AiTrainingModal({ onClose }: { onClose: () => void }) {
   const [rules, setRules] = useState<TrainingRule[]>([]);
   const [loading, setLoading] = useState(true);
@@ -113,6 +148,30 @@ export function AiTrainingModal({ onClose }: { onClose: () => void }) {
       }
     >
       <div className="space-y-6">
+        <div className="space-y-2">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            1-Click Quick Templates (No Typing Needed)
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {QUICK_RULE_PRESETS.map((preset) => (
+              <button
+                key={preset.title}
+                type="button"
+                onClick={() => {
+                  setTaskId(preset.taskId);
+                  setTitle(preset.title);
+                  setRuleText(preset.ruleText);
+                  setExampleGood(preset.exampleGood);
+                  setExampleBad(preset.exampleBad);
+                }}
+                className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand hover:bg-brand-50/40 hover:text-slate-900"
+              >
+                + {preset.title}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="space-y-3 rounded-2xl border border-slate-200 bg-slate-50/60 p-4">
           <div className="grid gap-3 sm:grid-cols-2">
             <div>
