@@ -337,7 +337,7 @@ export default function PropertyDashboard() {
             <div className="hidden sm:block">
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-base font-bold tracking-tight text-slate-900">
-                  Hotel SEO &amp; GEO Studio
+                  Cogwheel SEO - Templates
                 </h1>
                 <span className="rounded-full border border-brand/40 bg-brand-50 px-2.5 py-0.5 text-[11px] font-semibold text-slate-800">
                   Hospitality Automation
@@ -364,13 +364,12 @@ export default function PropertyDashboard() {
                   if (tab.id === "studio") setStudioStep(1);
                   setMainTab(tab.id);
                 }}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                  mainTab === tab.id
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${mainTab === tab.id
                     ? tab.id === "studio"
                       ? "bg-brand text-slate-900 shadow-sm"
                       : "bg-white text-slate-900 shadow-sm"
                     : "text-slate-600 hover:text-slate-900"
-                }`}
+                  }`}
               >
                 {tab.label}
               </button>
@@ -378,11 +377,10 @@ export default function PropertyDashboard() {
             <button
               type="button"
               onClick={() => setShowAiTraining((v) => !v)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                showAiTraining
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${showAiTraining
                   ? "bg-slate-900 text-brand-light shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
-              }`}
+                }`}
             >
               Train AI ({aiStatus.activeRules})
             </button>
@@ -406,11 +404,10 @@ export default function PropertyDashboard() {
                       </span>
                       <span className="text-sm font-bold text-slate-900">
                         {activeProperty.name
-                          ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
-                              activeProperty.city
-                                ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}`
-                                : ""
-                            }`
+                          ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${activeProperty.city
+                            ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}`
+                            : ""
+                          }`
                           : "Select a client or paste a hotel URL"}
                       </span>
                     </div>
@@ -452,11 +449,10 @@ export default function PropertyDashboard() {
                             setAutofillUrl(preset.url);
                             setAutofillError(null);
                           }}
-                          className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
-                            activeProperty.name === preset.name
+                          className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${activeProperty.name === preset.name
                               ? "border-brand bg-brand-50 text-slate-900"
                               : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900"
-                          }`}
+                            }`}
                         >
                           {preset.name}
                         </button>
@@ -555,9 +551,8 @@ export default function PropertyDashboard() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-500">STEP 1</span>
                       <span
-                        className={`h-2 w-2 rounded-full ${
-                          latestRuns["site-crawl"] ? "bg-emerald-500" : "bg-slate-300"
-                        }`}
+                        className={`h-2 w-2 rounded-full ${latestRuns["site-crawl"] ? "bg-emerald-500" : "bg-slate-300"
+                          }`}
                       />
                     </div>
                     <div className="font-display text-sm font-bold text-slate-900">Site Crawl</div>
@@ -575,9 +570,8 @@ export default function PropertyDashboard() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-500">STEP 2</span>
                       <span
-                        className={`h-2 w-2 rounded-full ${
-                          latestRuns["keyword-research"] ? "bg-emerald-500" : "bg-slate-300"
-                        }`}
+                        className={`h-2 w-2 rounded-full ${latestRuns["keyword-research"] ? "bg-emerald-500" : "bg-slate-300"
+                          }`}
                       />
                     </div>
                     <div className="font-display text-sm font-bold text-slate-900">Keyword Matrix</div>
@@ -610,12 +604,11 @@ export default function PropertyDashboard() {
                     <div className="flex items-center justify-between">
                       <span className="text-xs font-bold text-slate-700">STEP 4</span>
                       <span
-                        className={`h-2 w-2 rounded-full ${
-                          latestRuns["seo-baseline-ai-visibility"] ||
-                          latestRuns["seo-only-visibility-report"]
+                        className={`h-2 w-2 rounded-full ${latestRuns["seo-baseline-ai-visibility"] ||
+                            latestRuns["seo-only-visibility-report"]
                             ? "bg-emerald-500"
                             : "bg-brand"
-                        }`}
+                          }`}
                       />
                     </div>
                     <div className="font-display text-sm font-bold text-slate-900">
@@ -702,198 +695,193 @@ export default function PropertyDashboard() {
           )}
 
           {mainTab === "tasks" && (
-          <>
-          <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between">
-            <nav aria-label="Task Sections" className="flex flex-wrap gap-2">
-              {TASK_SECTIONS.map((section) => {
-                const count = TASKS_CONFIG.filter((t) => t.section === section).length;
-                const isActive = activeTab === section;
-                return (
-                  <button
-                    key={section}
-                    type="button"
-                    onClick={() => setActiveTab(section)}
-                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                      isActive
-                        ? "bg-slate-900 text-white shadow-sm"
-                        : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                    }`}
-                  >
-                    {isActive && <span className="h-2 w-2 rounded-full bg-brand" />}
-                    <span>{section}</span>
-                    <span className="text-xs opacity-75">({count})</span>
-                  </button>
-                );
-              })}
-            </nav>
+            <>
+              <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between">
+                <nav aria-label="Task Sections" className="flex flex-wrap gap-2">
+                  {TASK_SECTIONS.map((section) => {
+                    const count = TASKS_CONFIG.filter((t) => t.section === section).length;
+                    const isActive = activeTab === section;
+                    return (
+                      <button
+                        key={section}
+                        type="button"
+                        onClick={() => setActiveTab(section)}
+                        className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${isActive
+                            ? "bg-slate-900 text-white shadow-sm"
+                            : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                          }`}
+                      >
+                        {isActive && <span className="h-2 w-2 rounded-full bg-brand" />}
+                        <span>{section}</span>
+                        <span className="text-xs opacity-75">({count})</span>
+                      </button>
+                    );
+                  })}
+                </nav>
 
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Filter tasks..."
-                aria-label="Filter tasks"
-                className="w-44 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
-              />
-              <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-[11px] font-semibold">
-                {(["all", "ready", "upcoming"] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    type="button"
-                    onClick={() => setFilterMode(mode)}
-                    className={`rounded-lg px-2.5 py-1 capitalize transition ${
-                      filterMode === mode
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-500 hover:text-slate-900"
-                    }`}
-                  >
-                    {mode}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <Card
-            title={`${activeTab} Tasks`}
-            subtitle={`Active modules run through the shared validation pipeline with automatic Flag Summaries.`}
-          >
-            {sectionTasks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center">
-                <p className="text-sm font-semibold text-slate-700">
-                  No active tasks match this filter in {activeTab}.
-                </p>
-                <p className="text-xs text-slate-500">
-                  Switch to All to preview upcoming Phase 2/3 modules, or clear your search filter.
-                </p>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setFilterMode("all");
-                    setSearchQuery("");
-                  }}
-                >
-                  Show All {activeTab} Tasks
-                </Button>
-              </div>
-            ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {sectionTasks.map((task) => {
-                const run = latestRuns[task.id];
-                const isImplemented = task.phase === 1 || task.status === "Done";
-                const effectiveStatus: TaskStatus = run?.status ?? (task.phase === 1 ? "Not started" : task.status);
-                const disabled = !isImplemented;
-
-                return (
-                  <div
-                    key={task.id}
-                    className={`animate-fade-in flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${
-                      disabled
-                        ? "border-slate-200/70 bg-slate-50/60 opacity-80"
-                        : effectiveStatus === "Flagged"
-                          ? "border-slate-200 border-l-4 border-l-amber-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
-                          : effectiveStatus === "Done"
-                            ? "border-slate-200 border-l-4 border-l-emerald-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
-                            : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
-                    }`}
-                  >
-                    <div className="space-y-2.5">
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <span className="font-display text-sm font-bold text-slate-900">{task.name}</span>
-                        <div className="flex items-center gap-1.5">
-                          <span
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[effectiveStatus]}`}
-                          >
-                            <span
-                              className={`h-1.5 w-1.5 rounded-full ${
-                                effectiveStatus === "Done"
-                                  ? "bg-emerald-500"
-                                  : effectiveStatus === "Flagged"
-                                    ? "bg-amber-500"
-                                    : effectiveStatus === "Running"
-                                      ? "animate-pulse bg-sky-500"
-                                      : "bg-slate-400"
-                              }`}
-                            />
-                            {effectiveStatus}
-                          </span>
-                          <span
-                            className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                              OUTPUT_BADGE_STYLES[task.outputType] ?? "border-slate-200 bg-slate-100 text-slate-600"
-                            }`}
-                          >
-                            {task.outputType}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-xs leading-relaxed text-slate-600">{task.description}</p>
-                      <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                        {task.dataSources.map((src) => (
-                          <span
-                            key={src}
-                            className="rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500"
-                          >
-                            {src}
-                          </span>
-                        ))}
-                        {task.dependsOn.length > 0 && (
-                          <span className="text-[10px] text-slate-400">
-                            Requires: {task.dependsOn.join(", ")}
-                          </span>
-                        )}
-                      </div>
-                      {run && run.flags.length > 0 && (
-                        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
-                          Flag Summary ({run.flags.length}): {run.flags.map((f) => f.message).slice(0, 2).join(" | ")}
-                        </div>
-                      )}
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-                      <div>
-                        {run?.outputUrl ? (
-                          <a
-                            href={run.outputUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-xs font-semibold text-hilton underline decoration-hilton/40 underline-offset-2 hover:text-hilton-dark"
-                          >
-                            View Output
-                          </a>
-                        ) : (
-                          <span className="text-[11px] text-slate-400">
-                            {disabled ? `Scheduled for Phase ${task.phase}` : "Ready to run"}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {isImplemented && (
-                          <button
-                            type="button"
-                            onClick={() => setHistoryTask(task)}
-                            className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
-                          >
-                            History
-                          </button>
-                        )}
-                        <Button
-                          variant={disabled ? "secondary" : "primary"}
-                          disabled={disabled}
-                          onClick={() => handleRunTask(task)}
-                          title={disabled ? `Scheduled for Phase ${task.phase}` : `Run ${task.name}`}
-                        >
-                          {disabled ? `Phase ${task.phase}` : "Run Task"}
-                        </Button>
-                      </div>
-                    </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Filter tasks..."
+                    aria-label="Filter tasks"
+                    className="w-44 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+                  />
+                  <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-[11px] font-semibold">
+                    {(["all", "ready", "upcoming"] as const).map((mode) => (
+                      <button
+                        key={mode}
+                        type="button"
+                        onClick={() => setFilterMode(mode)}
+                        className={`rounded-lg px-2.5 py-1 capitalize transition ${filterMode === mode
+                            ? "bg-slate-900 text-white"
+                            : "text-slate-500 hover:text-slate-900"
+                          }`}
+                      >
+                        {mode}
+                      </button>
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-            )}
-          </Card>
-          </>
+                </div>
+              </div>
+
+              <Card
+                title={`${activeTab} Tasks`}
+                subtitle={`Active modules run through the shared validation pipeline with automatic Flag Summaries.`}
+              >
+                {sectionTasks.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center">
+                    <p className="text-sm font-semibold text-slate-700">
+                      No active tasks match this filter in {activeTab}.
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Switch to All to preview upcoming Phase 2/3 modules, or clear your search filter.
+                    </p>
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setFilterMode("all");
+                        setSearchQuery("");
+                      }}
+                    >
+                      Show All {activeTab} Tasks
+                    </Button>
+                  </div>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {sectionTasks.map((task) => {
+                      const run = latestRuns[task.id];
+                      const isImplemented = task.phase === 1 || task.status === "Done";
+                      const effectiveStatus: TaskStatus = run?.status ?? (task.phase === 1 ? "Not started" : task.status);
+                      const disabled = !isImplemented;
+
+                      return (
+                        <div
+                          key={task.id}
+                          className={`animate-fade-in flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${disabled
+                              ? "border-slate-200/70 bg-slate-50/60 opacity-80"
+                              : effectiveStatus === "Flagged"
+                                ? "border-slate-200 border-l-4 border-l-amber-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                                : effectiveStatus === "Done"
+                                  ? "border-slate-200 border-l-4 border-l-emerald-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                                  : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                            }`}
+                        >
+                          <div className="space-y-2.5">
+                            <div className="flex flex-wrap items-start justify-between gap-2">
+                              <span className="font-display text-sm font-bold text-slate-900">{task.name}</span>
+                              <div className="flex items-center gap-1.5">
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[effectiveStatus]}`}
+                                >
+                                  <span
+                                    className={`h-1.5 w-1.5 rounded-full ${effectiveStatus === "Done"
+                                        ? "bg-emerald-500"
+                                        : effectiveStatus === "Flagged"
+                                          ? "bg-amber-500"
+                                          : effectiveStatus === "Running"
+                                            ? "animate-pulse bg-sky-500"
+                                            : "bg-slate-400"
+                                      }`}
+                                  />
+                                  {effectiveStatus}
+                                </span>
+                                <span
+                                  className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${OUTPUT_BADGE_STYLES[task.outputType] ?? "border-slate-200 bg-slate-100 text-slate-600"
+                                    }`}
+                                >
+                                  {task.outputType}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-xs leading-relaxed text-slate-600">{task.description}</p>
+                            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                              {task.dataSources.map((src) => (
+                                <span
+                                  key={src}
+                                  className="rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                                >
+                                  {src}
+                                </span>
+                              ))}
+                              {task.dependsOn.length > 0 && (
+                                <span className="text-[10px] text-slate-400">
+                                  Requires: {task.dependsOn.join(", ")}
+                                </span>
+                              )}
+                            </div>
+                            {run && run.flags.length > 0 && (
+                              <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                                Flag Summary ({run.flags.length}): {run.flags.map((f) => f.message).slice(0, 2).join(" | ")}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                            <div>
+                              {run?.outputUrl ? (
+                                <a
+                                  href={run.outputUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-xs font-semibold text-hilton underline decoration-hilton/40 underline-offset-2 hover:text-hilton-dark"
+                                >
+                                  View Output
+                                </a>
+                              ) : (
+                                <span className="text-[11px] text-slate-400">
+                                  {disabled ? `Scheduled for Phase ${task.phase}` : "Ready to run"}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {isImplemented && (
+                                <button
+                                  type="button"
+                                  onClick={() => setHistoryTask(task)}
+                                  className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                                >
+                                  History
+                                </button>
+                              )}
+                              <Button
+                                variant={disabled ? "secondary" : "primary"}
+                                disabled={disabled}
+                                onClick={() => handleRunTask(task)}
+                                title={disabled ? `Scheduled for Phase ${task.phase}` : `Run ${task.name}`}
+                              >
+                                {disabled ? `Phase ${task.phase}` : "Run Task"}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </Card>
+            </>
           )}
 
           <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-xs text-slate-500">
