@@ -97,11 +97,10 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
 };
 
 export default function PropertyDashboard() {
-  const [view, setView] = useState<"dashboard" | "studio">("dashboard");
+  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio">("home");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
-  const [showSiteCrawl, setShowSiteCrawl] = useState(false);
   const [showAiTraining, setShowAiTraining] = useState(false);
   const [showBaselineModal, setShowBaselineModal] = useState(false);
   const [showVisibilityReport, setShowVisibilityReport] = useState(false);
@@ -225,7 +224,7 @@ export default function PropertyDashboard() {
 
   useEffect(() => {
     void refreshRuns();
-  }, [view, refreshRuns]);
+  }, [mainTab, refreshRuns]);
 
   function handleRunTask(task: TaskConfig) {
     if (task.phase !== 1 && task.status !== "Done") return;
@@ -238,7 +237,7 @@ export default function PropertyDashboard() {
       return;
     }
     if (task.id === "site-crawl") {
-      setShowSiteCrawl(true);
+      setMainTab("crawl");
       return;
     }
     if (CRAWL_TASK_IDS.has(task.id)) {
@@ -257,7 +256,7 @@ export default function PropertyDashboard() {
     } else {
       setStudioStep(1);
     }
-    setView("studio");
+    setMainTab("studio");
   }
 
   async function runCrawlBasedTask() {
@@ -348,576 +347,360 @@ export default function PropertyDashboard() {
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 rounded-xl bg-slate-100 p-1">
+          <nav aria-label="Main Navigation" className="flex flex-wrap items-center gap-1.5 rounded-xl bg-slate-100 p-1">
+            {(
+              [
+                { id: "home", label: "Home" },
+                { id: "tasks", label: `SEO Tasks (${readyCount})` },
+                { id: "crawl", label: "Site Crawl" },
+                { id: "studio", label: "Keyword Studio" },
+              ] as const
+            ).map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  if (tab.id === "studio") setStudioStep(1);
+                  setMainTab(tab.id);
+                }}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  mainTab === tab.id
+                    ? tab.id === "studio"
+                      ? "bg-brand text-slate-900 shadow-sm"
+                      : "bg-white text-slate-900 shadow-sm"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
             <button
               type="button"
-              onClick={() => setView("dashboard")}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                view === "dashboard"
-                  ? "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Property Dashboard
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setStudioStep(1);
-                setView("studio");
-              }}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                view === "studio"
-                  ? "bg-brand text-slate-900 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
-              }`}
-            >
-              Keyword &amp; Content Studio
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                setView("dashboard");
-                setShowAiTraining((v) => !v);
-              }}
-              className={`rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-all ${
+              onClick={() => setShowAiTraining((v) => !v)}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                 showAiTraining
                   ? "bg-slate-900 text-brand-light shadow-sm"
                   : "text-slate-600 hover:text-slate-900"
               }`}
             >
-              Train AI
+              Train AI ({aiStatus.activeRules})
             </button>
-          </div>
+          </nav>
         </div>
       </header>
 
-      {view === "studio" ? (
+      {mainTab === "studio" ? (
         <Studio key={studioStep} initialStep={studioStep} />
       ) : (
-        <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
-          <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-hilton-dark p-6 text-white shadow-card sm:p-8">
-            <div
-              aria-hidden="true"
-              className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand/20 blur-3xl"
-            />
-            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
-              <div className="max-w-2xl space-y-3">
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-light">
-                    <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                    Razib Marketing · Hospitality SEO &amp; GEO
+        <main className="mx-auto max-w-6xl space-y-6 px-6 py-7">
+          {mainTab === "home" && (
+            <>
+              <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card">
+                <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="space-y-1.5">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+                        Active Property
+                      </span>
+                      <span className="text-sm font-bold text-slate-900">
+                        {activeProperty.name
+                          ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
+                              activeProperty.city
+                                ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}`
+                                : ""
+                            }`
+                          : "Select a client or paste a hotel URL"}
+                      </span>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      <select
+                        aria-label="Pick Trained Client Property"
+                        value=""
+                        onChange={(e) => {
+                          const picked = TRAINED_PROPERTIES.find((p) => p.name === e.target.value);
+                          if (picked) {
+                            updateActiveProperty({
+                              name: picked.name,
+                              brand: picked.brand,
+                              city: picked.city,
+                              state: picked.state,
+                              url: picked.url,
+                            });
+                            setAutofillUrl(picked.url);
+                            setAutofillError(null);
+                          }
+                        }}
+                        className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:border-brand focus:outline-none"
+                      >
+                        <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
+                        {TRAINED_PROPERTIES.map((p) => (
+                          <option key={`${p.name}-${p.category}`} value={p.name}>
+                            {p.name}
+                            {p.category ? ` [${p.category}]` : ""}
+                            {p.url ? " • URL" : ""}
+                          </option>
+                        ))}
+                      </select>
+                      {QUICK_PROPERTY_PRESETS.map((preset) => (
+                        <button
+                          key={preset.name}
+                          type="button"
+                          onClick={() => {
+                            updateActiveProperty(preset);
+                            setAutofillUrl(preset.url);
+                            setAutofillError(null);
+                          }}
+                          className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
+                            activeProperty.name === preset.name
+                              ? "border-brand bg-brand-50 text-slate-900"
+                              : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900"
+                          }`}
+                        >
+                          {preset.name}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setShowAiTraining(true)}
-                    className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1 text-[11px] font-semibold text-emerald-200 transition hover:bg-emerald-500/25"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                    {aiStatus.provider} · {aiStatus.activeRules} Trained Rules
-                  </button>
-                </div>
-                <h2 className="font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
-                  Automate Direct-Booking SEO, Audits &amp; Client Decks
-                </h2>
-                <p className="text-sm text-slate-300">
-                  Run grounded site crawls, 78-keyword research matrices, on-page optimizations, and monthly PowerPoint visibility reports from one unified workspace.
-                </p>
-                <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-semibold">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveTab("Technical");
-                      setShowSiteCrawl(true);
-                    }}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 transition ${
-                      latestRuns["site-crawl"]
-                        ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30"
-                        : "bg-white/10 text-slate-200 hover:bg-white/20"
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        latestRuns["site-crawl"] ? "bg-emerald-400" : "bg-slate-400"
-                      }`}
+
+                  <div className="flex flex-wrap items-center gap-2">
+                    <input
+                      type="url"
+                      placeholder="Paste hotel URL..."
+                      value={autofillUrl}
+                      onChange={(e) => setAutofillUrl(e.target.value)}
+                      className="w-56 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none"
                     />
-                    1. Site Crawl
+                    <Button
+                      variant="primary"
+                      disabled={autofillBusy}
+                      onClick={() => void handleAutoDetectProperty()}
+                    >
+                      {autofillBusy ? "Detecting..." : "Auto-Fill"}
+                    </Button>
+                    <button
+                      type="button"
+                      onClick={() => setShowPropertyDetails((v) => !v)}
+                      className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                    >
+                      {showPropertyDetails ? "Hide" : "Edit"}
+                    </button>
+                  </div>
+                </div>
+
+                {autofillError && (
+                  <div className="mt-2.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
+                    {autofillError}
+                  </div>
+                )}
+
+                {showPropertyDetails && (
+                  <div className="mt-3 grid gap-2.5 border-t border-slate-100 pt-3 sm:grid-cols-2 lg:grid-cols-5">
+                    <input
+                      type="text"
+                      placeholder="Property Name"
+                      value={activeProperty.name}
+                      onChange={(e) => updateActiveProperty({ name: e.target.value })}
+                      className="input text-xs"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Brand"
+                      value={activeProperty.brand}
+                      onChange={(e) => updateActiveProperty({ brand: e.target.value })}
+                      className="input text-xs"
+                    />
+                    <input
+                      type="text"
+                      placeholder="City"
+                      value={activeProperty.city}
+                      onChange={(e) => updateActiveProperty({ city: e.target.value })}
+                      className="input text-xs"
+                    />
+                    <input
+                      type="text"
+                      maxLength={2}
+                      placeholder="State"
+                      value={activeProperty.state}
+                      onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
+                      className="input text-xs uppercase"
+                    />
+                    <input
+                      type="url"
+                      placeholder="https://property-url.com"
+                      value={activeProperty.url}
+                      onChange={(e) => updateActiveProperty({ url: e.target.value })}
+                      className="input text-xs"
+                    />
+                  </div>
+                )}
+              </section>
+
+              <Card
+                title="Automated SEO Workflow"
+                subtitle="Follow steps 1 to 4 or launch Auto-Run Pipeline to execute Crawl + Audits automatically."
+                actions={
+                  <Button variant="primary" onClick={() => setShowAutoPilot(true)}>
+                    Auto-Run Pipeline
+                  </Button>
+                }
+              >
+                <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                  <button
+                    type="button"
+                    onClick={() => setMainTab("crawl")}
+                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-500">STEP 1</span>
+                      <span
+                        className={`h-2 w-2 rounded-full ${
+                          latestRuns["site-crawl"] ? "bg-emerald-500" : "bg-slate-300"
+                        }`}
+                      />
+                    </div>
+                    <div className="font-display text-sm font-bold text-slate-900">Site Crawl</div>
+                    <p className="text-xs text-slate-500">Crawl pages, robots.txt &amp; sitemap.</p>
                   </button>
-                  <span className="text-slate-500">&rarr;</span>
+
                   <button
                     type="button"
                     onClick={() => {
                       setStudioStep(1);
-                      setView("studio");
+                      setMainTab("studio");
                     }}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 transition ${
-                      latestRuns["keyword-research"]
-                        ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30"
-                        : "bg-white/10 text-slate-200 hover:bg-white/20"
-                    }`}
+                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white"
                   >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        latestRuns["keyword-research"] ? "bg-emerald-400" : "bg-slate-400"
-                      }`}
-                    />
-                    2. Keyword Matrix
-                  </button>
-                  <span className="text-slate-500">&rarr;</span>
-                  <button
-                    type="button"
-                    onClick={() => setShowAutoPilot(true)}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 transition ${
-                      Array.from(CRAWL_TASK_IDS).some((id) => Boolean(latestRuns[id]))
-                        ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30"
-                        : "bg-white/10 text-slate-200 hover:bg-white/20"
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        Array.from(CRAWL_TASK_IDS).some((id) => Boolean(latestRuns[id]))
-                          ? "bg-emerald-400"
-                          : "bg-brand"
-                      }`}
-                    />
-                    3. On-Page &amp; Technical (
-                    {Array.from(CRAWL_TASK_IDS).filter((id) => Boolean(latestRuns[id])).length}/
-                    {CRAWL_TASK_IDS.size})
-                  </button>
-                  <span className="text-slate-500">&rarr;</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setActiveTab("Reporting");
-                      setShowVisibilityReport(true);
-                    }}
-                    className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 transition ${
-                      latestRuns["seo-baseline-ai-visibility"] ||
-                      latestRuns["seo-only-visibility-report"]
-                        ? "bg-emerald-500/20 text-emerald-200 hover:bg-emerald-500/30"
-                        : "bg-brand/20 text-brand-light hover:bg-brand/30"
-                    }`}
-                  >
-                    <span
-                      className={`h-1.5 w-1.5 rounded-full ${
-                        latestRuns["seo-baseline-ai-visibility"] ||
-                        latestRuns["seo-only-visibility-report"]
-                          ? "bg-emerald-400"
-                          : "bg-brand"
-                      }`}
-                    />
-                    4. Visibility Deck
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setShowAutoPilot(true)}
-                    className="ml-1 inline-flex items-center gap-1.5 rounded-lg bg-brand px-3 py-1 text-[11px] font-bold text-slate-900 shadow-sm transition hover:bg-brand-light"
-                  >
-                    Auto-Run Pipeline
-                  </button>
-                </div>
-              </div>
-              <div className="flex shrink-0 flex-wrap gap-3">
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    setStudioStep(1);
-                    setView("studio");
-                  }}
-                >
-                  Open Keyword &amp; Content Studio
-                </Button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setActiveTab("Reporting");
-                    setShowVisibilityReport(true);
-                  }}
-                  className="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
-                >
-                  Monthly Visibility Deck
-                </button>
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light">
-                    Zero-Type Workspace
-                  </span>
-                  <span className="text-xs font-semibold text-slate-800">
-                    {activeProperty.name
-                      ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
-                          activeProperty.city ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}` : ""
-                        }`
-                      : "Pick a preset or paste a hotel URL to auto-fill everything"}
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                  <select
-                    aria-label="Pick Trained Client Property"
-                    value=""
-                    onChange={(e) => {
-                      const picked = TRAINED_PROPERTIES.find((p) => p.name === e.target.value);
-                      if (picked) {
-                        updateActiveProperty({
-                          name: picked.name,
-                          brand: picked.brand,
-                          city: picked.city,
-                          state: picked.state,
-                          url: picked.url,
-                        });
-                        setAutofillUrl(picked.url);
-                        setAutofillError(null);
-                      }
-                    }}
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 focus:border-brand focus:outline-none"
-                  >
-                    <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
-                    {TRAINED_PROPERTIES.map((p) => (
-                      <option key={`${p.name}-${p.category}`} value={p.name}>
-                        {p.name}
-                        {p.category ? ` [${p.category}]` : ""}
-                        {p.url ? " • URL" : ""}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="text-[11px] font-medium text-slate-400">or Quick:</span>
-                  {QUICK_PROPERTY_PRESETS.map((preset) => {
-                    const isSelected = activeProperty.name === preset.name;
-                    return (
-                      <button
-                        key={preset.name}
-                        type="button"
-                        onClick={() => {
-                          updateActiveProperty(preset);
-                          setAutofillUrl(preset.url);
-                          setAutofillError(null);
-                        }}
-                        className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
-                          isSelected
-                            ? "border-brand bg-brand-50 text-slate-900"
-                            : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:bg-white hover:text-slate-900"
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-500">STEP 2</span>
+                      <span
+                        className={`h-2 w-2 rounded-full ${
+                          latestRuns["keyword-research"] ? "bg-emerald-500" : "bg-slate-300"
                         }`}
-                      >
-                        {preset.name}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
+                      />
+                    </div>
+                    <div className="font-display text-sm font-bold text-slate-900">Keyword Matrix</div>
+                    <p className="text-xs text-slate-500">78-keyword mapping &amp; USP copy.</p>
+                  </button>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  type="url"
-                  placeholder="Paste hotel URL & click Auto-Fill..."
-                  value={autofillUrl}
-                  onChange={(e) => setAutofillUrl(e.target.value)}
-                  className="w-64 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/25"
-                />
-                <Button
-                  variant="primary"
-                  disabled={autofillBusy}
-                  onClick={() => void handleAutoDetectProperty()}
-                >
-                  {autofillBusy ? "Detecting..." : "Auto-Fill"}
-                </Button>
-                <button
-                  type="button"
-                  onClick={() => setShowPropertyDetails((v) => !v)}
-                  className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                >
-                  {showPropertyDetails ? "Hide Fields" : "Edit"}
-                </button>
-                {activeProperty.name && (
                   <button
                     type="button"
-                    onClick={() => {
-                      const cleared = { name: "", brand: "", city: "", state: "", url: "" };
-                      setActiveProperty(cleared);
-                      setAutofillUrl("");
-                      try {
-                        window.localStorage.removeItem(ACTIVE_PROPERTY_KEY);
-                      } catch {
-                        // ignore
-                      }
-                    }}
-                    className="text-xs font-medium text-slate-400 hover:text-slate-700"
+                    onClick={() => setMainTab("tasks")}
+                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white"
                   >
-                    Clear
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-500">STEP 3</span>
+                      <span className="text-[11px] font-bold text-emerald-700">
+                        {Array.from(CRAWL_TASK_IDS).filter((id) => Boolean(latestRuns[id])).length}/
+                        {CRAWL_TASK_IDS.size}
+                      </span>
+                    </div>
+                    <div className="font-display text-sm font-bold text-slate-900">
+                      On-Page &amp; Technical
+                    </div>
+                    <p className="text-xs text-slate-500">Title/Meta, Headings, Schema &amp; Audits.</p>
                   </button>
-                )}
-              </div>
-            </div>
 
-            {autofillError && (
-              <div className="mt-2.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
-                {autofillError}
-              </div>
-            )}
-
-            {showPropertyDetails && (
-              <div className="mt-3 grid gap-2.5 border-t border-slate-100 pt-3 sm:grid-cols-2 lg:grid-cols-5">
-                <input
-                  type="text"
-                  placeholder="Property Name"
-                  value={activeProperty.name}
-                  onChange={(e) => updateActiveProperty({ name: e.target.value })}
-                  className="input text-xs"
-                />
-                <input
-                  type="text"
-                  placeholder="Brand (e.g. Curio Collection)"
-                  value={activeProperty.brand}
-                  onChange={(e) => updateActiveProperty({ brand: e.target.value })}
-                  className="input text-xs"
-                />
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={activeProperty.city}
-                  onChange={(e) => updateActiveProperty({ city: e.target.value })}
-                  className="input text-xs"
-                />
-                <input
-                  type="text"
-                  maxLength={2}
-                  placeholder="State (2-letter)"
-                  value={activeProperty.state}
-                  onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
-                  className="input text-xs uppercase"
-                />
-                <input
-                  type="url"
-                  placeholder="https://property-url.com"
-                  value={activeProperty.url}
-                  onChange={(e) => updateActiveProperty({ url: e.target.value })}
-                  className="input text-xs"
-                />
-              </div>
-            )}
-          </section>
-
-          <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Active Modules
-              </div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="font-display text-2xl font-extrabold text-slate-900">{readyCount}</span>
-                <span className="text-xs text-slate-500">/ {TASKS_CONFIG.length} tasks</span>
-              </div>
-              <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
-                <div
-                  className="h-full rounded-full bg-brand"
-                  style={{ width: `${Math.round((readyCount / TASKS_CONFIG.length) * 100)}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Recorded Runs
-              </div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="font-display text-2xl font-extrabold text-slate-900">{runList.length}</span>
-                <span className="text-xs text-slate-500">latest executions</span>
-              </div>
-              <p className="mt-2 text-[11px] text-slate-500">Synced with task history &amp; audit trail</p>
-            </div>
-
-            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Attention Needed
-              </div>
-              <div className="mt-1 flex items-baseline gap-2">
-                <span className="font-display text-2xl font-extrabold text-slate-900">{flaggedCount}</span>
-                <span className="text-xs text-slate-500">flagged runs</span>
-              </div>
-              <p className="mt-2 text-[11px] text-slate-500">Auto-validated with Flag Summaries</p>
-            </div>
-
-            <div className="rounded-2xl border border-brand/40 bg-gradient-to-br from-brand-50 via-white to-hilton-light/40 p-4 shadow-card">
-              <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">
-                Razib Marketing Focus
-              </div>
-              <div className="mt-1 font-display text-sm font-bold text-slate-900">
-                Direct Bookings &amp; AI/GEO Readiness
-              </div>
-              <a
-                href="https://razibmarketing.com/"
-                target="_blank"
-                rel="noreferrer"
-                className="mt-2 inline-block text-xs font-semibold text-hilton underline decoration-hilton/40 underline-offset-2 hover:text-hilton-dark"
-              >
-                razibmarketing.com
-              </a>
-            </div>
-          </section>
-
-          <section className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light">
-                    Zero-Type Workspace
-                  </span>
-                  <span className="text-xs font-semibold text-slate-800">
-                    {activeProperty.name
-                      ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
-                          activeProperty.city ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}` : ""
-                        }`
-                      : "Pick a preset or paste a hotel URL to auto-fill everything"}
-                  </span>
-                </div>
-                <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                  <select
-                    aria-label="Pick Trained Client Property"
-                    value=""
-                    onChange={(e) => {
-                      const picked = TRAINED_PROPERTIES.find((p) => p.name === e.target.value);
-                      if (picked) {
-                        updateActiveProperty({
-                          name: picked.name,
-                          brand: picked.brand,
-                          city: picked.city,
-                          state: picked.state,
-                          url: picked.url,
-                        });
-                        setAutofillUrl(picked.url);
-                        setAutofillError(null);
-                      }
-                    }}
-                    className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 focus:border-brand focus:outline-none"
+                  <button
+                    type="button"
+                    onClick={() => setShowVisibilityReport(true)}
+                    className="flex flex-col justify-between gap-2 rounded-2xl border border-brand/40 bg-brand-50/50 p-4 text-left transition hover:border-brand hover:bg-brand-50"
                   >
-                    <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
-                    {TRAINED_PROPERTIES.map((p) => (
-                      <option key={`${p.name}-${p.category}`} value={p.name}>
-                        {p.name}
-                        {p.category ? ` [${p.category}]` : ""}
-                        {p.url ? " • URL" : ""}
-                      </option>
-                    ))}
-                  </select>
-                  <span className="text-[11px] font-medium text-slate-400">or Quick:</span>
-                  {QUICK_PROPERTY_PRESETS.map((preset) => {
-                    const isSelected = activeProperty.name === preset.name;
-                    return (
-                      <button
-                        key={preset.name}
-                        type="button"
-                        onClick={() => {
-                          updateActiveProperty(preset);
-                          setAutofillUrl(preset.url);
-                          setAutofillError(null);
-                        }}
-                        className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold transition ${
-                          isSelected
-                            ? "border-brand bg-brand-50 text-slate-900"
-                            : "border-slate-200 bg-slate-50 text-slate-600 hover:border-slate-300 hover:bg-white hover:text-slate-900"
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs font-bold text-slate-700">STEP 4</span>
+                      <span
+                        className={`h-2 w-2 rounded-full ${
+                          latestRuns["seo-baseline-ai-visibility"] ||
+                          latestRuns["seo-only-visibility-report"]
+                            ? "bg-emerald-500"
+                            : "bg-brand"
                         }`}
-                      >
-                        {preset.name}
-                      </button>
-                    );
-                  })}
+                      />
+                    </div>
+                    <div className="font-display text-sm font-bold text-slate-900">
+                      Visibility Deck
+                    </div>
+                    <p className="text-xs text-slate-600">Monthly PPTX &amp; AI Visibility Slides.</p>
+                  </button>
                 </div>
-              </div>
+              </Card>
 
-              <div className="flex flex-wrap items-center gap-2">
-                <input
-                  type="url"
-                  placeholder="Paste hotel URL & click Auto-Fill..."
-                  value={autofillUrl}
-                  onChange={(e) => setAutofillUrl(e.target.value)}
-                  className="w-64 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/25"
-                />
-                <Button
-                  variant="primary"
-                  disabled={autofillBusy}
-                  onClick={() => void handleAutoDetectProperty()}
-                >
-                  {autofillBusy ? "Detecting..." : "Auto-Fill"}
-                </Button>
+              <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                    Active Modules
+                  </div>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <span className="font-display text-2xl font-extrabold text-slate-900">{readyCount}</span>
+                    <span className="text-xs text-slate-500">/ {TASKS_CONFIG.length} tasks</span>
+                  </div>
+                  <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                    <div
+                      className="h-full rounded-full bg-brand"
+                      style={{ width: `${Math.round((readyCount / TASKS_CONFIG.length) * 100)}%` }}
+                    />
+                  </div>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                    Recorded Runs
+                  </div>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <span className="font-display text-2xl font-extrabold text-slate-900">{runList.length}</span>
+                    <span className="text-xs text-slate-500">latest executions</span>
+                  </div>
+                  <p className="mt-2 text-[11px] text-slate-500">Synced with Run History</p>
+                </div>
+
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                    Attention Needed
+                  </div>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <span className="font-display text-2xl font-extrabold text-slate-900">{flaggedCount}</span>
+                    <span className="text-xs text-slate-500">flagged runs</span>
+                  </div>
+                  <p className="mt-2 text-[11px] text-slate-500">Auto-validated Flag Summaries</p>
+                </div>
+
                 <button
                   type="button"
-                  onClick={() => setShowPropertyDetails((v) => !v)}
-                  className="rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                  onClick={() => setShowAiTraining(true)}
+                  className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 text-left shadow-card transition hover:border-emerald-300"
                 >
-                  {showPropertyDetails ? "Hide Fields" : "Edit"}
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+                    Online AI Engine
+                  </div>
+                  <div className="mt-1 font-display text-sm font-bold text-slate-900">
+                    {aiStatus.provider}
+                  </div>
+                  <p className="mt-2 text-[11px] font-medium text-emerald-700">
+                    {aiStatus.activeRules} trained rules active &rarr;
+                  </p>
                 </button>
-                {activeProperty.name && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      const cleared = { name: "", brand: "", city: "", state: "", url: "" };
-                      setActiveProperty(cleared);
-                      setAutofillUrl("");
-                      try {
-                        window.localStorage.removeItem(ACTIVE_PROPERTY_KEY);
-                      } catch {
-                        // ignore
-                      }
-                    }}
-                    className="text-xs font-medium text-slate-400 hover:text-slate-700"
-                  >
-                    Clear
-                  </button>
-                )}
+              </section>
+            </>
+          )}
+
+          {mainTab === "crawl" && (
+            <div className="space-y-4">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <h2 className="font-display text-lg font-bold text-slate-900">Site Crawl &amp; Auto-Pilot</h2>
+                  <p className="text-xs text-slate-500">
+                    Crawl your hotel website first, or run the full automated pipeline in one click.
+                  </p>
+                </div>
+                <Button variant="primary" onClick={() => setShowAutoPilot(true)}>
+                  Auto-Run Full Pipeline
+                </Button>
               </div>
+              <SiteCrawlCard defaultUrl={activeProperty.url} onCompleted={() => void refreshRuns()} />
             </div>
+          )}
 
-            {autofillError && (
-              <div className="mt-2.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
-                {autofillError}
-              </div>
-            )}
-
-            {showPropertyDetails && (
-              <div className="mt-3 grid gap-2.5 border-t border-slate-100 pt-3 sm:grid-cols-2 lg:grid-cols-5">
-                <input
-                  type="text"
-                  placeholder="Property Name"
-                  value={activeProperty.name}
-                  onChange={(e) => updateActiveProperty({ name: e.target.value })}
-                  className="input text-xs"
-                />
-                <input
-                  type="text"
-                  placeholder="Brand (e.g. Curio Collection)"
-                  value={activeProperty.brand}
-                  onChange={(e) => updateActiveProperty({ brand: e.target.value })}
-                  className="input text-xs"
-                />
-                <input
-                  type="text"
-                  placeholder="City"
-                  value={activeProperty.city}
-                  onChange={(e) => updateActiveProperty({ city: e.target.value })}
-                  className="input text-xs"
-                />
-                <input
-                  type="text"
-                  maxLength={2}
-                  placeholder="State (2-letter)"
-                  value={activeProperty.state}
-                  onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
-                  className="input text-xs uppercase"
-                />
-                <input
-                  type="url"
-                  placeholder="https://property-url.com"
-                  value={activeProperty.url}
-                  onChange={(e) => updateActiveProperty({ url: e.target.value })}
-                  className="input text-xs"
-                />
-              </div>
-            )}
-          </section>
-
+          {mainTab === "tasks" && (
+          <>
           <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between">
             <nav aria-label="Task Sections" className="flex flex-wrap gap-2">
               {TASK_SECTIONS.map((section) => {
@@ -969,136 +752,6 @@ export default function PropertyDashboard() {
               </div>
             </div>
           </div>
-
-          {(activeTab === "Technical" || showSiteCrawl) && (
-            <SiteCrawlCard defaultUrl={activeProperty.url} onCompleted={() => void refreshRuns()} />
-          )}
-
-          {(activeCrawlTask || showAiTraining || showBaselineModal || showVisibilityReport || showAutoPilot || historyTask) && (
-            <div
-              className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 pt-10 backdrop-blur-sm"
-              onClick={(e) => {
-                if (e.target === e.currentTarget) {
-                  setActiveCrawlTask(null);
-                  setShowAiTraining(false);
-                  setShowBaselineModal(false);
-                  setShowVisibilityReport(false);
-                  setShowAutoPilot(false);
-                  setHistoryTask(null);
-                }
-              }}
-            >
-              <div className="w-full max-w-4xl">
-                {activeCrawlTask && (
-                  <Card
-                    title={activeCrawlTask.name}
-                    subtitle="Uses the latest Site Crawl run and approved Keyword Research keywords."
-                    actions={
-                      <Button variant="ghost" onClick={() => setActiveCrawlTask(null)}>
-                        Close
-                      </Button>
-                    }
-                  >
-                    <div className="space-y-4">
-                      {tmProp.name && tmProp.brand && tmProp.city && tmProp.state ? (
-                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 text-xs text-emerald-900">
-                          <span>
-                            Ready for <strong>{tmProp.name}</strong> ({tmProp.brand} · {tmProp.city}, {tmProp.state})
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setTmProp({ name: "", brand: "", city: "", state: "" })}
-                            className="font-semibold underline underline-offset-2 hover:text-emerald-700"
-                          >
-                            Change Property
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="grid gap-3 sm:grid-cols-4">
-                          <input
-                            type="text"
-                            placeholder="Property Name"
-                            value={tmProp.name}
-                            onChange={(e) => setTmProp({ ...tmProp, name: e.target.value })}
-                            className="input text-xs"
-                          />
-                          <input
-                            type="text"
-                            placeholder="Brand (e.g. Tapestry Collection)"
-                            value={tmProp.brand}
-                            onChange={(e) => setTmProp({ ...tmProp, brand: e.target.value })}
-                            className="input text-xs"
-                          />
-                          <input
-                            type="text"
-                            placeholder="City"
-                            value={tmProp.city}
-                            onChange={(e) => setTmProp({ ...tmProp, city: e.target.value })}
-                            className="input text-xs"
-                          />
-                          <input
-                            type="text"
-                            maxLength={2}
-                            placeholder="State (2-letter)"
-                            value={tmProp.state}
-                            onChange={(e) => setTmProp({ ...tmProp, state: e.target.value.toUpperCase() })}
-                            className="input text-xs uppercase"
-                          />
-                        </div>
-                      )}
-                      {tmError && (
-                        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700">
-                          {tmError}
-                        </div>
-                      )}
-                      <Button variant="primary" disabled={tmBusy} onClick={() => void runCrawlBasedTask()}>
-                        {tmBusy ? "Generating..." : `Run ${activeCrawlTask.name}`}
-                      </Button>
-                    </div>
-                  </Card>
-                )}
-
-                {showAiTraining && <AiTrainingModal onClose={() => setShowAiTraining(false)} />}
-
-                {showBaselineModal && (
-                  <SeoBaselineModal
-                    defaultProperty={{ name: activeProperty.name, url: activeProperty.url }}
-                    onClose={() => setShowBaselineModal(false)}
-                    onCompleted={() => void refreshRuns()}
-                  />
-                )}
-
-                {showVisibilityReport && (
-                  <SeoVisibilityReportModal
-                    onClose={() => setShowVisibilityReport(false)}
-                    onCompleted={() => void refreshRuns()}
-                  />
-                )}
-
-                {showAutoPilot && (
-                  <AutoPilotModal
-                    activeProperty={activeProperty}
-                    onClose={() => setShowAutoPilot(false)}
-                    onCompleted={() => void refreshRuns()}
-                    onOpenStudio={() => {
-                      setShowAutoPilot(false);
-                      setStudioStep(1);
-                      setView("studio");
-                    }}
-                    onOpenVisibilityDeck={() => {
-                      setShowAutoPilot(false);
-                      setActiveTab("Reporting");
-                      setShowVisibilityReport(true);
-                    }}
-                  />
-                )}
-
-                {historyTask && (
-                  <RunHistoryDrawer task={historyTask} onClose={() => setHistoryTask(null)} />
-                )}
-              </div>
-            </div>
-          )}
 
           <Card
             title={`${activeTab} Tasks`}
@@ -1238,6 +891,134 @@ export default function PropertyDashboard() {
             </div>
             )}
           </Card>
+          </>
+          )}
+
+          {(activeCrawlTask || showAiTraining || showBaselineModal || showVisibilityReport || showAutoPilot || historyTask) && (
+            <div
+              className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 pt-10 backdrop-blur-sm"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  setActiveCrawlTask(null);
+                  setShowAiTraining(false);
+                  setShowBaselineModal(false);
+                  setShowVisibilityReport(false);
+                  setShowAutoPilot(false);
+                  setHistoryTask(null);
+                }
+              }}
+            >
+              <div className="w-full max-w-4xl">
+                {activeCrawlTask && (
+                  <Card
+                    title={activeCrawlTask.name}
+                    subtitle="Uses the latest Site Crawl run and approved Keyword Research keywords."
+                    actions={
+                      <Button variant="ghost" onClick={() => setActiveCrawlTask(null)}>
+                        Close
+                      </Button>
+                    }
+                  >
+                    <div className="space-y-4">
+                      {tmProp.name && tmProp.brand && tmProp.city && tmProp.state ? (
+                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 text-xs text-emerald-900">
+                          <span>
+                            Ready for <strong>{tmProp.name}</strong> ({tmProp.brand} · {tmProp.city}, {tmProp.state})
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setTmProp({ name: "", brand: "", city: "", state: "" })}
+                            className="font-semibold underline underline-offset-2 hover:text-emerald-700"
+                          >
+                            Change Property
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="grid gap-3 sm:grid-cols-4">
+                          <input
+                            type="text"
+                            placeholder="Property Name"
+                            value={tmProp.name}
+                            onChange={(e) => setTmProp({ ...tmProp, name: e.target.value })}
+                            className="input text-xs"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Brand (e.g. Tapestry Collection)"
+                            value={tmProp.brand}
+                            onChange={(e) => setTmProp({ ...tmProp, brand: e.target.value })}
+                            className="input text-xs"
+                          />
+                          <input
+                            type="text"
+                            placeholder="City"
+                            value={tmProp.city}
+                            onChange={(e) => setTmProp({ ...tmProp, city: e.target.value })}
+                            className="input text-xs"
+                          />
+                          <input
+                            type="text"
+                            maxLength={2}
+                            placeholder="State (2-letter)"
+                            value={tmProp.state}
+                            onChange={(e) => setTmProp({ ...tmProp, state: e.target.value.toUpperCase() })}
+                            className="input text-xs uppercase"
+                          />
+                        </div>
+                      )}
+                      {tmError && (
+                        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700">
+                          {tmError}
+                        </div>
+                      )}
+                      <Button variant="primary" disabled={tmBusy} onClick={() => void runCrawlBasedTask()}>
+                        {tmBusy ? "Generating..." : `Run ${activeCrawlTask.name}`}
+                      </Button>
+                    </div>
+                  </Card>
+                )}
+
+                {showAiTraining && <AiTrainingModal onClose={() => setShowAiTraining(false)} />}
+
+                {showBaselineModal && (
+                  <SeoBaselineModal
+                    defaultProperty={{ name: activeProperty.name, url: activeProperty.url }}
+                    onClose={() => setShowBaselineModal(false)}
+                    onCompleted={() => void refreshRuns()}
+                  />
+                )}
+
+                {showVisibilityReport && (
+                  <SeoVisibilityReportModal
+                    onClose={() => setShowVisibilityReport(false)}
+                    onCompleted={() => void refreshRuns()}
+                  />
+                )}
+
+                {showAutoPilot && (
+                  <AutoPilotModal
+                    activeProperty={activeProperty}
+                    onClose={() => setShowAutoPilot(false)}
+                    onCompleted={() => void refreshRuns()}
+                    onOpenStudio={() => {
+                      setShowAutoPilot(false);
+                      setStudioStep(1);
+                      setMainTab("studio");
+                    }}
+                    onOpenVisibilityDeck={() => {
+                      setShowAutoPilot(false);
+                      setActiveTab("Reporting");
+                      setShowVisibilityReport(true);
+                    }}
+                  />
+                )}
+
+                {historyTask && (
+                  <RunHistoryDrawer task={historyTask} onClose={() => setHistoryTask(null)} />
+                )}
+              </div>
+            </div>
+          )}
 
           <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-xs text-slate-500">
             <div className="flex items-center gap-2">
