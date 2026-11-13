@@ -1,5 +1,5 @@
-import Studio from "@/components/Studio";
+import PropertyDashboard from "@/components/PropertyDashboard";
 
 export default function Home() {
-  return <Studio />;
+  return <PropertyDashboard />;
 }

@@ -1,7 +1,7 @@
-# Keyword Research — SEO/GEO & Content Studio Specification
+# Hotel SEO Automation App — Specification
 
-> Source of truth for the product. Business rules live in code under `src/config/*` and are referenced here.
-> Status: **Phase 1 (Ingest → Bucket → 78-KW Pool → Page Matrix) implemented.** Phases 2–3 are specified, not built.
+> Source of truth for the product. Business rules live in code under `src/config/*` and `src/tasks/tasks.config.ts`.
+> Status: **Phase 1 (Task Registry, Shared Core, Run History, Unified API, Property Dashboard, Keyword Research, Hilton Content Studio) implemented.** Phases 2–3 tasks are registered as `Not started`.
 
 ---
 
@@ -18,24 +18,29 @@ Antigravity (Agentic IDE) ──► GitHub Repo (Source) ──► Vercel (Auto-
 
 ```
 Browser UI (Next.js 14+ App Router / TypeScript / Tailwind)
- ├─ 1. Property Setup & Multi-CSV Dropzone (or Google Drive Folder Sync)
- ├─ 2. Template Selector (Catbird Standard Format vs. Reitz Union / Cogwheel Format)
- ├─ 3. 78-Keyword Pool & Page-to-Keyword Approval Matrix (Editable Checkpoint)
- └─ 4. Hilton SEO/GEO Content Studio (Live Character Counter + Diff Viewer)
+ ├─ Property Dashboard (src/components/PropertyDashboard.tsx)
+ │   └─ Tabs: On Page | Technical | Off Page | Local | Reporting
+ └─ Keyword & Content Studio (src/components/Studio.tsx)
+     ├─ 1. Property Setup & Multi-CSV Dropzone (or Google Drive Folder Sync)
+     ├─ 2. Template Selector (Catbird Standard Format vs. Reitz Union / Cogwheel Format)
+     ├─ 3. 78-Keyword Pool & Page-to-Keyword Approval Matrix (Editable Checkpoint)
+     └─ 4. Hilton SEO/GEO Content Studio (Live Character Counter + Diff Viewer)
         │
         ▼
-Vercel Serverless API Routes (/api/*)
- ├─ /api/ingest      ──► Multi-file CSV/XLSX parser, deduplicator, city-exclusion filter
- ├─ /api/bucket      ──► Deterministic bucketing engine + 78-keyword quota allocator
- ├─ /api/select-kw   ──► Page-to-Keyword matcher (KD < 45 rule + high-volume exception flag)
- ├─ /api/generate-kr ──► LLM API (Rationale generation) + Google Docs API (Keyword Doc builder)
- └─ /api/generate-hc ──► LLM API (Hilton copy rewriter + QA enforcement) + Google Docs API
+Unified Task API & Legacy Wrappers (/api/*)
+ ├─ POST /api/tasks/[taskId]/run   ──► Shared Task Pipeline (src/core/pipeline.ts)
+ ├─ GET  /api/tasks/[taskId]/runs  ──► Run History (task_runs)
+ ├─ POST /api/generate-kr          ──► Thin wrapper -> tasks/keyword-research
+ ├─ POST /api/generate-hc          ──► Thin wrapper -> tasks/usp-headline-optimization
+ ├─ POST /api/crawl-property       ──► Shared Crawler (src/core/crawler.ts)
+ └─ /api/ingest, /api/bucket, /api/select-kw, /api/runs, /api/drive-sync, /api/semrush-pull
         │
         ▼
-Storage & External Integrations
- ├─ Database: Supabase Postgres (Properties, Runs, 78-KW Pools, Approved Matrix)
- ├─ Google Workspace: Google Drive API (Folder/Template cloning) & Google Docs API
- └─ AI Engine: Anthropic Claude (`claude-sonnet-4-5`, fallback `claude-3-5-sonnet-latest`) — temperature = 0.2
+Shared Core (src/core/) & Task Modules (src/tasks/<task-id>/)
+ ├─ Pipeline: Inputs -> Fetch data -> Claude draft (temp 0.2) -> Validate (auto-retry 2x, then flag) -> Fill template -> Output link + Flag Summary
+ ├─ Crawler: SSRF-safe URL validation, robots/sitemap discovery, parallel fetch, Jina Reader fallback, hospitality service detection
+ ├─ Google Workspace: Service-account Docs, Sheets, Slides, Drive clients + template cloning
+ └─ Supabase Postgres: properties, runs, run_keywords, run_matrix, task_runs
 ```
 
 ### 2.1 Tech choices
@@ -44,18 +49,18 @@ Storage & External Integrations
 |---|---|
 | Framework | Next.js 14+ App Router, TypeScript (strict), Tailwind CSS |
 | Parsing | `papaparse` (CSV), SheetJS `xlsx` (XLSX/XLS) |
-| Validation | `zod` on every API boundary |
-| Database | Supabase Postgres + SQL migrations in `supabase/migrations` |
-| LLM | `@anthropic-ai/sdk`, `temperature: 0.2` for **all** generation calls |
-| Tests | `vitest` (pure engine functions are deterministic and fully unit-tested) |
+| Validation | `zod` on every API boundary and task `schema.ts` |
+| Database | Supabase Postgres + SQL migrations in `supabase/migrations` (`0001_init.sql`, `0002_task_runs.sql`) |
+| LLM | `@anthropic-ai/sdk` via `src/core/claude.ts`, `temperature: 0.2` pinned for **all** generation calls |
+| Tests | `vitest` (`tests/**/*.test.ts` and `src/tasks/**/*.test.ts`) |
 
-## 3. Phases
+## 3. Phases & Task Registry (`src/tasks/tasks.config.ts`)
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Property setup, multi-file ingest, cleaning, geo filter, bucketing, 78-KW allocator, page matcher, editable approval matrix, CSV export, run persistence | ✅ Built |
-| 2 | `/api/generate-kr`: LLM rationale + Keyword Report Google Doc (Format A/B), bucket tables ("No Data" for empty buckets), Drive template copy | ✅ Built |
-| 3 | `/api/generate-hc`: Hilton copy rewriter + QA enforcement (`hilton-validator.ts`), Content Studio (char counter + diff viewer), Google Doc template clone + native diff styling | ✅ Built |
+| 1 | Task Registry (21 tasks), `src/core/` (property, claude, google, templates, crawler, runs, pipeline), `0002_task_runs.sql`, `/api/tasks/[taskId]/run\|runs`, Property Dashboard, migrated `keyword-research` & `usp-headline-optimization` | ✅ Built |
+| 2 | Remaining On Page, Technical, Off Page, and Local tasks | Registered (`Not started`) |
+| 3 | Site Tech Re-Audit Report, Backlinking Strategy & Execution, Monthly/Quarterly/Final Reports | Registered (`Not started`) |
 
 ---
 

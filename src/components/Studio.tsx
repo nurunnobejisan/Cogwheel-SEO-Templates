@@ -46,8 +46,8 @@ const EMPTY_PROPERTY: Property = {
   excludedLocations: [],
 };
 
-export default function Studio() {
-  const [step, setStep] = useState<Step>(1);
+export default function Studio({ initialStep = 1 }: { initialStep?: Step }) {
+  const [step, setStep] = useState<Step>(initialStep);
   const [property, setProperty] = useState<Property>(EMPTY_PROPERTY);
   const [pages, setPages] = useState<SitemapPage[]>(sitemap.pages as SitemapPage[]);
   const [files, setFiles] = useState<File[]>([]);
