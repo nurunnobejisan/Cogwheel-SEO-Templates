@@ -1,4 +1,4 @@
-import type { ZodType } from "zod";
+import type { ZodType, ZodTypeDef } from "zod";
 import { createTaskRun, updateTaskRun, type TaskRunFlag } from "@/core/runs";
 import type { TaskStatus } from "@/tasks/tasks.config";
 
@@ -14,7 +14,7 @@ export interface ValidationOutcome<TDraft> {
 export interface PipelineConfig<TInput, TData, TDraft, TOutput> {
   taskId: string;
   propertyId?: string | null;
-  schema: ZodType<TInput>;
+  schema: ZodType<TInput, ZodTypeDef, unknown>;
   rawInput: unknown;
   maxRetries?: number;
   fetchData: (input: TInput) => Promise<TData>;
