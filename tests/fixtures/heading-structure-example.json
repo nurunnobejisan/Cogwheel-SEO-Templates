@@ -1,0 +1,27 @@
+{
+  "property": {
+    "name": "Hotel X Gainesville",
+    "brand": "Tapestry Collection",
+    "city": "Gainesville",
+    "state": "FL",
+    "url": "https://hotelx.example.com"
+  },
+  "rows": [
+    {
+      "page": "Home",
+      "url": "https://hotelx.example.com/",
+      "currentH1": "Welcome to Hotel X",
+      "proposedH1": "**Boutique Hotel Gainesville FL** — ~~Welcome to~~ Hotel X",
+      "currentH2List": ["Our Rooms", "Location"],
+      "proposedH2List": [
+        "**Boutique Hotel Gainesville FL** Accommodations",
+        "Rooftop Dining & **Gainesville** Amenities",
+        "Location Near UF Campus"
+      ],
+      "issue": "None",
+      "primaryKeyword": "boutique hotel gainesville fl",
+      "notes": "Aligned H1 and first H2 with primary keyword while keeping H1 under 70 chars."
+    }
+  ]
+}
+

@@ -28,7 +28,7 @@ export default function PropertyDashboard() {
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
   const [showSiteCrawl, setShowSiteCrawl] = useState(false);
-  const [showTitleMeta, setShowTitleMeta] = useState(false);
+  const [activeCrawlTask, setActiveCrawlTask] = useState<"title-meta" | "heading-structure" | null>(null);
   const [tmProp, setTmProp] = useState({ name: "", brand: "", city: "", state: "" });
   const [tmBusy, setTmBusy] = useState(false);
   const [tmError, setTmError] = useState<string | null>(null);
@@ -65,8 +65,8 @@ export default function PropertyDashboard() {
       setShowSiteCrawl(true);
       return;
     }
-    if (task.id === "title-meta") {
-      setShowTitleMeta(true);
+    if (task.id === "title-meta" || task.id === "heading-structure") {
+      setActiveCrawlTask(task.id);
       return;
     }
     if (task.id === "usp-headline-optimization") {
@@ -77,11 +77,12 @@ export default function PropertyDashboard() {
     setView("studio");
   }
 
-  async function runTitleMeta() {
+  async function runCrawlBasedTask() {
+    if (!activeCrawlTask) return;
     setTmError(null);
     setTmBusy(true);
     try {
-      const res = await fetch("/api/tasks/title-meta/run", {
+      const res = await fetch(`/api/tasks/${activeCrawlTask}/run`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -96,9 +97,9 @@ export default function PropertyDashboard() {
         }),
       });
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || "Title & Meta generation failed.");
+      if (!res.ok) throw new Error(json.error || "Task execution failed.");
       await refreshRuns();
-      setShowTitleMeta(false);
+      setActiveCrawlTask(null);
     } catch (e) {
       setTmError((e as Error).message);
     } finally {
@@ -169,12 +170,12 @@ export default function PropertyDashboard() {
             <SiteCrawlCard onCompleted={() => void refreshRuns()} />
           )}
 
-          {showTitleMeta && (
+          {activeCrawlTask && (
             <Card
-              title="Title_Meta Description"
+              title={activeCrawlTask === "title-meta" ? "Title_Meta Description" : "Heading Structure Optimization"}
               subtitle="Uses the latest Site Crawl run and approved Keyword Research keywords."
               actions={
-                <Button variant="ghost" onClick={() => setShowTitleMeta(false)}>
+                <Button variant="ghost" onClick={() => setActiveCrawlTask(null)}>
                   Close
                 </Button>
               }
@@ -216,8 +217,8 @@ export default function PropertyDashboard() {
                     {tmError}
                   </div>
                 )}
-                <Button variant="primary" disabled={tmBusy} onClick={() => void runTitleMeta()}>
-                  {tmBusy ? "Generating..." : "Generate Title & Meta Doc"}
+                <Button variant="primary" disabled={tmBusy} onClick={() => void runCrawlBasedTask()}>
+                  {tmBusy ? "Generating..." : "Run Task"}
                 </Button>
               </div>
             </Card>

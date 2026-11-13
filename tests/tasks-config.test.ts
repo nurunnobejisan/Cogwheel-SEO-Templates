@@ -26,6 +26,7 @@ describe("tasks.config.ts", () => {
   it("marks only Phase 1 tasks as implemented/Done and all Phase 2/3 tasks as Not started", () => {
     const phase1 = TASKS_CONFIG.filter((t) => t.phase === 1);
     expect(phase1.map((t) => t.id).sort()).toEqual([
+      "heading-structure",
       "keyword-research",
       "site-crawl",
       "title-meta",

@@ -1,4 +1,5 @@
 import type { PipelineResult } from "@/core/pipeline";
+import { runHeadingStructureTask } from "@/tasks/heading-structure";
 import { runKeywordResearchTask } from "@/tasks/keyword-research";
 import { runSiteCrawlTask } from "@/tasks/site-crawl";
 import { getTaskConfig, type TaskConfig } from "@/tasks/tasks.config";
@@ -12,6 +13,7 @@ export const TASK_RUNNERS: Record<string, TaskRunner> = {
   "usp-headline-optimization": runUspHeadlineTask,
   "site-crawl": runSiteCrawlTask,
   "title-meta": runTitleMetaTask,
+  "heading-structure": runHeadingStructureTask,
 };
 
 export function resolveTaskRunner(taskId: string): {

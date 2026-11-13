@@ -58,7 +58,7 @@ Shared Core (src/core/) & Task Modules (src/tasks/<task-id>/)
 
 | Phase | Scope | Status |
 |---|---|---|
-| 1 | Task Registry (22 tasks), `src/core/` (property, claude, google, templates, crawler/, runs, pipeline), `0002_task_runs.sql`, `0003_site_crawl.sql` (`crawl_runs`, `crawl_pages`), `/api/tasks/[taskId]/run\|runs`, `/api/tasks/site-crawl/run\|runs` (chunked batch queue), Property Dashboard, migrated `keyword-research` & `usp-headline-optimization`, `site-crawl`, and `title-meta` | ✅ Built |
+| 1 | Task Registry (22 tasks), `src/core/` (property, claude, google, templates, crawler/, runs, pipeline), `0002_task_runs.sql`, `0003_site_crawl.sql` (`crawl_runs`, `crawl_pages`), `/api/tasks/[taskId]/run\|runs`, `/api/tasks/site-crawl/run\|runs` (chunked batch queue), Property Dashboard, migrated `keyword-research` & `usp-headline-optimization`, `site-crawl`, `title-meta`, and `heading-structure` | ✅ Built |
 | 2 | Remaining On Page, Technical, Off Page, and Local tasks | Registered (`Not started`) |
 | 3 | Site Tech Re-Audit Report, Backlinking Strategy & Execution, Monthly/Quarterly/Final Reports | Registered (`Not started`) |
 
