@@ -141,6 +141,42 @@ export async function listTaskRuns(taskId: string, propertyId?: string): Promise
   return data.map(mapRowToRecord);
 }
 
+/**
+ * Returns the latest run per taskId in a single query for fast dashboard hydration.
+ */
+export async function listLatestTaskRunsSummary(): Promise<Record<string, TaskRunRecord>> {
+  const summary: Record<string, TaskRunRecord> = {};
+
+  if (!isSupabaseConfigured()) {
+    for (const run of memoryRuns) {
+      if (!summary[run.taskId]) summary[run.taskId] = run;
+    }
+    return summary;
+  }
+
+  const db = getSupabase();
+  const { data, error } = await db
+    .from("task_runs")
+    .select("*")
+    .order("created_at", { ascending: false })
+    .limit(100);
+
+  if (error || !data) {
+    for (const run of memoryRuns) {
+      if (!summary[run.taskId]) summary[run.taskId] = run;
+    }
+    return summary;
+  }
+
+  for (const row of data) {
+    const rec = mapRowToRecord(row);
+    if (!summary[rec.taskId]) {
+      summary[rec.taskId] = rec;
+    }
+  }
+  return summary;
+}
+
 function mapRowToRecord(row: Record<string, unknown>): TaskRunRecord {
   return {
     id: row.id as string,

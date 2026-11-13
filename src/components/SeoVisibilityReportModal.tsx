@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import * as XLSX from "xlsx";
 import { Button, Card } from "./ui";
 
 interface ReportSummary {
@@ -41,6 +40,7 @@ const MAX_CLIENT_XLSX_BYTES = 4 * 1024 * 1024;
 
 async function slimWorkbookIfNeeded(file: File): Promise<File> {
   if (file.size <= MAX_CLIENT_XLSX_BYTES) return file;
+  const XLSX = await import("xlsx");
   const buf = await file.arrayBuffer();
   const wb = XLSX.read(buf, { type: "array" });
   const firstSheetName = wb.SheetNames[0];

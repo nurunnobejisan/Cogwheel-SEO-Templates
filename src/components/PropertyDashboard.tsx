@@ -1,13 +1,23 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
-import { SiteCrawlCard } from "./SiteCrawlCard";
-import { SeoBaselineModal } from "./SeoBaselineModal";
-import { SeoVisibilityReportModal } from "./SeoVisibilityReportModal";
-import Studio from "./Studio";
 import { Button, Card } from "./ui";
+
+const Studio = dynamic(() => import("./Studio"), {
+  loading: () => (
+    <div className="mx-auto max-w-6xl px-6 py-12">
+      <div className="h-64 animate-pulse rounded-3xl bg-slate-200/70" />
+    </div>
+  ),
+});
+const SiteCrawlCard = dynamic(() => import("./SiteCrawlCard").then((m) => m.SiteCrawlCard));
+const SeoBaselineModal = dynamic(() => import("./SeoBaselineModal").then((m) => m.SeoBaselineModal));
+const SeoVisibilityReportModal = dynamic(() =>
+  import("./SeoVisibilityReportModal").then((m) => m.SeoVisibilityReportModal),
+);
 
 interface TaskRunSummary {
   id: string;
@@ -37,32 +47,23 @@ export default function PropertyDashboard() {
   const [tmProp, setTmProp] = useState({ name: "", brand: "", city: "", state: "" });
   const [tmBusy, setTmBusy] = useState(false);
   const [tmError, setTmError] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterMode, setFilterMode] = useState<"all" | "ready" | "upcoming">("all");
 
-  async function refreshRuns() {
-    const implemented = TASKS_CONFIG.filter((t) => t.phase === 1 || t.status === "Done");
-    const entries = await Promise.all(
-      implemented.map(async (task) => {
-        try {
-          const res = await fetch(`/api/tasks/${task.id}/runs`);
-          if (!res.ok) return null;
-          const data = (await res.json()) as { runs?: TaskRunSummary[] };
-          const latest = data.runs?.[0];
-          return latest ? ([task.id, latest] as const) : null;
-        } catch {
-          return null;
-        }
-      }),
-    );
-    const map: Record<string, TaskRunSummary> = {};
-    for (const entry of entries) {
-      if (entry) map[entry[0]] = entry[1];
+  const refreshRuns = useCallback(async () => {
+    try {
+      const res = await fetch("/api/tasks/summary", { cache: "no-store" });
+      if (!res.ok) return;
+      const data = (await res.json()) as { runs?: Record<string, TaskRunSummary> };
+      if (data.runs) setLatestRuns(data.runs);
+    } catch {
+      // ignore transient network errors
     }
-    setLatestRuns(map);
-  }
+  }, []);
 
   useEffect(() => {
     void refreshRuns();
-  }, [view]);
+  }, [view, refreshRuns]);
 
   function handleRunTask(task: TaskConfig) {
     if (task.phase !== 1 && task.status !== "Done") return;
@@ -120,7 +121,21 @@ export default function PropertyDashboard() {
     }
   }
 
-  const sectionTasks = TASKS_CONFIG.filter((t) => t.section === activeTab);
+  const sectionTasks = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return TASKS_CONFIG.filter((t) => {
+      if (t.section !== activeTab) return false;
+      const isImplemented = t.phase === 1 || t.status === "Done";
+      if (filterMode === "ready" && !isImplemented) return false;
+      if (filterMode === "upcoming" && isImplemented) return false;
+      if (!q) return true;
+      return (
+        t.name.toLowerCase().includes(q) ||
+        t.description.toLowerCase().includes(q) ||
+        t.dataSources.some((s) => s.toLowerCase().includes(q))
+      );
+    });
+  }, [activeTab, filterMode, searchQuery]);
   const readyCount = TASKS_CONFIG.filter((t) => t.phase === 1 || t.status === "Done").length;
   const runList = Object.values(latestRuns);
   const flaggedCount = runList.filter((r) => r.flags.length > 0 || r.status === "Flagged").length;
@@ -303,28 +318,57 @@ export default function PropertyDashboard() {
             </div>
           </section>
 
-          <nav aria-label="Task Sections" className="flex flex-wrap gap-2 border-b border-slate-200 pb-3">
-            {TASK_SECTIONS.map((section) => {
-              const count = TASKS_CONFIG.filter((t) => t.section === section).length;
-              const isActive = activeTab === section;
-              return (
-                <button
-                  key={section}
-                  type="button"
-                  onClick={() => setActiveTab(section)}
-                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                    isActive
-                      ? "bg-slate-900 text-white shadow-sm"
-                      : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                  }`}
-                >
-                  {isActive && <span className="h-2 w-2 rounded-full bg-brand" />}
-                  <span>{section}</span>
-                  <span className="text-xs opacity-75">({count})</span>
-                </button>
-              );
-            })}
-          </nav>
+          <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between">
+            <nav aria-label="Task Sections" className="flex flex-wrap gap-2">
+              {TASK_SECTIONS.map((section) => {
+                const count = TASKS_CONFIG.filter((t) => t.section === section).length;
+                const isActive = activeTab === section;
+                return (
+                  <button
+                    key={section}
+                    type="button"
+                    onClick={() => setActiveTab(section)}
+                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                      isActive
+                        ? "bg-slate-900 text-white shadow-sm"
+                        : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                    }`}
+                  >
+                    {isActive && <span className="h-2 w-2 rounded-full bg-brand" />}
+                    <span>{section}</span>
+                    <span className="text-xs opacity-75">({count})</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            <div className="flex flex-wrap items-center gap-2">
+              <input
+                type="search"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Filter tasks..."
+                aria-label="Filter tasks"
+                className="w-44 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+              />
+              <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-[11px] font-semibold">
+                {(["all", "ready", "upcoming"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    type="button"
+                    onClick={() => setFilterMode(mode)}
+                    className={`rounded-lg px-2.5 py-1 capitalize transition ${
+                      filterMode === mode
+                        ? "bg-slate-900 text-white"
+                        : "text-slate-500 hover:text-slate-900"
+                    }`}
+                  >
+                    {mode}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
 
           {(activeTab === "Technical" || showSiteCrawl) && (
             <SiteCrawlCard onCompleted={() => void refreshRuns()} />
@@ -412,7 +456,7 @@ export default function PropertyDashboard() {
                 return (
                   <div
                     key={task.id}
-                    className={`flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${
+                    className={`animate-fade-in flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${
                       disabled
                         ? "border-slate-200/70 bg-slate-50/60 opacity-80"
                         : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
