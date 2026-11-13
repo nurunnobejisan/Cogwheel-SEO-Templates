@@ -49,6 +49,32 @@ export function RunHistoryDrawer({ task, onClose }: Props) {
   const [runs, setRuns] = useState<TaskRunItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [feedbackNote, setFeedbackNote] = useState("");
+  const [trainingBusy, setTrainingBusy] = useState(false);
+  const [trainedNotice, setTrainedNotice] = useState<string | null>(null);
+
+  async function submitFeedbackRule(ruleText: string, title = `${task.name} Feedback`) {
+    if (!ruleText.trim()) return;
+    setTrainingBusy(true);
+    setTrainedNotice(null);
+    try {
+      const res = await fetch("/api/ai-training", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          taskId: task.id,
+          title,
+          ruleText: ruleText.trim(),
+        }),
+      });
+      if (res.ok) {
+        setFeedbackNote("");
+        setTrainedNotice("Saved to AI Training! Next run will follow this rule.");
+      }
+    } finally {
+      setTrainingBusy(false);
+    }
+  }
 
   useEffect(() => {
     let cancelled = false;
@@ -88,6 +114,49 @@ export function RunHistoryDrawer({ task, onClose }: Props) {
         </div>
       ) : (
         <div className="space-y-3">
+          <div className="space-y-2 rounded-2xl border border-brand/30 bg-brand-50/40 p-3.5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-bold text-slate-800">
+                Train AI From This Output (Auto-Improves Next Run)
+              </span>
+              {trainedNotice && (
+                <span className="text-[11px] font-semibold text-emerald-700">{trainedNotice}</span>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {[
+                { label: "More Concise", text: `Keep ${task.name} recommendations concise, prioritized, and actionable.` },
+                { label: "Hotel-Specific", text: `Tailor ${task.name} copy specifically to this hotel's brand, city, and direct-booking strengths.` },
+                { label: "Strict Grounding", text: `Only cite URLs, titles, and amenities verified in the crawl for ${task.name}.` },
+              ].map((chip) => (
+                <button
+                  key={chip.label}
+                  type="button"
+                  disabled={trainingBusy}
+                  onClick={() => void submitFeedbackRule(chip.text, `${task.name}: ${chip.label}`)}
+                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-brand hover:text-slate-900"
+                >
+                  + {chip.label}
+                </button>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Or type custom feedback for next run..."
+                value={feedbackNote}
+                onChange={(e) => setFeedbackNote(e.target.value)}
+                className="input flex-1 text-xs"
+              />
+              <Button
+                variant="primary"
+                disabled={trainingBusy || !feedbackNote.trim()}
+                onClick={() => void submitFeedbackRule(feedbackNote)}
+              >
+                {trainingBusy ? "Saving..." : "Train AI"}
+              </Button>
+            </div>
+          </div>
           {runs.slice(0, 10).map((run) => {
             const xlsxBase64 =
               run.output && typeof run.output.xlsxBase64 === "string" ? run.output.xlsxBase64 : null;

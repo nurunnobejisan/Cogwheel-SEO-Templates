@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { getActiveAiProviderLabel } from "@/core/claude";
 import {
   addTrainingRule,
   deleteTrainingRule,
@@ -26,7 +27,10 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const taskId = searchParams.get("taskId") || undefined;
   const rules = await listTrainingRules(taskId);
-  return NextResponse.json({ rules });
+  return NextResponse.json({
+    rules,
+    provider: getActiveAiProviderLabel(),
+  });
 }
 
 export async function POST(req: Request) {

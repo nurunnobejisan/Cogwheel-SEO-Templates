@@ -124,6 +124,10 @@ export default function PropertyDashboard() {
   const [tmError, setTmError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterMode, setFilterMode] = useState<"all" | "ready" | "upcoming">("ready");
+  const [aiStatus, setAiStatus] = useState<{ provider: string; activeRules: number }>({
+    provider: "Online AI",
+    activeRules: 5,
+  });
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -196,10 +200,24 @@ export default function PropertyDashboard() {
 
   const refreshRuns = useCallback(async () => {
     try {
-      const res = await fetch("/api/tasks/summary", { cache: "no-store" });
-      if (!res.ok) return;
-      const data = (await res.json()) as { runs?: Record<string, TaskRunSummary> };
-      if (data.runs) setLatestRuns(data.runs);
+      const [summaryRes, trainingRes] = await Promise.all([
+        fetch("/api/tasks/summary", { cache: "no-store" }),
+        fetch("/api/ai-training", { cache: "no-store" }),
+      ]);
+      if (summaryRes.ok) {
+        const data = (await summaryRes.json()) as { runs?: Record<string, TaskRunSummary> };
+        if (data.runs) setLatestRuns(data.runs);
+      }
+      if (trainingRes.ok) {
+        const tData = (await trainingRes.json()) as {
+          provider?: string;
+          rules?: Array<{ active: boolean }>;
+        };
+        setAiStatus({
+          provider: tData.provider || "Online AI",
+          activeRules: (tData.rules ?? []).filter((r) => r.active).length,
+        });
+      }
     } catch {
       // ignore transient network errors
     }
@@ -385,9 +403,19 @@ export default function PropertyDashboard() {
             />
             <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
               <div className="max-w-2xl space-y-3">
-                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-light">
-                  <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                  Razib Marketing · Hospitality SEO &amp; GEO
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-light">
+                    <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                    Razib Marketing · Hospitality SEO &amp; GEO
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setShowAiTraining(true)}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-emerald-400/30 bg-emerald-500/15 px-3 py-1 text-[11px] font-semibold text-emerald-200 transition hover:bg-emerald-500/25"
+                  >
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                    {aiStatus.provider} · {aiStatus.activeRules} Trained Rules
+                  </button>
                 </div>
                 <h2 className="font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
                   Automate Direct-Booking SEO, Audits &amp; Client Decks
