@@ -272,3 +272,4 @@ function mapPageRow(row: Record<string, unknown>): CrawlPageRecord {
     crawledAt: row.crawled_at as string,
   };
 }
+

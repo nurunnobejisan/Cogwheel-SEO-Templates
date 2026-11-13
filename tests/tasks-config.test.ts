@@ -28,6 +28,7 @@ describe("tasks.config.ts", () => {
     expect(phase1.map((t) => t.id).sort()).toEqual([
       "keyword-research",
       "site-crawl",
+      "title-meta",
       "usp-headline-optimization",
     ]);
 

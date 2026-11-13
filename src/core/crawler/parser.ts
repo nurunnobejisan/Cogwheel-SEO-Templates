@@ -181,3 +181,4 @@ export function parseHtmlPage(html: string, pageUrl: string): ParsedHtmlPage {
     plainText,
   };
 }
+

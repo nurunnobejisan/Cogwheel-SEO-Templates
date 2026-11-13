@@ -1,0 +1,23 @@
+{
+  "property": {
+    "name": "Hotel X Gainesville",
+    "brand": "Tapestry Collection",
+    "city": "Gainesville",
+    "state": "FL",
+    "url": "https://hotelx.example.com"
+  },
+  "rows": [
+    {
+      "page": "Home",
+      "url": "https://hotelx.example.com/",
+      "currentTitle": "Hotel X Gainesville",
+      "proposedTitle": "Boutique Hotel Gainesville FL | **Tapestry Collection**",
+      "titleCharCount": 52,
+      "currentMeta": "Stay at Hotel X Gainesville.",
+      "proposedMeta": "Stay at Hotel X Gainesville, a **boutique hotel gainesville fl** **steps from UF with rooftop dining and pet-friendly guest rooms. Book your stay direct today.**",
+      "metaCharCount": 157,
+      "primaryKeyword": "boutique hotel gainesville fl",
+      "notes": "Added primary keyword within first 40 chars and direct booking CTA."
+    }
+  ]
+}

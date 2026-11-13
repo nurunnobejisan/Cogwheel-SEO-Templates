@@ -118,3 +118,4 @@ export interface CrawlRunRecord {
   queueState: CrawlQueueState;
   siteSummary: SiteCrawlSummary;
 }
+

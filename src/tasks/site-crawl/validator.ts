@@ -191,3 +191,4 @@ export function summaryToTaskFlags(summary: SiteCrawlSummary): TaskRunFlag[] {
   }
   return flags;
 }
+

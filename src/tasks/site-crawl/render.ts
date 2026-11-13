@@ -26,3 +26,4 @@ export function renderSiteCrawlOutput(run: CrawlRunRecord, flags: TaskRunFlag[])
     flags,
   };
 }
+

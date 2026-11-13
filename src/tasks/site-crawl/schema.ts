@@ -24,3 +24,4 @@ export const siteCrawlInputSchema = z.union([stepSiteCrawlSchema, startSiteCrawl
 export type SiteCrawlInput = z.infer<typeof siteCrawlInputSchema>;
 export type StartSiteCrawlInput = z.infer<typeof startSiteCrawlSchema>;
 export type StepSiteCrawlInput = z.infer<typeof stepSiteCrawlSchema>;
+

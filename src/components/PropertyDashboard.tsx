@@ -28,6 +28,10 @@ export default function PropertyDashboard() {
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
   const [showSiteCrawl, setShowSiteCrawl] = useState(false);
+  const [showTitleMeta, setShowTitleMeta] = useState(false);
+  const [tmProp, setTmProp] = useState({ name: "", brand: "", city: "", state: "" });
+  const [tmBusy, setTmBusy] = useState(false);
+  const [tmError, setTmError] = useState<string | null>(null);
 
   async function refreshRuns() {
     const implemented = TASKS_CONFIG.filter((t) => t.phase === 1);
@@ -61,12 +65,45 @@ export default function PropertyDashboard() {
       setShowSiteCrawl(true);
       return;
     }
+    if (task.id === "title-meta") {
+      setShowTitleMeta(true);
+      return;
+    }
     if (task.id === "usp-headline-optimization") {
       setStudioStep(4);
     } else {
       setStudioStep(1);
     }
     setView("studio");
+  }
+
+  async function runTitleMeta() {
+    setTmError(null);
+    setTmBusy(true);
+    try {
+      const res = await fetch("/api/tasks/title-meta/run", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          property: {
+            name: tmProp.name.trim(),
+            brand: tmProp.brand.trim(),
+            city: tmProp.city.trim(),
+            state: tmProp.state.trim().toUpperCase(),
+            allowedLocations: [],
+            excludedLocations: [],
+          },
+        }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || "Title & Meta generation failed.");
+      await refreshRuns();
+      setShowTitleMeta(false);
+    } catch (e) {
+      setTmError((e as Error).message);
+    } finally {
+      setTmBusy(false);
+    }
   }
 
   const sectionTasks = TASKS_CONFIG.filter((t) => t.section === activeTab);
@@ -130,6 +167,60 @@ export default function PropertyDashboard() {
 
           {(activeTab === "Technical" || showSiteCrawl) && (
             <SiteCrawlCard onCompleted={() => void refreshRuns()} />
+          )}
+
+          {showTitleMeta && (
+            <Card
+              title="Title_Meta Description"
+              subtitle="Uses the latest Site Crawl run and approved Keyword Research keywords."
+              actions={
+                <Button variant="ghost" onClick={() => setShowTitleMeta(false)}>
+                  Close
+                </Button>
+              }
+            >
+              <div className="space-y-4">
+                <div className="grid gap-3 sm:grid-cols-4">
+                  <input
+                    type="text"
+                    placeholder="Property Name"
+                    value={tmProp.name}
+                    onChange={(e) => setTmProp({ ...tmProp, name: e.target.value })}
+                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Brand (e.g. Tapestry Collection)"
+                    value={tmProp.brand}
+                    onChange={(e) => setTmProp({ ...tmProp, brand: e.target.value })}
+                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="text"
+                    placeholder="City"
+                    value={tmProp.city}
+                    onChange={(e) => setTmProp({ ...tmProp, city: e.target.value })}
+                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
+                  />
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="State (2-letter)"
+                    value={tmProp.state}
+                    onChange={(e) => setTmProp({ ...tmProp, state: e.target.value })}
+                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm uppercase"
+                  />
+                </div>
+                {tmError && (
+                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700">
+                    {tmError}
+                  </div>
+                )}
+                <Button variant="primary" disabled={tmBusy} onClick={() => void runTitleMeta()}>
+                  {tmBusy ? "Generating..." : "Generate Title & Meta Doc"}
+                </Button>
+              </div>
+            </Card>
           )}
 
           <Card

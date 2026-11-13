@@ -182,3 +182,4 @@ export function SiteCrawlCard({ onCompleted }: { onCompleted?: () => void }) {
     </Card>
   );
 }
+

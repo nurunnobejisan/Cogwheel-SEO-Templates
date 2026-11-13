@@ -56,3 +56,4 @@ create index if not exists crawl_pages_run_idx
 
 alter table public.crawl_runs enable row level security;
 alter table public.crawl_pages enable row level security;
+

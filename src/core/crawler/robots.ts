@@ -106,3 +106,4 @@ export async function fetchRobotsTxt(origin: string, timeoutMs = 5000): Promise<
     return { allow: [], disallow: [], sitemaps: [], raw: "" };
   }
 }
+

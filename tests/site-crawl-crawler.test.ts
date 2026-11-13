@@ -210,3 +210,4 @@ describe("Site Crawl core primitives", () => {
     expect(summary.redirectChains).toHaveLength(1);
   });
 });
+
