@@ -106,7 +106,21 @@ export default function PropertyDashboard() {
   const [tmBusy, setTmBusy] = useState(false);
   const [tmError, setTmError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [filterMode, setFilterMode] = useState<"all" | "ready" | "upcoming">("all");
+  const [filterMode, setFilterMode] = useState<"all" | "ready" | "upcoming">("ready");
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        setShowAiTraining(false);
+        setShowBaselineModal(false);
+        setShowVisibilityReport(false);
+        setActiveCrawlTask(null);
+        setHistoryTask(null);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   useEffect(() => {
     try {
@@ -774,85 +788,136 @@ export default function PropertyDashboard() {
             <SiteCrawlCard defaultUrl={activeProperty.url} onCompleted={() => void refreshRuns()} />
           )}
 
-          {activeCrawlTask && (
-            <Card
-              title={activeCrawlTask.name}
-              subtitle="Uses the latest Site Crawl run (and approved Keyword Research keywords where applicable)."
-              actions={
-                <Button variant="ghost" onClick={() => setActiveCrawlTask(null)}>
-                  Close
-                </Button>
-              }
+          {(activeCrawlTask || showAiTraining || showBaselineModal || showVisibilityReport || historyTask) && (
+            <div
+              className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-slate-900/50 p-4 pt-10 backdrop-blur-sm"
+              onClick={(e) => {
+                if (e.target === e.currentTarget) {
+                  setActiveCrawlTask(null);
+                  setShowAiTraining(false);
+                  setShowBaselineModal(false);
+                  setShowVisibilityReport(false);
+                  setHistoryTask(null);
+                }
+              }}
             >
-              <div className="space-y-4">
-                <div className="grid gap-3 sm:grid-cols-4">
-                  <input
-                    type="text"
-                    placeholder="Property Name"
-                    value={tmProp.name}
-                    onChange={(e) => setTmProp({ ...tmProp, name: e.target.value })}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Brand (e.g. Tapestry Collection)"
-                    value={tmProp.brand}
-                    onChange={(e) => setTmProp({ ...tmProp, brand: e.target.value })}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  />
-                  <input
-                    type="text"
-                    placeholder="City"
-                    value={tmProp.city}
-                    onChange={(e) => setTmProp({ ...tmProp, city: e.target.value })}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  />
-                  <input
-                    type="text"
-                    maxLength={2}
-                    placeholder="State (2-letter)"
-                    value={tmProp.state}
-                    onChange={(e) => setTmProp({ ...tmProp, state: e.target.value })}
-                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm uppercase"
-                  />
-                </div>
-                {tmError && (
-                  <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700">
-                    {tmError}
-                  </div>
+              <div className="w-full max-w-4xl">
+                {activeCrawlTask && (
+                  <Card
+                    title={activeCrawlTask.name}
+                    subtitle="Uses the latest Site Crawl run and approved Keyword Research keywords."
+                    actions={
+                      <Button variant="ghost" onClick={() => setActiveCrawlTask(null)}>
+                        Close
+                      </Button>
+                    }
+                  >
+                    <div className="space-y-4">
+                      {tmProp.name && tmProp.brand && tmProp.city && tmProp.state ? (
+                        <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 text-xs text-emerald-900">
+                          <span>
+                            Ready for <strong>{tmProp.name}</strong> ({tmProp.brand} · {tmProp.city}, {tmProp.state})
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => setTmProp({ name: "", brand: "", city: "", state: "" })}
+                            className="font-semibold underline underline-offset-2 hover:text-emerald-700"
+                          >
+                            Change Property
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="grid gap-3 sm:grid-cols-4">
+                          <input
+                            type="text"
+                            placeholder="Property Name"
+                            value={tmProp.name}
+                            onChange={(e) => setTmProp({ ...tmProp, name: e.target.value })}
+                            className="input text-xs"
+                          />
+                          <input
+                            type="text"
+                            placeholder="Brand (e.g. Tapestry Collection)"
+                            value={tmProp.brand}
+                            onChange={(e) => setTmProp({ ...tmProp, brand: e.target.value })}
+                            className="input text-xs"
+                          />
+                          <input
+                            type="text"
+                            placeholder="City"
+                            value={tmProp.city}
+                            onChange={(e) => setTmProp({ ...tmProp, city: e.target.value })}
+                            className="input text-xs"
+                          />
+                          <input
+                            type="text"
+                            maxLength={2}
+                            placeholder="State (2-letter)"
+                            value={tmProp.state}
+                            onChange={(e) => setTmProp({ ...tmProp, state: e.target.value.toUpperCase() })}
+                            className="input text-xs uppercase"
+                          />
+                        </div>
+                      )}
+                      {tmError && (
+                        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700">
+                          {tmError}
+                        </div>
+                      )}
+                      <Button variant="primary" disabled={tmBusy} onClick={() => void runCrawlBasedTask()}>
+                        {tmBusy ? "Generating..." : `Run ${activeCrawlTask.name}`}
+                      </Button>
+                    </div>
+                  </Card>
                 )}
-                <Button variant="primary" disabled={tmBusy} onClick={() => void runCrawlBasedTask()}>
-                  {tmBusy ? "Generating..." : "Run Task"}
-                </Button>
+
+                {showAiTraining && <AiTrainingModal onClose={() => setShowAiTraining(false)} />}
+
+                {showBaselineModal && (
+                  <SeoBaselineModal
+                    defaultProperty={{ name: activeProperty.name, url: activeProperty.url }}
+                    onClose={() => setShowBaselineModal(false)}
+                    onCompleted={() => void refreshRuns()}
+                  />
+                )}
+
+                {showVisibilityReport && (
+                  <SeoVisibilityReportModal
+                    onClose={() => setShowVisibilityReport(false)}
+                    onCompleted={() => void refreshRuns()}
+                  />
+                )}
+
+                {historyTask && (
+                  <RunHistoryDrawer task={historyTask} onClose={() => setHistoryTask(null)} />
+                )}
               </div>
-            </Card>
-          )}
-
-          {showAiTraining && <AiTrainingModal onClose={() => setShowAiTraining(false)} />}
-
-          {showBaselineModal && (
-            <SeoBaselineModal
-              defaultProperty={{ name: activeProperty.name, url: activeProperty.url }}
-              onClose={() => setShowBaselineModal(false)}
-              onCompleted={() => void refreshRuns()}
-            />
-          )}
-
-          {showVisibilityReport && (
-            <SeoVisibilityReportModal
-              onClose={() => setShowVisibilityReport(false)}
-              onCompleted={() => void refreshRuns()}
-            />
-          )}
-
-          {historyTask && (
-            <RunHistoryDrawer task={historyTask} onClose={() => setHistoryTask(null)} />
+            </div>
           )}
 
           <Card
             title={`${activeTab} Tasks`}
             subtitle={`Active modules run through the shared validation pipeline with automatic Flag Summaries.`}
           >
+            {sectionTasks.length === 0 ? (
+              <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center">
+                <p className="text-sm font-semibold text-slate-700">
+                  No active tasks match this filter in {activeTab}.
+                </p>
+                <p className="text-xs text-slate-500">
+                  Switch to All to preview upcoming Phase 2/3 modules, or clear your search filter.
+                </p>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    setFilterMode("all");
+                    setSearchQuery("");
+                  }}
+                >
+                  Show All {activeTab} Tasks
+                </Button>
+              </div>
+            ) : (
             <div className="grid gap-4 md:grid-cols-2">
               {sectionTasks.map((task) => {
                 const run = latestRuns[task.id];
@@ -966,6 +1031,7 @@ export default function PropertyDashboard() {
                 );
               })}
             </div>
+            )}
           </Card>
 
           <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-xs text-slate-500">
