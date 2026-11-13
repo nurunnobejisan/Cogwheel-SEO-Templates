@@ -362,10 +362,10 @@ export default function PropertyDashboard() {
                 }}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                   mainTab === tab.id
-                    ? tab.id === "studio"
-                      ? "bg-brand text-slate-900 shadow-sm"
-                      : "bg-white text-slate-900 shadow-sm"
-                    : "text-slate-600 hover:text-slate-900"
+                  ? tab.id === "studio"
+                    ? "bg-brand text-slate-900 shadow-sm"
+                    : "bg-white text-slate-900 shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
                 }`}
               >
                 {tab.label}
@@ -376,8 +376,8 @@ export default function PropertyDashboard() {
               onClick={() => setShowAiTraining((v) => !v)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                 showAiTraining
-                  ? "bg-slate-900 text-brand-light shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
+                ? "bg-slate-900 text-brand-light shadow-sm"
+                : "text-slate-600 hover:text-slate-900"
               }`}
             >
               Train AI ({aiStatus.activeRules})
@@ -449,8 +449,8 @@ export default function PropertyDashboard() {
                           }}
                           className={`rounded-lg border px-2.5 py-1.5 text-xs font-semibold transition ${
                             activeProperty.name === preset.name
-                              ? "border-brand bg-brand-50 text-slate-900"
-                              : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900"
+                            ? "border-brand bg-brand-50 text-slate-900"
+                            : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900"
                           }`}
                         >
                           {preset.name}

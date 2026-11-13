@@ -221,3 +221,4 @@ export function HotelHealthScoreCard({ activeProperty, latestRuns, onRunAudit }:
     </div>
   );
 }
+
