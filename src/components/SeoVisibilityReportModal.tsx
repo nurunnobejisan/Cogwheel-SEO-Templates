@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button, Card } from "./ui";
+import { Card } from "./ui";
 
 interface ReportSummary {
   property_name: string;
@@ -169,97 +169,245 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
   }
 
   return (
-    <Card className="mb-6 border-slate-300 bg-white p-6">
-      <div className="mb-4 flex items-center justify-between">
+    <Card className="animate-fade-in mb-6 border-slate-200/90 bg-white">
+      <div className="mb-6 flex items-center justify-between">
         <div>
-          <h3 className="font-display text-base font-bold text-slate-900">
-            SEO Only Visibility Report (Monthly)
+          <h3 className="font-display text-xl font-bold tracking-tight text-slate-900">
+            Upload Source Files
           </h3>
-          <p className="text-xs text-slate-500">
-            Generates a filled PowerPoint visibility deck from your PPTX template, Semrush XLSX export, and optional Site Audit PDF.
+          <p className="mt-0.5 text-xs text-slate-500">
+            SEO Only Visibility Report (Monthly) — upload your template and Semrush exports to build your client deck.
           </p>
         </div>
-        <Button variant="secondary" onClick={onClose}>
+        <button
+          type="button"
+          onClick={onClose}
+          className="rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+        >
           Close
-        </Button>
+        </button>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <label className="flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 p-4 text-xs transition hover:border-brand hover:bg-brand-50/40">
-          <span className="font-semibold text-slate-800">PowerPoint Template (.pptx) *</span>
-          <span className="mt-1 text-[11px] text-slate-500">
-            {templateFile ? `${templateFile.name} (${Math.round(templateFile.size / 1024)} KB)` : "Click to select .pptx template"}
-          </span>
+      {/* 3-Column Step Upload Cards */}
+      <div className="grid gap-4 sm:grid-cols-3">
+        {/* STEP 01 */}
+        <label
+          className={`group flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed p-5 transition-all ${
+            templateFile
+              ? "border-brand bg-brand-50/30"
+              : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50/50"
+          }`}
+        >
           <input
             type="file"
             accept=".pptx"
+            className="sr-only"
             onChange={(e) => setTemplateFile(e.target.files?.[0] ?? null)}
-            className="mt-2 block w-full text-[11px] text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-slate-800"
           />
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              STEP 01
+            </span>
+            <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
+              Required
+            </span>
+          </div>
+
+          <div className="my-6 flex flex-col items-center text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-500 transition-transform group-hover:scale-105">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h18M4.5 4.5v10.5a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5V4.5M9 20.25l3-3.75 3 3.75" />
+              </svg>
+            </div>
+            <div className="font-display text-sm font-bold text-slate-900">PowerPoint Template</div>
+            <div className="mt-0.5 text-xs text-slate-500">
+              {templateFile ? templateFile.name : "Master slide deck"}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
+              .pptx
+            </span>
+            <span className="font-semibold text-slate-800 group-hover:text-slate-950">
+              {templateFile ? `${Math.round(templateFile.size / 1024)} KB` : "Browse ↗"}
+            </span>
+          </div>
         </label>
 
-        <label className="flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 p-4 text-xs transition hover:border-brand hover:bg-brand-50/40">
-          <span className="font-semibold text-slate-800">Keywords Workbook (.xlsx) *</span>
-          <span className="mt-1 text-[11px] text-slate-500">
-            {xlsxFile ? `${xlsxFile.name} (${Math.round(xlsxFile.size / 1024)} KB)` : "Click to select Semrush .xlsx export"}
-          </span>
+        {/* STEP 02 */}
+        <label
+          className={`group flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed p-5 transition-all ${
+            xlsxFile
+              ? "border-brand bg-brand-50/30"
+              : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50/50"
+          }`}
+        >
           <input
             type="file"
             accept=".xlsx"
+            className="sr-only"
             onChange={(e) => setXlsxFile(e.target.files?.[0] ?? null)}
-            className="mt-2 block w-full text-[11px] text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-slate-800"
           />
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              STEP 02
+            </span>
+            <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
+              Required
+            </span>
+          </div>
+
+          <div className="my-6 flex flex-col items-center text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 transition-transform group-hover:scale-105">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </div>
+            <div className="font-display text-sm font-bold text-slate-900">Keywords Workbook</div>
+            <div className="mt-0.5 text-xs text-slate-500">
+              {xlsxFile ? xlsxFile.name : "Excel export"}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
+              .xlsx
+            </span>
+            <span className="font-semibold text-slate-800 group-hover:text-slate-950">
+              {xlsxFile ? `${Math.round(xlsxFile.size / 1024)} KB` : "Browse ↗"}
+            </span>
+          </div>
         </label>
 
-        <label className="flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 p-4 text-xs transition hover:border-brand hover:bg-brand-50/40">
-          <span className="font-semibold text-slate-800">Semrush Site Audit PDF (.pdf, optional)</span>
-          <span className="mt-1 text-[11px] text-slate-500">
-            {pdfFile ? `${pdfFile.name} (${Math.round(pdfFile.size / 1024)} KB)` : "Optional for Slide 5 SEO Errors"}
-          </span>
+        {/* STEP 03 */}
+        <label
+          className={`group flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed p-5 transition-all ${
+            pdfFile
+              ? "border-brand bg-brand-50/30"
+              : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50/50"
+          }`}
+        >
           <input
             type="file"
             accept=".pdf"
+            className="sr-only"
             onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
-            className="mt-2 block w-full text-[11px] text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-800 hover:file:bg-slate-300"
           />
-        </label>
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              STEP 03
+            </span>
+            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold text-slate-500">
+              Optional
+            </span>
+          </div>
 
-        <label className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 text-xs">
-          <span className="font-semibold text-slate-800">Target Website URL (optional)</span>
-          <span className="mt-1 text-[11px] text-slate-500">
-            Used for live hospitality service &amp; topic matching
+          <div className="my-6 flex flex-col items-center text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 transition-transform group-hover:scale-105">
+              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+              </svg>
+            </div>
+            <div className="font-display text-sm font-bold text-slate-900">Semrush Audit PDF</div>
+            <div className="mt-0.5 text-xs text-slate-500">
+              {pdfFile ? pdfFile.name : "Optional PDF report"}
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
+              .pdf
+            </span>
+            <span className="font-semibold text-slate-800 group-hover:text-slate-950">
+              {pdfFile ? `${Math.round(pdfFile.size / 1024)} KB` : "Browse ↗"}
+            </span>
+          </div>
+        </label>
+      </div>
+
+      {/* STEP 04: Target Website Crawl & Service Match */}
+      <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2.5">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              STEP 04
+            </span>
+            <h4 className="font-display text-sm font-bold text-slate-900">
+              Target Website Crawl &amp; Service Match
+            </h4>
+          </div>
+          <span className="rounded-full border border-purple-200 bg-purple-50 px-3 py-0.5 text-[11px] font-semibold text-purple-700">
+            Service Verification
           </span>
+        </div>
+        <p className="mt-1.5 text-xs text-slate-500">
+          Enter the target property website URL to crawl its offerings and match services against your Keywords Workbook. Unmatched services are automatically excluded from the Ancillary Keyword Position Summary.
+        </p>
+        <div className="mt-3.5 flex flex-col gap-3 sm:flex-row">
           <input
             type="url"
             value={targetUrl}
             onChange={(e) => setTargetUrl(e.target.value)}
-            placeholder="https://thenines.com/"
-            className="mt-2 block w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+            placeholder="https://www.marriott.com/en-us/hotels/... or https://www.propertywebsite.com"
+            className="flex-1 rounded-xl border border-slate-200 bg-slate-50/50 px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/25"
           />
-        </label>
+          <button
+            type="button"
+            onClick={handleInspectWebsite}
+            disabled={crawlBusy || (!targetUrl.trim() && !xlsxFile)}
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs font-semibold text-slate-800 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <svg className="h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M12 3a14.5 14.5 0 010 18M12 3a14.5 14.5 0 000 18" />
+            </svg>
+            {crawlBusy ? "Crawling..." : "Crawl & Match Workbook"}
+          </button>
+        </div>
       </div>
 
       {error && (
-        <div className="mt-4 rounded border border-red-200 bg-red-50 px-3 py-2 text-xs text-red-700">
+        <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs text-rose-700">
           {error}
         </div>
       )}
 
-      <div className="mt-4 flex flex-wrap items-center gap-3">
-        <Button onClick={handleGenerate} disabled={busy || !templateFile || !xlsxFile}>
-          {busy ? "Generating PPTX..." : "Generate Monthly Visibility Deck (.pptx)"}
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={handleInspectWebsite}
-          disabled={crawlBusy || (!targetUrl.trim() && !xlsxFile)}
+      {/* Dark Bottom Action Bar */}
+      <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-slate-950 p-4 text-white">
+        <button
+          type="button"
+          onClick={handleGenerate}
+          disabled={busy || !templateFile || !xlsxFile}
+          className="inline-flex items-center gap-2.5 rounded-xl bg-brand px-5 py-3 font-display text-sm font-bold text-slate-950 shadow-glow transition hover:bg-brand-light disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {crawlBusy ? "Inspecting..." : "Inspect Website Services"}
-        </Button>
+          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+          </svg>
+          {busy ? "Generating Deck..." : "Generate & Download Deck"}
+        </button>
+
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+            <span className={`h-1.5 w-1.5 rounded-full ${templateFile ? "bg-brand" : "bg-slate-500"}`} />
+            Template Required
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+            <span className={`h-1.5 w-1.5 rounded-full ${xlsxFile ? "bg-brand" : "bg-slate-500"}`} />
+            Workbook Required
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+            <span className={`h-1.5 w-1.5 rounded-full ${pdfFile ? "bg-brand" : "bg-slate-500"}`} />
+            PDF Optional
+          </span>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
+            <span className={`h-1.5 w-1.5 rounded-full ${crawlInfo || targetUrl.trim() ? "bg-brand" : "bg-slate-500"}`} />
+            Crawl Optional
+          </span>
+        </div>
       </div>
 
       {crawlInfo && (
-        <div className="mt-4 rounded border border-slate-200 bg-slate-50 p-3 text-xs text-slate-700">
+        <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-700">
           <div className="font-semibold text-slate-900">
             Site Inspection: {crawlInfo.page_title} ({crawlInfo.crawled_pages} pages crawled)
           </div>
@@ -270,7 +418,7 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
       )}
 
       {summary && (
-        <div className="mt-4 space-y-2 rounded border border-emerald-200 bg-emerald-50 p-4 text-xs text-slate-800">
+        <div className="mt-4 space-y-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-slate-800">
           <div className="font-semibold text-emerald-900">
             Report Generated: {summary.property_name} ({summary.slide_count} slides,{" "}
             {summary.is_brand_hosted ? "Brand-Hosted" : "Standalone"})
@@ -295,4 +443,3 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
     </Card>
   );
 }
-
