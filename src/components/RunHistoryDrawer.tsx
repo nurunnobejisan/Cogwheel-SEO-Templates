@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { downloadBase64WithCountdown } from "@/lib/download-manager";
 import type { TaskConfig, TaskStatus } from "@/tasks/tasks.config";
 import { Button, Card } from "./ui";
 
@@ -33,16 +34,11 @@ const BADGE: Record<TaskStatus, string> = {
 };
 
 function downloadBase64Xlsx(base64: string, filename: string) {
-  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-  const blob = new Blob([bytes], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadBase64WithCountdown(
+    base64,
+    filename,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  );
 }
 
 export function RunHistoryDrawer({ task, onClose }: Props) {

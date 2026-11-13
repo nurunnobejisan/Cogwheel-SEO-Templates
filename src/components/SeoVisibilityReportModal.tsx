@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { downloadBlobWithCountdown } from "@/lib/download-manager";
 import { Card } from "./ui";
 
 interface ReportSummary {
@@ -145,14 +146,7 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
       const downloadName = nameMatch?.[1] || "seo_visibility_report.pptx";
 
       const blob = await res.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = downloadName;
-      document.body.appendChild(a);
-      a.click();
-      a.remove();
-      URL.revokeObjectURL(url);
+      downloadBlobWithCountdown(blob, downloadName);
 
       if (parsedSummary) {
         const taskRes = await fetch("/api/tasks/seo-only-visibility-report/run", {

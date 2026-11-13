@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { downloadBase64WithCountdown, downloadTextWithCountdown } from "@/lib/download-manager";
 import { Button, Card } from "./ui";
 
 interface PropertyInput {
@@ -42,16 +43,11 @@ const PIPELINE_STEPS: Array<{ id: string; label: string; defaultEnabled: boolean
 ];
 
 function downloadXlsx(base64: string, filename: string) {
-  const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
-  const blob = new Blob([bytes], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadBase64WithCountdown(
+    base64,
+    filename,
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  );
 }
 
 export function AutoPilotModal({
@@ -370,13 +366,11 @@ export function AutoPilotModal({
                       downloadXlsx(s.xlsxBase64, `${propertySlug}-${s.id}.xlsx`);
                     }
                     if (s.jsonLdScript) {
-                      const blob = new Blob([s.jsonLdScript], { type: "application/ld+json" });
-                      const url = URL.createObjectURL(blob);
-                      const a = document.createElement("a");
-                      a.href = url;
-                      a.download = `${propertySlug}-schema-markup.json`;
-                      a.click();
-                      URL.revokeObjectURL(url);
+                      downloadTextWithCountdown(
+                        `${propertySlug}-schema-markup.json`,
+                        s.jsonLdScript,
+                        "application/ld+json",
+                      );
                     }
                   }
                 }}

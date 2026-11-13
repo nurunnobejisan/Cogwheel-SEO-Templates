@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import { downloadManager, downloadTextWithCountdown } from "@/lib/download-manager";
 import type { GeoSeoInsights } from "@/lib/engine/geo-seo";
 import type { Allocation, MatrixRow, Property, TemplateId } from "@/lib/types";
 
@@ -44,13 +45,7 @@ export function poolToCsv(allocation: Allocation): string {
 }
 
 export function downloadText(filename: string, text: string, mime = "text/csv;charset=utf-8") {
-  const blob = new Blob([text], { type: mime });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+  downloadTextWithCountdown(filename, text, mime);
 }
 
 export function buildReportFilename(propertyName: string, ext: string): string {
@@ -68,63 +63,72 @@ export function downloadExcelReport(opts: {
   allocation: Allocation;
   insights: GeoSeoInsights;
 }): void {
-  const wb = XLSX.utils.book_new();
+  const filename = buildReportFilename(opts.property.name, "xlsx");
 
-  const summaryRows = [
-    ["Property", opts.property.name],
-    ["Market", `${opts.property.city}, ${opts.property.state}`],
-    ["Brand", opts.property.brand ?? ""],
-    ["URL", opts.property.url ?? ""],
-    ["Branded Keywords", opts.insights.brandedCount],
-    ["Non-Branded Keywords", opts.insights.nonBrandedCount],
-    ["Transactional Intent", opts.insights.intentBreakdown.transactional],
-    ["Commercial Intent", opts.insights.intentBreakdown.commercial],
-    ["Local Intent", opts.insights.intentBreakdown.local],
-    ["Informational Intent", opts.insights.intentBreakdown.informational],
-  ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryRows), "Summary");
+  downloadManager.startDownload({
+    filename,
+    format: "xlsx",
+    countdownSeconds: 3,
+    onExecute: () => {
+      const wb = XLSX.utils.book_new();
 
-  const mappingRows = [
-    ["Page", "Path", "Primary Keyword", "SV", "KD", "Secondary Keyword", "Confidence", "Flags", "Status"],
-    ...opts.matrix.map((r) => [
-      r.title,
-      r.path,
-      r.primary?.keyword ?? "",
-      r.primary?.volume ?? 0,
-      r.primary?.kd ?? "N/A",
-      r.secondary?.keyword ?? "",
-      opts.insights.pageConfidence[r.pageId]?.score ?? "",
-      r.flags.join(" | "),
-      r.status,
-    ]),
-  ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(mappingRows), "Keyword Mapping");
+      const summaryRows = [
+        ["Property", opts.property.name],
+        ["Market", `${opts.property.city}, ${opts.property.state}`],
+        ["Brand", opts.property.brand ?? ""],
+        ["URL", opts.property.url ?? ""],
+        ["Branded Keywords", opts.insights.brandedCount],
+        ["Non-Branded Keywords", opts.insights.nonBrandedCount],
+        ["Transactional Intent", opts.insights.intentBreakdown.transactional],
+        ["Commercial Intent", opts.insights.intentBreakdown.commercial],
+        ["Local Intent", opts.insights.intentBreakdown.local],
+        ["Informational Intent", opts.insights.intentBreakdown.informational],
+      ];
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(summaryRows), "Summary");
 
-  const poolRows = [
-    ["#", "Keyword", "Volume", "KD", "Bucket", "Role", "Page", "Source Group", "Flags"],
-    ...opts.allocation.pool.map((k, i) => [
-      i + 1,
-      k.keyword,
-      k.volume,
-      k.kd ?? "N/A",
-      k.bucketName ?? "",
-      k.role,
-      k.pageId ?? "",
-      k.sourceGroup,
-      k.flags.join(" | "),
-    ]),
-  ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(poolRows), "78-KW Pool");
+      const mappingRows = [
+        ["Page", "Path", "Primary Keyword", "SV", "KD", "Secondary Keyword", "Confidence", "Flags", "Status"],
+        ...opts.matrix.map((r) => [
+          r.title,
+          r.path,
+          r.primary?.keyword ?? "",
+          r.primary?.volume ?? 0,
+          r.primary?.kd ?? "N/A",
+          r.secondary?.keyword ?? "",
+          opts.insights.pageConfidence[r.pageId]?.score ?? "",
+          r.flags.join(" | "),
+          r.status,
+        ]),
+      ];
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(mappingRows), "Keyword Mapping");
 
-  const geoRows = [
-    ["Type", "Recommendation / Query", "Volume"],
-    ...opts.insights.conversationalQueries.map((q) => ["Conversational Query", q.keyword, q.volume]),
-    ...opts.insights.localOpportunities.map((q) => ["Local Opportunity", q.keyword, q.volume]),
-    ...opts.insights.faqOpportunities.map((f) => ["FAQ Opportunity", f, ""]),
-    ...opts.insights.structuredDataRecommendations.map((s) => ["Schema Recommendation", s, ""]),
-  ];
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(geoRows), "GEO & Local SEO");
+      const poolRows = [
+        ["#", "Keyword", "Volume", "KD", "Bucket", "Role", "Page", "Source Group", "Flags"],
+        ...opts.allocation.pool.map((k, i) => [
+          i + 1,
+          k.keyword,
+          k.volume,
+          k.kd ?? "N/A",
+          k.bucketName ?? "",
+          k.role,
+          k.pageId ?? "",
+          k.sourceGroup,
+          k.flags.join(" | "),
+        ]),
+      ];
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(poolRows), "78-KW Pool");
 
-  XLSX.writeFile(wb, buildReportFilename(opts.property.name, "xlsx"));
+      const geoRows = [
+        ["Type", "Recommendation / Query", "Volume"],
+        ...opts.insights.conversationalQueries.map((q) => ["Conversational Query", q.keyword, q.volume]),
+        ...opts.insights.localOpportunities.map((q) => ["Local Opportunity", q.keyword, q.volume]),
+        ...opts.insights.faqOpportunities.map((f) => ["FAQ Opportunity", f, ""]),
+        ...opts.insights.structuredDataRecommendations.map((s) => ["Schema Recommendation", s, ""]),
+      ];
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(geoRows), "GEO & Local SEO");
+
+      XLSX.writeFile(wb, filename);
+    },
+  });
 }
 

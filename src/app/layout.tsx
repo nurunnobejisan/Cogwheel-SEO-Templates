@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { DownloadFeedbackModal } from "@/components/DownloadFeedbackModal";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -17,7 +18,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
-      <body className="font-sans text-slate-800 antialiased selection:bg-brand selection:text-slate-900">{children}</body>
+      <body className="font-sans text-slate-800 antialiased selection:bg-brand selection:text-slate-900">
+        {children}
+        <DownloadFeedbackModal />
+      </body>
     </html>
   );
 }
