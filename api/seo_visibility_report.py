@@ -2010,6 +2010,7 @@ def build(
     output: Path,
     full_list_url: str = "",
     target_url: str = "",
+    has_vanity_site: bool | None = None,
 ) -> None:
     audit_data = None
     used_pdf_tracked = False
@@ -2092,6 +2093,7 @@ def build(
         target_url=effective_target_url,
         workbook_urls=wb_profile.get("urls"),
         audit_data=audit_data,
+        has_vanity_site=has_vanity_site,
     )
     if brand_hotel:
         # Remove SEO Errors Report slide(s) for brand-hosted hotels per template note

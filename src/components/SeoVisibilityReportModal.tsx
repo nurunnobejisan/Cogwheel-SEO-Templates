@@ -62,6 +62,7 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
   const [xlsxFile, setXlsxFile] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
   const [targetUrl, setTargetUrl] = useState("");
+  const [vanityMode, setVanityMode] = useState<"auto" | "vanity" | "brand">("auto");
   const [busy, setBusy] = useState(false);
   const [crawlBusy, setCrawlBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -109,6 +110,8 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
       form.append("xlsx", preparedXlsx);
       if (pdfFile) form.append("pdf", pdfFile);
       if (targetUrl.trim()) form.append("target_url", targetUrl.trim());
+      if (vanityMode === "vanity") form.append("has_vanity_site", "true");
+      if (vanityMode === "brand") form.append("has_vanity_site", "false");
 
       const res = await fetch("/api/seo-visibility-report", {
         method: "POST",
@@ -147,6 +150,7 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             targetUrl: targetUrl.trim(),
+            hasVanitySite: vanityMode === "vanity" ? true : vanityMode === "brand" ? false : undefined,
             templateFileName: templateFile.name,
             xlsxFileName: xlsxFile.name,
             pdfFileName: pdfFile?.name,
@@ -363,6 +367,33 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
             </svg>
             {crawlBusy ? "Crawling..." : "Crawl & Match Workbook"}
           </button>
+        </div>
+        <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3">
+          <span className="text-[11px] text-slate-500">
+            Slide 5 (SEO Errors) applies to independents &amp; soft brands with a vanity site:
+          </span>
+          <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-0.5 text-[11px] font-semibold">
+            {(
+              [
+                ["auto", "Auto-Detect"],
+                ["vanity", "Has Vanity Site (Keep Slide 5)"],
+                ["brand", "Brand-Hosted Only (Omit Slide 5)"],
+              ] as const
+            ).map(([mode, label]) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setVanityMode(mode)}
+                className={`rounded-lg px-2.5 py-1 transition ${
+                  vanityMode === mode
+                    ? "bg-slate-900 text-white"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

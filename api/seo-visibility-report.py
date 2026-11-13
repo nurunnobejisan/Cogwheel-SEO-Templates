@@ -409,6 +409,10 @@ def _handle_generate():
         pdf = request.files.get("pdf")
         raw_target_url = (request.form.get("target_url") or "").strip()
         target_url = _validate_target_url(raw_target_url) if raw_target_url else ""
+        raw_vanity = (request.form.get("has_vanity_site") or "").strip().lower()
+        has_vanity_site: bool | None = (
+            True if raw_vanity in {"true", "1", "yes"} else False if raw_vanity in {"false", "0", "no"} else None
+        )
 
         template_path = _save_validated_upload(template, temp_dir, ".pptx", (b"PK\x03\x04",), "PowerPoint Template")
         xlsx_path = _save_validated_upload(xlsx, temp_dir, ".xlsx", (b"PK\x03\x04",), "Keywords Workbook")
@@ -453,7 +457,15 @@ def _handle_generate():
             )
 
         out_temp = temp_dir / "generated_report.pptx"
-        build(template_path, pdf_path, xlsx_path, out_temp, full_list_url="", target_url=target_url)
+        build(
+            template_path,
+            pdf_path,
+            xlsx_path,
+            out_temp,
+            full_list_url="",
+            target_url=target_url,
+            has_vanity_site=has_vanity_site,
+        )
         pptx_bytes = out_temp.read_bytes()
         _write_cache_bytes(cache_key, pptx_bytes)
 
