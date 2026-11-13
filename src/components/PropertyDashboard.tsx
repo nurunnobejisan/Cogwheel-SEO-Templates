@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
 import { SiteCrawlCard } from "./SiteCrawlCard";
+import { SeoVisibilityReportModal } from "./SeoVisibilityReportModal";
 import Studio from "./Studio";
 import { Button, Card } from "./ui";
 
@@ -28,13 +29,14 @@ export default function PropertyDashboard() {
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
   const [showSiteCrawl, setShowSiteCrawl] = useState(false);
+  const [showVisibilityReport, setShowVisibilityReport] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<"title-meta" | "heading-structure" | null>(null);
   const [tmProp, setTmProp] = useState({ name: "", brand: "", city: "", state: "" });
   const [tmBusy, setTmBusy] = useState(false);
   const [tmError, setTmError] = useState<string | null>(null);
 
   async function refreshRuns() {
-    const implemented = TASKS_CONFIG.filter((t) => t.phase === 1);
+    const implemented = TASKS_CONFIG.filter((t) => t.phase === 1 || t.status === "Done");
     const entries = await Promise.all(
       implemented.map(async (task) => {
         try {
@@ -60,7 +62,11 @@ export default function PropertyDashboard() {
   }, [view]);
 
   function handleRunTask(task: TaskConfig) {
-    if (task.phase !== 1) return;
+    if (task.phase !== 1 && task.status !== "Done") return;
+    if (task.id === "seo-only-visibility-report") {
+      setShowVisibilityReport(true);
+      return;
+    }
     if (task.id === "site-crawl") {
       setShowSiteCrawl(true);
       return;
@@ -224,6 +230,13 @@ export default function PropertyDashboard() {
             </Card>
           )}
 
+          {showVisibilityReport && (
+            <SeoVisibilityReportModal
+              onClose={() => setShowVisibilityReport(false)}
+              onCompleted={() => void refreshRuns()}
+            />
+          )}
+
           <Card
             title={`${activeTab} Tasks`}
             subtitle={`Phase 1 tasks are active. Phase 2 and Phase 3 tasks are registered and disabled until implemented.`}
@@ -231,8 +244,9 @@ export default function PropertyDashboard() {
             <div className="divide-y divide-slate-100">
               {sectionTasks.map((task) => {
                 const run = latestRuns[task.id];
+                const isImplemented = task.phase === 1 || task.status === "Done";
                 const effectiveStatus: TaskStatus = run?.status ?? (task.phase === 1 ? "Not started" : task.status);
-                const disabled = task.phase !== 1;
+                const disabled = !isImplemented;
 
                 return (
                   <div

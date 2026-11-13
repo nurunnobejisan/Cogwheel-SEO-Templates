@@ -23,17 +23,18 @@ describe("tasks.config.ts", () => {
     }
   });
 
-  it("marks only Phase 1 tasks as implemented/Done and all Phase 2/3 tasks as Not started", () => {
-    const phase1 = TASKS_CONFIG.filter((t) => t.phase === 1);
-    expect(phase1.map((t) => t.id).sort()).toEqual([
+  it("marks implemented tasks as Done and remaining Phase 2/3 tasks as Not started", () => {
+    const doneTasks = TASKS_CONFIG.filter((t) => t.status === "Done");
+    expect(doneTasks.map((t) => t.id).sort()).toEqual([
       "heading-structure",
       "keyword-research",
+      "seo-only-visibility-report",
       "site-crawl",
       "title-meta",
       "usp-headline-optimization",
     ]);
 
-    const other = TASKS_CONFIG.filter((t) => t.phase !== 1);
+    const other = TASKS_CONFIG.filter((t) => t.status !== "Done");
     for (const t of other) {
       expect(t.status).toBe("Not started");
     }

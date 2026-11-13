@@ -1,6 +1,7 @@
 import type { PipelineResult } from "@/core/pipeline";
 import { runHeadingStructureTask } from "@/tasks/heading-structure";
 import { runKeywordResearchTask } from "@/tasks/keyword-research";
+import { runSeoOnlyVisibilityReport } from "@/tasks/seo-only-visibility-report";
 import { runSiteCrawlTask } from "@/tasks/site-crawl";
 import { getTaskConfig, type TaskConfig } from "@/tasks/tasks.config";
 import { runTitleMetaTask } from "@/tasks/title-meta";
@@ -14,6 +15,7 @@ export const TASK_RUNNERS: Record<string, TaskRunner> = {
   "site-crawl": runSiteCrawlTask,
   "title-meta": runTitleMetaTask,
   "heading-structure": runHeadingStructureTask,
+  "seo-only-visibility-report": runSeoOnlyVisibilityReport,
 };
 
 export function resolveTaskRunner(taskId: string): {

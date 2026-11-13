@@ -1,0 +1,36 @@
+{
+  "property": {
+    "name": "The Nines, a Luxury Collection Hotel, Portland",
+    "brand": "Luxury Collection",
+    "city": "Portland",
+    "state": "OR"
+  },
+  "targetUrl": "https://thenines.com/",
+  "templateFileName": "Monthly SEO Visibility Analysis - TEMPLATE.pptx",
+  "xlsxFileName": "organic-positions.xlsx",
+  "downloadName": "seo_visibility_report_The_Nines.pptx",
+  "summary": {
+    "property_name": "The Nines Portland",
+    "slide_count": 5,
+    "is_brand_hosted": false,
+    "pdf_included": false,
+    "tracked_count": 6,
+    "ancillary_count": 14,
+    "top10_count": 8,
+    "rank_buckets": {
+      "top3": 3,
+      "pos4_10": 5,
+      "pos11_20": 4,
+      "pos21_40": 2
+    },
+    "tracked_preview": [
+      { "keyword": "luxury hotel portland", "start": "6", "current": "4", "delta": "+2" },
+      { "keyword": "portland boutique hotel", "start": "9", "current": "7", "delta": "+2" }
+    ],
+    "ancillary_preview": [
+      { "keyword": "rooftop dining portland", "rank": "3", "volume": "1900" },
+      { "keyword": "pioneer square hotel", "rank": "5", "volume": "720" }
+    ]
+  }
+}
+

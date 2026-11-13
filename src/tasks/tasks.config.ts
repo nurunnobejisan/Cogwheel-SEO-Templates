@@ -283,7 +283,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "semrush", "gsc", "crawl", "prior_runs"],
     dependsOn: ["keyword-research"],
     phase: 3,
-    status: "Not started",
+    status: "Done",
     description: "Monthly SEO visibility deck covering tracked rankings, ancillary keywords, and site health.",
   },
   {

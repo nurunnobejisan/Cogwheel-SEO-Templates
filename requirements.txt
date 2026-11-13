@@ -1,0 +1,9 @@
+flask
+flask-cors
+python-pptx
+pypdf
+pymupdf
+openpyxl
+pandas
+Pillow
+werkzeug
