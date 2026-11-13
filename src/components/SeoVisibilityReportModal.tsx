@@ -185,44 +185,56 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <label className="block space-y-1 text-xs font-medium text-slate-700">
-          <span>PowerPoint Template (.pptx) *</span>
+        <label className="flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 p-4 text-xs transition hover:border-brand hover:bg-brand-50/40">
+          <span className="font-semibold text-slate-800">PowerPoint Template (.pptx) *</span>
+          <span className="mt-1 text-[11px] text-slate-500">
+            {templateFile ? `${templateFile.name} (${Math.round(templateFile.size / 1024)} KB)` : "Click to select .pptx template"}
+          </span>
           <input
             type="file"
             accept=".pptx"
             onChange={(e) => setTemplateFile(e.target.files?.[0] ?? null)}
-            className="block w-full rounded border border-slate-200 px-3 py-2 text-xs"
+            className="mt-2 block w-full text-[11px] text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-slate-800"
           />
         </label>
 
-        <label className="block space-y-1 text-xs font-medium text-slate-700">
-          <span>Keywords Workbook (.xlsx) *</span>
+        <label className="flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 p-4 text-xs transition hover:border-brand hover:bg-brand-50/40">
+          <span className="font-semibold text-slate-800">Keywords Workbook (.xlsx) *</span>
+          <span className="mt-1 text-[11px] text-slate-500">
+            {xlsxFile ? `${xlsxFile.name} (${Math.round(xlsxFile.size / 1024)} KB)` : "Click to select Semrush .xlsx export"}
+          </span>
           <input
             type="file"
             accept=".xlsx"
             onChange={(e) => setXlsxFile(e.target.files?.[0] ?? null)}
-            className="block w-full rounded border border-slate-200 px-3 py-2 text-xs"
+            className="mt-2 block w-full text-[11px] text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-900 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-white hover:file:bg-slate-800"
           />
         </label>
 
-        <label className="block space-y-1 text-xs font-medium text-slate-700">
-          <span>Semrush Site Audit PDF (.pdf, optional)</span>
+        <label className="flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed border-slate-300 bg-slate-50/70 p-4 text-xs transition hover:border-brand hover:bg-brand-50/40">
+          <span className="font-semibold text-slate-800">Semrush Site Audit PDF (.pdf, optional)</span>
+          <span className="mt-1 text-[11px] text-slate-500">
+            {pdfFile ? `${pdfFile.name} (${Math.round(pdfFile.size / 1024)} KB)` : "Optional for Slide 5 SEO Errors"}
+          </span>
           <input
             type="file"
             accept=".pdf"
             onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
-            className="block w-full rounded border border-slate-200 px-3 py-2 text-xs"
+            className="mt-2 block w-full text-[11px] text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-200 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-800 hover:file:bg-slate-300"
           />
         </label>
 
-        <label className="block space-y-1 text-xs font-medium text-slate-700">
-          <span>Target Website URL (optional, for service matching)</span>
+        <label className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 text-xs">
+          <span className="font-semibold text-slate-800">Target Website URL (optional)</span>
+          <span className="mt-1 text-[11px] text-slate-500">
+            Used for live hospitality service &amp; topic matching
+          </span>
           <input
             type="url"
             value={targetUrl}
             onChange={(e) => setTargetUrl(e.target.value)}
             placeholder="https://thenines.com/"
-            className="block w-full rounded border border-slate-200 px-3 py-2 text-xs"
+            className="mt-2 block w-full rounded-xl border border-slate-200 px-3 py-2 text-xs focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
           />
         </label>
       </div>

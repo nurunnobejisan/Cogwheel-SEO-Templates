@@ -189,6 +189,57 @@ export default function PropertyDashboard() {
         <Studio key={studioStep} initialStep={studioStep} />
       ) : (
         <main className="mx-auto max-w-6xl space-y-6 px-6 py-8">
+          <section className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-slate-900 via-slate-900 to-hilton-dark p-6 text-white shadow-card sm:p-8">
+            <div
+              aria-hidden="true"
+              className="pointer-events-none absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand/20 blur-3xl"
+            />
+            <div className="relative flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+              <div className="max-w-2xl space-y-3">
+                <div className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[11px] font-semibold uppercase tracking-wider text-brand-light">
+                  <span className="h-1.5 w-1.5 rounded-full bg-brand" />
+                  Razib Marketing · Hospitality SEO &amp; GEO
+                </div>
+                <h2 className="font-display text-2xl font-extrabold tracking-tight text-white sm:text-3xl">
+                  Automate Direct-Booking SEO, Audits &amp; Client Decks
+                </h2>
+                <p className="text-sm text-slate-300">
+                  Run grounded site crawls, 78-keyword research matrices, on-page optimizations, and monthly PowerPoint visibility reports from one unified workspace.
+                </p>
+                <div className="flex flex-wrap items-center gap-2 pt-1 text-[11px] font-medium text-slate-300">
+                  <span className="rounded-lg bg-white/10 px-2.5 py-1">1. Site Crawl</span>
+                  <span className="text-slate-500">&rarr;</span>
+                  <span className="rounded-lg bg-white/10 px-2.5 py-1">2. Keyword Matrix</span>
+                  <span className="text-slate-500">&rarr;</span>
+                  <span className="rounded-lg bg-white/10 px-2.5 py-1">3. On-Page &amp; Technical</span>
+                  <span className="text-slate-500">&rarr;</span>
+                  <span className="rounded-lg bg-brand/20 px-2.5 py-1 text-brand-light">4. Visibility Deck</span>
+                </div>
+              </div>
+              <div className="flex shrink-0 flex-wrap gap-3">
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    setStudioStep(1);
+                    setView("studio");
+                  }}
+                >
+                  Open Keyword &amp; Content Studio
+                </Button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("Reporting");
+                    setShowVisibilityReport(true);
+                  }}
+                  className="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 text-sm font-semibold text-white backdrop-blur transition hover:bg-white/20"
+                >
+                  Monthly Visibility Deck
+                </button>
+              </div>
+            </div>
+          </section>
+
           <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
               <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
@@ -336,9 +387,9 @@ export default function PropertyDashboard() {
 
           <Card
             title={`${activeTab} Tasks`}
-            subtitle={`Phase 1 tasks are active. Phase 2 and Phase 3 tasks are registered and disabled until implemented.`}
+            subtitle={`Active modules run through the shared validation pipeline with automatic Flag Summaries.`}
           >
-            <div className="divide-y divide-slate-100">
+            <div className="grid gap-4 md:grid-cols-2">
               {sectionTasks.map((task) => {
                 const run = latestRuns[task.id];
                 const isImplemented = task.phase === 1 || task.status === "Done";
@@ -348,55 +399,84 @@ export default function PropertyDashboard() {
                 return (
                   <div
                     key={task.id}
-                    className="flex flex-col gap-4 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
+                    className={`flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${
+                      disabled
+                        ? "border-slate-200/70 bg-slate-50/60 opacity-80"
+                        : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                    }`}
                   >
-                    <div className="space-y-1">
-                      <div className="flex flex-wrap items-center gap-2.5">
+                    <div className="space-y-2.5">
+                      <div className="flex flex-wrap items-start justify-between gap-2">
                         <span className="font-display text-sm font-bold text-slate-900">{task.name}</span>
-                        <span
-                          className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold ${STATUS_STYLES[effectiveStatus]}`}
-                        >
-                          {effectiveStatus}
-                        </span>
-                        <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-medium uppercase text-slate-600">
-                          {task.outputType}
-                        </span>
-                        {disabled && (
-                          <span className="rounded bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
-                            Phase {task.phase}
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[effectiveStatus]}`}
+                          >
+                            <span
+                              className={`h-1.5 w-1.5 rounded-full ${
+                                effectiveStatus === "Done"
+                                  ? "bg-emerald-500"
+                                  : effectiveStatus === "Flagged"
+                                    ? "bg-amber-500"
+                                    : effectiveStatus === "Running"
+                                      ? "animate-pulse bg-sky-500"
+                                      : "bg-slate-400"
+                              }`}
+                            />
+                            {effectiveStatus}
+                          </span>
+                          <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-slate-600">
+                            {task.outputType}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-xs leading-relaxed text-slate-600">{task.description}</p>
+                      <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                        {task.dataSources.map((src) => (
+                          <span
+                            key={src}
+                            className="rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                          >
+                            {src}
+                          </span>
+                        ))}
+                        {task.dependsOn.length > 0 && (
+                          <span className="text-[10px] text-slate-400">
+                            Requires: {task.dependsOn.join(", ")}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-slate-500">{task.description}</p>
-                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-400">
-                        <span>Sources: {task.dataSources.join(", ")}</span>
-                        {task.dependsOn.length > 0 && <span>Depends on: {task.dependsOn.join(", ")}</span>}
-                      </div>
                       {run && run.flags.length > 0 && (
-                        <div className="mt-1 text-xs text-amber-700">
+                        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
                           Flag Summary ({run.flags.length}): {run.flags.map((f) => f.message).slice(0, 2).join(" | ")}
                         </div>
                       )}
                     </div>
 
-                    <div className="flex shrink-0 items-center gap-3">
-                      {run?.outputUrl && (
-                        <a
-                          href={run.outputUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-xs font-semibold text-slate-700 underline decoration-slate-300 underline-offset-2 hover:text-slate-900"
-                        >
-                          View Output
-                        </a>
-                      )}
+                    <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                      <div>
+                        {run?.outputUrl ? (
+                          <a
+                            href={run.outputUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs font-semibold text-hilton underline decoration-hilton/40 underline-offset-2 hover:text-hilton-dark"
+                          >
+                            View Output
+                          </a>
+                        ) : (
+                          <span className="text-[11px] text-slate-400">
+                            {disabled ? `Scheduled for Phase ${task.phase}` : "Ready to run"}
+                          </span>
+                        )}
+                      </div>
                       <Button
                         variant={disabled ? "secondary" : "primary"}
                         disabled={disabled}
                         onClick={() => handleRunTask(task)}
                         title={disabled ? `Scheduled for Phase ${task.phase}` : `Run ${task.name}`}
                       >
-                        Run
+                        {disabled ? `Phase ${task.phase}` : "Run Task"}
                       </Button>
                     </div>
                   </div>
