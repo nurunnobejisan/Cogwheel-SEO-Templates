@@ -8,7 +8,14 @@
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Milford Hospitality Group",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "(Milford Hospitality Group) Tom Quick Inn",
@@ -19,7 +26,14 @@
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Milford Hospitality Group",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Arrive Albuquerque (Palisociety)",
@@ -30,7 +44,14 @@
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
-    "status": "On Hold"
+    "status": "Active",
+    "managementGroup": "palisociety",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Arrive Austin (Palisociety)",
@@ -41,7 +62,14 @@
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "palisociety",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Arrive Memphis (Palisociety)",
@@ -52,7 +80,14 @@
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "palisociety",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Arrive Palm Springs (Palisociety)",
@@ -63,7 +98,14 @@
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "palisociety",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Arrive Wilmington (Palisociety)",
@@ -74,7 +116,14 @@
     "propertyType": "Independent",
     "category": "SMB Independent 2026",
     "projectType": "Ongoing",
-    "status": "On Hold"
+    "status": "Active",
+    "managementGroup": "palisociety",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Curtis Denver (Sage)",
@@ -85,7 +134,14 @@
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "One-Time",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Embassy Suites Asheville (Parks) Montford Restaurant 2026",
@@ -96,7 +152,14 @@
     "propertyType": "Restaurant",
     "category": "Restaurant",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Embassy Suites Asheville (Parks) Soprana Restaurant 2026",
@@ -107,7 +170,14 @@
     "propertyType": "Restaurant",
     "category": "Restaurant",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Governors' Inn",
@@ -118,18 +188,14 @@
     "propertyType": "Independent",
     "category": "Independent",
     "projectType": "Ongoing",
-    "status": "Active"
-  },
-  {
-    "name": "Hotel De La Poste French Quarter (Sage",
-    "brand": "Independent",
-    "city": "New Orleans",
-    "state": "LA",
-    "url": "https://hoteldelapostenola.com/",
-    "propertyType": "",
-    "category": "",
-    "projectType": "",
-    "status": "To Do"
+    "status": "Active",
+    "managementGroup": "Milford Hospitality Group",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Hotel De La Poste French Quarter (Sage)",
@@ -140,7 +206,14 @@
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "Brand+Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Hotel Ely",
@@ -162,29 +235,50 @@
     "propertyType": "Soft Vanity",
     "category": "Soft vanity",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Hotel Per La (Vanity)",
     "brand": "Soft Vanity",
-    "city": "",
-    "state": "",
+    "city": "Los Angeles",
+    "state": "CA",
     "url": "https://hotelperla.com",
     "propertyType": "Independent",
     "category": "Soft vanity",
     "projectType": "Ongoing",
-    "status": "Completed"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "La Fonda (Bentley)",
     "brand": "Independent",
-    "city": "",
-    "state": "",
+    "city": "Santa Fe",
+    "state": "NM",
     "url": "https://lafondasantafe.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Morrison House (Sage)",
@@ -195,7 +289,14 @@
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "Brand+Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Pinon Court (Bentley)",
@@ -206,7 +307,14 @@
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "Rancho Bernardo Inn (JC Resorts)",
@@ -222,13 +330,20 @@
   {
     "name": "SENZA Hotel (Bentley)",
     "brand": "Independent",
-    "city": "",
-    "state": "",
+    "city": "Napa",
+    "state": "CA",
     "url": "https://senzahotel.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Alexandrian (Sage)",
@@ -239,7 +354,14 @@
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "Brand+Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Barnett (HRI)",
@@ -250,29 +372,50 @@
     "propertyType": "Vanity",
     "category": "Vanity Site",
     "projectType": "Ongoing",
-    "status": "Completed"
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Coachman (Sage)",
     "brand": "Independent",
-    "city": "",
-    "state": "",
+    "city": "Lake Tahoe",
+    "state": "CA",
     "url": "https://www.coachmantahoe.com/",
     "propertyType": "Independent",
     "category": "Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Grand Hotel Golf Resort & Spa (PCH)",
     "brand": "Soft Brand",
-    "city": "",
-    "state": "",
+    "city": "Point Clear",
+    "state": "AL",
     "url": "https://www.grand1847.com/",
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "Brand+Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "PCH Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Inn at Wise",
@@ -283,7 +426,14 @@
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "n/a",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Nines Portland (Sage)",
@@ -294,7 +444,14 @@
     "propertyType": "Soft Vanity",
     "category": "Soft Vanity",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Raphael Hotel (Bentley)",
@@ -305,7 +462,14 @@
     "propertyType": "Vanity",
     "category": "Vanity Site",
     "projectType": "Brand+Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Winslow Arizona",
@@ -316,7 +480,14 @@
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Lodging IQ",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "The Winslow Oklahoma",
@@ -327,7 +498,14 @@
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Lodging IQ",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "AC Hotel Bethesda - WASBA (OTO)",
@@ -1174,7 +1352,14 @@
     "propertyType": "Boutique Hotel",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "AC Hotel Bozeman Downtown",
@@ -1207,7 +1392,14 @@
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
   },
   {
     "name": "RevAMP",
@@ -1494,5 +1686,3168 @@
     "category": "",
     "projectType": "30 Point",
     "status": "Completed"
+  },
+  {
+    "name": "Hyatt Place Washington DC/US Capitol",
+    "brand": "Hyatt",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.hyatt.com/hyatt-place/en-US/waszd-hyatt-place-washington-dc-us-capitol",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott Tampa Westshore/Airport",
+    "brand": "Marriott",
+    "city": "Tampa",
+    "state": "FL",
+    "url": "https://www.marriott.com/en-us/hotels/tpaws-residence-inn-tampa-westshore-airport/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM; 30 Points Audit",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Grand Hotel Golf Resort & Spa (PCH)",
+    "brand": "Marriott",
+    "city": "Point Clear",
+    "state": "AL",
+    "url": "https://www.marriott.com/en-us/hotels/ptlak-grand-hotel-golf-resort-and-spa-autograph-collection/overview/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Draft",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hyatt Thompson Houson",
+    "brand": "Hyatt",
+    "city": "Houston",
+    "state": "TX",
+    "url": "https://www.hyatt.com/thompson-hotels/en-US/iahth-thompson-houston",
+    "propertyType": "Boutique / Luxury",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Draft",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Fort Wayne Downtown at Grand Wayne Convention Center",
+    "brand": "Marriott",
+    "city": "Fort Wayne",
+    "state": "IN",
+    "url": "https://www.marriott.com/en-us/hotels/fwadt-courtyard-fort-wayne-downtown-at-grand-wayne-convention-center/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Draft",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Trilogy Hotel Montgomery, Autograph Collection",
+    "brand": "Marriott",
+    "city": "Montgomery",
+    "state": "AL",
+    "url": "https://www.marriott.com/en-us/hotels/mgmak-trilogy-hotel-montgomery-autograph-collection/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Draft",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hotel Per La, Autograph Collection",
+    "brand": "Marriott",
+    "city": "Los Angeles",
+    "state": "CA",
+    "url": "https://www.marriott.com/en-us/hotels/laxdk-hotel-per-la-autograph-collection/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality; delete",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Embassy Suites by Hilton Tampa Brandon",
+    "brand": "Hilton",
+    "city": "Tampa",
+    "state": "FL",
+    "url": "https://www.hilton.com/en/hotels/tpabdes-embassy-suites-tampa-brandon/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Fairfield by Marriott Inn & Suites Louisville Downtown",
+    "brand": "Marriott",
+    "city": "Louisville",
+    "state": "KY",
+    "url": "https://www.marriott.com/en-us/hotels/sdffd-fairfield-inn-and-suites-louisville-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Arlington National Landing",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasnl-ac-hotel-arlington-national-landing/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Boston Cambridge",
+    "brand": "Marriott",
+    "city": "Cambridge",
+    "state": "MA",
+    "url": "https://www.marriott.com/en-us/hotels/bosar-ac-hotel-boston-cambridge/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Homewood Suites by Hilton Long Beach Airport",
+    "brand": "Hilton",
+    "city": "Long Beach",
+    "state": "CA",
+    "url": "https://www.hilton.com/en/hotels/lgbarhw-homewood-suites-long-beach-airport/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Kansas City Plaza",
+    "brand": "Marriott",
+    "city": "Kansas City",
+    "state": "MO",
+    "url": "https://www.marriott.com/en-us/hotels/mciac-ac-hotel-kansas-city-plaza/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Bloomington",
+    "brand": "Hilton",
+    "city": "Bloomington",
+    "state": "IN",
+    "url": "https://www.hilton.com/en/hotels/bmgingi-hilton-garden-inn-bloomington/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Miami Wynwood",
+    "brand": "Marriott",
+    "city": "Miami",
+    "state": "FL",
+    "url": "https://www.marriott.com/en-us/hotels/miaaw-ac-hotel-miami-wynwood/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "SpringHill Suites by Marriott Louisville Downtown",
+    "brand": "Marriott",
+    "city": "Louisville",
+    "state": "KY",
+    "url": "https://www.marriott.com/en-us/hotels/sdfsd-springhill-suites-louisville-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Pleasanton",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/oakac-ac-hotel-pleasanton/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Washington DC Convention Center",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasae-ac-hotel-washington-dc-convention-center/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn - Big Sky/The Wilson Hotel",
+    "brand": "Marriott",
+    "city": "Bozeman",
+    "state": "MT",
+    "url": "https://www.marriott.com/en-us/hotels/bznrk-residence-inn-big-sky-the-wilson-hotel/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Hoffman Estates",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/chihegi-hilton-garden-inn-hoffman-estates/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Boston Brookline",
+    "brand": "Marriott",
+    "city": "Cambridge",
+    "state": "MA",
+    "url": "https://www.marriott.com/en-us/hotels/bosbl-courtyard-boston-brookline/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Lake Forest Mettawa",
+    "brand": "Hilton",
+    "city": "Chicago",
+    "state": "IL",
+    "url": "https://www.hilton.com/en/hotels/ordlfgi-hilton-garden-inn-lake-forest-mettawa/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Washington Capitol Hill/Navy Yard",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasny-courtyard-washington-capitol-hill-navy-yard/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn & Suites Omaha-Downtown",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/omadnhx-hampton-suites-omaha-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Los Angeles Pasadena/Old Town",
+    "brand": "Marriott",
+    "city": "Los Angeles",
+    "state": "CA",
+    "url": "https://www.marriott.com/en-us/hotels/laxot-courtyard-los-angeles-pasadena-old-town/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Naperville/Warrenville",
+    "brand": "Hilton",
+    "city": "Chicago",
+    "state": "IL",
+    "url": "https://www.hilton.com/en/hotels/ordnwgi-hilton-garden-inn-naperville-warrenville/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn - Pittsburgh University Place",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/pitucgi-hilton-garden-inn-pittsburgh-university-place/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Philadelphia Downtown",
+    "brand": "Marriott",
+    "city": "Philadelphia",
+    "state": "PA",
+    "url": "https://www.marriott.com/en-us/hotels/phlyd-courtyard-philadelphia-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Homewood Suites by Hilton Tampa-Brandon",
+    "brand": "Hilton",
+    "city": "Tampa",
+    "state": "FL",
+    "url": "https://www.hilton.com/en/hotels/tpahwhw-homewood-suites-tampa-brandon/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Sunnyvale Silicon Valley",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/sjcsv-courtyard-sunnyvale-silicon-valley/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Hershey",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/mdthegi-hilton-garden-inn-hershey/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott San Diego Downtown",
+    "brand": "Marriott",
+    "city": "San Diego",
+    "state": "CA",
+    "url": "https://www.marriott.com/en-us/hotels/sancd-courtyard-san-diego-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn & Suites Annapolis",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/andmdhx-hampton-suites-annapolis/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Alexandria Old Town/Southwest",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasal-courtyard-alexandria-old-town-southwest/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Omaha Downtown/Old Market Area",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/omacy-courtyard-omaha-downtown-old-market-area/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Bethesda Downtown",
+    "brand": "Hilton",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.hilton.com/en/hotels/wasbtgi-hilton-garden-inn-bethesda-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Embassy Suites by Hilton South Jordan Salt Lake City",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/slcjoes-embassy-suites-south-jordan-salt-lake-city/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Brooklyn New York",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/nycbshh-hilton-brooklyn-new-york/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton St. Petersburg Carillon Park",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/piecahf-hilton-st-petersburg-carillon-park/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Queens/JFK Airport",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/jfkqagi-hilton-garden-inn-queens-jfk-airport/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Los Angeles Culver City",
+    "brand": "Hilton",
+    "city": "Los Angeles",
+    "state": "CA",
+    "url": "https://www.hilton.com/en/hotels/laxwehh-hilton-los-angeles-culver-city/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Garden City Long Island",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/jhcgchx-hampton-garden-city-long-island/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Homewood Suites by Hilton Omaha-Downtown",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/omahwhw-homewood-suites-omaha-downtown/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Homewood Suites by Hilton University City Philadelphia, PA",
+    "brand": "Hilton",
+    "city": "Philadelphia",
+    "state": "PA",
+    "url": "https://www.hilton.com/en/hotels/phluphw-homewood-suites-university-city-philadelphia-pa/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Philadelphia Center City-Convention Center",
+    "brand": "Hilton",
+    "city": "Philadelphia",
+    "state": "PA",
+    "url": "https://www.hilton.com/en/hotels/phlcvhx-hampton-philadelphia-center-city-convention-center/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Le Méridien Tampa, The Courthouse",
+    "brand": "Marriott",
+    "city": "Tampa",
+    "state": "FL",
+    "url": "https://www.marriott.com/en-us/hotels/tpamd-le-meridien-tampa-the-courthouse/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Washington Marriott Capitol Hill",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasnn-washington-marriott-capitol-hill/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Denver Marriott South at Park Meadows",
+    "brand": "Marriott",
+    "city": "Denver",
+    "state": "CO",
+    "url": "https://www.marriott.com/en-us/hotels/denms-denver-marriott-south-at-park-meadows/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Ithaca Marriott Downtown on the Commons",
+    "brand": "Marriott",
+    "city": "Ithaca",
+    "state": "NY",
+    "url": "https://www.marriott.com/en-us/hotels/ithmc-ithaca-marriott-downtown-on-the-commons/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Mystic Marriott Hotel & Spa",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/gonmm-mystic-marriott-hotel-and-spa/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Moxy NYC Downtown",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/nycof-moxy-nyc-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Renaissance Boulder Flatiron Hotel",
+    "brand": "Marriott",
+    "city": "Denver",
+    "state": "CO",
+    "url": "https://www.marriott.com/en-us/hotels/denir-renaissance-boulder-flatiron-hotel/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Renaissance Fort Lauderdale West Hotel",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/fllrp-renaissance-fort-lauderdale-west-hotel/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Westin Dallas Fort Worth Airport",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/dfwwa-the-westin-dallas-fort-worth-airport/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Westin Philadelphia",
+    "brand": "Marriott",
+    "city": "Philadelphia",
+    "state": "PA",
+    "url": "https://www.marriott.com/en-us/hotels/phlwi-the-westin-philadelphia/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM Group 1",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Manhattan-Chelsea",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/nyccshx-hampton-manhattan-chelsea/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Manhattan/Times Square South",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/nycmahx-hampton-manhattan-times-square-south/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn New York/Manhattan-Midtown East",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/nycmegi-hilton-garden-inn-new-york-manhattan-midtown-east/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Manhattan-Madison Square Garden Area",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/nychshx-hampton-manhattan-madison-square-garden-area/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn & Suites Yonkers",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/nycynhx-hampton-suites-yonkers/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Westchester Dobbs Ferry",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/hpnwdgi-hilton-garden-inn-westchester-dobbs-ferry/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Washington DC/Georgetown Area",
+    "brand": "Hilton",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.hilton.com/en/hotels/waswegi-hilton-garden-inn-washington-dc-georgetown-area/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Austin University Capitol District",
+    "brand": "Hilton",
+    "city": "Austin",
+    "state": "TX",
+    "url": "https://www.hilton.com/en/hotels/ausaugi-hilton-garden-inn-austin-university-capitol-district/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Boston Logan Airport Chelsea",
+    "brand": "Hilton",
+    "city": "Cambridge",
+    "state": "MA",
+    "url": "https://www.hilton.com/en/hotels/boshthx-hampton-boston-logan-airport-chelsea/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn & Suites Providence/Smithfield",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/pvdsfhx-hampton-suites-providence-smithfield/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Detroit/Novi",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/detnogi-hilton-garden-inn-detroit-novi/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Long Beach Airport",
+    "brand": "Hilton",
+    "city": "Long Beach",
+    "state": "CA",
+    "url": "https://www.hilton.com/en/hotels/lgbaphx-hampton-long-beach-airport/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn & Suites Miami Wynwood Design District",
+    "brand": "Hilton",
+    "city": "Miami",
+    "state": "FL",
+    "url": "https://www.hilton.com/en/hotels/miamihx-hampton-suites-miami-wynwood-design-district/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn & Suites Miami-Doral/Dolphin Mall",
+    "brand": "Hilton",
+    "city": "Miami",
+    "state": "FL",
+    "url": "https://www.hilton.com/en/hotels/miaflhx-hampton-suites-miami-doral-dolphin-mall/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Washington-Downtown-Convention Center",
+    "brand": "Hilton",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.hilton.com/en/hotels/washhhx-hampton-washington-downtown-convention-center/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Washington DC Downtown",
+    "brand": "Hilton",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.hilton.com/en/hotels/dcachgi-hilton-garden-inn-washington-dc-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Nines, a Luxury Collection Hotel, Portland",
+    "brand": "Marriott",
+    "city": "Portland",
+    "state": "OR",
+    "url": "https://www.marriott.com/en-us/hotels/pdxln-the-nines-a-luxury-collection-hotel-portland/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Embassy Suites by Hilton Boulder",
+    "brand": "Hilton",
+    "city": "Denver",
+    "state": "CO",
+    "url": "https://www.hilton.com/en/hotels/denboes-embassy-suites-boulder/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Morrison House Old Town Alexandria, Autograph Collection",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasmh-morrison-house-old-town-alexandria-autograph-collection/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Alexandrian Old Town Alexandria, Autograph Collection",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasmo-the-alexandrian-old-town-alexandria-autograph-collection/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Homewood Suites by Hilton Raleigh Cary I-40",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/rducxhw-homewood-suites-raleigh-cary-i-40/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Grand Hotel Golf Resort & Spa, Autograph Collection",
+    "brand": "Marriott",
+    "city": "Point Clear",
+    "state": "AL",
+    "url": "https://www.marriott.com/en-us/hotels/ptlak-grand-hotel-golf-resort-and-spa-autograph-collection/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "PCH Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Renaissance Mobile Riverview Plaza Hotel",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/mobrv-renaissance-mobile-riverview-plaza-hotel/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "PCH Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Homewood Suites by Hilton New Orleans French Quarter",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/msyfrhw-homewood-suites-new-orleans-french-quarter/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Dana Point Doheny Beach",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/snadbgi-hilton-garden-inn-dana-point-doheny-beach/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Canopy by Hilton Dallas Uptown",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/dfwrmpy-canopy-dallas-uptown/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Renaissance Montgomery Hotel & Spa at the Convention Center",
+    "brand": "Marriott",
+    "city": "Montgomery",
+    "state": "AL",
+    "url": "https://www.marriott.com/en-us/hotels/mgmbr-renaissance-montgomery-hotel-and-spa-at-the-convention-center/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "PCH Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Auburn Marriott Opelika Resort & Spa at Grand National",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/csgab-auburn-marriott-opelika-resort-and-spa-at-grand-national/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "PCH Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn & Suites Boerne",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/satbohx-hampton-suites-boerne/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Renaissance Birmingham Ross Bridge Golf Resort & Spa",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/bhmhv-renaissance-birmingham-ross-bridge-golf-resort-and-spa/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "PCH Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Motto by Hilton Nashville Downtown",
+    "brand": "Hilton",
+    "city": "Nashville",
+    "state": "TN",
+    "url": "https://www.hilton.com/en/hotels/bnairua-motto-nashville-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Chartwell Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "DoubleTree Suites by Hilton Hotel Salt Lake City Downtown",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/slcwsdt-doubletree-suites-salt-lake-city-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Denver Downtown",
+    "brand": "Marriott",
+    "city": "Denver",
+    "state": "CO",
+    "url": "https://www.marriott.com/en-us/hotels/dencd-courtyard-denver-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Knoxville",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/knxkhhf-hilton-knoxville/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Aimbridge Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Moxy Denver Cherry Creek",
+    "brand": "Marriott",
+    "city": "Denver",
+    "state": "CO",
+    "url": "https://www.marriott.com/en-us/hotels/denox-moxy-denver-cherry-creek/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Staybridge Suites IAH Airport East",
+    "brand": "IHG",
+    "city": "",
+    "state": "",
+    "url": "https://www.ihg.com/staybridge/hotels/us/en/humble/houbl/hoteldetail",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Om Woodbridge",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hotel de la Poste – French Quarter, A Renaissance Hotel",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/msyrf-hotel-de-la-poste-french-quarter-a-renaissance-hotel/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Four Points by Sheraton Orlando International Drive",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/mcofp-four-points-orlando-international-drive/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Aimbridge Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Downtown Dallas",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/dalpagi-hilton-garden-inn-downtown-dallas/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton San Antonio Hill Country",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/sathchf-hilton-san-antonio-hill-country/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Pennywell Hotel",
+    "brand": "Independent",
+    "city": "",
+    "state": "",
+    "url": "https://thepennywellhotel.com/",
+    "propertyType": "Boutique",
+    "category": "SMB Independent",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Hospitality Ventures Management",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Bidwell Marriott Portland",
+    "brand": "Marriott",
+    "city": "Portland",
+    "state": "OR",
+    "url": "https://www.marriott.com/en-us/hotels/pdxct-the-bidwell-marriott-portland/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "DoubleTree by Hilton Asheville Downtown",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/avlildt-doubletree-asheville-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Tru by Hilton Raleigh Durham Airport",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/rduatru-tru-raleigh-durham-airport/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Homewood Suites by Hilton Greenville Downtown",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/gspsohw-homewood-suites-greenville-downtown/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Embassy Suites by Hilton Asheville Downtown",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/avleses-embassy-suites-asheville-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Bozeman Downtown",
+    "brand": "Marriott",
+    "city": "Bozeman",
+    "state": "MT",
+    "url": "https://www.marriott.com/en-us/hotels/bznar-ac-hotel-bozeman-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Embassy Suites by Hilton Minneapolis Downtown",
+    "brand": "Hilton",
+    "city": "Minneapolis",
+    "state": "MN",
+    "url": "https://www.hilton.com/en/hotels/mspsses-embassy-suites-minneapolis-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton San Diego Bayfront",
+    "brand": "Hilton",
+    "city": "San Diego",
+    "state": "CA",
+    "url": "https://www.hilton.com/en/hotels/sancchh-hilton-san-diego-bayfront/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "30 Points Audit",
+    "status": "Active",
+    "managementGroup": "30 Points Audit",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Canopy by Hilton Boston Downtown",
+    "brand": "Hilton",
+    "city": "Cambridge",
+    "state": "MA",
+    "url": "https://www.hilton.com/en/hotels/bostnpy-canopy-boston-downtown/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Olshan",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Renaissance Shoals Resort & Spa",
+    "brand": "Marriott",
+    "city": "Florence",
+    "state": "AL",
+    "url": "https://www.marriott.com/en-us/hotels/mslbr-renaissance-shoals-resort-and-spa/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "PCH Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Los Angeles South Bay",
+    "brand": "Marriott",
+    "city": "Los Angeles",
+    "state": "CA",
+    "url": "https://www.marriott.com/en-us/hotels/laxae-ac-hotel-los-angeles-south-bay/overview/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Welcome",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Sacramento Cal Expo",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/sacce-courtyard-sacramento-cal-expo/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Welcome",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hyatt Union Square New York",
+    "brand": "Hyatt",
+    "city": "",
+    "state": "",
+    "url": "https://www.hyatt.com/hyatt-hotels/en-US/nycus-hyatt-union-square-new-york",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "LivSmart Studios by Hilton Columbia Greystone",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/caertey-livsmart-studios-columbia-greystone/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hotel Elysium",
+    "brand": "Independent",
+    "city": "",
+    "state": "",
+    "url": "https://thehotelelysium.com/",
+    "propertyType": "Boutique",
+    "category": "SMB Independent",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Hotel Elysium",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Edgewater NYC Area",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/lgaew-courtyard-edgewater-nyc-area/overview/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Welcome",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Element by Marriott New Orleans Downtown",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/msyed-element-new-orleans-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Visalia Marriott at the Convention Center",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/vismc-visalia-marriott-at-the-convention-center/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Welcome",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Scranton & Conference Center",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/scrcchf-hilton-scranton-and-conference-center/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Welcome",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Fort Wayne at the Grand Wayne Convention Center",
+    "brand": "Hilton",
+    "city": "Fort Wayne",
+    "state": "IN",
+    "url": "https://www.hilton.com/en/hotels/fwafhhf-hilton-fort-wayne-at-the-grand-wayne-convention-center/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Welcome",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Maison Métier",
+    "brand": "Independent",
+    "city": "",
+    "state": "",
+    "url": "https://maisonmetier.com/",
+    "propertyType": "Boutique",
+    "category": "SMB Independent",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn by Hilton Raleigh Cary Alston Town Center",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/rdugghx-hampton-inn-raleigh-cary-alston-town-center/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Parks Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hyatt Place Los Angeles/LAX/El Segundo",
+    "brand": "Hyatt",
+    "city": "Los Angeles",
+    "state": "CA",
+    "url": "https://www.hyatt.com/hyatt-place/en-US/laxze-hyatt-place-los-angeles-lax-el-segundo",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Welcome",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "AC Hotel Pasadena",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/burpa-ac-hotel-pasadena/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Welcome",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "SpringHill Suites by Marriott Denver Downtown",
+    "brand": "Marriott",
+    "city": "Denver",
+    "state": "CO",
+    "url": "https://www.marriott.com/en-us/hotels/densd-springhill-suites-denver-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn by Hilton Dexter",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/cgidxhx-hampton-dexter/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "First call hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "TownePlace Suites by Marriott Sikeston",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/cgist-towneplace-suites-sikeston/overview/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "First call hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Fairfield by Marriott Inn & Suites Sikeston",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/cgisf-fairfield-inn-and-suites-sikeston",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "First call hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Fairfield by Marriott Inn & Suites Poplar Bluff",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/cgifi-fairfield-inn-and-suites-poplar-bluff/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "First call hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Barnett",
+    "brand": "Hyatt",
+    "city": "",
+    "state": "",
+    "url": "https://www.hyatt.com/jdv-by-hyatt/en-US/msyjd-jdv-the-barnett",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hyatt House Nashville Downtown / Convention Center",
+    "brand": "Hyatt",
+    "city": "Nashville",
+    "state": "TN",
+    "url": "https://www.hyatt.com/hyatt-house/en-US/bnaxd-hyatt-house-nashville-downtown-convention-center",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Schulte Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "JW Marriott Houston Downtown",
+    "brand": "Marriott",
+    "city": "Houston",
+    "state": "TX",
+    "url": "https://www.marriott.com/en-us/hotels/houdj-jw-marriott-houston-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HM Alpha Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Benson Hotel and Faculty Club",
+    "brand": "Independent",
+    "city": "",
+    "state": "",
+    "url": "https://thebensonhotel.com/",
+    "propertyType": "Boutique",
+    "category": "Large Independent",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Homewood Suites by Hilton Washington, D.C. Downtown",
+    "brand": "Hilton",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.hilton.com/en/hotels/washwhw-homewood-suites-washington-dc-downtown",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott San Jose North/Silicon Valley",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/sjcno-courtyard-san-jose-north-silicon-valley/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Omaha Downtown/Old Market Area",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/omadmgi-hilton-garden-inn-omaha-downtown-old-market-area/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #2",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott Southington",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/bdlst-residence-inn-southington",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott Houston Westchase on Westheimer",
+    "brand": "Marriott",
+    "city": "Houston",
+    "state": "TX",
+    "url": "https://www.marriott.com/en-us/hotels/houwt-residence-inn-houston-westchase-on-westheimer/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Rockville-Gaithersburg",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/dcarvgi-hilton-garden-inn-rockville-gaithersburg/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott Brownsville",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/brori-residence-inn-brownsville/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Harlingen",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/hrlcy-courtyard-harlingen/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "TownePlace Suites by Marriott Sunnyvale Silicon Valley",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/sjcss-towneplace-suites-sunnyvale-silicon-valley/overview/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott South Bend Mishawaka",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/sbnmr-residence-inn-south-bend-mishawaka",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hyatt House White Plains",
+    "brand": "Hyatt",
+    "city": "",
+    "state": "",
+    "url": "https://www.hyatt.com/hyatt-house/en-US/lgaxw-hyatt-house-white-plains",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott Danbury",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/dxrri-residence-inn-danbury",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Holiday Inn Express New York City Times Square",
+    "brand": "IHG",
+    "city": "",
+    "state": "",
+    "url": "https://www.ihg.com/holidayinnexpress/hotels/us/en/new-york/nycws/hoteldetail",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Holiday Inn New York City - Wall Street",
+    "brand": "IHG",
+    "city": "",
+    "state": "",
+    "url": "https://www.ihg.com/holidayinn/hotels/us/en/new-york/nycmf/hoteldetail",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott Mystic Groton",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/gonmy-residence-inn-mystic-groton",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Holiday Inn Express New York City-Wall Street",
+    "brand": "IHG",
+    "city": "",
+    "state": "",
+    "url": "https://www.ihg.com/holidayinnexpress/hotels/us/en/new-york/nycsf/hoteldetail",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hyatt Place Houston/Sugar Land",
+    "brand": "Hyatt",
+    "city": "Houston",
+    "state": "TX",
+    "url": "https://www.hyatt.com/hyatt-place/en-US/houzs-hyatt-place-houston-sugar-land",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Hartford South/Glastonbury",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/bdlghgi-hilton-garden-inn-hartford-south-glastonbury/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Courtyard by Marriott Houston Westchase",
+    "brand": "Marriott",
+    "city": "Houston",
+    "state": "TX",
+    "url": "https://www.marriott.com/en-us/hotels/houwc-courtyard-houston-westchase/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Selinsgrove/Shamokin Dam",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/sgvpahx-hampton-selinsgrove-shamokin-dam/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hilton Garden Inn Merrillville",
+    "brand": "Hilton",
+    "city": "Chicago",
+    "state": "IL",
+    "url": "https://www.hilton.com/en/hotels/mdwingi-hilton-garden-inn-merrillville/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Fairfield by Marriott Inn & Suites South Bend at Notre Dame",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/sbnnd-fairfield-inn-and-suites-south-bend-at-notre-dame/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Home2 Suites by Hilton Chicago River North",
+    "brand": "Hilton",
+    "city": "Chicago",
+    "state": "IL",
+    "url": "http://hilton.com/en/hotels/chirnht-home2-suites-chicago-river-north/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hampton Inn Danville",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/dankchx-hampton-danville/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "SpringHill Suites by Marriott Alexandria Old Town/Southwest",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasva-springhill-suites-alexandria-old-town-southwest/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott Chicago Lake Forest/Mettawa",
+    "brand": "Marriott",
+    "city": "Chicago",
+    "state": "IL",
+    "url": "https://www.marriott.com/en-us/hotels/chilk-residence-inn-chicago-lake-forest-mettawa/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Industrialist Hotel, Pittsburgh, Autograph Collection",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/pitad-the-industrialist-hotel-pittsburgh-autograph-collection/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "30 Points Audit",
+    "status": "Paused",
+    "managementGroup": "HRI Hospitality; 30 Points Audit",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Aloft by Marriott New Orleans Downtown",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/msyal-aloft-new-orleans-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "30 Points Audit",
+    "status": "Paused",
+    "managementGroup": "HRI Hospitality; 30 Points Audit",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott Williamsburg",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/phfrw-residence-inn-williamsburg/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "SpringHill Suites by Marriott Williamsburg",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/phfsh-springhill-suites-williamsburg/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3; Chartwell Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "The Raphael Hotel, Autograph Collection",
+    "brand": "Marriott",
+    "city": "Kansas City",
+    "state": "MO",
+    "url": "https://www.marriott.com/en-us/hotels/mciak-the-raphael-hotel-autograph-collection/overview/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Bentley Legacy",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Holiday Inn Norwich",
+    "brand": "IHG",
+    "city": "",
+    "state": "",
+    "url": "https://www.ihg.com/holidayinn/hotels/us/en/norwich/nwhct/hoteldetail",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Salt Ranch Hotel",
+    "brand": "Independent",
+    "city": "",
+    "state": "",
+    "url": "https://saltranchhotel.com/",
+    "propertyType": "Boutique",
+    "category": "SMB Independent",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Remington",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Embassy Suites by Hilton Orlando International Drive ICON Park",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://www.hilton.com/en/hotels/mcoites-embassy-suites-orlando-international-drive-icon-park/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Crestline",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Klondike Cabins",
+    "brand": "Independent",
+    "city": "",
+    "state": "",
+    "url": "https://www.theklondikecabins.com/",
+    "propertyType": "Boutique",
+    "category": "SMB Independent",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "n/a",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Hotel Teatro",
+    "brand": "Independent",
+    "city": "",
+    "state": "",
+    "url": "https://hotelteatro.com/",
+    "propertyType": "Boutique",
+    "category": "Large Independent",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Sage Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "DC/Georgetown/West End",
+    "brand": "Hyatt",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.hyatt.com/hyatt-place/en-US/waszm-hyatt-place-washington-dc-georgetown-west-end",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Fairfield by Marriott Inn & Suites Washington, DC/Downtown",
+    "brand": "Marriott",
+    "city": "Washington",
+    "state": "DC",
+    "url": "https://www.marriott.com/en-us/hotels/wasfc-fairfield-inn-and-suites-washington-dc-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Candlewood Suites New York City- Times Square",
+    "brand": "IHG",
+    "city": "",
+    "state": "",
+    "url": "https://www.ihg.com/candlewood/hotels/us/en/new-york/nyccw/hoteldetail",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Fairfield by Marriott Inn & Suites New York Manhattan/Downtown East",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/nycfm-fairfield-inn-and-suites-new-york-manhattan-downtown-east/overview/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Holiday Inn Express NYC Chelsea - NoMad Area",
+    "brand": "IHG",
+    "city": "",
+    "state": "",
+    "url": "https://www.ihg.com/holidayinnexpress/hotels/us/en/new-york/nycny/hoteldetail",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Fairfield Inn New York LaGuardia Airport/Flushing",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/lgafi-fairfield-inn-new-york-laguardia-airport-flushing/overview/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Holiday Inn Express & Suites Boston - Cambridge",
+    "brand": "IHG",
+    "city": "Cambridge",
+    "state": "MA",
+    "url": "https://www.ihg.com/holidayinnexpress/hotels/us/en/cambridge/boscb/hoteldetail",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Residence Inn by Marriott West Orange",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/ewrog-residence-inn-west-orange/overview/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "HHM - Group #3",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Sheraton Fort Worth Downtown Hotel",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://www.marriott.com/en-us/hotels/dfwds-sheraton-fort-worth-downtown-hotel/overview/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Aimbridge Hospitality",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Caption by Hyatt Downtown Nashville",
+    "brand": "Hyatt",
+    "city": "Nashville",
+    "state": "TN",
+    "url": "https://www.hyatt.com/caption-by-hyatt/en-US/bnacp-caption-by-hyatt-downtown-nashville",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "30 Points Audit",
+    "status": "Active",
+    "managementGroup": "HRI Hospitality; 30 Points Audit",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Razib Marketing",
+    "brand": "Independent",
+    "city": "",
+    "state": "",
+    "url": "https://razibmarketing.com",
+    "propertyType": "Boutique",
+    "category": "SMB Independent",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini",
+      "perplexity"
+    ]
   }
 ]

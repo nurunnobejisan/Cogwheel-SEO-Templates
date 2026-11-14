@@ -65,6 +65,38 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
     active: true,
     createdAt: "2026-11-13T00:00:00.000Z",
   },
+  {
+    id: "seed-visibility-suite-5-platforms",
+    taskId: null,
+    title: "5-Platform Generative Search Alignment (VisibilitySuite)",
+    ruleText:
+      "Align SEO recommendations with the 5 live AI tracking engines monitored across Cogwheel's 200+ property portfolio: Google AI Overviews, ChatGPT Search, Google Gemini, Perplexity, and AI Mode. Prioritize entity schema (Hotel, LodgingBusiness, DaySpa, FoodEstablishment) and direct-booking citation triggers.",
+    exampleGood: "Optimize FAQ schema and spa pricing for citations across ChatGPT Search, Google AI Overviews, Gemini, and Perplexity.",
+    exampleBad: "Targeting only classic 10 blue links Google desktop search while ignoring AI answer citations.",
+    active: true,
+    createdAt: "2026-11-14T00:00:00.000Z",
+  },
+  {
+    id: "seed-management-group-benchmarking",
+    taskId: null,
+    title: "Hospitality Management Group & Comp-Set Segmentation",
+    ruleText:
+      "Identify property management groups (HHM Groups 1/2/3, Sage Hospitality, Bentley Legacy, HRI Hospitality, PCH Hospitality, Milford Group). Never frame sister hotels from the same management portfolio as hostile comp-set competitors; benchmark exclusively against non-portfolio local market rivals.",
+    exampleGood: "Comparing Residence Inn Tampa against neighboring Hyatt Place rather than an HHM sister hotel.",
+    exampleBad: "Selecting an HHM Group 1 sister hotel as the primary hostile competitor in a local ranking battle.",
+    active: true,
+    createdAt: "2026-11-14T00:00:00.000Z",
+  },
+  {
+    id: "seed-brand-standard-direct-booking",
+    taskId: null,
+    title: "Brand Flag vs Soft Brand Direct Booking Paths",
+    ruleText:
+      "For Full Flag properties (Residence Inn, Courtyard, Fairfield, Embassy Suites, Homewood Suites, Hyatt Place), enforce official direct booking and loyalty integration (Marriott Bonvoy, Hilton Honors, World of Hyatt). For Soft Brands (Autograph Collection, Curio, Tribute, Thompson) and Independents, highlight distinctive local amenities, signature dining, and vanity site offerings.",
+    exampleGood: "Highlighting Marriott Bonvoy member rates on Courtyard Fort Wayne while highlighting River View Day Spa on Renaissance Shoals.",
+    active: true,
+    createdAt: "2026-11-14T00:00:00.000Z",
+  },
 ];
 
 const memoryRules: AiTrainingRule[] = [...DEFAULT_SEED_RULES];
