@@ -49,7 +49,7 @@ export function ClientDeliverablesModal({
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              📊 PowerPoint Generator
+              PowerPoint Generator
             </button>
             <button
               type="button"
@@ -60,7 +60,7 @@ export function ClientDeliverablesModal({
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              🖥️ Live Slide Preview
+              Live Slide Preview
             </button>
             <button
               type="button"
@@ -71,7 +71,7 @@ export function ClientDeliverablesModal({
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              📄 1-Page Owner Memo
+              1-Page Owner Memo
             </button>
             <button
               type="button"
@@ -82,7 +82,7 @@ export function ClientDeliverablesModal({
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              ✉️ Email Client
+              Email Dispatcher
             </button>
             <button
               type="button"
@@ -93,7 +93,7 @@ export function ClientDeliverablesModal({
                   : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
-              📑 Google Slides
+              Google Slides
             </button>
           </div>
 

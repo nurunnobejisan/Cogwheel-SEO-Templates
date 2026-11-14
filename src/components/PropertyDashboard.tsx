@@ -669,10 +669,10 @@ export default function PropertyDashboard() {
                   <button
                     type="button"
                     onClick={() => setDeliverablesTab("pptx")}
-                    className="flex flex-col justify-between gap-2 rounded-2xl border border-brand/40 bg-brand-50/50 p-4 text-left transition hover:border-brand hover:bg-brand-50"
+                    className="flex flex-col justify-between gap-2 rounded-2xl border border-brand/40 bg-brand-50/50 p-4 text-left transition hover:border-brand hover:bg-brand-50 dark:border-brand/30 dark:bg-brand-950/20"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-700">STEP 4</span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">STEP 4</span>
                       <span
                         className={`h-2 w-2 rounded-full ${
                           latestRuns["seo-baseline-ai-visibility"] ||
@@ -682,91 +682,102 @@ export default function PropertyDashboard() {
                         }`}
                       />
                     </div>
-                    <div className="font-display text-sm font-bold text-slate-900">
-                      Visibility Deck
+                    <div className="font-display text-sm font-bold text-slate-900 dark:text-white">
+                      Deliverables Studio
                     </div>
-                    <p className="text-xs text-slate-600">Monthly PPTX &amp; AI Visibility Slides.</p>
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      PPTX Deck, Slide Preview, Memo &amp; Email Dispatcher.
+                    </p>
                   </button>
                 </div>
               </Card>
 
-              {/* AI & GEO Intelligence & Deliverables Hub */}
-              <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <button
-                  type="button"
-                  onClick={() => setMainTab("geo")}
-                  className="group flex flex-col justify-between rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50/80 to-white p-4 text-left shadow-sm transition hover:border-purple-400 hover:shadow-md dark:border-purple-900/50 dark:from-purple-950/20 dark:to-slate-900"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-800 dark:bg-purple-950 dark:text-purple-300">
-                      AI SEARCH ENGINE
-                    </span>
-                    <span className="text-xs font-bold text-purple-700 dark:text-purple-400">78% Score</span>
+              {/* Executive Intelligence & Visibility Suite Suite */}
+              <section className="grid gap-4 sm:grid-cols-3">
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
+                        AI Citation Engine
+                      </span>
+                      <span className="font-mono text-xs font-bold text-purple-700 dark:text-purple-400">
+                        78% Ready
+                      </span>
+                    </div>
+                    <h3 className="mt-2.5 font-display text-sm font-bold text-slate-900 dark:text-white">
+                      AI &amp; GEO Readiness Radar
+                    </h3>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      Audit ChatGPT Search, Google AI Overviews &amp; Perplexity citations across 5 schema pillars.
+                    </p>
                   </div>
-                  <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
-                    🤖 AI &amp; GEO Readiness Radar
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setMainTab("geo")}
+                      className="text-xs font-semibold text-purple-700 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
+                    >
+                      Inspect AI Readiness &rarr;
+                    </button>
                   </div>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-                    ChatGPT Search, Google AI Overviews &amp; Perplexity citation audit.
-                  </p>
-                </button>
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => setMainTab("compset")}
-                  className="group flex flex-col justify-between rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/80 to-white p-4 text-left shadow-sm transition hover:border-blue-400 hover:shadow-md dark:border-blue-900/50 dark:from-blue-950/20 dark:to-slate-900"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800 dark:bg-blue-950 dark:text-blue-300">
-                      LOCAL MARKET
-                    </span>
-                    <span className="text-xs font-bold text-emerald-600">84% Win</span>
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
+                        Local Comp-Set
+                      </span>
+                      <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        84% Win
+                      </span>
+                    </div>
+                    <h3 className="mt-2.5 font-display text-sm font-bold text-slate-900 dark:text-white">
+                      Local Comp-Set Intelligence
+                    </h3>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      Benchmark organic positions against top 3 local properties with keyword battleground metrics.
+                    </p>
                   </div>
-                  <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
-                    🏨 Local Comp-Set Ranking Matrix
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setMainTab("compset")}
+                      className="text-xs font-semibold text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                    >
+                      View Local Matrix &rarr;
+                    </button>
                   </div>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-                    Benchmark against top 3 nearby boutique &amp; luxury competitors.
-                  </p>
-                </button>
+                </div>
 
-                <button
-                  type="button"
-                  onClick={() => setDeliverablesTab("preview")}
-                  className="group flex flex-col justify-between rounded-2xl border border-brand/40 bg-gradient-to-br from-brand-50/60 to-white p-4 text-left shadow-sm transition hover:border-brand hover:shadow-md dark:border-brand/40 dark:from-brand-950/20 dark:to-slate-900"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-md bg-brand/20 px-2 py-0.5 text-[10px] font-bold text-slate-900 dark:text-brand-light">
-                      INTERACTIVE
-                    </span>
-                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">5 Slides</span>
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                        VisibilitySuite.ai
+                      </span>
+                      <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-emerald-600">
+                        <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                        Connected
+                      </span>
+                    </div>
+                    <h3 className="mt-2.5 font-display text-sm font-bold text-slate-900 dark:text-white">
+                      VisibilitySuite Data Connector
+                    </h3>
+                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                      Sync batch prompts, comp-set radars, and citation snapshots directly with your dashboard.
+                    </p>
                   </div>
-                  <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
-                    🖥️ Live Slide Deck Preview
+                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <button
+                      type="button"
+                      onClick={() => setShowVisibilitySuite(true)}
+                      className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300"
+                    >
+                      Connect &amp; Sync Data &rarr;
+                    </button>
                   </div>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-                    Flip through slides, edit insight notes, and preview before downloading.
-                  </p>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => setDeliverablesTab("memo")}
-                  className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4 text-left shadow-sm transition hover:border-slate-400 hover:shadow-md dark:border-slate-800 dark:from-slate-800/40 dark:to-slate-900"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-700 dark:text-slate-300">
-                      EXECUTIVE PDF
-                    </span>
-                    <span className="text-xs font-bold text-slate-500">1-Page</span>
-                  </div>
-                  <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
-                    📄 1-Page Owner &amp; GM Memo
-                  </div>
-                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-                    Fast printable briefing with Top 5 search wins &amp; action items.
-                  </p>
-                </button>
+                </div>
               </section>
 
               <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
