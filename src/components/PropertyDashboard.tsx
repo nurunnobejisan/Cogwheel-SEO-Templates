@@ -115,7 +115,7 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
 };
 
 export default function PropertyDashboard() {
-  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset">("home");
+  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs">("home");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
@@ -410,6 +410,7 @@ export default function PropertyDashboard() {
                 { id: "home", label: "Home" },
                 { id: "geo", label: "AI & GEO" },
                 { id: "compset", label: "Comp-Set" },
+                { id: "labs", label: "Labs ðŸ§ª" },
                 { id: "tasks", label: `Tasks (${readyCount})` },
               ] as const
             ).map((tab) => (
@@ -454,7 +455,7 @@ export default function PropertyDashboard() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
                 </svg>
               )}
-              <span className="hidden sm:inline">{isDark ? "Light" : "Dark"}</span>
+
             </button>
           </nav>
         </div>
@@ -876,6 +877,140 @@ export default function PropertyDashboard() {
               property={activeProperty}
               onExportMemo={() => setDeliverablesTab("memo")}
             />
+          )}
+
+          {mainTab === "labs" && (
+            <>
+              {/* Labs Header */}
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Labs</h2>
+                    <span className="rounded-full border border-violet-300/60 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-700 dark:border-violet-700/60 dark:bg-violet-950/40 dark:text-violet-300">Experimental</span>
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Advanced SEO utilities &amp; diagnostic tools â€” test, inspect, and validate in real time.</p>
+                </div>
+              </div>
+
+              {/* Labs Tool Grid */}
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+                {/* Keyword Cluster Analyzer */}
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-violet-100 dark:bg-violet-950/60">
+                        <svg className="h-4 w-4 text-violet-600 dark:text-violet-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" /></svg>
+                      </span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Keyword Cluster Analyzer</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed">Paste keywords to auto-group by semantic topic clusters. Ideal for content silo planning.</p>
+                    <textarea rows={3} placeholder="best hotels in denver\nboutique hotel denver\ndowntown hotel deals..." className="mt-3 w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-700 placeholder:text-slate-400 focus:border-violet-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200" />
+                  </div>
+                  <button type="button" className="mt-3 w-full rounded-xl bg-violet-600 py-2 text-xs font-semibold text-white transition hover:bg-violet-700">Cluster Keywords u2192</button>
+                </div>
+
+                {/* SERP Meta Previewer */}
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-100 dark:bg-sky-950/60">
+                        <svg className="h-4 w-4 text-sky-600 dark:text-sky-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+                      </span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">SERP Meta Previewer</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">Preview how your title &amp; meta description appear in Google search results.</p>
+                    <input type="text" placeholder="Page title (50-60 chars)" maxLength={70} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 mb-2" />
+                    <textarea rows={2} placeholder="Meta description (120-158 chars)" maxLength={160} className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:border-sky-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200" />
+                    <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-800">
+                      <div className="text-[10px] text-slate-400 mb-1">razibmarketing.com u203a hotel u203a page</div>
+                      <div className="text-sm font-medium text-blue-700 dark:text-blue-400 truncate">Your Page Title Will Appear Here</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-2">Your meta description preview will show here. Keep it under 158 characters for best results.</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Schema Generator */}
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-950/60">
+                        <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                      </span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Schema Markup Generator</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">Generate Hotel, FAQPage, or LocalBusiness JSON-LD schema for your property in one click.</p>
+                    <select className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 focus:border-emerald-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                      <option>Hotel Schema (LodgingBusiness)</option>
+                      <option>FAQPage Schema</option>
+                      <option>LocalBusiness Schema</option>
+                      <option>BreadcrumbList Schema</option>
+                    </select>
+                  </div>
+                  <button type="button" className="mt-3 w-full rounded-xl bg-emerald-600 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700">Generate Schema JSON-LD u2192</button>
+                </div>
+
+                {/* Robots.txt Tester */}
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-orange-100 dark:bg-orange-950/60">
+                        <svg className="h-4 w-4 text-orange-600 dark:text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                      </span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Robots.txt Tester</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">Check whether Googlebot or AI crawlers are blocked by robots.txt rules.</p>
+                    <input type="url" placeholder="https://www.hotel.com/page-to-test" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:border-orange-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 mb-2" />
+                    <select className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 focus:border-orange-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                      <option>Googlebot</option>
+                      <option>Bingbot</option>
+                      <option>GPTBot (OpenAI)</option>
+                      <option>ClaudeBot (Anthropic)</option>
+                    </select>
+                  </div>
+                  <button type="button" className="mt-3 w-full rounded-xl bg-orange-500 py-2 text-xs font-semibold text-white transition hover:bg-orange-600">Test Robots.txt u2192</button>
+                </div>
+
+                {/* Redirect Chain Inspector */}
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-100 dark:bg-rose-950/60">
+                        <svg className="h-4 w-4 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5l7 7-7 7M5 5l7 7-7 7" /></svg>
+                      </span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Redirect Chain Inspector</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">Trace 301/302 chains and detect link equity loss or redirect loops.</p>
+                    <input type="url" placeholder="https://old-url.com/page" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:border-rose-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200" />
+                  </div>
+                  <button type="button" className="mt-3 w-full rounded-xl bg-rose-500 py-2 text-xs font-semibold text-white transition hover:bg-rose-600">Trace Redirects u2192</button>
+                </div>
+
+                {/* Content Gap Finder */}
+                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                  <div>
+                    <div className="flex items-center gap-2 mb-3">
+                      <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-950/60">
+                        <svg className="h-4 w-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
+                      </span>
+                      <span className="text-xs font-bold text-slate-700 dark:text-slate-200">Content Gap Finder</span>
+                    </div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">Compare your property URL against top competitors to surface keyword and topic gaps.</p>
+                    <input type="url" placeholder="Your hotel URL" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs mb-2 text-slate-700 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200" />
+                    <input type="url" placeholder="Competitor URL #1" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs mb-2 text-slate-700 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200" />
+                    <input type="url" placeholder="Competitor URL #2" className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-700 placeholder:text-slate-400 focus:border-amber-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200" />
+                  </div>
+                  <button type="button" className="mt-3 w-full rounded-xl bg-amber-500 py-2 text-xs font-semibold text-white transition hover:bg-amber-600">Find Content Gaps u2192</button>
+                </div>
+
+              </div>
+
+              {/* Labs Coming Soon Banner */}
+              <div className="rounded-2xl border border-dashed border-violet-300 bg-violet-50/50 px-6 py-5 text-center dark:border-violet-800/60 dark:bg-violet-950/20">
+                <p className="text-sm font-semibold text-violet-700 dark:text-violet-300">ðŸ§ª More Labs Tools Coming Soon</p>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Log Analyzer · Hreflang Validator · Core Web Vitals Scorer · AI Snippet Generator · Internal Link Map</p>
+              </div>
+            </>
           )}
 
           {mainTab === "crawl" && (
