@@ -68,10 +68,10 @@ export function preRenderValidate(
   for (const [key, def] of Object.entries(schema.variables)) {
     const val = context[key];
     if (val === undefined || val === null || val === "" || (typeof val === "number" && isNaN(val))) {
-      if (def.required) {
-        missing.push(key);
-      } else if (def.fallback !== undefined) {
+      if (def.fallback !== undefined) {
         resolvedContext[key] = def.fallback;
+      } else if (def.required) {
+        missing.push(key);
       } else {
         resolvedContext[key] = "";
       }
