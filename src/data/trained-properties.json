@@ -1155,15 +1155,59 @@
     "status": "Active"
   },
   {
-    "name": "Renaissance Shoals Hotel & Spa (PCH) (Previously Marriott Shoals)",
-    "brand": "Independent",
-    "city": "",
-    "state": "",
-    "url": "",
-    "propertyType": "",
-    "category": "",
-    "projectType": "30 Point",
-    "status": "Account Manager Review"
+    "name": "Renaissance Shoals Resort & Spa",
+    "brand": "Renaissance / Marriott",
+    "city": "Florence",
+    "state": "AL",
+    "url": "https://www.marriott.com/en-us/hotels/mslbr-renaissance-shoals-resort-and-spa/overview/",
+    "propertyType": "Branded Resort",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active"
+  },
+  {
+    "name": "The Curtis Denver",
+    "brand": "DoubleTree / Hilton",
+    "city": "Denver",
+    "state": "CO",
+    "url": "https://www.hilton.com/en/hotels/denchdt-the-curtis-denver/",
+    "propertyType": "Boutique Hotel",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active"
+  },
+  {
+    "name": "AC Hotel Bozeman Downtown",
+    "brand": "AC Hotels / Marriott",
+    "city": "Bozeman",
+    "state": "MT",
+    "url": "https://www.marriott.com/en-us/hotels/bznar-ac-hotel-bozeman-downtown/overview/",
+    "propertyType": "Branded Lifestyle",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active"
+  },
+  {
+    "name": "Embassy Suites by Hilton Minneapolis Downtown",
+    "brand": "Embassy Suites / Hilton",
+    "city": "Minneapolis",
+    "state": "MN",
+    "url": "https://www.hilton.com/en/hotels/mspsees-embassy-suites-minneapolis-downtown/",
+    "propertyType": "Full Service Suites",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active"
+  },
+  {
+    "name": "Hilton Garden Inn Davis Downtown",
+    "brand": "Hilton Garden Inn",
+    "city": "Davis",
+    "state": "CA",
+    "url": "https://www.hilton.com/en/hotels/smfdagi-hilton-garden-inn-davis-downtown/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active"
   },
   {
     "name": "RevAMP",

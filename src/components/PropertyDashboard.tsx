@@ -58,25 +58,32 @@ const ACTIVE_PROPERTY_KEY = "razib_active_property_v1";
 
 const QUICK_PROPERTY_PRESETS = [
   {
-    name: "The Harborview Hotel",
-    brand: "Curio Collection",
-    city: "Charleston",
-    state: "SC",
-    url: "https://www.hilton.com/en/hotels/chshvqq-the-harborview-hotel/",
+    name: "Renaissance Shoals Resort & Spa",
+    brand: "Renaissance / Marriott",
+    city: "Florence",
+    state: "AL",
+    url: "https://www.marriott.com/en-us/hotels/mslbr-renaissance-shoals-resort-and-spa/overview/",
   },
   {
-    name: "The Driskill",
-    brand: "Unbound Collection",
-    city: "Austin",
-    state: "TX",
-    url: "https://www.thedriskill.com/",
+    name: "The Curtis Denver",
+    brand: "DoubleTree / Hilton",
+    city: "Denver",
+    state: "CO",
+    url: "https://www.hilton.com/en/hotels/denchdt-the-curtis-denver/",
   },
   {
-    name: "Hotel Zachary",
-    brand: "Tribute Portfolio",
-    city: "Chicago",
-    state: "IL",
-    url: "https://www.hotelzachary.com/",
+    name: "AC Hotel Bozeman Downtown",
+    brand: "AC Hotels / Marriott",
+    city: "Bozeman",
+    state: "MT",
+    url: "https://www.marriott.com/en-us/hotels/bznar-ac-hotel-bozeman-downtown/overview/",
+  },
+  {
+    name: "Embassy Suites Minneapolis Downtown",
+    brand: "Embassy Suites / Hilton",
+    city: "Minneapolis",
+    state: "MN",
+    url: "https://www.hilton.com/en/hotels/mspsees-embassy-suites-minneapolis-downtown/",
   },
 ];
 
