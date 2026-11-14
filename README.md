@@ -1,14 +1,14 @@
 # Cogwheel SEO & GEO Visibility Studio — Razib Marketing
 
-Automated hospitality SEO intelligence, 78-keyword pool allocation, PowerPoint monthly visibility reporting, Generative Engine Optimization (GEO) audit radar, and multi-channel client deliverable studio for independent and branded hotels.
+Automated hospitality SEO intelligence, 78-keyword pool allocation, PowerPoint monthly visibility reporting, Generative Engine Optimization (GEO) audit radar, VisibilitySuite.ai data connector, and multi-channel client deliverable studio for independent and branded hotels.
 
 ---
 
-## 🌟 Comprehensive Feature Suite
+## Feature Suite
 
-### 1. 🤖 AI & GEO (Generative Engine Optimization) Readiness Radar
+### 1. AI & GEO (Generative Engine Optimization) Readiness Radar
 * **Component**: `src/components/GeoReadinessRadar.tsx`
-* **0–100% AI Citation Readiness Score**: Circular animated gauge benchmarking property visibility across modern AI engines (**ChatGPT Search**, **Google AI Overviews**, **Perplexity AI**, and **Bing/Copilot**).
+* **0–100% AI Citation Readiness Score**: Circular animated gauge benchmarking property visibility across modern AI engines (**ChatGPT Search**, **Google AI Overviews**, **Google Gemini**, **Perplexity AI**, and **Bing/Copilot**).
 * **Hospitality Schema Audit**: Scans and verifies 5 critical structured data pillars:
   * `Hotel / LodgingBusiness` schema (NAP, geo-coordinates, check-in/out hours).
   * `Restaurant / Dining` schema (menus, opening hours, cuisine types).
@@ -17,16 +17,22 @@ Automated hospitality SEO intelligence, 78-keyword pool allocation, PowerPoint m
   * `AmenityFeature` specifications (Wi-Fi, pool, EV charging, fitness center).
 * **Conversational AI Query Generator**: Simulates authentic traveler prompts (e.g. *"Best boutique hotel with river view and spa in Florence AL"*), evaluating AI citation confidence and showing simulated model responses.
 
-### 2. 📊 PowerPoint Monthly Visibility Deck Generator
+### 2. VisibilitySuite.ai Integration & Data Connector
+* **Component**: `src/components/VisibilitySuiteModal.tsx` | **Endpoint**: `/api/visibility-suite`
+* **1-Click Batch Prompt Export**: Generates validated JSON and CSV payloads formatted for direct ingestion into VisibilitySuite.ai onboarding endpoints (`/onboarding/prompts/batch` & `/onboarding/competitors`).
+* **Direct API Sync**: Pushes property keywords, competitors, and target search engines to VisibilitySuite via secure bearer token authentication.
+* **Score Calibration**: Ingests VisibilitySuite citation score snapshots directly into your local GEO Radar.
+
+### 3. PowerPoint Monthly Visibility Deck Generator
 * **Endpoint**: `/api/seo-visibility-report` | **Core Python Engine**: `api/seo_visibility_report.py`
 * **Permanent XML Comment Stripping**: Built-in OpenXML comment scrubber (`strip_pptx_comments`) completely cleans slide notes, comment pins, authors, and relation XML so downloaded PowerPoint decks never show leftover feedback bubbles or comment sidebars.
 * **Smart Service Matching**: Scans target hotel URL and Semrush keyword workbook to automatically detect and tag services (*Hotel & Lodging*, *Resort & Getaways*, *Spa & Wellness*), filtering out irrelevant noise from the Ancillary Keyword summary.
 * **Multi-File Ingest**: Supports drag & drop for PowerPoint templates (`.pptx`), Semrush exports (`.xlsx`/`.xls`), and Google Search Console/SEM PDFs.
 
-### 3. 🖥️ In-Browser Live Slide Deck Preview (Interactive Carousel)
+### 4. In-Browser Live Slide Deck Preview (Interactive Carousel)
 * **Component**: `src/components/SlideDeckPreview.tsx`
 * **Interactive 16:9 Presentation Canvas**: Inspect generated presentation slides directly in the browser before or after downloading.
-* **Full Carousel Navigation**: Previous (`◀`), Next (`▶`), 1–5 slide jump pills, and bottom thumbnail strip.
+* **Full Carousel Navigation**: Previous, Next, 1–5 slide jump pills, and bottom thumbnail strip.
 * **Live Inline Editing**: Modify Top 10 rankings counts, improvement deltas, and the **Executive Insight callout** directly on the slide canvas with real-time updates.
 * **Slide Sequence**:
   * **Slide 1**: Cover slide with Cogwheel branding, property title, and reporting window.
@@ -35,16 +41,16 @@ Automated hospitality SEO intelligence, 78-keyword pool allocation, PowerPoint m
   * **Slide 4**: Why Track & Full Keyword Visibility rationale.
   * **Slide 5**: Technical SEO Health, Core Web Vitals, and priority action items.
 
-### 4. 🏨 Local Comp-Set Ranking Matrix
+### 5. Local Comp-Set Ranking Matrix
 * **Component**: `src/components/CompsetRankingMatrix.tsx`
-* **Nearby Competitor Benchmarking**: Directly benchmarks your active property against the top 3 local competitors (e.g., *GunRunner Boutique Hotel*, *Courtyard Florence*, *Hampton Inn Downtown*).
-* **Keyword Battleground Table**: Compares organic ranks, search volumes, and displays **Competitive Edge badges** (`▲ Leading (+2)`, `= Tied #1`, `▼ Behind (-3)`).
+* **Nearby Competitor Benchmarking**: Directly benchmarks your active property against the top 3 local competitors in the same market.
+* **Keyword Battleground Table**: Compares organic ranks, search volumes, and displays **Competitive Edge badges** (`Leading (+2)`, `Tied`, `Behind (-3)`).
 * **Share of Voice Calculation**: Computes the percentage of high-intent local search queries where your property commands top 3 organic rankings.
 * **Custom Keyword Radar**: Add custom localized keywords on the fly.
 
-### 5. 📄 1-Page Executive PDF Memo for Hotel Owners / GMs
+### 6. 1-Page Executive PDF Memo for Hotel Owners / GMs
 * **Component**: `src/components/ExecutiveMemoModal.tsx`
-* **Tailored for Leadership**: Concise, executive briefing designed for General Managers and asset managers who prefer a quick 1-page summary over 20-slide presentations.
+* **Tailored for Leadership**: Concise executive briefing designed for General Managers and asset managers who prefer a quick 1-page summary over 20-slide presentations.
 * **Strict 1-Page Print Layout**: Formatted with print CSS (`@media print`) for clean printing and PDF export (`window.print()`).
 * **Memo Sections**:
   * **4 Executive KPI Badges**: Top 10 Rankings, Local Share of Voice, Direct Booking Revenue Lift, AI & GEO Readiness Score.
@@ -52,7 +58,7 @@ Automated hospitality SEO intelligence, 78-keyword pool allocation, PowerPoint m
   * **Local Comp-Set Positioning**: High-level market share briefing.
   * **30-Day Technical & Revenue Action Items**: High-priority recommendations with clear business rationales.
 
-### 6. ✉️ 1-Click Client Email Dispatcher
+### 7. 1-Click Client Email Dispatcher
 * **Component**: `src/components/ClientEmailDispatcher.tsx`
 * **Endpoint**: `/api/client-email`
 * **Connected Gmail Integration**: Generates executive monthly email deliverable briefings using your connected Google account (`riboynjsr@gmail.com`).
@@ -62,19 +68,17 @@ Automated hospitality SEO intelligence, 78-keyword pool allocation, PowerPoint m
   * **Open in Gmail Web**: Instant web compose link pre-filled with subject and formatted body.
   * **Copy to Clipboard**: Instant copy for Slack, CRM, or custom mail clients.
 
-### 7. ⏱️ Global Download Feedback & Real-Time Countdown Manager
-* **Component**: `src/components/DownloadFeedbackModal.tsx` | **Engine**: `src/lib/download-manager.ts`
-* **Visual Countdown Ring**: 3-second animated countdown ring before file download triggers, allowing users to verify filename and format.
-* **Format Badges**: Color-coded badges for `.xlsx`, `.csv`, `.pptx`, `.pdf`, `.json`, and `.txt`.
-* **Animated Success Confirmation**: Green checkmark modal confirms download initiation and automatically dismisses after 2.5 seconds.
-* **Generation Progress Modal**: 5-stage progress timeline for PowerPoint and baseline report builds.
+### 8. Trained Portfolio Knowledge Base (311 Client Properties)
+* **Data**: `src/data/trained-properties.json` | **Training Core**: `src/core/training.ts`
+* **311 Pre-Trained Properties**: Covers Marriott Bonvoy, Hilton Honors, World of Hyatt, IHG One Rewards, and independent boutique hotels across major management groups (HHM Groups 1/2/3, Sage Hospitality, Bentley Legacy, HRI, PCH).
+* **Auto-Complete & Auto-Fill**: Instant lookup and auto-detection from website URLs.
 
-### 8. 🌓 Dark / Modern High-Contrast Theme Toggle
+### 9. Dark / Modern High-Contrast Theme Toggle
 * **Tailwind & CSS**: `darkMode: "class"`, `src/app/globals.css`, `tailwind.config.ts`
-* **Sleek Dark Theme**: Deep slate background (`#0b0f19`), high-contrast dark inputs, and neon brand accents (`#a3d11b`).
-* **Header Toggle**: One-click `☀️ Light / 🌙 Dark` toggle with automatic system preference detection and persistent `localStorage` memory.
+* **High-Contrast Theme**: Deep midnight canvas (`#0b0f19`), high-contrast dark inputs, and crisp lime brand accents (`#a3d11b`).
+* **Header Toggle**: Vector SVG sun/moon toggle with automatic system preference detection and persistent `localStorage` memory.
 
-### 9. 🔍 Keyword Matrix & Content Studio Core
+### 10. Keyword Matrix & Content Studio Core
 * **Multi-Format Ingest (`/api/ingest`)**: Drag & drop up to 50 CSV, TSV, TXT, XLSX, XLS, or JSON exports (Semrush, GSC, Ahrefs). Automatically detects columns, strips BOM, deduplicates by normalized keyword, filters out wrong-state/booking-site/low-volume (`SV < 10`) noise, and derives bucket names from `Group`/`Topic` columns or filenames.
 * **Website Auto-Discovery (`/api/crawl-property`)**: Scans a property URL to auto-detect city/state, active sitemap pages, and pet policy.
 * **Google Drive Sync (`/api/drive-sync`) & Semrush API Pull (`/api/semrush-pull`)**: Syncs exports directly from a Google Drive folder (`01-semrush/`) or pulls live keyword data via the Semrush API.
@@ -84,11 +88,12 @@ Automated hospitality SEO intelligence, 78-keyword pool allocation, PowerPoint m
 
 ---
 
-## 🛠️ API Endpoints Reference
+## API Endpoints Reference
 
 | Endpoint | Method | Description |
 | :--- | :--- | :--- |
 | `/api/seo-visibility-report` | `POST` | Generates PowerPoint Monthly Visibility Deck & crawls property services |
+| `/api/visibility-suite` | `POST` | Exports batch payloads, syncs with VisibilitySuite API, and imports citation scores |
 | `/api/client-email` | `POST` | Drafts or sends client deliverable emails via connected Gmail (`riboynjsr@gmail.com`) |
 | `/api/property-autofill` | `POST` | Auto-detects hotel name, brand, city, state, and canonical URL from target website |
 | `/api/crawl-property` | `POST` | Crawls property website for sitemap, meta tags, and structured amenities |
@@ -97,6 +102,8 @@ Automated hospitality SEO intelligence, 78-keyword pool allocation, PowerPoint m
 | `/api/select-kw` | `POST` | Allocates the 78-keyword master strategy pool across sitemap pages |
 | `/api/generate-kr` | `POST` | Clones Google Doc template and writes grounded keyword recommendations |
 | `/api/generate-hc` | `POST` | Generates rule-validated Hilton brand copy with diff markup |
+| `/api/ai-training` | `GET/POST` | Manages AI rules, portfolio knowledge, and design patch feedback |
+| `/api/runs` | `GET/POST` | Manages and queries historical task runs and flag summaries |
 | `/api/runs` | `GET/POST` | Manages and queries historical task runs and flag summaries |
 
 ---
