@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "./ui";
+import { VisibilitySuiteModal } from "./VisibilitySuiteModal";
 
 interface GeoProps {
   property?: {
@@ -118,7 +119,8 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
     },
   ]);
 
-  const readinessScore = 78; // 0 - 100
+  const [readinessScore, setReadinessScore] = useState(78); // 0 - 100
+  const [showVisibilitySuite, setShowVisibilitySuite] = useState(false);
 
   const handleRescan = () => {
     setIsScanning(true);
@@ -257,6 +259,13 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             }`}
           >
             🤖 AI Engine Presence
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowVisibilitySuite(true)}
+            className="rounded-xl border border-purple-500/40 bg-purple-900/60 px-3.5 py-1.5 text-xs font-bold text-purple-200 transition hover:bg-purple-800"
+          >
+            🔗 Connect VisibilitySuite Data
           </button>
         </div>
       </div>
@@ -549,15 +558,44 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             Export GEO Findings into Client Deliverables
           </span>
           <p className="text-[11px] text-slate-500 dark:text-slate-400">
-            Include AI Citation Readiness scores in the Monthly Visibility Deck or 1-Page Owner Memo.
+            Include AI Citation Readiness scores in the Monthly Visibility Deck or sync with VisibilitySuite.
           </p>
         </div>
-        {onRunDeckGeneration && (
-          <Button onClick={onRunDeckGeneration} variant="primary">
-            ✨ Generate Visibility Deck with GEO Insights
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="secondary"
+            onClick={() => setShowVisibilitySuite(true)}
+            className="text-xs"
+          >
+            🔗 Connect VisibilitySuite Data
           </Button>
-        )}
+          {onRunDeckGeneration && (
+            <Button onClick={onRunDeckGeneration} variant="primary">
+              ✨ Generate Visibility Deck with GEO Insights
+            </Button>
+          )}
+        </div>
       </div>
+
+      {showVisibilitySuite && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowVisibilitySuite(false);
+          }}
+        >
+          <div className="w-full max-w-2xl">
+            <VisibilitySuiteModal
+              property={property}
+              onClose={() => setShowVisibilitySuite(false)}
+              onImportScore={(score) => {
+                setReadinessScore(score);
+                setShowVisibilitySuite(false);
+              }}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
