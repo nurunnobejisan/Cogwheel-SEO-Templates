@@ -223,12 +223,11 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs dark:divide-slate-800">
               {keywords.map((kw, i) => {
-                const bestCompRank = Math.min(
-                  ...Object.values(kw.compRanks).filter((r) => typeof r === "number")
-                );
-                const isWinning = kw.yourRank < bestCompRank;
-                const isTied = kw.yourRank === bestCompRank;
-                const gap = bestCompRank - kw.yourRank;
+                const numericRanks = Object.values(kw.compRanks).filter((r): r is number => typeof r === "number" && !isNaN(r));
+                const bestCompRank = numericRanks.length > 0 ? Math.min(...numericRanks) : null;
+                const isWinning = bestCompRank !== null ? kw.yourRank < bestCompRank : true;
+                const isTied = bestCompRank !== null ? kw.yourRank === bestCompRank : false;
+                const gap = bestCompRank !== null ? Math.abs(bestCompRank - kw.yourRank) : 0;
 
                 return (
                   <tr key={i} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
@@ -256,7 +255,7 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
                       return (
                         <td key={c.id} className="py-3.5 px-3 text-center">
                           <span className="font-mono text-slate-600 dark:text-slate-400">
-                            #{rank}
+                            {typeof rank === "number" ? `#${rank}` : "—"}
                           </span>
                         </td>
                       );
@@ -264,7 +263,7 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
                     <td className="py-3.5 px-4 text-center">
                       {isWinning ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
-                          Leading (+{gap})
+                          Leading {bestCompRank !== null ? `(+${gap})` : ""}
                         </span>
                       ) : isTied ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
@@ -272,7 +271,7 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-400">
-                          Behind ({gap})
+                          Behind (-{gap})
                         </span>
                       )}
                     </td>

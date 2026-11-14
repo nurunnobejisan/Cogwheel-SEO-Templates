@@ -36,6 +36,19 @@ export function VisibilitySuiteModal({
   const [copied, setCopied] = useState(false);
   const [pasteJson, setPasteJson] = useState("");
 
+  const isFlorence = propertyCity.toLowerCase().includes("florence");
+  const localCompetitors = isFlorence
+    ? [
+        { name: "GunRunner Boutique Hotel", domain: "gunrunnerhotel.com" },
+        { name: "Courtyard Florence", domain: "marriott.com" },
+        { name: "Hampton Inn Downtown", domain: "hilton.com" },
+      ]
+    : [
+        { name: `${propertyCity} Boutique Hotel`, domain: `${propertyCity.toLowerCase().replace(/\s+/g, "")}boutiquehotel.com` },
+        { name: `Courtyard by Marriott ${propertyCity}`, domain: "marriott.com" },
+        { name: `Hilton ${propertyCity} Downtown`, domain: "hilton.com" },
+      ];
+
   const batchPayload = {
     organization: {
       brandName: propertyName,
@@ -71,11 +84,7 @@ export function VisibilitySuiteModal({
         targetEngines: ["Copilot", "Perplexity"],
       },
     ],
-    competitors: [
-      { name: "GunRunner Boutique Hotel", domain: "gunrunnerhotel.com" },
-      { name: "Courtyard Florence", domain: "marriott.com" },
-      { name: "Hampton Inn Downtown", domain: "hilton.com" },
-    ],
+    competitors: localCompetitors,
   };
 
   const jsonString = JSON.stringify(batchPayload, null, 2);

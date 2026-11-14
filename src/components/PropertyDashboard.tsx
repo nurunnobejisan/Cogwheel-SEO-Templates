@@ -569,7 +569,7 @@ export default function PropertyDashboard() {
                     <button
                       type="button"
                       onClick={() => setShowPropertyDetails((v) => !v)}
-                      className="h-8 shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50"
+                      className="h-8 shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                       {showPropertyDetails ? "Hide" : "Edit"}
                     </button>
@@ -1123,18 +1123,18 @@ export default function PropertyDashboard() {
           </>
           )}
 
-          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-xs text-slate-500">
+          <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-brand" />
               <span>
-                Powered by <strong className="text-slate-700">Razib Marketing</strong> — Digital Marketing &amp; SEO Automation for Hotels
+                Powered by <strong className="text-slate-700 dark:text-slate-200">Razib Marketing</strong> — Digital Marketing &amp; SEO Automation for Hotels
               </span>
             </div>
             <a
               href="https://razibmarketing.com/"
               target="_blank"
               rel="noreferrer"
-              className="font-medium text-slate-600 underline decoration-slate-300 underline-offset-2 hover:text-slate-900"
+              className="font-medium text-slate-600 underline decoration-slate-300 underline-offset-2 hover:text-slate-900 dark:text-slate-400 dark:decoration-slate-700 dark:hover:text-white"
             >
               razibmarketing.com
             </a>
@@ -1242,22 +1242,6 @@ export default function PropertyDashboard() {
               />
             )}
 
-            {showVisibilitySuite && (
-              <div
-                className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
-                onClick={(e) => {
-                  if (e.target === e.currentTarget) setShowVisibilitySuite(false);
-                }}
-              >
-                <div className="w-full max-w-2xl">
-                  <VisibilitySuiteModal
-                    property={activeProperty}
-                    onClose={() => setShowVisibilitySuite(false)}
-                  />
-                </div>
-              </div>
-            )}
-
             {showAutoPilot && (
               <AutoPilotModal
                 activeProperty={activeProperty}
@@ -1287,6 +1271,22 @@ export default function PropertyDashboard() {
                 onPrioritized={() => void refreshRuns()}
               />
             )}
+          </div>
+        </div>
+      )}
+
+      {showVisibilitySuite && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowVisibilitySuite(false);
+          }}
+        >
+          <div className="w-full max-w-2xl">
+            <VisibilitySuiteModal
+              property={activeProperty}
+              onClose={() => setShowVisibilitySuite(false)}
+            />
           </div>
         </div>
       )}
