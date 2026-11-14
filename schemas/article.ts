@@ -5,7 +5,7 @@
 export interface ArticleInput {
   url: string;
   headline: string;
-  description: string;
+  description?: string;
   image?: string | string[];
   datePublished?: string;
   dateModified?: string;

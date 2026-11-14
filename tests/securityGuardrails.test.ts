@@ -17,7 +17,7 @@ describe("Day 3: XSS Protection, Canonical Normalizer & Robots Guardrails", () =
       assert(!escaped.includes("<script>"));
       assert(escaped.includes("&lt;script&gt;"));
       assert(escaped.includes("&quot;"));
-      assert(escaped.includes("&#x27;"));
+      assert(escaped.includes("&#39;") || escaped.includes("&#x27;"));
     });
 
     it("prevents javascript: pseudo-protocols in HTML attributes", () => {

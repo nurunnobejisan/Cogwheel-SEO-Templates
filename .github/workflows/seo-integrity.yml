@@ -21,6 +21,10 @@ jobs:
           node-version: 22
           cache: 'npm'
 
+      - name: Install Node.js Dependencies
+        run: |
+          npm ci
+
       - name: Setup Python Runtime
         uses: actions/setup-python@v5
         with:

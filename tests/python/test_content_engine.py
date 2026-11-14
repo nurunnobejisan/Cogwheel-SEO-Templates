@@ -17,7 +17,7 @@ def test_clean_text_and_count():
     html = "<h1>Denver Hotel</h1><p>Luxury suites with mountain views.</p>"
     cleaned = clean_text(html)
     assert "h1" not in cleaned
-    assert count_words(html) == 6
+    assert count_words(html) == 7
 
 
 def test_jaccard_similarity_calculation():

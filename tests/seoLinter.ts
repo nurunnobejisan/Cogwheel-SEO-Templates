@@ -107,7 +107,7 @@ export function runFullSeoLint(): { passed: boolean; reports: LinterGateReport[]
     const errors: string[] = [];
     try {
       const graph = buildSchemaGraph([
-        buildArticleSchema({ headline: "Test Article", url: "https://example.com/art/" }),
+        buildArticleSchema({ headline: "Test Article", url: "https://example.com/art/", description: "Test Article Description" }),
         buildLocalBusinessSchema({ name: "Hotel Test", url: "https://example.com/" })
       ]);
       if (!graph.includes("@graph") || !graph.includes("https://schema.org")) {
