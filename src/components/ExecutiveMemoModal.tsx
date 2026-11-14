@@ -80,17 +80,17 @@ HIGH-PRIORITY ACTION ITEMS:
 
         <div className="flex items-center gap-2">
           <Button variant="ghost" onClick={handleCopy} className="text-xs">
-            {copied ? "✓ Copied" : "📋 Copy Text"}
+            {copied ? "Copied" : "Copy Text"}
           </Button>
 
           {onOpenEmail && (
             <Button variant="secondary" onClick={onOpenEmail} className="text-xs">
-              ✉️ Email Deliverable
+              Email Deliverable
             </Button>
           )}
 
           <Button variant="primary" onClick={handlePrint} className="text-xs">
-            🖨️ Print / Save as PDF
+            Print / Save as PDF
           </Button>
 
           {onClose && (

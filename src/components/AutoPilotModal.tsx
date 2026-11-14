@@ -376,7 +376,7 @@ export function AutoPilotModal({
                 }}
                 className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 shadow-sm"
               >
-                📦 Download All Audit Deliverables
+                Download All Audit Deliverables
               </button>
             )}
           </div>

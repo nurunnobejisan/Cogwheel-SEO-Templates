@@ -122,7 +122,7 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
       <div className="flex flex-col justify-between gap-4 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900 md:flex-row md:items-center">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand-50 px-3 py-1 text-xs font-semibold text-slate-800 dark:bg-brand-950/40 dark:text-brand-light">
-            🏨 Local Competitive Intelligence
+            Local Competitive Intelligence
           </div>
           <h2 className="mt-2 font-display text-2xl font-bold text-slate-900 dark:text-white">
             Local Comp-Set Ranking Matrix
@@ -151,7 +151,7 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
           </div>
           {onExportMemo && (
             <Button variant="primary" onClick={onExportMemo} className="text-xs">
-              📄 Send to 1-Page Memo
+              Send to 1-Page Memo
             </Button>
           )}
         </div>
@@ -264,15 +264,15 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
                     <td className="py-3.5 px-4 text-center">
                       {isWinning ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
-                          ▲ Leading (+{gap})
+                          Leading (+{gap})
                         </span>
                       ) : isTied ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                          = Tied #1
+                          Tied
                         </span>
                       ) : (
                         <span className="inline-flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-0.5 text-[11px] font-bold text-rose-700 dark:bg-rose-950/60 dark:text-rose-400">
-                          ▼ Behind ({gap})
+                          Behind ({gap})
                         </span>
                       )}
                     </td>

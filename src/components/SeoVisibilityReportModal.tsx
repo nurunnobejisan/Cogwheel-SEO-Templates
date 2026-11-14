@@ -587,7 +587,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
             onClick={() => setShowPreview((v) => !v)}
             className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 font-display text-sm font-bold text-white transition hover:bg-white/20"
           >
-            🖥️ {showPreview ? "Hide Preview" : "Live Slide Preview"}
+            {showPreview ? "Hide Live Preview" : "Live Slide Preview"}
           </button>
         </div>
 

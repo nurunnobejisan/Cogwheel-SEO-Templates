@@ -143,7 +143,7 @@ export function VisibilitySuiteModal({
       }
       setSyncStatus({
         type: "success",
-        msg: "✅ Data successfully synced to VisibilitySuite.ai! Check your dashboard.",
+        msg: "Data successfully synced to VisibilitySuite.ai. Check your dashboard.",
       });
     } catch (err: any) {
       setSyncStatus({
@@ -172,7 +172,7 @@ export function VisibilitySuiteModal({
       if (onImportScore) onImportScore(score);
       setSyncStatus({
         type: "success",
-        msg: `✅ Successfully imported VisibilitySuite score (${score}%) into your GEO Radar!`,
+        msg: `Successfully imported VisibilitySuite score (${score}%) into your GEO Radar.`,
       });
     } catch (err: any) {
       setSyncStatus({ type: "error", msg: "Invalid format. Paste JSON from VisibilitySuite." });
@@ -185,7 +185,7 @@ export function VisibilitySuiteModal({
       <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-5 dark:border-slate-800 sm:flex-row sm:items-center">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-purple-300 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-800 dark:border-purple-800 dark:bg-purple-950/40 dark:text-purple-300">
-            🔗 Integration Connector
+            Integration Connector
           </div>
           <h2 className="mt-2 font-display text-xl font-bold text-slate-900 dark:text-white">
             Connect with VisibilitySuite.ai
@@ -202,7 +202,7 @@ export function VisibilitySuiteModal({
             rel="noopener noreferrer"
             className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-purple-700"
           >
-            ↗ Sign In to VisibilitySuite
+            Sign In to VisibilitySuite
           </a>
           <Button variant="ghost" onClick={onClose} className="text-xs">
             Close
@@ -221,7 +221,7 @@ export function VisibilitySuiteModal({
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
           }`}
         >
-          📦 1-Click Batch Export (Recommended)
+          1-Click Batch Export (Recommended)
         </button>
         <button
           type="button"
@@ -232,7 +232,7 @@ export function VisibilitySuiteModal({
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
           }`}
         >
-          ⚡ Direct API Sync
+          Direct API Sync
         </button>
         <button
           type="button"
@@ -243,7 +243,7 @@ export function VisibilitySuiteModal({
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
           }`}
         >
-          📥 Import Citation Report
+          Import Citation Report
         </button>
       </div>
 
@@ -295,15 +295,15 @@ export function VisibilitySuiteModal({
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <Button variant="ghost" onClick={handleCopyJson} className="text-xs">
-                {copied ? "✓ Copied JSON" : "📋 Copy Payload"}
+                {copied ? "Copied JSON" : "Copy Payload"}
               </Button>
               <Button variant="secondary" onClick={handleDownloadCsv} className="text-xs">
-                📥 Download Prompts CSV
+                Download Prompts CSV
               </Button>
             </div>
 
             <Button variant="primary" onClick={handleDownloadJson} className="text-xs">
-              📦 Download VisibilitySuite Batch File (.json)
+              Download VisibilitySuite Batch File (.json)
             </Button>
           </div>
         </div>
@@ -355,7 +355,7 @@ export function VisibilitySuiteModal({
               onClick={handleDirectSync}
               className="text-xs"
             >
-              {syncBusy ? "Syncing..." : "🚀 Push Data to VisibilitySuite.ai"}
+              {syncBusy ? "Syncing..." : "Push Data to VisibilitySuite.ai"}
             </Button>
           </div>
         </div>
@@ -385,7 +385,7 @@ export function VisibilitySuiteModal({
 
           <div className="flex justify-end">
             <Button variant="primary" onClick={handleImportReport} className="text-xs">
-              📥 Calibrate GEO Radar with Report
+              Calibrate GEO Radar with Report
             </Button>
           </div>
         </div>

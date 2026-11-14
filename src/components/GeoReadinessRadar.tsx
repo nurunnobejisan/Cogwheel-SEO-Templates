@@ -225,7 +225,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                 : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
             }`}
           >
-            📊 Radar Overview
+            Radar Overview
           </button>
           <button
             type="button"
@@ -236,7 +236,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                 : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
             }`}
           >
-            🏷️ Schema &amp; Entities Audit
+            Schema &amp; Entities Audit
           </button>
           <button
             type="button"
@@ -247,7 +247,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                 : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
             }`}
           >
-            💬 Conversational AI Queries
+            Conversational AI Queries
           </button>
           <button
             type="button"
@@ -258,14 +258,14 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                 : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
             }`}
           >
-            🤖 AI Engine Presence
+            AI Engine Presence
           </button>
           <button
             type="button"
             onClick={() => setShowVisibilitySuite(true)}
             className="rounded-xl border border-purple-500/40 bg-purple-900/60 px-3.5 py-1.5 text-xs font-bold text-purple-200 transition hover:bg-purple-800"
           >
-            🔗 Connect VisibilitySuite Data
+            Connect VisibilitySuite Data
           </button>
         </div>
       </div>
@@ -567,11 +567,11 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             onClick={() => setShowVisibilitySuite(true)}
             className="text-xs"
           >
-            🔗 Connect VisibilitySuite Data
+            Connect VisibilitySuite Data
           </Button>
           {onRunDeckGeneration && (
             <Button onClick={onRunDeckGeneration} variant="primary">
-              ✨ Generate Visibility Deck with GEO Insights
+              Generate Visibility Deck with GEO Insights
             </Button>
           )}
         </div>

@@ -58,8 +58,10 @@ export function ComingSoonModal({ task, onClose, onPrioritized }: Props) {
     >
       <div className="space-y-5">
         <div className="flex flex-col sm:flex-row items-center gap-4 rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50/70 via-white to-amber-50/30 p-5">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-2xl text-white shadow-sm">
-            🚀
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-amber-500 text-white shadow-sm">
+            <svg className="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
           </div>
           <div className="space-y-1 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-2">

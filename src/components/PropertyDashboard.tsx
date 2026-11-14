@@ -44,6 +44,9 @@ const AutoPilotModal = dynamic(() => import("./AutoPilotModal").then((m) => m.Au
 const ComingSoonModal = dynamic(() =>
   import("./ComingSoonModal").then((m) => m.ComingSoonModal),
 );
+const VisibilitySuiteModal = dynamic(() =>
+  import("./VisibilitySuiteModal").then((m) => m.VisibilitySuiteModal),
+);
 
 const CRAWL_TASK_IDS = new Set([
   "title-meta",
@@ -120,6 +123,7 @@ export default function PropertyDashboard() {
   const [deliverablesTab, setDeliverablesTab] = useState<"pptx" | "slides" | "preview" | "memo" | "email" | null>(null);
   const [isDark, setIsDark] = useState(false);
   const [showAutoPilot, setShowAutoPilot] = useState(false);
+  const [showVisibilitySuite, setShowVisibilitySuite] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
   const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
   const [comingSoonTask, setComingSoonTask] = useState<TaskConfig | null>(null);
@@ -180,6 +184,7 @@ export default function PropertyDashboard() {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         setShowAiTraining(false);
+        setShowVisibilitySuite(false);
         setDeliverablesTab(null);
         setShowAutoPilot(false);
         setActiveCrawlTask(null);
@@ -364,8 +369,8 @@ export default function PropertyDashboard() {
   const flaggedCount = runList.filter((r) => r.flags.length > 0 || r.status === "Flagged").length;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 text-slate-800">
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 backdrop-blur-md">
+    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#0b0f19] dark:text-slate-100 transition-colors">
+      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/95">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-3.5">
           <div className="flex items-center gap-4">
             <a
@@ -384,17 +389,17 @@ export default function PropertyDashboard() {
                 className="h-9 w-auto object-contain"
               />
             </a>
-            <div className="hidden h-7 w-px bg-slate-200 sm:block" />
+            <div className="hidden h-7 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
             <div className="hidden sm:block">
               <div className="flex items-center gap-2">
-                <h1 className="font-display text-base font-bold tracking-tight text-slate-900">
+                <h1 className="font-display text-base font-bold tracking-tight text-slate-900 dark:text-white">
                   Hotel SEO &amp; GEO Studio
                 </h1>
-                <span className="rounded-full border border-brand/40 bg-brand-50 px-2.5 py-0.5 text-[11px] font-semibold text-slate-800">
+                <span className="rounded-full border border-brand/40 bg-brand-50 px-2.5 py-0.5 text-[11px] font-semibold text-slate-800 dark:border-brand/30 dark:bg-brand-950/40 dark:text-brand-light">
                   Hospitality Automation
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">
                 Direct-booking growth workflows across On Page, Technical, Off Page, Local &amp; Reporting
               </p>
             </div>
@@ -403,8 +408,8 @@ export default function PropertyDashboard() {
             {(
               [
                 { id: "home", label: "Home" },
-                { id: "geo", label: "🤖 AI & GEO" },
-                { id: "compset", label: "🏨 Comp-Set" },
+                { id: "geo", label: "AI & GEO" },
+                { id: "compset", label: "Comp-Set" },
                 { id: "tasks", label: `Tasks (${readyCount})` },
                 { id: "crawl", label: "Site Crawl" },
                 { id: "studio", label: "Keyword Studio" },
@@ -445,7 +450,15 @@ export default function PropertyDashboard() {
               className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               title="Toggle Dark / Modern High-Contrast Theme"
             >
-              <span>{isDark ? "☀️" : "🌙"}</span>
+              {isDark ? (
+                <svg className="h-3.5 w-3.5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+              ) : (
+                <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                </svg>
+              )}
               <span className="hidden sm:inline">{isDark ? "Light" : "Dark"}</span>
             </button>
           </nav>
@@ -458,15 +471,15 @@ export default function PropertyDashboard() {
         <main className="mx-auto max-w-6xl space-y-6 px-6 py-7">
           {mainTab === "home" && (
             <>
-              <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card">
+              <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card dark:border-slate-800 dark:bg-slate-900">
                 <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between lg:items-center">
                   {/* Left: label + title + preset row */}
                   <div className="min-w-0 flex-1 space-y-2">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="shrink-0 rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+                      <span className="shrink-0 rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light dark:bg-brand dark:text-slate-950">
                         Active Property
                       </span>
-                      <span className="min-w-0 truncate text-sm font-bold text-slate-900">
+                      <span className="min-w-0 truncate text-sm font-bold text-slate-900 dark:text-white">
                         {activeProperty.name
                           ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
                               activeProperty.city
@@ -494,7 +507,7 @@ export default function PropertyDashboard() {
                             setAutofillError(null);
                           }
                         }}
-                        className="h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 focus:border-brand focus:outline-none"
+                        className="h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 focus:border-brand focus:outline-none"
                       >
                         <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
                         {TRAINED_PROPERTIES.map((p) => (
@@ -516,8 +529,8 @@ export default function PropertyDashboard() {
                           }}
                           className={`h-8 rounded-lg border px-2.5 text-xs font-semibold transition ${
                             activeProperty.name === preset.name
-                              ? "border-brand bg-brand-50 text-slate-900"
-                              : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900"
+                              ? "border-brand bg-brand-50 text-slate-900 dark:border-brand/60 dark:bg-brand-950/40 dark:text-brand-light"
+                              : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
                           }`}
                         >
                           {preset.name}
@@ -533,7 +546,7 @@ export default function PropertyDashboard() {
                       placeholder="Paste hotel URL..."
                       value={autofillUrl}
                       onChange={(e) => setAutofillUrl(e.target.value)}
-                      className="h-8 w-44 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none sm:w-52"
+                      className="h-8 w-44 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 sm:w-52"
                     />
                     <Button
                       variant="primary"
@@ -614,18 +627,18 @@ export default function PropertyDashboard() {
                   <button
                     type="button"
                     onClick={() => setMainTab("crawl")}
-                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white"
+                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand dark:hover:bg-slate-800"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500">STEP 1</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">STEP 1</span>
                       <span
                         className={`h-2 w-2 rounded-full ${
-                          latestRuns["site-crawl"] ? "bg-emerald-500" : "bg-slate-300"
+                          latestRuns["site-crawl"] ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700"
                         }`}
                       />
                     </div>
-                    <div className="font-display text-sm font-bold text-slate-900">Site Crawl</div>
-                    <p className="text-xs text-slate-500">Crawl pages, robots.txt &amp; sitemap.</p>
+                    <div className="font-display text-sm font-bold text-slate-900 dark:text-white">Site Crawl</div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Crawl pages, robots.txt &amp; sitemap.</p>
                   </button>
 
                   <button
@@ -634,36 +647,36 @@ export default function PropertyDashboard() {
                       setStudioStep(1);
                       setMainTab("studio");
                     }}
-                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white"
+                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand dark:hover:bg-slate-800"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500">STEP 2</span>
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">STEP 2</span>
                       <span
                         className={`h-2 w-2 rounded-full ${
-                          latestRuns["keyword-research"] ? "bg-emerald-500" : "bg-slate-300"
+                          latestRuns["keyword-research"] ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700"
                         }`}
                       />
                     </div>
-                    <div className="font-display text-sm font-bold text-slate-900">Keyword Matrix</div>
-                    <p className="text-xs text-slate-500">78-keyword mapping &amp; USP copy.</p>
+                    <div className="font-display text-sm font-bold text-slate-900 dark:text-white">Keyword Matrix</div>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">78-keyword mapping &amp; USP copy.</p>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setMainTab("tasks")}
-                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white"
+                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand dark:hover:bg-slate-800"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500">STEP 3</span>
-                      <span className="text-[11px] font-bold text-emerald-700">
+                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">STEP 3</span>
+                      <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
                         {Array.from(CRAWL_TASK_IDS).filter((id) => Boolean(latestRuns[id])).length}/
                         {CRAWL_TASK_IDS.size}
                       </span>
                     </div>
-                    <div className="font-display text-sm font-bold text-slate-900">
+                    <div className="font-display text-sm font-bold text-slate-900 dark:text-white">
                       On-Page &amp; Technical
                     </div>
-                    <p className="text-xs text-slate-500">Title/Meta, Headings, Schema &amp; Audits.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Title/Meta, Headings, Schema &amp; Audits.</p>
                   </button>
 
                   <button
@@ -781,15 +794,15 @@ export default function PropertyDashboard() {
               </section>
 
               <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Active Modules
                   </div>
                   <div className="mt-1 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-extrabold text-slate-900">{readyCount}</span>
-                    <span className="text-xs text-slate-500">/ {TASKS_CONFIG.length} tasks</span>
+                    <span className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">{readyCount}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">/ {TASKS_CONFIG.length} tasks</span>
                   </div>
-                  <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                     <div
                       className="h-full rounded-full bg-brand"
                       style={{ width: `${Math.round((readyCount / TASKS_CONFIG.length) * 100)}%` }}
@@ -797,40 +810,40 @@ export default function PropertyDashboard() {
                   </div>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Recorded Runs
                   </div>
                   <div className="mt-1 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-extrabold text-slate-900">{runList.length}</span>
-                    <span className="text-xs text-slate-500">latest executions</span>
+                    <span className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">{runList.length}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">latest executions</span>
                   </div>
-                  <p className="mt-2 text-[11px] text-slate-500">Synced with Run History</p>
+                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">Synced with Run History</p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
+                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Attention Needed
                   </div>
                   <div className="mt-1 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-extrabold text-slate-900">{flaggedCount}</span>
-                    <span className="text-xs text-slate-500">flagged runs</span>
+                    <span className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">{flaggedCount}</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400">flagged runs</span>
                   </div>
-                  <p className="mt-2 text-[11px] text-slate-500">Auto-validated Flag Summaries</p>
+                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">Auto-validated Flag Summaries</p>
                 </div>
 
                 <button
                   type="button"
                   onClick={() => setShowAiTraining(true)}
-                  className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 text-left shadow-card transition hover:border-emerald-300"
+                  className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 text-left shadow-card transition hover:border-emerald-300 dark:border-emerald-900/60 dark:bg-emerald-950/20 dark:hover:border-emerald-700"
                 >
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700">
+                  <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                     Online AI Engine
                   </div>
-                  <div className="mt-1 font-display text-sm font-bold text-slate-900">
+                  <div className="mt-1 font-display text-sm font-bold text-slate-900 dark:text-white">
                     {aiStatus.provider}
                   </div>
-                  <p className="mt-2 text-[11px] font-medium text-emerald-700">
+                  <p className="mt-2 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
                     {aiStatus.activeRules} trained rules active &rarr;
                   </p>
                 </button>
@@ -1180,6 +1193,22 @@ export default function PropertyDashboard() {
                 onClose={() => setDeliverablesTab(null)}
                 onCompleted={() => void refreshRuns()}
               />
+            )}
+
+            {showVisibilitySuite && (
+              <div
+                className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
+                onClick={(e) => {
+                  if (e.target === e.currentTarget) setShowVisibilitySuite(false);
+                }}
+              >
+                <div className="w-full max-w-2xl">
+                  <VisibilitySuiteModal
+                    property={activeProperty}
+                    onClose={() => setShowVisibilitySuite(false)}
+                  />
+                </div>
+              </div>
             )}
 
             {showAutoPilot && (

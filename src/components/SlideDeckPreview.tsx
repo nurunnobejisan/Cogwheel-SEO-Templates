@@ -88,14 +88,14 @@ export function SlideDeckPreview({
           </div>
 
           <Button variant="ghost" onClick={handlePrev} className="px-2.5 py-1.5 text-xs">
-            ◀ Prev
+            Previous
           </Button>
           <Button variant="ghost" onClick={handleNext} className="px-2.5 py-1.5 text-xs">
-            Next ▶
+            Next
           </Button>
 
           <Button variant="primary" onClick={handleTriggerDownload} className="text-xs py-1.5">
-            📥 Download .pptx
+            Download .pptx
           </Button>
         </div>
       </div>
@@ -128,7 +128,7 @@ export function SlideDeckPreview({
                 Search Engine &amp; AI Visibility Performance Review
               </p>
               <div className="mt-4 flex items-center gap-3 text-xs text-purple-300 font-mono">
-                <span>📍 {propertyCity}, {propertyState}</span>
+                <span>{propertyCity}, {propertyState}</span>
                 <span>•</span>
                 <span>Audit Version 3.2</span>
               </div>
@@ -227,7 +227,7 @@ export function SlideDeckPreview({
               <div className="flex flex-col justify-between rounded-xl border border-purple-300 bg-purple-50/60 p-4">
                 <div>
                   <div className="flex items-center gap-1.5 text-xs font-bold text-[#381a5e]">
-                    <span>💡</span> Executive Insight (Click to edit)
+                    Executive Insight (Click to edit)
                   </div>
                   <textarea
                     value={executiveNote}

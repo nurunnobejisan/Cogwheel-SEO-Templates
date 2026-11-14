@@ -29,14 +29,14 @@ export function ClientEmailDispatcher({
 
 Here is your executive search and AI visibility summary for ${propertyName} (${propertyCity}, ${propertyState}) for this month:
 
-🚀 Key Highlights & Ranking Wins:
+Key Highlights & Ranking Wins:
 • Total Top 10 Search Positions: ${top10Count} keywords
 • Positive Ranking Momentum: +${improvedCount} core terms improved
 • #1 Ranking: "florence alabama resort" (880 monthly search volume)
 • #2 Ranking: "hotels in florence al" (1,600 monthly search volume)
 • Generative AI Citation Score: 78/100 (Indexed in ChatGPT Search & Google AI Overviews)
 
-🔍 Priority Technical Actions for Next Cycle:
+Priority Technical Actions for Next Cycle:
 1. Add DaySpa schema to capture AI voice and conversational search bookings.
 2. Publish Pet Policy FAQ block to resolve unverified OTA fees in Google AI Overviews.
 3. Optimize wedding and corporate conference landing pages for seasonal inquiry surges.
@@ -115,7 +115,7 @@ Connected via: riboynjsr@gmail.com`;
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800">
         <div>
           <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand-50 px-3 py-1 text-xs font-semibold text-slate-800 dark:bg-brand-950/40 dark:text-brand-light">
-            ✉️ 1-Click Client Dispatcher
+            Client Deliverable Dispatcher
           </div>
           <h2 className="mt-2 font-display text-xl font-bold text-slate-900 dark:text-white">
             Dispatch Monthly Performance Memo
@@ -191,14 +191,14 @@ Connected via: riboynjsr@gmail.com`;
             onClick={handleCopyClipboard}
             className="text-xs"
           >
-            {copied ? "✓ Copied to Clipboard" : "📋 Copy Email Text"}
+            {copied ? "Copied" : "Copy Email Text"}
           </Button>
           <Button
             variant="secondary"
             onClick={handleOpenWebCompose}
             className="text-xs"
           >
-            ↗ Open in Gmail Web
+            Open in Gmail Web
           </Button>
         </div>
 
@@ -209,7 +209,7 @@ Connected via: riboynjsr@gmail.com`;
             onClick={() => handleDispatch("draft")}
             className="text-xs"
           >
-            {busy ? "Saving..." : "📝 Save Draft in Gmail"}
+            {busy ? "Saving..." : "Save Draft in Gmail"}
           </Button>
           <Button
             variant="primary"
@@ -217,7 +217,7 @@ Connected via: riboynjsr@gmail.com`;
             onClick={() => handleDispatch("send")}
             className="text-xs"
           >
-            {busy ? "Sending..." : "🚀 Send Email via riboynjsr@gmail.com"}
+            {busy ? "Sending..." : "Send Email via riboynjsr@gmail.com"}
           </Button>
         </div>
       </div>
