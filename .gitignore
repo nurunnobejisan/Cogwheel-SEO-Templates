@@ -8,3 +8,4 @@ out
 .vercel
 .DS_Store
 coverage
+.env*
