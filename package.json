@@ -1,6 +1,6 @@
 {
-  "name": "keyword-research",
-  "version": "0.1.0",
+  "name": "cogwheel-seo-studio",
+  "version": "2.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
