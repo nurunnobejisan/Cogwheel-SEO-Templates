@@ -411,20 +411,15 @@ export default function PropertyDashboard() {
                 { id: "geo", label: "AI & GEO" },
                 { id: "compset", label: "Comp-Set" },
                 { id: "tasks", label: `Tasks (${readyCount})` },
-                { id: "crawl", label: "Site Crawl" },
-                { id: "studio", label: "Keyword Studio" },
               ] as const
             ).map((tab) => (
               <button
                 key={tab.id}
                 type="button"
-                onClick={() => {
-                  if (tab.id === "studio") setStudioStep(1);
-                  setMainTab(tab.id);
-                }}
+                onClick={() => setMainTab(tab.id)}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                   mainTab === tab.id
-                    ? tab.id === "studio" || tab.id === "geo"
+                    ? tab.id === "geo"
                       ? "bg-brand text-slate-900 shadow-sm"
                       : "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
                     : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -466,7 +461,22 @@ export default function PropertyDashboard() {
       </header>
 
       {mainTab === "studio" ? (
-        <Studio key={studioStep} initialStep={studioStep} initialProperty={activeProperty} />
+        <div className="mx-auto max-w-6xl space-y-4 px-6 py-6">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Keyword Research Studio</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">78-keyword pool allocation, page-to-keyword matrix &amp; Hilton copy engine.</p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMainTab("tasks")}
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            >
+              &larr; Back to Tasks
+            </button>
+          </div>
+          <Studio key={studioStep} initialStep={studioStep} initialProperty={activeProperty} />
+        </div>
       ) : (
         <main className="mx-auto max-w-6xl space-y-6 px-6 py-7">
           {mainTab === "home" && (
@@ -884,7 +894,44 @@ export default function PropertyDashboard() {
 
           {mainTab === "tasks" && (
           <>
-          <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between">
+          {/* Studio & Crawl Utilities inside Tasks */}
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-card dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded-md bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                Task Utilities
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Access underlying site crawler and 78-keyword matrix allocation for this property.
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setMainTab("crawl")}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
+              >
+                <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                </svg>
+                Launch Site Crawl
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setStudioStep(1);
+                  setMainTab("studio");
+                }}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
+              >
+                <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Open Keyword Studio
+              </button>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between dark:border-slate-800">
             <nav aria-label="Task Sections" className="flex flex-wrap gap-2">
               {TASK_SECTIONS.map((section) => {
                 const count = TASKS_CONFIG.filter((t) => t.section === section).length;
