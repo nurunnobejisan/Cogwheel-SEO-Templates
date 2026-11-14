@@ -28,6 +28,7 @@ interface CrawlPreview {
   page_title: string;
   crawled_pages: number;
   sitemap_urls: number;
+  page_topics?: string[];
   website_services: string[];
   matched_services: string[];
   unmatched_services: string[];
