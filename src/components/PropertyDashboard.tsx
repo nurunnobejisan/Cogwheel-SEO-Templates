@@ -33,6 +33,12 @@ const AiTrainingModal = dynamic(() => import("./AiTrainingModal").then((m) => m.
 const ClientDeliverablesModal = dynamic(() =>
   import("./ClientDeliverablesModal").then((m) => m.ClientDeliverablesModal),
 );
+const GeoReadinessRadar = dynamic(() =>
+  import("./GeoReadinessRadar").then((m) => m.GeoReadinessRadar),
+);
+const CompsetRankingMatrix = dynamic(() =>
+  import("./CompsetRankingMatrix").then((m) => m.CompsetRankingMatrix),
+);
 const RunHistoryDrawer = dynamic(() => import("./RunHistoryDrawer").then((m) => m.RunHistoryDrawer));
 const AutoPilotModal = dynamic(() => import("./AutoPilotModal").then((m) => m.AutoPilotModal));
 const ComingSoonModal = dynamic(() =>
@@ -99,12 +105,13 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
 };
 
 export default function PropertyDashboard() {
-  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio">("home");
+  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset">("home");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
   const [showAiTraining, setShowAiTraining] = useState(false);
-  const [deliverablesTab, setDeliverablesTab] = useState<"pptx" | "slides" | null>(null);
+  const [deliverablesTab, setDeliverablesTab] = useState<"pptx" | "slides" | "preview" | "memo" | "email" | null>(null);
+  const [isDark, setIsDark] = useState(false);
   const [showAutoPilot, setShowAutoPilot] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
   const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
@@ -129,6 +136,38 @@ export default function PropertyDashboard() {
     provider: "Online AI",
     activeRules: 5,
   });
+
+  useEffect(() => {
+    try {
+      const savedTheme = window.localStorage.getItem("cogwheel_theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
+        setIsDark(true);
+        document.documentElement.classList.add("dark");
+      } else {
+        setIsDark(false);
+        document.documentElement.classList.remove("dark");
+      }
+    } catch {
+      // ignore localStorage
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const next = !isDark;
+    setIsDark(next);
+    if (next) {
+      document.documentElement.classList.add("dark");
+      try {
+        window.localStorage.setItem("cogwheel_theme", "dark");
+      } catch {}
+    } else {
+      document.documentElement.classList.remove("dark");
+      try {
+        window.localStorage.setItem("cogwheel_theme", "light");
+      } catch {}
+    }
+  };
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
@@ -353,11 +392,13 @@ export default function PropertyDashboard() {
               </p>
             </div>
           </div>
-          <nav aria-label="Main Navigation" className="flex flex-wrap items-center gap-1.5 rounded-xl bg-slate-100 p-1">
+          <nav aria-label="Main Navigation" className="flex flex-wrap items-center gap-1.5 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
             {(
               [
                 { id: "home", label: "Home" },
-                { id: "tasks", label: `SEO Tasks (${readyCount})` },
+                { id: "geo", label: "🤖 AI & GEO" },
+                { id: "compset", label: "🏨 Comp-Set" },
+                { id: "tasks", label: `Tasks (${readyCount})` },
                 { id: "crawl", label: "Site Crawl" },
                 { id: "studio", label: "Keyword Studio" },
               ] as const
@@ -371,10 +412,10 @@ export default function PropertyDashboard() {
                 }}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                   mainTab === tab.id
-                  ? tab.id === "studio"
-                    ? "bg-brand text-slate-900 shadow-sm"
-                    : "bg-white text-slate-900 shadow-sm"
-                  : "text-slate-600 hover:text-slate-900"
+                    ? tab.id === "studio" || tab.id === "geo"
+                      ? "bg-brand text-slate-900 shadow-sm"
+                      : "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 }`}
               >
                 {tab.label}
@@ -385,11 +426,20 @@ export default function PropertyDashboard() {
               onClick={() => setShowAiTraining((v) => !v)}
               className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                 showAiTraining
-                ? "bg-slate-900 text-brand-light shadow-sm"
-                : "text-slate-600 hover:text-slate-900"
+                  ? "bg-slate-900 text-brand-light shadow-sm dark:bg-slate-700 dark:text-brand-light"
+                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
               }`}
             >
               Train AI ({aiStatus.activeRules})
+            </button>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              title="Toggle Dark / Modern High-Contrast Theme"
+            >
+              <span>{isDark ? "☀️" : "🌙"}</span>
+              <span className="hidden sm:inline">{isDark ? "Light" : "Dark"}</span>
             </button>
           </nav>
         </div>
@@ -633,6 +683,85 @@ export default function PropertyDashboard() {
                 </div>
               </Card>
 
+              {/* AI & GEO Intelligence & Deliverables Hub */}
+              <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <button
+                  type="button"
+                  onClick={() => setMainTab("geo")}
+                  className="group flex flex-col justify-between rounded-2xl border border-purple-200 bg-gradient-to-br from-purple-50/80 to-white p-4 text-left shadow-sm transition hover:border-purple-400 hover:shadow-md dark:border-purple-900/50 dark:from-purple-950/20 dark:to-slate-900"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-800 dark:bg-purple-950 dark:text-purple-300">
+                      AI SEARCH ENGINE
+                    </span>
+                    <span className="text-xs font-bold text-purple-700 dark:text-purple-400">78% Score</span>
+                  </div>
+                  <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
+                    🤖 AI &amp; GEO Readiness Radar
+                  </div>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                    ChatGPT Search, Google AI Overviews &amp; Perplexity citation audit.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setMainTab("compset")}
+                  className="group flex flex-col justify-between rounded-2xl border border-blue-200 bg-gradient-to-br from-blue-50/80 to-white p-4 text-left shadow-sm transition hover:border-blue-400 hover:shadow-md dark:border-blue-900/50 dark:from-blue-950/20 dark:to-slate-900"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+                      LOCAL MARKET
+                    </span>
+                    <span className="text-xs font-bold text-emerald-600">84% Win</span>
+                  </div>
+                  <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
+                    🏨 Local Comp-Set Ranking Matrix
+                  </div>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                    Benchmark against top 3 nearby boutique &amp; luxury competitors.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDeliverablesTab("preview")}
+                  className="group flex flex-col justify-between rounded-2xl border border-brand/40 bg-gradient-to-br from-brand-50/60 to-white p-4 text-left shadow-sm transition hover:border-brand hover:shadow-md dark:border-brand/40 dark:from-brand-950/20 dark:to-slate-900"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-md bg-brand/20 px-2 py-0.5 text-[10px] font-bold text-slate-900 dark:text-brand-light">
+                      INTERACTIVE
+                    </span>
+                    <span className="text-xs font-bold text-slate-600 dark:text-slate-400">5 Slides</span>
+                  </div>
+                  <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
+                    🖥️ Live Slide Deck Preview
+                  </div>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                    Flip through slides, edit insight notes, and preview before downloading.
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setDeliverablesTab("memo")}
+                  className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-gradient-to-br from-slate-50 to-white p-4 text-left shadow-sm transition hover:border-slate-400 hover:shadow-md dark:border-slate-800 dark:from-slate-800/40 dark:to-slate-900"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-700 dark:text-slate-300">
+                      EXECUTIVE PDF
+                    </span>
+                    <span className="text-xs font-bold text-slate-500">1-Page</span>
+                  </div>
+                  <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
+                    📄 1-Page Owner &amp; GM Memo
+                  </div>
+                  <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                    Fast printable briefing with Top 5 search wins &amp; action items.
+                  </p>
+                </button>
+              </section>
+
               <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">
@@ -689,6 +818,20 @@ export default function PropertyDashboard() {
                 </button>
               </section>
             </>
+          )}
+
+          {mainTab === "geo" && (
+            <GeoReadinessRadar
+              property={activeProperty}
+              onRunDeckGeneration={() => setDeliverablesTab("pptx")}
+            />
+          )}
+
+          {mainTab === "compset" && (
+            <CompsetRankingMatrix
+              property={activeProperty}
+              onExportMemo={() => setDeliverablesTab("memo")}
+            />
           )}
 
           {mainTab === "crawl" && (
@@ -1010,7 +1153,12 @@ export default function PropertyDashboard() {
             {deliverablesTab && (
               <ClientDeliverablesModal
                 initialTab={deliverablesTab}
-                defaultProperty={{ name: activeProperty.name, url: activeProperty.url }}
+                defaultProperty={{
+                  name: activeProperty.name,
+                  url: activeProperty.url,
+                  city: activeProperty.city,
+                  state: activeProperty.state,
+                }}
                 onClose={() => setDeliverablesTab(null)}
                 onCompleted={() => void refreshRuns()}
               />

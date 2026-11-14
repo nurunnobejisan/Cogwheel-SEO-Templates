@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { downloadBlobWithCountdown } from "@/lib/download-manager";
 import { GenerationProgressModal } from "./GenerationProgressModal";
+import { SlideDeckPreview } from "./SlideDeckPreview";
 import { Card } from "./ui";
 
 interface ReportSummary {
@@ -75,6 +76,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
   const [summary, setSummary] = useState<ReportSummary | null>(null);
   const [narrative, setNarrative] = useState<string | null>(null);
   const [flags, setFlags] = useState<Array<{ code: string; message: string; severity: string }>>([]);
+  const [showPreview, setShowPreview] = useState(false);
 
   useEffect(() => {
     if (defaultProperty?.url && !targetUrl) {
@@ -190,6 +192,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
           const taskJson = await taskRes.json();
           setNarrative(taskJson.data?.executiveSummary ?? taskJson.output?.executiveSummary ?? null);
           setFlags(taskJson.flags ?? []);
+          setShowPreview(true);
           onCompleted();
         }
       }
@@ -566,17 +569,27 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
 
       {/* Dark Bottom Action Bar */}
       <div className="mt-5 flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-slate-950 p-4 text-white">
-        <button
-          type="button"
-          onClick={handleGenerate}
-          disabled={busy || !templateFile || !xlsxFile}
-          className="inline-flex items-center gap-2.5 rounded-xl bg-brand px-5 py-3 font-display text-sm font-bold text-slate-950 shadow-glow transition hover:bg-brand-light disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-            <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-          </svg>
-          {busy ? "Generating Deck..." : "Generate & Download Deck"}
-        </button>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            type="button"
+            onClick={handleGenerate}
+            disabled={busy || !templateFile || !xlsxFile}
+            className="inline-flex items-center gap-2.5 rounded-xl bg-brand px-5 py-3 font-display text-sm font-bold text-slate-950 shadow-glow transition hover:bg-brand-light disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+            </svg>
+            {busy ? "Generating Deck..." : "Generate & Download Deck"}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setShowPreview((v) => !v)}
+            className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 font-display text-sm font-bold text-white transition hover:bg-white/20"
+          >
+            🖥️ {showPreview ? "Hide Preview" : "Live Slide Preview"}
+          </button>
+        </div>
 
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
@@ -597,6 +610,16 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
           </span>
         </div>
       </div>
+
+      {showPreview && (
+        <div className="mt-6 rounded-3xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-900/60">
+          <SlideDeckPreview
+            propertyName={summary?.property_name || defaultProperty?.name}
+            matchedServices={crawlInfo?.matched_services}
+            onDownloadPptx={handleGenerate}
+          />
+        </div>
+      )}
 
       {summary && (
         <div className="mt-4 space-y-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-slate-800">
