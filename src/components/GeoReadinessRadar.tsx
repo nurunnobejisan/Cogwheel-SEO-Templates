@@ -141,47 +141,46 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
   return (
     <div className="space-y-6">
       {/* Top Banner Card */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 text-white shadow-xl dark:border-slate-800">
-        <div className="absolute -right-16 -top-16 h-56 w-56 rounded-full bg-brand/20 blur-3xl" />
-        <div className="relative z-10 flex flex-col justify-between gap-6 md:flex-row md:items-center">
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-card transition-all dark:border-slate-800 dark:bg-slate-900">
+        <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand/10 px-3 py-1 text-xs font-semibold text-brand-light">
+            <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700 dark:border-purple-800/40 dark:bg-purple-950/40 dark:text-purple-300">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-brand" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-500 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-purple-600 dark:bg-purple-400" />
               </span>
               AI &amp; GEO Readiness Engine v2.4
             </div>
-            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-white md:text-3xl">
+            <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-white md:text-3xl">
               Generative Engine Optimization (GEO) Radar
             </h2>
-            <p className="mt-1 max-w-xl text-xs text-slate-300 sm:text-sm">
-              Evaluates how effectively <span className="font-semibold text-white">{propertyName}</span> is cited,
+            <p className="mt-1.5 max-w-xl text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
+              Evaluates how effectively <span className="font-semibold text-slate-800 dark:text-slate-200">{propertyName}</span> is cited,
               synthesized, and recommended by ChatGPT Search, Google AI Overviews, and Perplexity.
             </p>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs text-slate-400">
-              <span className="rounded-md bg-slate-800/80 px-2 py-1 font-mono text-[11px] text-slate-300">
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+              <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[11px] text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 {propertyCity}, {propertyState}
               </span>
-              <span className="truncate max-w-xs text-slate-400 font-mono text-[11px]">
+              <span className="max-w-xs truncate rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[11px] text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 {propertyUrl}
               </span>
             </div>
           </div>
 
           {/* Circular Score Gauge */}
-          <div className="flex shrink-0 items-center gap-5 rounded-2xl border border-slate-700/60 bg-slate-800/60 p-4 backdrop-blur-md">
+          <div className="flex shrink-0 items-center gap-5 rounded-2xl border border-slate-200/90 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/60">
             <div className="relative flex h-20 w-20 items-center justify-center">
               <svg className="h-full w-full -rotate-90" viewBox="0 0 36 36">
                 <path
-                  className="text-slate-700"
+                  className="text-slate-200 dark:text-slate-700"
                   strokeWidth="3.5"
                   stroke="currentColor"
                   fill="none"
                   d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                 />
                 <path
-                  className="text-brand transition-all duration-1000"
+                  className="text-purple-600 transition-all duration-1000 dark:text-brand"
                   strokeDasharray={`${readinessScore}, 100`}
                   strokeWidth="3.5"
                   strokeLinecap="round"
@@ -191,80 +190,87 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                 />
               </svg>
               <div className="absolute flex flex-col items-center">
-                <span className="font-display text-xl font-extrabold text-white">{readinessScore}%</span>
-                <span className="text-[9px] uppercase tracking-wider text-slate-400">GEO Score</span>
+                <span className="font-display text-xl font-extrabold text-slate-900 dark:text-white">{readinessScore}%</span>
+                <span className="text-[9px] uppercase tracking-wider text-slate-400 dark:text-slate-500">GEO Score</span>
               </div>
             </div>
             <div>
-              <div className="inline-block rounded-md bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold text-emerald-300">
+              <div className="inline-block rounded-md border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-[11px] font-bold text-purple-700 dark:border-purple-800/50 dark:bg-purple-950/60 dark:text-purple-300">
                 Grade: B+ Strong Readiness
               </div>
-              <p className="mt-1 text-xs text-slate-300">
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                 3 of 5 schema pillars verified.
               </p>
               <button
                 type="button"
                 onClick={handleRescan}
                 disabled={isScanning}
-                className="mt-2 text-xs font-semibold text-brand-light hover:underline"
+                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-purple-700 hover:text-purple-900 dark:text-brand-light dark:hover:underline"
               >
-                {isScanning ? `Auditing... ${scanProgress}%` : "↻ Re-Scan Property"}
+                <svg className={`h-3 w-3 ${isScanning ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                {isScanning ? `Auditing... ${scanProgress}%` : "Re-Scan Property"}
               </button>
             </div>
           </div>
         </div>
 
         {/* Tab switcher */}
-        <div className="mt-6 flex flex-wrap gap-2 border-t border-slate-800 pt-4">
-          <button
-            type="button"
-            onClick={() => setActiveTab("overview")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
-              activeTab === "overview"
-                ? "bg-brand text-slate-900 shadow-sm"
-                : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
-            }`}
-          >
-            Radar Overview
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("schema")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
-              activeTab === "schema"
-                ? "bg-brand text-slate-900 shadow-sm"
-                : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
-            }`}
-          >
-            Schema &amp; Entities Audit
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("queries")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
-              activeTab === "queries"
-                ? "bg-brand text-slate-900 shadow-sm"
-                : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
-            }`}
-          >
-            Conversational AI Queries
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("engines")}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
-              activeTab === "engines"
-                ? "bg-brand text-slate-900 shadow-sm"
-                : "bg-slate-800/80 text-slate-300 hover:bg-slate-700"
-            }`}
-          >
-            AI Engine Presence
-          </button>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-4 dark:border-slate-800">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => setActiveTab("overview")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+                activeTab === "overview"
+                  ? "bg-slate-900 text-white shadow-sm dark:bg-brand dark:text-slate-950"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              }`}
+            >
+              Radar Overview
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("schema")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+                activeTab === "schema"
+                  ? "bg-slate-900 text-white shadow-sm dark:bg-brand dark:text-slate-950"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              }`}
+            >
+              Schema &amp; Entities Audit
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("queries")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+                activeTab === "queries"
+                  ? "bg-slate-900 text-white shadow-sm dark:bg-brand dark:text-slate-950"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              }`}
+            >
+              Conversational AI Queries
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab("engines")}
+              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+                activeTab === "engines"
+                  ? "bg-slate-900 text-white shadow-sm dark:bg-brand dark:text-slate-950"
+                  : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+              }`}
+            >
+              AI Engine Presence
+            </button>
+          </div>
+
           <button
             type="button"
             onClick={() => setShowVisibilitySuite(true)}
-            className="rounded-xl border border-purple-500/40 bg-purple-900/60 px-3.5 py-1.5 text-xs font-bold text-purple-200 transition hover:bg-purple-800"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-purple-200 bg-purple-50 px-3.5 py-1.5 text-xs font-semibold text-purple-700 transition hover:bg-purple-100 dark:border-purple-800/60 dark:bg-purple-950/40 dark:text-purple-300 dark:hover:bg-purple-900/40"
           >
+            <span className="h-1.5 w-1.5 rounded-full bg-purple-600 dark:bg-purple-400" />
             Connect VisibilitySuite Data
           </button>
         </div>
@@ -272,99 +278,123 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
 
       {/* Tab 1: Overview */}
       {activeTab === "overview" && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-3">
           {/* Pillar 1 */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Pillar 01
-              </span>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
-                85% Active
-              </span>
+          <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 border-t-2 border-t-emerald-500 bg-white p-5 shadow-card dark:border-slate-800 dark:border-t-emerald-500 dark:bg-slate-900">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Pillar 01
+                </span>
+                <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  85% Active
+                </span>
+              </div>
+              <h3 className="mt-2.5 font-display text-base font-bold text-slate-900 dark:text-white">
+                Structured Schema Architecture
+              </h3>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Machine-readable JSON-LD enabling LLMs to extract amenities, restaurant hours, and spa menus without scraping ambiguity.
+              </p>
             </div>
-            <h3 className="mt-2 text-base font-bold text-slate-900 dark:text-white">
-              Structured Schema Architecture
-            </h3>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-              Machine-readable JSON-LD enabling LLMs to extract amenities, restaurant hours, and spa menus without scraping ambiguity.
-            </p>
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 space-y-2.5 border-t border-slate-100 pt-3 dark:border-slate-800">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">LodgingBusiness</span>
-                <span className="font-bold text-emerald-600">Verified</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">LodgingBusiness</span>
+                <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  Verified
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">Restaurant / Dining</span>
-                <span className="font-bold text-amber-600">Missing Hours</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">Restaurant / Dining</span>
+                <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:border-amber-800/50 dark:bg-amber-950/60 dark:text-amber-300">
+                  Missing Hours
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">Day Spa &amp; Wellness</span>
-                <span className="font-bold text-rose-600">Action Needed</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">Day Spa &amp; Wellness</span>
+                <span className="rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/60 dark:text-rose-300">
+                  Action Needed
+                </span>
               </div>
             </div>
           </div>
 
           {/* Pillar 2 */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Pillar 02
-              </span>
-              <span className="rounded-full bg-sky-100 px-2 py-0.5 text-[11px] font-bold text-sky-700 dark:bg-sky-950/60 dark:text-sky-400">
-                72% Active
-              </span>
+          <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 border-t-2 border-t-sky-500 bg-white p-5 shadow-card dark:border-slate-800 dark:border-t-sky-500 dark:bg-slate-900">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Pillar 02
+                </span>
+                <span className="rounded-full border border-sky-200 bg-sky-50 px-2.5 py-0.5 text-[11px] font-bold text-sky-700 dark:border-sky-800/50 dark:bg-sky-950/60 dark:text-sky-300">
+                  72% Active
+                </span>
+              </div>
+              <h3 className="mt-2.5 font-display text-base font-bold text-slate-900 dark:text-white">
+                Natural Language Question Coverage
+              </h3>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Direct answers to traveler prompts: pet policies, parking rates, resort fees, and wedding capacities.
+              </p>
             </div>
-            <h3 className="mt-2 text-base font-bold text-slate-900 dark:text-white">
-              Natural Language Question Coverage
-            </h3>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-              Direct answers to traveler prompts: pet policies, parking rates, resort fees, and wedding capacities.
-            </p>
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 space-y-2.5 border-t border-slate-100 pt-3 dark:border-slate-800">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">River View &amp; Suites FAQ</span>
-                <span className="font-bold text-emerald-600">Covered</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">River View &amp; Suites FAQ</span>
+                <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  Covered
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">Pet Fee &amp; Weight Limits</span>
-                <span className="font-bold text-rose-600">Missing In FAQ</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">Pet Fee &amp; Weight Limits</span>
+                <span className="rounded-md border border-rose-200 bg-rose-50 px-2 py-0.5 text-[10px] font-bold text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/60 dark:text-rose-300">
+                  Missing In FAQ
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">Spa Treatment Pricing</span>
-                <span className="font-bold text-amber-600">Partial</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">Spa Treatment Pricing</span>
+                <span className="rounded-md border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:border-amber-800/50 dark:bg-amber-950/60 dark:text-amber-300">
+                  Partial
+                </span>
               </div>
             </div>
           </div>
 
           {/* Pillar 3 */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                Pillar 03
-              </span>
-              <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[11px] font-bold text-violet-700 dark:bg-violet-950/60 dark:text-violet-400">
-                90% Strong
-              </span>
+          <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 border-t-2 border-t-purple-500 bg-white p-5 shadow-card dark:border-slate-800 dark:border-t-purple-500 dark:bg-slate-900">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                  Pillar 03
+                </span>
+                <span className="rounded-full border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-[11px] font-bold text-purple-700 dark:border-purple-800/50 dark:bg-purple-950/60 dark:text-purple-300">
+                  90% Strong
+                </span>
+              </div>
+              <h3 className="mt-2.5 font-display text-base font-bold text-slate-900 dark:text-white">
+                Brand Entity Disambiguation
+              </h3>
+              <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                Clear differentiation between {propertyName} and nearby competitor properties in the Muscle Shoals / Florence metro.
+              </p>
             </div>
-            <h3 className="mt-2 text-base font-bold text-slate-900 dark:text-white">
-              Brand Entity Disambiguation
-            </h3>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-              Clear differentiation between {propertyName} and nearby competitor properties in the Muscle Shoals / Florence metro.
-            </p>
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 space-y-2.5 border-t border-slate-100 pt-3 dark:border-slate-800">
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">Google Knowledge Panel</span>
-                <span className="font-bold text-emerald-600">Claimed</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">Google Knowledge Panel</span>
+                <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  Claimed
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">TripAdvisor Entity Match</span>
-                <span className="font-bold text-emerald-600">Linked</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">TripAdvisor Entity Match</span>
+                <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  Linked
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-slate-600 dark:text-slate-300">Direct Booking Citation</span>
-                <span className="font-bold text-emerald-600">Primary URL</span>
+                <span className="font-medium text-slate-600 dark:text-slate-300">Direct Booking Citation</span>
+                <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  Primary URL
+                </span>
               </div>
             </div>
           </div>
@@ -403,7 +433,19 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                             : "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-400"
                         }`}
                       >
-                        {check.status === "passed" ? "✓" : check.status === "warning" ? "!" : "✕"}
+                        {check.status === "passed" ? (
+                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                          </svg>
+                        ) : check.status === "warning" ? (
+                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                          </svg>
+                        ) : (
+                          <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        )}
                       </span>
                       <div>
                         <span className="font-semibold text-sm text-slate-900 dark:text-white">
@@ -500,11 +542,11 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
 
       {/* Tab 4: AI Engine Breakdown */}
       {activeTab === "engines" && (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-sm text-slate-900 dark:text-white">ChatGPT Search</span>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
+              <span className="text-sm font-bold text-slate-900 dark:text-white">ChatGPT Search</span>
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
                 84%
               </span>
             </div>
@@ -513,10 +555,10 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-sm text-slate-900 dark:text-white">Google AI Overviews</span>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Google AI Overviews</span>
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
                 88%
               </span>
             </div>
@@ -525,10 +567,22 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-sm text-slate-900 dark:text-white">Perplexity AI</span>
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-950 dark:text-amber-400">
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Google Gemini</span>
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
+                82%
+              </span>
+            </div>
+            <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+              Grounds answers via Google Maps places and verified guest reviews. Cites pet policies and spa bookings.
+            </p>
+          </div>
+
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Perplexity AI</span>
+              <span className="rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:border-amber-800/50 dark:bg-amber-950/60 dark:text-amber-300">
                 68%
               </span>
             </div>
@@ -537,10 +591,10 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             </p>
           </div>
 
-          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
             <div className="flex items-center justify-between">
-              <span className="font-bold text-sm text-slate-900 dark:text-white">Bing / Copilot</span>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400">
+              <span className="text-sm font-bold text-slate-900 dark:text-white">Bing / Copilot</span>
+              <span className="rounded-full border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
                 74%
               </span>
             </div>
@@ -552,12 +606,12 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
       )}
 
       {/* Action Footer */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card dark:border-slate-800 dark:bg-slate-900">
         <div>
-          <span className="text-xs font-bold text-slate-900 dark:text-white">
+          <span className="font-display text-sm font-bold text-slate-900 dark:text-white">
             Export GEO Findings into Client Deliverables
           </span>
-          <p className="text-[11px] text-slate-500 dark:text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Include AI Citation Readiness scores in the Monthly Visibility Deck or sync with VisibilitySuite.
           </p>
         </div>
@@ -570,7 +624,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             Connect VisibilitySuite Data
           </Button>
           {onRunDeckGeneration && (
-            <Button onClick={onRunDeckGeneration} variant="primary">
+            <Button onClick={onRunDeckGeneration} variant="primary" className="text-xs">
               Generate Visibility Deck with GEO Insights
             </Button>
           )}
