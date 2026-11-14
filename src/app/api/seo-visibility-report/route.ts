@@ -11,6 +11,25 @@ const execFileAsync = promisify(execFile);
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
+interface CrawlCacheEntry {
+  timestamp: number;
+  data: {
+    target_url: string;
+    page_title: string;
+    crawled_pages: number;
+    sitemap_urls: number;
+    page_topics: string[];
+    website_services: string[];
+    workbook_services: string[];
+    matched_services: string[];
+    unmatched_services: string[];
+    workbook_keyword_count: number;
+  };
+}
+
+const CRAWL_CACHE = new Map<string, CrawlCacheEntry>();
+const CRAWL_CACHE_TTL_MS = 15 * 60 * 1000; // 15-minute in-memory cache
+
 const SERVICE_PATTERNS: Record<string, RegExp> = {
   lodging: /\b(?:hotels?|inns?|motels?|lodging|stays?|places\s+to\s+stay|rooms?)\b/i,
   accommodations: /\b(?:accommodations?)\b/i,
@@ -148,6 +167,12 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      const cacheKey = `${effectiveUrl.toLowerCase()}_${workbookKeywords.length}`;
+      const cached = CRAWL_CACHE.get(cacheKey);
+      if (cached && Date.now() - cached.timestamp < CRAWL_CACHE_TTL_MS) {
+        return NextResponse.json(cached.data);
+      }
+
       // Try running the Python crawl script first if available
       try {
         const pythonScript = path.resolve(process.cwd(), "api/seo-visibility-report.py");
@@ -253,7 +278,7 @@ export async function POST(req: NextRequest) {
         .map((s) => SERVICE_LABELS[s] || s)
         .sort();
 
-      return NextResponse.json({
+      const responseData = {
         target_url: effectiveUrl,
         page_title: pageTitle,
         crawled_pages: 1,
@@ -264,7 +289,10 @@ export async function POST(req: NextRequest) {
         matched_services: matchedLabels,
         unmatched_services: unmatchedLabels,
         workbook_keyword_count: workbookKeywords.length,
-      });
+      };
+
+      CRAWL_CACHE.set(cacheKey, { timestamp: Date.now(), data: responseData });
+      return NextResponse.json(responseData);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -333,3 +361,4 @@ export async function POST(req: NextRequest) {
     );
   }
 }
+

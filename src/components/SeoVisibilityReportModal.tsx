@@ -34,6 +34,7 @@ interface CrawlPreview {
 }
 
 interface Props {
+  defaultProperty?: { name?: string; url?: string };
   onClose: () => void;
   onCompleted: () => void;
 }
@@ -59,12 +60,13 @@ async function slimWorkbookIfNeeded(file: File): Promise<File> {
   });
 }
 
-export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
+export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted }: Props) {
   const [templateFile, setTemplateFile] = useState<File | null>(null);
   const [xlsxFile, setXlsxFile] = useState<File | null>(null);
   const [pdfFile, setPdfFile] = useState<File | null>(null);
-  const [targetUrl, setTargetUrl] = useState("");
+  const [targetUrl, setTargetUrl] = useState(defaultProperty?.url || "");
   const [vanityMode, setVanityMode] = useState<"auto" | "vanity" | "brand">("auto");
+  const [dragOverZone, setDragOverZone] = useState<"template" | "xlsx" | "pdf" | null>(null);
   const [busy, setBusy] = useState(false);
   const [crawlBusy, setCrawlBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -72,6 +74,26 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
   const [summary, setSummary] = useState<ReportSummary | null>(null);
   const [narrative, setNarrative] = useState<string | null>(null);
   const [flags, setFlags] = useState<Array<{ code: string; message: string; severity: string }>>([]);
+
+  useEffect(() => {
+    if (defaultProperty?.url && !targetUrl) {
+      setTargetUrl(defaultProperty.url);
+    }
+  }, [defaultProperty?.url, targetUrl]);
+
+  function handleDrop(e: React.DragEvent, zone: "template" | "xlsx" | "pdf") {
+    e.preventDefault();
+    setDragOverZone(null);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    if (zone === "template" && file.name.toLowerCase().endsWith(".pptx")) {
+      setTemplateFile(file);
+    } else if (zone === "xlsx" && (file.name.toLowerCase().endsWith(".xlsx") || file.name.toLowerCase().endsWith(".xls"))) {
+      setXlsxFile(file);
+    } else if (zone === "pdf" && file.name.toLowerCase().endsWith(".pdf")) {
+      setPdfFile(file);
+    }
+  }
 
   async function handleInspectWebsite() {
     setError(null);
@@ -200,139 +222,205 @@ export function SeoVisibilityReportModal({ onClose, onCompleted }: Props) {
       {/* 3-Column Step Upload Cards */}
       <div className="grid gap-4 sm:grid-cols-3">
         {/* STEP 01 */}
-        <label
-          className={`group flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed p-5 transition-all ${
-            templateFile
-              ? "border-brand bg-brand-50/30"
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOverZone("template");
+          }}
+          onDragLeave={() => setDragOverZone(null)}
+          onDrop={(e) => handleDrop(e, "template")}
+          className={`group relative flex flex-col justify-between rounded-2xl border-2 border-dashed p-5 transition-all ${
+            dragOverZone === "template"
+              ? "border-brand bg-brand-50/50 ring-4 ring-brand/20"
+              : templateFile
+              ? "border-brand/80 bg-brand-50/30"
               : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50/50"
           }`}
         >
-          <input
-            type="file"
-            accept=".pptx"
-            className="sr-only"
-            onChange={(e) => setTemplateFile(e.target.files?.[0] ?? null)}
-          />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              STEP 01
-            </span>
-            <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
-              Required
-            </span>
-          </div>
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              accept=".pptx"
+              className="sr-only"
+              onChange={(e) => setTemplateFile(e.target.files?.[0] ?? null)}
+            />
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                STEP 01
+              </span>
+              <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
+                Required
+              </span>
+            </div>
 
-          <div className="my-6 flex flex-col items-center text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-500 transition-transform group-hover:scale-105">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h18M4.5 4.5v10.5a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5V4.5M9 20.25l3-3.75 3 3.75" />
-              </svg>
+            <div className="my-6 flex flex-col items-center text-center">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-orange-50 text-orange-500 transition-transform group-hover:scale-105">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h18M4.5 4.5v10.5a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5V4.5M9 20.25l3-3.75 3 3.75" />
+                </svg>
+              </div>
+              <div className="font-display text-sm font-bold text-slate-900">PowerPoint Template</div>
+              <div className="mt-0.5 text-xs text-slate-500 truncate max-w-[200px]" title={templateFile ? templateFile.name : "Master slide deck"}>
+                {templateFile ? templateFile.name : "Master slide deck or drag .pptx here"}
+              </div>
             </div>
-            <div className="font-display text-sm font-bold text-slate-900">PowerPoint Template</div>
-            <div className="mt-0.5 text-xs text-slate-500">
-              {templateFile ? templateFile.name : "Master slide deck"}
-            </div>
-          </div>
+          </label>
 
           <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
             <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
               .pptx
             </span>
-            <span className="font-semibold text-slate-800 group-hover:text-slate-950">
-              {templateFile ? `${Math.round(templateFile.size / 1024)} KB` : "Browse ↗"}
-            </span>
+            {templateFile ? (
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-slate-800">{Math.round(templateFile.size / 1024)} KB</span>
+                <button
+                  type="button"
+                  onClick={() => setTemplateFile(null)}
+                  className="rounded p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700"
+                  title="Clear template"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <span className="font-semibold text-slate-800 group-hover:text-slate-950">Browse ↗</span>
+            )}
           </div>
-        </label>
+        </div>
 
         {/* STEP 02 */}
-        <label
-          className={`group flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed p-5 transition-all ${
-            xlsxFile
-              ? "border-brand bg-brand-50/30"
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOverZone("xlsx");
+          }}
+          onDragLeave={() => setDragOverZone(null)}
+          onDrop={(e) => handleDrop(e, "xlsx")}
+          className={`group relative flex flex-col justify-between rounded-2xl border-2 border-dashed p-5 transition-all ${
+            dragOverZone === "xlsx"
+              ? "border-brand bg-brand-50/50 ring-4 ring-brand/20"
+              : xlsxFile
+              ? "border-brand/80 bg-brand-50/30"
               : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50/50"
           }`}
         >
-          <input
-            type="file"
-            accept=".xlsx"
-            className="sr-only"
-            onChange={(e) => setXlsxFile(e.target.files?.[0] ?? null)}
-          />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              STEP 02
-            </span>
-            <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
-              Required
-            </span>
-          </div>
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              accept=".xlsx,.xls"
+              className="sr-only"
+              onChange={(e) => setXlsxFile(e.target.files?.[0] ?? null)}
+            />
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                STEP 02
+              </span>
+              <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
+                Required
+              </span>
+            </div>
 
-          <div className="my-6 flex flex-col items-center text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 transition-transform group-hover:scale-105">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
+            <div className="my-6 flex flex-col items-center text-center">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 transition-transform group-hover:scale-105">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+              </div>
+              <div className="font-display text-sm font-bold text-slate-900">Keywords Workbook</div>
+              <div className="mt-0.5 text-xs text-slate-500 truncate max-w-[200px]" title={xlsxFile ? xlsxFile.name : "Excel export"}>
+                {xlsxFile ? xlsxFile.name : "Excel export or drag .xlsx here"}
+              </div>
             </div>
-            <div className="font-display text-sm font-bold text-slate-900">Keywords Workbook</div>
-            <div className="mt-0.5 text-xs text-slate-500">
-              {xlsxFile ? xlsxFile.name : "Excel export"}
-            </div>
-          </div>
+          </label>
 
           <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
             <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
               .xlsx
             </span>
-            <span className="font-semibold text-slate-800 group-hover:text-slate-950">
-              {xlsxFile ? `${Math.round(xlsxFile.size / 1024)} KB` : "Browse ↗"}
-            </span>
+            {xlsxFile ? (
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-slate-800">{Math.round(xlsxFile.size / 1024)} KB</span>
+                <button
+                  type="button"
+                  onClick={() => setXlsxFile(null)}
+                  className="rounded p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700"
+                  title="Clear workbook"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <span className="font-semibold text-slate-800 group-hover:text-slate-950">Browse ↗</span>
+            )}
           </div>
-        </label>
+        </div>
 
         {/* STEP 03 */}
-        <label
-          className={`group flex cursor-pointer flex-col justify-between rounded-2xl border border-dashed p-5 transition-all ${
-            pdfFile
-              ? "border-brand bg-brand-50/30"
+        <div
+          onDragOver={(e) => {
+            e.preventDefault();
+            setDragOverZone("pdf");
+          }}
+          onDragLeave={() => setDragOverZone(null)}
+          onDrop={(e) => handleDrop(e, "pdf")}
+          className={`group relative flex flex-col justify-between rounded-2xl border-2 border-dashed p-5 transition-all ${
+            dragOverZone === "pdf"
+              ? "border-brand bg-brand-50/50 ring-4 ring-brand/20"
+              : pdfFile
+              ? "border-brand/80 bg-brand-50/30"
               : "border-slate-300 bg-white hover:border-slate-400 hover:bg-slate-50/50"
           }`}
         >
-          <input
-            type="file"
-            accept=".pdf"
-            className="sr-only"
-            onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
-          />
-          <div className="flex items-center justify-between">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              STEP 03
-            </span>
-            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold text-slate-500">
-              Optional
-            </span>
-          </div>
+          <label className="cursor-pointer">
+            <input
+              type="file"
+              accept=".pdf"
+              className="sr-only"
+              onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
+            />
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                STEP 03
+              </span>
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold text-slate-500">
+                Optional
+              </span>
+            </div>
 
-          <div className="my-6 flex flex-col items-center text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 transition-transform group-hover:scale-105">
-              <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-              </svg>
+            <div className="my-6 flex flex-col items-center text-center">
+              <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 transition-transform group-hover:scale-105">
+                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <div className="font-display text-sm font-bold text-slate-900">Semrush Audit PDF</div>
+              <div className="mt-0.5 text-xs text-slate-500 truncate max-w-[200px]" title={pdfFile ? pdfFile.name : "Optional PDF report"}>
+                {pdfFile ? pdfFile.name : "Optional PDF or drag .pdf here"}
+              </div>
             </div>
-            <div className="font-display text-sm font-bold text-slate-900">Semrush Audit PDF</div>
-            <div className="mt-0.5 text-xs text-slate-500">
-              {pdfFile ? pdfFile.name : "Optional PDF report"}
-            </div>
-          </div>
+          </label>
 
           <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
             <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
               .pdf
             </span>
-            <span className="font-semibold text-slate-800 group-hover:text-slate-950">
-              {pdfFile ? `${Math.round(pdfFile.size / 1024)} KB` : "Browse ↗"}
-            </span>
+            {pdfFile ? (
+              <div className="flex items-center gap-2">
+                <span className="font-semibold text-slate-800">{Math.round(pdfFile.size / 1024)} KB</span>
+                <button
+                  type="button"
+                  onClick={() => setPdfFile(null)}
+                  className="rounded p-0.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700"
+                  title="Clear PDF"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <span className="font-semibold text-slate-800 group-hover:text-slate-950">Browse ↗</span>
+            )}
           </div>
-        </label>
+        </div>
       </div>
 
       {/* STEP 04: Target Website Crawl & Service Match */}

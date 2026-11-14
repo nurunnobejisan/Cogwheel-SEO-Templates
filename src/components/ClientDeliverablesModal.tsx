@@ -65,7 +65,11 @@ export function ClientDeliverablesModal({
       </div>
 
       {activeTab === "pptx" ? (
-        <SeoVisibilityReportModal onClose={onClose} onCompleted={onCompleted} />
+        <SeoVisibilityReportModal
+          defaultProperty={defaultProperty}
+          onClose={onClose}
+          onCompleted={onCompleted}
+        />
       ) : (
         <SeoBaselineModal
           defaultProperty={defaultProperty}
