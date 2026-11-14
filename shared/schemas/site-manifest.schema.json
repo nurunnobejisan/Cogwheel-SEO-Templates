@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "SiteManifest",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": [
+      "url",
+      "primaryKeyword"
+    ],
+    "properties": {
+      "url": {
+        "type": "string",
+        "format": "uri"
+      },
+      "primaryKeyword": {
+        "type": "string",
+        "minLength": 2
+      },
+      "secondaryTags": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      },
+      "parentPage": {
+        "type": "string",
+        "format": "uri"
+      },
+      "categoryHierarchy": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      },
+      "approvedAnchorVariations": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": []
+      }
+    }
+  }
+}

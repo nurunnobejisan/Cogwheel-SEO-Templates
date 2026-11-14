@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Context-Aware XSS Protection
+ * Cogwheel SEO Templates — Context-Aware XSS Protection (escape-html compliant)
  * 
  * Provides robust escaping for HTML text content, HTML attribute values,
  * and JSON-LD script context to prevent injection vulnerabilities.
@@ -10,19 +10,22 @@ const HTML_ESCAPE_MAP: Record<string, string> = {
   "<": "&lt;",
   ">": "&gt;",
   '"': "&quot;",
-  "'": "&#x27;",
+  "'": "&#39;",
   "/": "&#x2F;",
-  "`": "&#x60;",
+  "`": "&#96;",
   "=": "&#x3D;"
 };
 
 /**
- * Escapes unsafe characters for HTML body context.
+ * Escapes unsafe characters for HTML body context (drop-in escape-html compatible).
  */
 export function escapeHtml(str: string | null | undefined): string {
   if (!str) return "";
   return String(str).replace(/[&<>"'`=\/]/g, (char) => HTML_ESCAPE_MAP[char] || char);
 }
+
+export const escape = escapeHtml;
+export default escapeHtml;
 
 /**
  * Escapes unsafe characters strictly for HTML attribute values (e.g., href, title, content).

@@ -1,4 +1,4 @@
-name: SEO Integrity & Security CI
+name: Cogwheel SEO Integrity, TypeScript & Python CI
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   seo-integrity:
-    name: SEO Quality & Security Verification
+    name: Full-Stack SEO Integrity & Quality Verification
     runs-on: ubuntu-latest
 
     steps:
@@ -19,22 +19,37 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: 'npm'
+
+      - name: Setup Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pydantic pytest
 
       - name: Secret Scan Verification
         run: |
-          echo "Scanning codebase for exposed secrets and private keys..."
-          ! grep -rnE "(ghp_[a-zA-Z0-9]{20,}|sk-[a-zA-Z0-9]{20,}|AIza[0-9A-Za-z-_]{35})" src/ validators/ schemas/ exporters/ 2>/dev/null
+          echo "Scanning codebase for exposed secrets and private credentials..."
+          ! grep -rnE "(ghp_[a-zA-Z0-9]{20,}|sk-[a-zA-Z0-9]{20,}|AIza[0-9A-Za-z-_]{35})" src/ validators/ schemas/ exporters/ api/ 2>/dev/null
 
-      - name: Run Master SEO Linter (10-Gate Validation)
+      - name: TypeScript Type Checking (tsc --noEmit)
+        run: |
+          npx tsc --noEmit
+
+      - name: Run TypeScript Layer Tests (Vitest & Node test runner)
+        run: |
+          node --test --experimental-strip-types tests/ts/*.test.ts
+
+      - name: Run Python Layer Tests (Pytest)
+        run: |
+          pytest tests/python/ -v
+
+      - name: Run Master 10-Gate SEO Integrity Linter
         run: |
           node --experimental-strip-types tests/seoLinter.ts
-
-      - name: Run Unit & Regression Test Suite
-        run: |
-          node --test --experimental-strip-types tests/variableResolver.test.ts
-          node --test --experimental-strip-types tests/securityGuardrails.test.ts
-          node --test --experimental-strip-types tests/schemas.test.ts
-          node --test --experimental-strip-types tests/serpOptimizer.test.ts
-          node --test --experimental-strip-types tests/uniquenessGate.test.ts
-          node --test --experimental-strip-types tests/internalLinker.test.ts
-          node --test --experimental-strip-types tests/exporters.test.ts

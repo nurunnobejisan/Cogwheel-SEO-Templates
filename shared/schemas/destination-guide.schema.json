@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "DestinationGuide",
+  "type": "object",
+  "required": [
+    "hotelName",
+    "cityName",
+    "destinationTitle",
+    "destinationOverview"
+  ],
+  "properties": {
+    "hotelName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "brand": {
+      "type": "string",
+      "default": "Independent Collection"
+    },
+    "cityName": {
+      "type": "string",
+      "minLength": 1
+    },
+    "destinationTitle": {
+      "type": "string",
+      "minLength": 5
+    },
+    "destinationSubtitle": {
+      "type": "string",
+      "default": "Premier travel insights and local recommendations"
+    },
+    "destinationOverview": {
+      "type": "string",
+      "minLength": 20
+    },
+    "amenitiesList": {
+      "type": "string",
+      "default": "modern luxury amenities, on-site dining, and 24/7 guest services"
+    },
+    "bookingPerks": {
+      "type": "string",
+      "default": "lowest direct booking rate guarantee and flexible cancellations"
+    },
+    "attractionsSummary": {
+      "type": "string",
+      "default": "convenient access to cultural attractions, dining districts, and local transit"
+    }
+  }
+}
