@@ -818,6 +818,9 @@ export default function PropertyDashboard() {
                       style={{ width: `${Math.round((readyCount / TASKS_CONFIG.length) * 100)}%` }}
                     />
                   </div>
+                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
+                    {readyCount} Active &bull; {TASKS_CONFIG.length - readyCount} Coming Soon
+                  </p>
                 </div>
 
                 <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
@@ -964,19 +967,23 @@ export default function PropertyDashboard() {
                 aria-label="Filter tasks"
                 className="w-44 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
               />
-              <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-[11px] font-semibold">
-                {(["all", "ready", "upcoming"] as const).map((mode) => (
+              <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-[11px] font-semibold dark:border-slate-800 dark:bg-slate-900">
+                {[
+                  { id: "all", label: `All (${TASKS_CONFIG.length})` },
+                  { id: "ready", label: `Active (${readyCount})` },
+                  { id: "upcoming", label: `Coming Soon (${TASKS_CONFIG.length - readyCount})` },
+                ].map((mode) => (
                   <button
-                    key={mode}
+                    key={mode.id}
                     type="button"
-                    onClick={() => setFilterMode(mode)}
-                    className={`rounded-lg px-2.5 py-1 capitalize transition ${
-                      filterMode === mode
-                        ? "bg-slate-900 text-white"
-                        : "text-slate-500 hover:text-slate-900"
+                    onClick={() => setFilterMode(mode.id as "all" | "ready" | "upcoming")}
+                    className={`rounded-lg px-2.5 py-1 transition ${
+                      filterMode === mode.id
+                        ? "bg-slate-900 text-white dark:bg-brand dark:text-slate-950"
+                        : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                     }`}
                   >
-                    {mode}
+                    {mode.label}
                   </button>
                 ))}
               </div>
@@ -985,25 +992,46 @@ export default function PropertyDashboard() {
 
           <Card
             title={`${activeTab} Tasks`}
-            subtitle={`Active modules run through the shared validation pipeline with automatic Flag Summaries.`}
+            subtitle={
+              activeTab === "Off Page" || activeTab === "Local"
+                ? `All ${activeTab} modules are currently in development for Phase 2 & 3 (Coming Soon). Click any card to preview module requirements and request early access.`
+                : `Active production modules run through the shared validation pipeline with automatic Flag Summaries.`
+            }
           >
             {sectionTasks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center">
-                <p className="text-sm font-semibold text-slate-700">
-                  No active tasks match this filter in {activeTab}.
+              <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center dark:border-slate-800 dark:bg-slate-800/40">
+                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                  {filterMode === "ready" && (activeTab === "Off Page" || activeTab === "Local")
+                    ? `All ${activeTab} modules are upcoming roadmap releases (Coming Soon).`
+                    : `No tasks match this filter in ${activeTab}.`}
                 </p>
-                <p className="text-xs text-slate-500">
-                  Switch to All to preview upcoming Phase 2/3 modules, or clear your search filter.
+                <p className="text-xs text-slate-500 dark:text-slate-400">
+                  {filterMode === "ready" && (activeTab === "Off Page" || activeTab === "Local")
+                    ? `Switch to "Coming Soon" or "All" to inspect the specifications and data inputs for these modules.`
+                    : `Switch filter or clear your search query to preview other tasks.`}
                 </p>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    setFilterMode("all");
-                    setSearchQuery("");
-                  }}
-                >
-                  Show All {activeTab} Tasks
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="primary"
+                    onClick={() => {
+                      setFilterMode("all");
+                      setSearchQuery("");
+                    }}
+                  >
+                    Show All {activeTab} Tasks
+                  </Button>
+                  {(activeTab === "Off Page" || activeTab === "Local") && (
+                    <Button
+                      variant="secondary"
+                      onClick={() => {
+                        setFilterMode("upcoming");
+                        setSearchQuery("");
+                      }}
+                    >
+                      View Coming Soon Modules
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : (
             <div className="grid gap-4 md:grid-cols-2">
@@ -1016,69 +1044,81 @@ export default function PropertyDashboard() {
                 return (
                   <div
                     key={task.id}
+                    onClick={() => {
+                      if (disabled) handleRunTask(task);
+                    }}
                     className={`animate-fade-in flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${
                       disabled
-                        ? "border-slate-200/70 bg-slate-50/60 opacity-80"
+                        ? "cursor-pointer border-slate-200/80 bg-slate-50/70 hover:border-amber-300 hover:bg-white hover:shadow-card dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-amber-600/60 dark:hover:bg-slate-900"
                         : effectiveStatus === "Flagged"
-                          ? "border-slate-200 border-l-4 border-l-amber-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                          ? "border-slate-200 border-l-4 border-l-amber-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
                           : effectiveStatus === "Done"
-                            ? "border-slate-200 border-l-4 border-l-emerald-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
-                            : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card"
+                            ? "border-slate-200 border-l-4 border-l-emerald-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
+                            : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
                     }`}
                   >
                     <div className="space-y-2.5">
                       <div className="flex flex-wrap items-start justify-between gap-2">
-                        <span className="font-display text-sm font-bold text-slate-900">{task.name}</span>
+                        <span className="font-display text-sm font-bold text-slate-900 dark:text-white">{task.name}</span>
                         <div className="flex items-center gap-1.5">
-                          <span
-                            className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[effectiveStatus]}`}
-                          >
+                          {disabled ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
+                              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                              Coming Soon
+                            </span>
+                          ) : (
                             <span
-                              className={`h-1.5 w-1.5 rounded-full ${
-                                effectiveStatus === "Done"
-                                  ? "bg-emerald-500"
-                                  : effectiveStatus === "Flagged"
-                                    ? "bg-amber-500"
-                                    : effectiveStatus === "Running"
-                                      ? "animate-pulse bg-sky-500"
-                                      : "bg-slate-400"
-                              }`}
-                            />
-                            {effectiveStatus}
-                          </span>
+                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[effectiveStatus]}`}
+                            >
+                              <span
+                                className={`h-1.5 w-1.5 rounded-full ${
+                                  effectiveStatus === "Done"
+                                    ? "bg-emerald-500"
+                                    : effectiveStatus === "Flagged"
+                                      ? "bg-amber-500"
+                                      : effectiveStatus === "Running"
+                                        ? "animate-pulse bg-sky-500"
+                                        : "bg-slate-400"
+                                }`}
+                              />
+                              {effectiveStatus}
+                            </span>
+                          )}
                           <span
                             className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                              OUTPUT_BADGE_STYLES[task.outputType] ?? "border-slate-200 bg-slate-100 text-slate-600"
+                              disabled
+                                ? "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                                : OUTPUT_BADGE_STYLES[task.outputType] ?? "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
                             }`}
                           >
-                            {task.outputType}
+                            {disabled ? `Phase ${task.phase}` : task.outputType}
                           </span>
                         </div>
                       </div>
-                      <p className="text-xs leading-relaxed text-slate-600">{task.description}</p>
+                      <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400">{task.description}</p>
                       <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                         {task.dataSources.map((src) => (
                           <span
                             key={src}
-                            className="rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500"
+                            className="rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-400"
                           >
                             {src}
                           </span>
                         ))}
                         {task.dependsOn.length > 0 && (
-                          <span className="text-[10px] text-slate-400">
+                          <span className="text-[10px] text-slate-400 dark:text-slate-500">
                             Requires: {task.dependsOn.join(", ")}
                           </span>
                         )}
                       </div>
                       {run && run.flags.length > 0 && (
-                        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
                           Flag Summary ({run.flags.length}): {run.flags.map((f) => f.message).slice(0, 2).join(" | ")}
                         </div>
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between border-t border-slate-100 pt-3">
+                    <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
                       <div>
                         {run?.outputUrl ? (
                           <a
@@ -1090,8 +1130,8 @@ export default function PropertyDashboard() {
                             View Output
                           </a>
                         ) : (
-                          <span className="text-[11px] text-slate-400">
-                            {disabled ? `Scheduled for Phase ${task.phase}` : "Ready to run"}
+                          <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                            {disabled ? `Roadmap: Scheduled for Phase ${task.phase}` : "Ready to run"}
                           </span>
                         )}
                       </div>
@@ -1099,18 +1139,24 @@ export default function PropertyDashboard() {
                         {isImplemented && (
                           <button
                             type="button"
-                            onClick={() => setHistoryTask(task)}
-                            className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setHistoryTask(task);
+                            }}
+                            className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
                           >
                             History
                           </button>
                         )}
                         <Button
                           variant={disabled ? "secondary" : "primary"}
-                          onClick={() => handleRunTask(task)}
-                          title={disabled ? `Coming Soon (Phase ${task.phase})` : `Run ${task.name}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleRunTask(task);
+                          }}
+                          title={disabled ? `Coming Soon (Phase ${task.phase} Roadmap) — Click to inspect specifications` : `Run ${task.name}`}
                         >
-                          {disabled ? `Coming Soon (Phase ${task.phase})` : "Run Task"}
+                          {disabled ? "Coming Soon" : "Run Task"}
                         </Button>
                       </div>
                     </div>
