@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { downloadBlobWithCountdown } from "@/lib/download-manager";
 import { GenerationProgressModal } from "./GenerationProgressModal";
 import { Card } from "./ui";
