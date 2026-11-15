@@ -94,4 +94,36 @@ describe("Vitest/TS: Hardened Edge Cases & Defensive Safeguards", () => {
     assert(result.html.includes('href="https://example.com/spa/"'));
     assert(result.html.includes("luxury spa (on-site)"));
   });
+
+  it("Variable resolver safely handles variables with regex pattern tokens like $& without placeholder leakage", async () => {
+    const { resolveTemplate } = await import("../../validators/variableResolver.ts");
+    const schema = {
+      id: "offer-schema",
+      name: "Special Offer",
+      variables: {
+        dealName: { name: "dealName", required: true }
+      }
+    };
+
+    const res = resolveTemplate("Exclusive: {{dealName}} available now!", schema, {
+      dealName: "Special $& Discount Offer"
+    });
+
+    assert.strictEqual(res.success, true);
+    assert.strictEqual(res.output, "Exclusive: Special $& Discount Offer available now!");
+  });
+
+  it("Shopify Exporter properly uses payload fallback title and meta description when provided", async () => {
+    const { exportToShopifyLiquid } = await import("../../exporters/shopifyExporter.ts");
+    const liquid = exportToShopifyLiquid({
+      scope: "product",
+      snippetName: "presidential-suite",
+      title: "Custom Presidential Suite Title",
+      metaDescription: "Custom luxury suite description for SEO.",
+      richContentHtml: "<p>Room content</p>"
+    });
+
+    assert(liquid.includes("Custom Presidential Suite Title | {{ shop.name }}"));
+    assert(liquid.includes('content="Custom luxury suite description for SEO."'));
+  });
 });

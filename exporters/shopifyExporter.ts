@@ -24,17 +24,23 @@ export function exportToShopifyLiquid(payload: ShopifyExportPayload): string {
   Scope: ${payload.scope}
 {%- endcomment -%}`;
 
+  const fallbackTitle = payload.title
+    ? `\n{%- else -%}\n  <title>${payload.title.replace(/"/g, "&quot;")} | {{ shop.name }}</title>`
+    : `\n{%- else -%}\n  <title>{{ ${scopePrefix}.title | escape }} | {{ shop.name }}</title>`;
+
+  const fallbackDesc = payload.metaDescription
+    ? `\n{%- else -%}\n  <meta name="description" content="${payload.metaDescription.replace(/"/g, "&quot;")}">`
+    : "";
+
   const seoMetaLiquid = `
 {%- if ${scopePrefix}.metafields.seo.title != blank -%}
-  <title>{{ ${scopePrefix}.metafields.seo.title | escape }}</title>
-{%- else -%}
-  <title>{{ ${scopePrefix}.title | escape }} | {{ shop.name }}</title>
+  <title>{{ ${scopePrefix}.metafields.seo.title | escape }}</title>${fallbackTitle}
 {%- endif -%}
 
 {%- if ${scopePrefix}.metafields.seo.description != blank -%}
   <meta name="description" content="{{ ${scopePrefix}.metafields.seo.description | escape }}">
 {%- elsif ${scopePrefix}.description != blank -%}
-  <meta name="description" content="{{ ${scopePrefix}.description | strip_html | truncatewords: 25 | escape }}">
+  <meta name="description" content="{{ ${scopePrefix}.description | strip_html | truncatewords: 25 | escape }}">${fallbackDesc}
 {%- endif -%}
 <link rel="canonical" href="{{ canonical_url }}">
 `;

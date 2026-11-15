@@ -136,9 +136,9 @@ export function resolveTemplate(
     const singleCurly = new RegExp(`\\{${key}\\}`, "g");
     const templateLiteral = new RegExp(`\\$\\{\\s*${key}\\s*\\}`, "g");
 
-    rendered = rendered.replace(doubleCurly, stringVal);
-    rendered = rendered.replace(singleCurly, stringVal);
-    rendered = rendered.replace(templateLiteral, stringVal);
+    rendered = rendered.replace(doubleCurly, () => stringVal);
+    rendered = rendered.replace(singleCurly, () => stringVal);
+    rendered = rendered.replace(templateLiteral, () => stringVal);
   }
 
   // Scan for any leftover unresolved patterns
