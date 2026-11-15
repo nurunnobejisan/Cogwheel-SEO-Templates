@@ -48,5 +48,7 @@ The standardized production architecture organizes modular components under:
 | `templates/hotel-destination-guide.html`| Template | Created | Production sample template for hotel destinations |
 | `templates/hotel-room-showcase.html` | Template | Created | Production sample template for room showcase pages |
 | `templates/hotel-faq-amenities.html` | Template | Created | Production sample template for hotel amenities & FAQ |
-| `src/components/PropertyDashboard.tsx` | UI | Updated | Labs experimental hub & icon-only dark mode toggle |
-| `README.md` | Docs | Updated | Comprehensive system documentation |
+| `src/components/PropertyDashboard.tsx` | UI | Updated | Labs experimental hub, luxury visual polish, pipeline telemetry |
+| `src/components/LabsView.tsx` | UI | Created | Multi-CMS Exporter playground, GEO AI simulator & rich SERP |
+| `tests/ts/edge-cases-and-defenses.test.ts` | Test | Created | Defensive unit tests covering regex leaks, quote sanitization & fallbacks |
+| `README.md` | Docs | Updated | Comprehensive system documentation (v2.6.0) |

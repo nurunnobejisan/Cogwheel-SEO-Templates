@@ -396,7 +396,10 @@ export default function PropertyDashboard() {
                 <h1 className="font-display text-base font-bold tracking-tight text-slate-900 dark:text-white">
                   Hotel SEO &amp; GEO Studio
                 </h1>
-                <span className="rounded-full border border-brand/40 bg-brand-50 px-2.5 py-0.5 text-[11px] font-semibold text-slate-800 dark:border-brand/30 dark:bg-brand-950/40 dark:text-brand-light">
+                <span className="rounded-full border border-brand/40 bg-brand-50 px-2 py-0.5 text-[10px] font-semibold text-slate-800 dark:border-brand/30 dark:bg-brand-950/40 dark:text-brand-light">
+                  v2.6.0
+                </span>
+                <span className="hidden rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 md:inline-block">
                   Hospitality Automation
                 </span>
               </div>

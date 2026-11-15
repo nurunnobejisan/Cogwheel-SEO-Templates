@@ -2,6 +2,7 @@
 > Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by **Razib Marketing**.
 
 [![SEO Integrity & Security CI](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions/workflows/seo-integrity.yml/badge.svg)](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions)
+[![Release v2.6.0](https://img.shields.io/badge/Release-v2.6.0-a3d11b?style=flat-square&logo=github)](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/releases/tag/v2.6.0)
 [![Next.js 14.2](https://img.shields.io/badge/Next.js-14.2-black?style=flat-square&logo=next.js)](https://nextjs.org/)
 [![TypeScript 5.5](https://img.shields.io/badge/TypeScript-5.5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
 [![Node.js v22](https://img.shields.io/badge/Node.js-v22-green?style=flat-square&logo=node.js)](https://nodejs.org/)
@@ -165,6 +166,10 @@ node --test --experimental-strip-types tests/*.test.ts
 ### Day 10 — Interactive Preview Tool & Labs Integration
 - Standalone CLI previewer (`scripts/seo-preview-cli.ts`) for marketing team members.
 - Next.js UI integration with experimental **Labs** hub in `PropertyDashboard.tsx`.
+- **Multi-CMS Exporter Playground**: Live side-by-side compilation and one-click code copy or file download for HTML5, Shopify Liquid, WordPress PHP, and Webflow CSV.
+- **GEO AI Search Simulator**: Live emulation of citations and response summaries across Google Gemini Overviews, ChatGPT Search, and Perplexity Pro.
+- **Rich SERP Snippet Preview**: Desktop & mobile SERP previews featuring Google hotel star ratings (`★★★★★`), localized pricing tags, and amenity pill badges.
+- **Luxury Hospitality Visual Polish**: Dual-mode radial ambient glow, spring-curve card hover physics (`.card-hover`), and real-time pulsing workflow pipeline telemetry.
 
 ---
 
