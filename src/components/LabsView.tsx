@@ -3,6 +3,7 @@
 import { useState, useMemo } from "react";
 import { calculatePixelWidth, smartTrimTitle, DEFAULT_SERP_LIMITS } from "../../validators/serpOptimizer";
 import { buildSchemaGraph, buildLocalBusinessSchema, buildFAQPageSchema, buildBreadcrumbSchema } from "../../schemas";
+import { exportToHtml, exportToShopifyLiquid, exportToWordPressPhp, exportToWebflowCsv } from "../../exporters";
 
 interface LabsViewProps {
   property?: {
@@ -25,6 +26,7 @@ export function LabsView({ property }: LabsViewProps) {
       : "Experience modern boutique accommodations with luxury amenities, on-site dining, and lowest rate guarantee. Book your stay direct today."
   );
   const [serpDevice, setSerpDevice] = useState<"desktop" | "mobile">("desktop");
+  const [showRichSnippet, setShowRichSnippet] = useState(true);
 
   const titlePx = useMemo(() => calculatePixelWidth(serpTitle), [serpTitle]);
   const descPx = useMemo(() => calculatePixelWidth(serpDesc), [serpDesc]);
@@ -132,6 +134,84 @@ export function LabsView({ property }: LabsViewProps) {
     }
   };
 
+  // --- 5. Multi-CMS Exporter State ---
+  const [exportCms, setExportCms] = useState<"HTML" | "Shopify" | "WordPress" | "Webflow">("HTML");
+  const [copiedCms, setCopiedCms] = useState(false);
+
+  const exportedCmsCode = useMemo(() => {
+    const propName = property?.name || "The Curtis Denver";
+    const propCity = property?.city || "Denver";
+    const propUrl = property?.url || "https://example.com/hotel/";
+
+    if (exportCms === "HTML") {
+      return exportToHtml(
+        {
+          title: `${propName} | Luxury Downtown Hotel in ${propCity}`,
+          metaDescription: `Official site of ${propName} in ${propCity}. Best rate guaranteed direct booking, boutique guest rooms, and premium amenities.`,
+          canonicalUrl: propUrl,
+          bodyContent: `<header>\n  <h1>${propName}</h1>\n  <p>Luxury accommodations in the heart of ${propCity}.</p>\n</header>\n<main>\n  <section id="rooms">\n    <h2>Boutique Suites</h2>\n    <p>Discover personalized hospitality and modern comforts.</p>\n  </section>\n</main>`,
+          jsonLdScript: generatedSchema
+        },
+        { minify: false }
+      );
+    } else if (exportCms === "Shopify") {
+      return exportToShopifyLiquid({
+        scope: "product",
+        snippetName: "hotel-suite-showcase",
+        title: `${propName} — Luxury Suite Booking`,
+        metaDescription: `Reserve direct at ${propName} with lowest rate guarantee.`,
+        richContentHtml: `<h2>${propName} Guest Room Experience</h2>\n<p>Book direct with complimentary high-speed Wi-Fi and flexible cancellation.</p>`,
+        schemaJsonLd: generatedSchema
+      });
+    } else if (exportCms === "WordPress") {
+      return exportToWordPressPhp({
+        postTitle: `${propName} — Destination & Accommodation Guide`,
+        postName: `${propName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-guide`,
+        postContent: `<h2>Welcome to ${propName}</h2>\n<p>Nestled in ${propCity}, offering upscale guest suites, on-site dining, and exceptional service.</p>`,
+        seoTitle: `${propName} | Official Website`,
+        metaDescription: `Discover ${propName} in ${propCity}. Lowest rates guaranteed online.`,
+        canonicalUrl: propUrl,
+        focusKeyword: `${propName.toLowerCase()} hotel`,
+        schemaJsonLd: generatedSchema
+      });
+    } else {
+      return exportToWebflowCsv([
+        {
+          name: `${propName} Luxury King Suite`,
+          slug: `${propName.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-king-suite`,
+          metaTitle: `${propName} | King Suite Accommodations`,
+          metaDescription: `Spacious luxury suite in ${propCity} with private balcony and skyline views.`,
+          postBodyHtml: `<h2>King Suite Details</h2><p>Featuring plush bedding, workstation, and marble bathroom.</p>`,
+          heroImage: "https://example.com/images/hero-suite.jpg",
+          category: "Accommodations",
+          archived: false,
+          draft: false
+        }
+      ]);
+    }
+  }, [exportCms, property, generatedSchema]);
+
+  const handleCopyCms = () => {
+    navigator.clipboard?.writeText(exportedCmsCode);
+    setCopiedCms(true);
+    setTimeout(() => setCopiedCms(false), 2000);
+  };
+
+  const handleDownloadCms = () => {
+    const ext = exportCms === "HTML" ? "html" : exportCms === "Shopify" ? "liquid" : exportCms === "WordPress" ? "php" : "csv";
+    const filename = `cogwheel-${exportCms.toLowerCase()}-export.${ext}`;
+    const blob = new Blob([exportedCmsCode], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // --- 6. GEO AI Search Overview State ---
+  const [aiEngine, setAiEngine] = useState<"ChatGPT" | "Gemini" | "Perplexity">("Gemini");
+
   return (
     <div className="space-y-6">
       {/* Labs Header */}
@@ -140,19 +220,19 @@ export function LabsView({ property }: LabsViewProps) {
           <div className="flex items-center gap-2">
             <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Labs</h2>
             <span className="rounded-full border border-violet-300/60 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-700 dark:border-violet-700/60 dark:bg-violet-950/40 dark:text-violet-300">
-              Interactive Diagnostic Suite
+              Interactive Diagnostic &amp; Export Suite
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Real-time SEO sandbox utilities: SERP pixel analyzer, Schema generator, topic clustering, and crawler checks.
+            Real-time SEO sandbox utilities: SERP pixel analyzer, Schema generator, Multi-CMS exporters, GEO AI simulator, and crawler checks.
           </p>
         </div>
       </div>
 
-      {/* Grid of Tools */}
+      {/* Grid of Tools: 6 Tools in 2-column layout */}
       <div className="grid gap-6 lg:grid-cols-2">
 
-        {/* 1. SERP Pixel-Width Simulator */}
+        {/* 1. SERP Pixel-Width Simulator with Rich Snippets */}
         <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -163,23 +243,34 @@ export function LabsView({ property }: LabsViewProps) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Live SERP Pixel Optimizer</span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Live SERP &amp; Rich Snippet Preview</span>
               </div>
-              <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-800">
-                <button
-                  type="button"
-                  onClick={() => setSerpDevice("desktop")}
-                  className={`px-2 py-1 text-[11px] font-semibold rounded-md transition ${serpDevice === "desktop" ? "bg-white shadow-xs text-slate-900 dark:bg-slate-900 dark:text-white" : "text-slate-500"}`}
-                >
-                  Desktop (580px)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSerpDevice("mobile")}
-                  className={`px-2 py-1 text-[11px] font-semibold rounded-md transition ${serpDevice === "mobile" ? "bg-white shadow-xs text-slate-900 dark:bg-slate-900 dark:text-white" : "text-slate-500"}`}
-                >
-                  Mobile (920px)
-                </button>
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={showRichSnippet}
+                    onChange={(e) => setShowRichSnippet(e.target.checked)}
+                    className="rounded border-slate-300 text-sky-600 focus:ring-sky-500"
+                  />
+                  <span>Rich Stars</span>
+                </label>
+                <div className="flex rounded-lg border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-800">
+                  <button
+                    type="button"
+                    onClick={() => setSerpDevice("desktop")}
+                    className={`px-2 py-1 text-[11px] font-semibold rounded-md transition ${serpDevice === "desktop" ? "bg-white shadow-xs text-slate-900 dark:bg-slate-900 dark:text-white" : "text-slate-500"}`}
+                  >
+                    Desktop (580px)
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSerpDevice("mobile")}
+                    className={`px-2 py-1 text-[11px] font-semibold rounded-md transition ${serpDevice === "mobile" ? "bg-white shadow-xs text-slate-900 dark:bg-slate-900 dark:text-white" : "text-slate-500"}`}
+                  >
+                    Mobile (920px)
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -217,6 +308,19 @@ export function LabsView({ property }: LabsViewProps) {
               >
                 {serpDevice === "desktop" && isTitleDesktopOver ? smartTrimTitle(serpTitle, 580) : serpTitle}
               </div>
+
+              {/* Rich Snippet Elements: Stars, Price, Reviews */}
+              {showRichSnippet && (
+                <div className="flex items-center gap-2 mt-1 text-xs">
+                  <span className="text-amber-500 font-bold">★★★★★</span>
+                  <span className="font-bold text-slate-700 dark:text-slate-200 text-[11px]">4.9</span>
+                  <span className="text-slate-400 text-[11px]">(342 reviews)</span>
+                  <span className="text-slate-300 dark:text-slate-600">•</span>
+                  <span className="font-semibold text-emerald-700 dark:text-emerald-400 text-[11px]">From $219/night</span>
+                  <span className="rounded bg-sky-100 dark:bg-sky-950 px-1.5 py-0.2 text-[10px] text-sky-700 dark:text-sky-300 font-semibold">Free WiFi</span>
+                </div>
+              )}
+
               <div className="text-xs text-slate-600 dark:text-slate-300 mt-1 line-clamp-2 leading-relaxed">
                 {serpDesc}
               </div>
@@ -281,7 +385,123 @@ export function LabsView({ property }: LabsViewProps) {
           </div>
         </div>
 
-        {/* 3. Semantic Keyword Clustering */}
+        {/* 3. Multi-CMS Code Exporter Playground (NEW!) */}
+        <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-indigo-100 dark:bg-indigo-950/60">
+                  <svg className="h-4 w-4 text-indigo-600 dark:text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Multi-CMS Production Exporter</span>
+              </div>
+              <div className="flex gap-1">
+                {(["HTML", "Shopify", "WordPress", "Webflow"] as const).map((cms) => (
+                  <button
+                    key={cms}
+                    type="button"
+                    onClick={() => setExportCms(cms)}
+                    className={`px-2 py-1 text-[11px] font-semibold rounded-lg transition ${exportCms === cms ? "bg-indigo-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
+                  >
+                    {cms}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2.5">
+              Instantly export W3C HTML5, Shopify Liquid objects, WordPress PHP partials, or Webflow CSV:
+            </p>
+
+            <pre className="h-48 overflow-auto rounded-xl border border-slate-200 bg-slate-900 p-3 font-mono text-[11px] text-indigo-300 dark:border-slate-800">
+              {exportedCmsCode}
+            </pre>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-[11px] text-slate-500">
+              Format: {exportCms === "HTML" ? "HTML5 (.html)" : exportCms === "Shopify" ? "Liquid (.liquid)" : exportCms === "WordPress" ? "PHP (.php)" : "CSV (.csv)"}
+            </span>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={handleCopyCms}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300"
+              >
+                {copiedCms ? "✔ Copied!" : "Copy Code"}
+              </button>
+              <button
+                type="button"
+                onClick={handleDownloadCms}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700"
+              >
+                Download File &darr;
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* 4. GEO AI Search Overview Simulator (NEW!) */}
+        <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-100 dark:bg-purple-950/60">
+                  <svg className="h-4 w-4 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">GEO AI Search Simulator</span>
+              </div>
+              <div className="flex gap-1">
+                {(["Gemini", "ChatGPT", "Perplexity"] as const).map((eng) => (
+                  <button
+                    key={eng}
+                    type="button"
+                    onClick={() => setAiEngine(eng)}
+                    className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition ${aiEngine === eng ? "bg-purple-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
+                  >
+                    {eng}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+              Preview how Generative AI engines cite and summarize {property?.name || "your hotel"} from JSON-LD schemas:
+            </p>
+
+            <div className="rounded-xl border border-purple-200/80 bg-purple-50/50 p-3.5 dark:border-purple-900/60 dark:bg-purple-950/30">
+              <div className="flex items-center gap-2 text-[11px] font-bold text-purple-800 dark:text-purple-300 mb-2">
+                <span className="flex h-2 w-2 rounded-full bg-purple-600 animate-pulse"></span>
+                <span>{aiEngine} AI Overview Synthesis:</span>
+              </div>
+              <p className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed">
+                &ldquo;{property?.name || "The Curtis Denver"} is a top-rated boutique hotel in downtown {property?.city || "Denver"}. Key amenities include high-speed Wi-Fi, pet-friendly accommodations, valet parking, and on-site dining. Best rates are available via direct reservation.&rdquo;
+              </p>
+              <div className="mt-3 flex flex-wrap items-center gap-2 pt-2 border-t border-purple-200/60 dark:border-purple-900/40">
+                <span className="text-[10px] font-semibold text-slate-500">Cited Sources:</span>
+                <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700 shadow-xs dark:bg-slate-800 dark:text-slate-200">
+                  {property?.name || "The Curtis"} Official Site [1]
+                </span>
+                <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700 shadow-xs dark:bg-slate-800 dark:text-slate-200">
+                  Schema.org Hotel Graph [2]
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between">
+            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+              ✔ 94% Citation Readiness Score
+            </span>
+            <span className="text-[10px] text-slate-400">Schema-backed authority</span>
+          </div>
+        </div>
+
+        {/* 5. Semantic Keyword Clustering */}
         <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -329,7 +549,7 @@ export function LabsView({ property }: LabsViewProps) {
           </button>
         </div>
 
-        {/* 4. Robots.txt & Crawler Inspector */}
+        {/* 6. Robots.txt & Crawler Inspector */}
         <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <div>
             <div className="flex items-center gap-2 mb-3">
@@ -389,7 +609,7 @@ export function LabsView({ property }: LabsViewProps) {
           🧪 Enterprise SEO Labs Suite — Powered by Razib Marketing
         </p>
         <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-          Integrated with 10-Gate SEO Quality Engine • Multi-CMS Export Support (HTML, Liquid, WordPress, Webflow)
+          Integrated with 10-Gate SEO Quality Engine • Multi-CMS Export Support (HTML5, Shopify Liquid, WordPress PHP, Webflow CSV)
         </p>
       </div>
     </div>
