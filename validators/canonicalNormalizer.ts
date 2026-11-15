@@ -37,13 +37,16 @@ export interface CanonicalOptions {
 
 export function normalizeCanonicalUrl(
   rawUrl: string,
-  options: CanonicalOptions = {
+  options: CanonicalOptions = {}
+): string {
+  const opts: Required<CanonicalOptions> = {
     trailingSlash: true,
     forceHttps: true,
     stripTracking: true,
-    stripHash: true
-  }
-): string {
+    stripHash: true,
+    ...options
+  };
+
   if (!rawUrl || typeof rawUrl !== "string") {
     throw new Error("Invalid URL provided to canonical normalizer.");
   }
@@ -66,7 +69,7 @@ export function normalizeCanonicalUrl(
   }
 
   // 1. Force HTTPS
-  if (options.forceHttps) {
+  if (opts.forceHttps) {
     parsed.protocol = "https:";
   }
 
@@ -74,7 +77,7 @@ export function normalizeCanonicalUrl(
   parsed.hostname = parsed.hostname.toLowerCase();
 
   // 3. Strip tracking parameters
-  if (options.stripTracking) {
+  if (opts.stripTracking) {
     const keysToRemove: string[] = [];
     parsed.searchParams.forEach((_, key) => {
       const lower = key.toLowerCase();
@@ -86,7 +89,7 @@ export function normalizeCanonicalUrl(
   }
 
   // 4. Strip Hash
-  if (options.stripHash) {
+  if (opts.stripHash) {
     parsed.hash = "";
   }
 
@@ -96,9 +99,9 @@ export function normalizeCanonicalUrl(
   const hasFileExtension = /\.[a-zA-Z0-9]{2,5}$/.test(pathname);
 
   if (!hasFileExtension) {
-    if (options.trailingSlash && !pathname.endsWith("/")) {
+    if (opts.trailingSlash && !pathname.endsWith("/")) {
       pathname += "/";
-    } else if (!options.trailingSlash && pathname.endsWith("/") && pathname !== "/") {
+    } else if (!opts.trailingSlash && pathname.endsWith("/") && pathname !== "/") {
       pathname = pathname.slice(0, -1);
     }
   }

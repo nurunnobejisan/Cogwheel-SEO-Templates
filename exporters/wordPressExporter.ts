@@ -60,7 +60,7 @@ if (!defined('ABSPATH')) {
   <?php if (!empty('${payload.schemaJsonLd ? "has_schema" : ""}')) : ?>
   <!-- Cogwheel Unified JSON-LD Schema -->
   <script type="application/ld+json">
-    <?php echo json_encode(${JSON.stringify(payload.schemaJsonLd || "")}, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE); ?>
+    <?php echo '${(payload.schemaJsonLd || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'; ?>
   </script>
   <?php endif; ?>
 </div>

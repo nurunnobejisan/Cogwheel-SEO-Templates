@@ -71,7 +71,8 @@ export function cleanContent(text: string, boilerplatePhrases: string[] = []): s
 
   // Strip known boilerplate phrases
   for (const phrase of boilerplatePhrases) {
-    const pLower = phrase.toLowerCase();
+    if (!phrase || !phrase.trim()) continue;
+    const pLower = phrase.toLowerCase().trim();
     while (lower.includes(pLower)) {
       lower = lower.replace(pLower, " ");
     }

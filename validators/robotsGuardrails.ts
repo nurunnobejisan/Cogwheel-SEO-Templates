@@ -51,7 +51,11 @@ export function verifyProductionIndexable(html: string, env?: string): void {
   const currentEnv = (env || process.env.APP_ENV || process.env.NODE_ENV || "development").toLowerCase();
 
   if (currentEnv === "production") {
-    const noindexMatch = html.match(/<meta[^>]*name=["']robots["'][^>]*content=["'][^"']*noindex[^"']*["'][^>]*>/i);
+    // Detect noindex in <meta> tags regardless of attribute order (name before content OR content before name)
+    // Covers standard robots, googlebot, bingbot, etc.
+    const noindexMatch = html.match(
+      /<meta\b(?=[^>]*\bname=["'](?:robots|googlebot|bingbot)["'])(?=[^>]*\bcontent=["'][^"']*noindex[^"']*["'])[^>]*>/i
+    );
     if (noindexMatch) {
       throw new ProductionNoindexError(
         `CRITICAL SEO LEAK: Production build contains "noindex" directive: ${noindexMatch[0]}`

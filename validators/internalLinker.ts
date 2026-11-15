@@ -48,7 +48,8 @@ export interface InternalLinkingReport {
 export function calculateTopicalRelevance(source: PageManifestItem, target: PageManifestItem): number {
   if (source.url === target.url) return 0;
 
-  let score = 0;
+  // Base topical score for distinct pages in the same site manifest
+  let score = 5;
 
   // Direct Parent / Child relationship
   if (source.parentPage === target.url || target.parentPage === source.url) {
@@ -139,8 +140,12 @@ export function injectInternalLinks(
       const escapedAnchor = anchor.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 
       // Regex matching anchor text OUTSIDE headings and existing anchors
-      // We process by scanning paragraph blocks or text nodes
-      const anchorRegex = new RegExp(`\\b(${escapedAnchor})\\b`, "i");
+      // Safely apply word boundary only if first/last char is a word character
+      const startsWithWord = /^\w/.test(anchor);
+      const endsWithWord = /\w$/.test(anchor);
+      const leftBoundary = startsWithWord ? "\\b" : "(?:^|\\s)";
+      const rightBoundary = endsWithWord ? "\\b" : "(?:$|[\\s.,!?;])";
+      const anchorRegex = new RegExp(`${leftBoundary}(${escapedAnchor})${rightBoundary}`, "i");
 
       // Check if candidate appears inside content
       if (!anchorRegex.test(modifiedHtml)) continue;
