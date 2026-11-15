@@ -639,18 +639,23 @@ export default function PropertyDashboard() {
                   <button
                     type="button"
                     onClick={() => setMainTab("crawl")}
-                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand dark:hover:bg-slate-800"
+                    className="card-hover group flex flex-col justify-between gap-2 rounded-2xl border border-slate-200/90 bg-white/80 p-4 text-left backdrop-blur-xs transition hover:border-brand dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">STEP 1</span>
-                      <span
-                        className={`h-2 w-2 rounded-full ${
-                          latestRuns["site-crawl"] ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700"
-                        }`}
-                      />
+                      <span className="text-[10px] font-extrabold tracking-wider text-slate-500 uppercase dark:text-slate-400">STEP 1</span>
+                      {latestRuns["site-crawl"] ? (
+                        <span className="relative flex h-2.5 w-2.5">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                        </span>
+                      ) : (
+                        <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-700" />
+                      )}
                     </div>
-                    <div className="font-display text-sm font-bold text-slate-900 dark:text-white">Site Crawl</div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Crawl pages, robots.txt &amp; sitemap.</p>
+                    <div>
+                      <div className="font-display text-sm font-bold text-slate-900 group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand">Site Crawl</div>
+                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Crawl pages, robots.txt &amp; sitemap.</p>
+                    </div>
                   </button>
 
                   <button
@@ -659,67 +664,72 @@ export default function PropertyDashboard() {
                       setStudioStep(1);
                       setMainTab("studio");
                     }}
-                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand dark:hover:bg-slate-800"
+                    className="card-hover group flex flex-col justify-between gap-2 rounded-2xl border border-slate-200/90 bg-white/80 p-4 text-left backdrop-blur-xs transition hover:border-brand dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">STEP 2</span>
-                      <span
-                        className={`h-2 w-2 rounded-full ${
-                          latestRuns["keyword-research"] ? "bg-emerald-500" : "bg-slate-300 dark:bg-slate-700"
-                        }`}
-                      />
+                      <span className="text-[10px] font-extrabold tracking-wider text-slate-500 uppercase dark:text-slate-400">STEP 2</span>
+                      {latestRuns["keyword-research"] ? (
+                        <span className="relative flex h-2.5 w-2.5">
+                          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                          <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                        </span>
+                      ) : (
+                        <span className="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-700" />
+                      )}
                     </div>
-                    <div className="font-display text-sm font-bold text-slate-900 dark:text-white">Keyword Matrix</div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">78-keyword mapping &amp; USP copy.</p>
+                    <div>
+                      <div className="font-display text-sm font-bold text-slate-900 group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand">Keyword Matrix</div>
+                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">78-keyword mapping &amp; USP copy.</p>
+                    </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setMainTab("tasks")}
-                    className="flex flex-col justify-between gap-2 rounded-2xl border border-slate-200 bg-slate-50/70 p-4 text-left transition hover:border-brand hover:bg-white dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand dark:hover:bg-slate-800"
+                    className="card-hover group flex flex-col justify-between gap-2 rounded-2xl border border-slate-200/90 bg-white/80 p-4 text-left backdrop-blur-xs transition hover:border-brand dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-500 dark:text-slate-400">STEP 3</span>
-                      <span className="text-[11px] font-bold text-emerald-700 dark:text-emerald-400">
+                      <span className="text-[10px] font-extrabold tracking-wider text-slate-500 uppercase dark:text-slate-400">STEP 3</span>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
                         {Array.from(CRAWL_TASK_IDS).filter((id) => Boolean(latestRuns[id])).length}/
-                        {CRAWL_TASK_IDS.size}
+                        {CRAWL_TASK_IDS.size} Done
                       </span>
                     </div>
-                    <div className="font-display text-sm font-bold text-slate-900 dark:text-white">
-                      On-Page &amp; Technical
+                    <div>
+                      <div className="font-display text-sm font-bold text-slate-900 group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand">
+                        On-Page &amp; Technical
+                      </div>
+                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Title/Meta, Headings, Schema &amp; Audits.</p>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Title/Meta, Headings, Schema &amp; Audits.</p>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setDeliverablesTab("pptx")}
-                    className="flex flex-col justify-between gap-2 rounded-2xl border border-brand/40 bg-brand-50/50 p-4 text-left transition hover:border-brand hover:bg-brand-50 dark:border-brand/30 dark:bg-brand-950/20"
+                    className="card-hover group flex flex-col justify-between gap-2 rounded-2xl border border-brand/50 bg-brand-50/50 p-4 text-left backdrop-blur-xs transition hover:border-brand hover:bg-brand-50 dark:border-brand/40 dark:bg-brand-950/20"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-700 dark:text-slate-300">STEP 4</span>
-                      <span
-                        className={`h-2 w-2 rounded-full ${
-                          latestRuns["seo-baseline-ai-visibility"] ||
-                          latestRuns["seo-only-visibility-report"]
-                            ? "bg-emerald-500"
-                            : "bg-brand"
-                        }`}
-                      />
+                      <span className="text-[10px] font-extrabold tracking-wider text-brand-dark uppercase dark:text-brand">STEP 4</span>
+                      <span className="relative flex h-2.5 w-2.5">
+                        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75" />
+                        <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-brand" />
+                      </span>
                     </div>
-                    <div className="font-display text-sm font-bold text-slate-900 dark:text-white">
-                      Deliverables Studio
+                    <div>
+                      <div className="font-display text-sm font-bold text-slate-900 group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand">
+                        Deliverables Studio
+                      </div>
+                      <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+                        PPTX Deck, Slide Preview, Memo &amp; Email Dispatcher.
+                      </p>
                     </div>
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
-                      PPTX Deck, Slide Preview, Memo &amp; Email Dispatcher.
-                    </p>
                   </button>
                 </div>
               </Card>
 
               {/* Executive Intelligence & Visibility Suite Suite */}
               <section className="grid gap-4 sm:grid-cols-3">
-                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200 border-t-4 border-t-purple-500 bg-white p-5 shadow-sm dark:border-slate-800 dark:border-t-purple-500 dark:bg-slate-900">
                   <div>
                     <div className="flex items-center justify-between">
                       <span className="rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
@@ -740,14 +750,14 @@ export default function PropertyDashboard() {
                     <button
                       type="button"
                       onClick={() => setMainTab("geo")}
-                      className="text-xs font-semibold text-purple-700 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-purple-700 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
                     >
-                      Inspect AI Readiness &rarr;
+                      Inspect AI Readiness <span>&rarr;</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200 border-t-4 border-t-blue-500 bg-white p-5 shadow-sm dark:border-slate-800 dark:border-t-blue-500 dark:bg-slate-900">
                   <div>
                     <div className="flex items-center justify-between">
                       <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
@@ -768,14 +778,14 @@ export default function PropertyDashboard() {
                     <button
                       type="button"
                       onClick={() => setMainTab("compset")}
-                      className="text-xs font-semibold text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                     >
-                      View Local Matrix &rarr;
+                      View Local Matrix <span>&rarr;</span>
                     </button>
                   </div>
                 </div>
 
-                <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200 border-t-4 border-t-brand bg-white p-5 shadow-sm dark:border-slate-800 dark:border-t-brand dark:bg-slate-900">
                   <div>
                     <div className="flex items-center justify-between">
                       <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
@@ -797,16 +807,16 @@ export default function PropertyDashboard() {
                     <button
                       type="button"
                       onClick={() => setShowVisibilitySuite(true)}
-                      className="text-xs font-semibold text-emerald-700 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300"
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300"
                     >
-                      Connect &amp; Sync Data &rarr;
+                      Connect &amp; Sync Data <span>&rarr;</span>
                     </button>
                   </div>
                 </div>
               </section>
 
               <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
+                <div className="card-hover rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Active Modules
                   </div>
@@ -825,7 +835,7 @@ export default function PropertyDashboard() {
                   </p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
+                <div className="card-hover rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Recorded Runs
                   </div>
@@ -836,7 +846,7 @@ export default function PropertyDashboard() {
                   <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">Synced with Run History</p>
                 </div>
 
-                <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
+                <div className="card-hover rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                     Attention Needed
                   </div>
@@ -850,7 +860,7 @@ export default function PropertyDashboard() {
                 <button
                   type="button"
                   onClick={() => setShowAiTraining(true)}
-                  className="rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 text-left shadow-card transition hover:border-emerald-300 dark:border-emerald-900/60 dark:bg-emerald-950/20 dark:hover:border-emerald-700"
+                  className="card-hover rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 text-left shadow-card transition hover:border-emerald-300 dark:border-emerald-900/60 dark:bg-emerald-950/20 dark:hover:border-emerald-700"
                 >
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                     Online AI Engine
