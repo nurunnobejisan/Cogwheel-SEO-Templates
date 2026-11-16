@@ -85,8 +85,18 @@ html.dark .glass-nav {
     background: white !important;
     color: black !important;
   }
-  .no-print {
+  .no-print, [aria-hidden="true"], nav {
     display: none !important;
+  }
+  .fixed {
+    position: static !important;
+    overflow: visible !important;
+    inset: auto !important;
+    background: transparent !important;
+  }
+  .overflow-y-auto, .overflow-auto {
+    overflow: visible !important;
+    max-height: none !important;
   }
   .print-page {
     width: 100% !important;
@@ -95,6 +105,5 @@ html.dark .glass-nav {
     padding: 16px !important;
     box-shadow: none !important;
     border: none !important;
-    page-break-after: avoid !important;
   }
 }

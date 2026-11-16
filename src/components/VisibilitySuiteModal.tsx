@@ -43,6 +43,11 @@ export function VisibilitySuiteModal({
   const [pasteJson, setPasteJson] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [importedSummary, setImportedSummary] = useState<string | null>(null);
+  const [loadedBatch, setLoadedBatch] = useState<{
+    property: { name: string; brand: string; city: string; state: string; url: string };
+    competitors: Array<{ name: string; domain: string }>;
+    prompts: Array<{ prompt: string; category: string; targetEngines: string[] }>;
+  } | null>(null);
 
   const isFlorence = propertyCity.toLowerCase().includes("florence");
   const localCompetitors = isFlorence
@@ -142,6 +147,12 @@ export function VisibilitySuiteModal({
         const prompts = Array.isArray(parsed.promptsBatch) ? parsed.promptsBatch : [];
 
         onImportBatch?.({
+          property: newProperty,
+          competitors,
+          prompts,
+        });
+
+        setLoadedBatch({
           property: newProperty,
           competitors,
           prompts,
@@ -393,12 +404,67 @@ export function VisibilitySuiteModal({
             </div>
           </div>
 
-          {importedSummary && (
+          {loadedBatch ? (
+            <div className="space-y-3 rounded-2xl border border-purple-200 bg-purple-50/60 p-4 dark:border-purple-900/60 dark:bg-purple-950/30">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                    Ingested Batch Property
+                  </span>
+                  <h4 className="font-display text-base font-bold text-slate-900 dark:text-white">
+                    {loadedBatch.property.name}
+                  </h4>
+                  <p className="text-xs text-slate-600 dark:text-slate-300">
+                    {loadedBatch.property.city}, {loadedBatch.property.state} &bull; <span className="font-mono text-[11px] text-purple-700 dark:text-purple-400">{loadedBatch.property.url}</span>
+                  </p>
+                </div>
+                <Button variant="primary" onClick={onClose} className="text-xs">
+                  Apply &amp; Return to Dashboard
+                </Button>
+              </div>
+
+              {loadedBatch.competitors.length > 0 && (
+                <div className="pt-2 border-t border-purple-200/60 dark:border-purple-900/40">
+                  <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                    Comp-Set Competitors Ingested ({loadedBatch.competitors.length}):
+                  </span>
+                  <div className="mt-1.5 flex flex-wrap gap-2">
+                    {loadedBatch.competitors.map((comp, i) => (
+                      <span
+                        key={i}
+                        className="rounded-lg border border-purple-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-800 dark:border-purple-800 dark:bg-slate-900 dark:text-slate-200"
+                      >
+                        {comp.name} <span className="font-mono text-[10px] text-purple-600 dark:text-purple-400">({comp.domain})</span>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {loadedBatch.prompts.length > 0 && (
+                <div className="pt-2 border-t border-purple-200/60 dark:border-purple-900/40">
+                  <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                    GEO Search Prompts Ingested ({loadedBatch.prompts.length}):
+                  </span>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    {loadedBatch.prompts.map((p, i) => (
+                      <span
+                        key={i}
+                        className="rounded-md bg-purple-100/80 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/50 dark:text-purple-200"
+                      >
+                        {p.category}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : importedSummary ? (
             <div className="rounded-xl border border-purple-200 bg-purple-50/80 p-3.5 text-xs text-purple-900 dark:border-purple-900/60 dark:bg-purple-950/40 dark:text-purple-300">
               <div className="font-bold">Active Property Configured:</div>
               <div className="mt-0.5 text-[11px]">{importedSummary}</div>
             </div>
-          )}
+          ) : null}
 
           <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-300">
             <span className="font-semibold text-slate-900 dark:text-white">What gets auto-filled:</span>

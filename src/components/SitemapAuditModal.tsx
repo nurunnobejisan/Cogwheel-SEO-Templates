@@ -261,6 +261,21 @@ export function SitemapAuditModal({ defaultUrl = "", onClose }: Props) {
               </tbody>
             </table>
           </div>
+          <div className="flex flex-wrap items-center justify-between gap-2 text-[11px] text-slate-500">
+            <span>
+              Showing {Math.min(50, filteredUrls.length)} of {filteredUrls.length} URLs in this category
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                const text = filteredUrls.map((u) => u.url).join("\n");
+                navigator.clipboard?.writeText(text);
+              }}
+              className="font-semibold text-purple-600 hover:text-purple-800 dark:text-purple-400"
+            >
+              Copy URLs to Clipboard
+            </button>
+          </div>
         </div>
       )}
     </div>
