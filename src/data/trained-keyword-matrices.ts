@@ -11,6 +11,15 @@ export interface TrainedKeywordRow {
   placement: string;
 }
 
+export interface KeywordBucketGroup {
+  bucketName: string;
+  keywords: Array<{
+    keyword: string;
+    volume: number;
+    kd: number;
+  }>;
+}
+
 export interface TrainedKeywordDeliverable {
   id: string;
   propertyName: string;
@@ -23,6 +32,7 @@ export interface TrainedKeywordDeliverable {
   totalVolume: number;
   avgKd: number;
   matrix: TrainedKeywordRow[];
+  bucketsData: KeywordBucketGroup[];
 }
 
 export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
@@ -109,6 +119,55 @@ export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
         currentRank: "New Target",
         rationale: "Visual amenity search intent highlighting the property's oceanfront pool and lazy river in photo gallery alt tags and metadata.",
         placement: "Embed in gallery hero image alt attributes, page intro copy, and Open Graph cards.",
+      },
+    ],
+    bucketsData: [
+      {
+        bucketName: "Hotel Deals & Packages",
+        keywords: [
+          { keyword: "affordable hotels in panama city beach florida", volume: 590, kd: 29 },
+          { keyword: "panama city beach hotel deals", volume: 260, kd: 39 },
+          { keyword: "panama city beach deals hotels", volume: 110, kd: 25 },
+          { keyword: "hotel deals for panama city beach", volume: 90, kd: 27 },
+          { keyword: "hotel deals in panama city beach fl", volume: 50, kd: 28 },
+        ],
+      },
+      {
+        bucketName: "Beachfront & Oceanfront Bars",
+        keywords: [
+          { keyword: "bars on the beach panama city", volume: 2900, kd: 35 },
+          { keyword: "panama city beach bars", volume: 1900, kd: 48 },
+          { keyword: "bars in panama city beach", volume: 720, kd: 32 },
+          { keyword: "beach bars panama city beach", volume: 480, kd: 35 },
+          { keyword: "bars panama city beach fl", volume: 390, kd: 20 },
+        ],
+      },
+      {
+        bucketName: "Restaurants & Dining",
+        keywords: [
+          { keyword: "restaurants panama city beach", volume: 8100, kd: 29 },
+          { keyword: "restaurants on the beach panama city", volume: 5400, kd: 50 },
+          { keyword: "seafood restaurants panama city beach", volume: 1600, kd: 54 },
+          { keyword: "panama city beach seafood", volume: 880, kd: 55 },
+          { keyword: "dining in panama city beach florida", volume: 260, kd: 44 },
+        ],
+      },
+      {
+        bucketName: "Weddings & Banquets",
+        keywords: [
+          { keyword: "panama city beach wedding venues", volume: 110, kd: 15 },
+          { keyword: "wedding reception venues panama city beach fl", volume: 110, kd: 19 },
+          { keyword: "wedding venues in panama city beach fl", volume: 90, kd: 11 },
+          { keyword: "panama city beach wedding packages", volume: 50, kd: 10 },
+        ],
+      },
+      {
+        bucketName: "Breakfast & Rooftop Amenities",
+        keywords: [
+          { keyword: "breakfast buffets in panama city beach fl", volume: 260, kd: 33 },
+          { keyword: "breakfast buffet panama city beach", volume: 210, kd: 23 },
+          { keyword: "rooftop bar panama city beach", volume: 50, kd: 16 },
+        ],
       },
     ],
   },
@@ -221,6 +280,44 @@ export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
         placement: "Event landing page H1, RFP submission CTA, and meeting space specs table.",
       },
     ],
+    bucketsData: [
+      {
+        bucketName: "North End Dining & Restaurants",
+        keywords: [
+          { keyword: "restaurant in north end boston ma", volume: 33100, kd: 47 },
+          { keyword: "north end restaurants", volume: 9900, kd: 49 },
+          { keyword: "dining north end boston", volume: 3600, kd: 26 },
+          { keyword: "north end italian district restaurant", volume: 1600, kd: 24 },
+          { keyword: "restaurants in north end boston", volume: 880, kd: 28 },
+        ],
+      },
+      {
+        bucketName: "TD Garden & Arena Proximity",
+        keywords: [
+          { keyword: "hotels close to td banknorth garden", volume: 9900, kd: 40 },
+          { keyword: "hotels near td garden", volume: 4400, kd: 54 },
+          { keyword: "hotels close to td garden boston", volume: 1300, kd: 32 },
+          { keyword: "hotels near td garden boston", volume: 1300, kd: 40 },
+        ],
+      },
+      {
+        bucketName: "Quincy Market & Attractions",
+        keywords: [
+          { keyword: "hotels near quincy market boston ma", volume: 480, kd: 26 },
+          { keyword: "boston hotels near quincy market", volume: 390, kd: 30 },
+          { keyword: "quincy market hotels", volume: 140, kd: 30 },
+          { keyword: "freedom trail hotels", volume: 110, kd: 28 },
+        ],
+      },
+      {
+        bucketName: "Balcony Rooms & Boutique",
+        keywords: [
+          { keyword: "boutique hotel boston", volume: 1000, kd: 44 },
+          { keyword: "boston hotel with balcony rooms", volume: 50, kd: 16 },
+          { keyword: "boston hotels with balcony rooms", volume: 30, kd: 13 },
+        ],
+      },
+    ],
   },
   {
     id: "ac-hotel-st-petersburg",
@@ -305,6 +402,33 @@ export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
         currentRank: "New Target",
         rationale: "Targets travelers searching for pet accommodations with low difficulty (KD 31) across gallery image metadata.",
         placement: "Gallery image alt tags, pet policy section, and Google Business Profile attributes.",
+      },
+    ],
+    bucketsData: [
+      {
+        bucketName: "Downtown Dining & Tapas",
+        keywords: [
+          { keyword: "dining downtown st petersburg fl", volume: 6600, kd: 29 },
+          { keyword: "dining st petersburg", volume: 3600, kd: 41 },
+          { keyword: "st petersburg dining", volume: 210, kd: 40 },
+        ],
+      },
+      {
+        bucketName: "Tropicana Field & Stadium Proximity",
+        keywords: [
+          { keyword: "hotels near tropicana field st petersburg fl", volume: 480, kd: 30 },
+          { keyword: "st petersburg fl hotels near tropicana field", volume: 480, kd: 31 },
+          { keyword: "hotels near vinoy park st petersburg", volume: 260, kd: 30 },
+        ],
+      },
+      {
+        bucketName: "Weddings & Social Events",
+        keywords: [
+          { keyword: "wedding venues st petersburg fl", volume: 480, kd: 22 },
+          { keyword: "st petersburg wedding venues", volume: 140, kd: 36 },
+          { keyword: "wedding reception venues st petersburg fl", volume: 110, kd: 30 },
+          { keyword: "meeting rooms st petersburg fl", volume: 90, kd: 11 },
+        ],
       },
     ],
   },
@@ -393,6 +517,24 @@ export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
         placement: "Winter activities guide, ski shuttle copy, and local adventure map.",
       },
     ],
+    bucketsData: [
+      {
+        bucketName: "Cabins, Chalets & Suites",
+        keywords: [
+          { keyword: "south lake tahoe cabin rentals", volume: 2400, kd: 38 },
+          { keyword: "south lake tahoe suites", volume: 390, kd: 34 },
+          { keyword: "tahoe boutique hotels", volume: 320, kd: 26 },
+        ],
+      },
+      {
+        bucketName: "Ski & Winter Activities",
+        keywords: [
+          { keyword: "things to do south lake tahoe winter", volume: 1000, kd: 30 },
+          { keyword: "hotel near heavenly village", volume: 590, kd: 25 },
+          { keyword: "south lake tahoe ski hotel", volume: 480, kd: 28 },
+        ],
+      },
+    ],
   },
   {
     id: "governors-inn-casselton",
@@ -467,6 +609,16 @@ export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
         placement: "Banquet facility title tag, wedding brochure PDF link, and event inquiry form.",
       },
     ],
+    bucketsData: [
+      {
+        bucketName: "Fargo Feeder Demand",
+        keywords: [
+          { keyword: "wedding venues fargo nd", volume: 1300, kd: 21 },
+          { keyword: "fargo hotel rooms", volume: 480, kd: 42 },
+          { keyword: "rv parks near fargo nd", volume: 210, kd: 18 },
+        ],
+      },
+    ],
   },
   {
     id: "project-farmhouse-nyc",
@@ -527,6 +679,17 @@ export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
         currentRank: "New Target",
         rationale: "Accessible KD (38) for workshop, seminar, and nonprofit meeting space.",
         placement: "Meeting rental page H1, layout diagrams, and AV equipment list.",
+      },
+    ],
+    bucketsData: [
+      {
+        bucketName: "Filming & Event Venues NYC",
+        keywords: [
+          { keyword: "event space new york", volume: 2900, kd: 52 },
+          { keyword: "event venues nyc", volume: 2400, kd: 48 },
+          { keyword: "nyc filming locations", volume: 1600, kd: 44 },
+          { keyword: "sustainable event venues", volume: 40, kd: 10 },
+        ],
       },
     ],
   },
@@ -591,6 +754,16 @@ export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
         placement: "Special offers title tag, package cards, and direct booking CTA.",
       },
     ],
+    bucketsData: [
+      {
+        bucketName: "Okaloosa Island & Beachfront",
+        keywords: [
+          { keyword: "beach hotels in fort walton", volume: 4400, kd: 47 },
+          { keyword: "dining fort walton beach", volume: 3600, kd: 44 },
+          { keyword: "hotels near pensacola international airport", volume: 320, kd: 20 },
+        ],
+      },
+    ],
   },
   {
     id: "auburn-marriott-opelika",
@@ -651,6 +824,17 @@ export const TRAINED_KEYWORD_DELIVERABLES: TrainedKeywordDeliverable[] = [
         currentRank: "Position 2",
         rationale: "Commanding wedding and gala presence in east Alabama with 15,000 sq ft of event space.",
         placement: "Wedding hero headline, ballroom specs table, and catering RFP.",
+      },
+    ],
+    bucketsData: [
+      {
+        bucketName: "RTJ Golf & Resort Spa",
+        keywords: [
+          { keyword: "auburn al hotels", volume: 5400, kd: 38 },
+          { keyword: "grand national golf course opelika al", volume: 1600, kd: 22 },
+          { keyword: "wedding venues auburn al", volume: 880, kd: 26 },
+          { keyword: "spa auburn al", volume: 720, kd: 25 },
+        ],
       },
     ],
   },

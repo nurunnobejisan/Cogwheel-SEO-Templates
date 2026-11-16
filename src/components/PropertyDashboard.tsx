@@ -434,7 +434,7 @@ export default function PropertyDashboard() {
             {(
               [
                 { id: "home", label: "Home" },
-                { id: "keywords", label: "Keyword Research" },
+                { id: "keywords", label: "Keywords" },
                 { id: "tasks", label: `Tasks (${readyCount})` },
                 { id: "labs", label: "Labs" },
               ] as const
@@ -924,6 +924,7 @@ export default function PropertyDashboard() {
           {mainTab === "keywords" && (
             <KeywordResearchView
               activeProperty={activeProperty}
+              onBackToDashboard={() => setMainTab("home")}
               onOpenCopyStudio={() => {
                 setStudioStep(4);
                 setMainTab("studio");
