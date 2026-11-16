@@ -5,24 +5,25 @@ import { SeoBaselineModal } from "./SeoBaselineModal";
 import { SeoVisibilityReportModal } from "./SeoVisibilityReportModal";
 import { SlideDeckPreview } from "./SlideDeckPreview";
 import { ExecutiveMemoModal } from "./ExecutiveMemoModal";
+import { ExecutivePitchDeckModal } from "./ExecutivePitchDeckModal";
 import { ClientEmailDispatcher } from "./ClientEmailDispatcher";
 import { Button } from "./ui";
 
 interface Props {
-  initialTab?: "pptx" | "slides" | "preview" | "memo" | "email";
+  initialTab?: "pptx" | "slides" | "preview" | "memo" | "email" | "deck";
   defaultProperty?: { name?: string; url?: string; city?: string; state?: string };
   onClose: () => void;
   onCompleted: () => void;
 }
 
 export function ClientDeliverablesModal({
-  initialTab = "pptx",
+  initialTab = "deck",
   defaultProperty,
   onClose,
   onCompleted,
 }: Props) {
   const [activeTab, setActiveTab] = useState<
-    "pptx" | "slides" | "preview" | "memo" | "email"
+    "pptx" | "slides" | "preview" | "memo" | "email" | "deck"
   >(initialTab);
 
   return (
@@ -40,6 +41,17 @@ export function ClientDeliverablesModal({
 
         <div className="flex flex-wrap items-center gap-2">
           <div className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1 text-xs font-semibold dark:bg-slate-800">
+            <button
+              type="button"
+              onClick={() => setActiveTab("deck")}
+              className={`rounded-lg px-3 py-1.5 transition ${
+                activeTab === "deck"
+                  ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
+            >
+              Executive Pitch Deck (2-Page PDF)
+            </button>
             <button
               type="button"
               onClick={() => setActiveTab("pptx")}
@@ -104,6 +116,14 @@ export function ClientDeliverablesModal({
       </div>
 
       {/* Tab Panels */}
+      {activeTab === "deck" && (
+        <ExecutivePitchDeckModal
+          property={defaultProperty}
+          onClose={onClose}
+          onOpenEmail={() => setActiveTab("email")}
+        />
+      )}
+
       {activeTab === "pptx" && (
         <SeoVisibilityReportModal
           defaultProperty={defaultProperty}

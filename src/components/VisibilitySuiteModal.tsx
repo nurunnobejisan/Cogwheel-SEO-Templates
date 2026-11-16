@@ -14,12 +14,18 @@ interface VisibilitySuiteModalProps {
   };
   onClose: () => void;
   onImportScore?: (score: number) => void;
+  onImportBatch?: (batchData: {
+    property: { name: string; brand: string; city: string; state: string; url: string };
+    competitors?: Array<{ name: string; domain: string }>;
+    prompts?: any[];
+  }) => void;
 }
 
 export function VisibilitySuiteModal({
   property,
   onClose,
   onImportScore,
+  onImportBatch,
 }: VisibilitySuiteModalProps) {
   const propertyName = property?.name || "Renaissance Shoals Resort & Spa";
   const propertyUrl =
@@ -28,13 +34,15 @@ export function VisibilitySuiteModal({
   const propertyCity = property?.city || "Florence";
   const propertyState = property?.state || "AL";
 
-  const [activeTab, setActiveTab] = useState<"export" | "api" | "import">("export");
+  const [activeTab, setActiveTab] = useState<"export" | "ingest" | "api" | "import">("ingest");
   const [apiKey, setApiKey] = useState("");
   const [workspaceId, setWorkspaceId] = useState("");
   const [syncBusy, setSyncBusy] = useState(false);
   const [syncStatus, setSyncStatus] = useState<{ type: "success" | "error" | "info"; msg: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const [pasteJson, setPasteJson] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
+  const [importedSummary, setImportedSummary] = useState<string | null>(null);
 
   const isFlorence = propertyCity.toLowerCase().includes("florence");
   const localCompetitors = isFlorence
@@ -90,7 +98,7 @@ export function VisibilitySuiteModal({
   const jsonString = JSON.stringify(batchPayload, null, 2);
 
   const handleCopyJson = () => {
-    navigator.clipboard.writeText(jsonString);
+    navigator.clipboard?.writeText(jsonString);
     setCopied(true);
     setTimeout(() => setCopied(false), 2500);
   };
@@ -116,6 +124,87 @@ export function VisibilitySuiteModal({
     ].join("\n");
 
     downloadTextWithCountdown(filename, csvContent, "text/csv;charset=utf-8", 3);
+  };
+
+  const processBatchJsonString = (rawJson: string) => {
+    try {
+      const parsed = JSON.parse(rawJson);
+      if (parsed.organization) {
+        const org = parsed.organization;
+        const newProperty = {
+          name: org.brandName || propertyName,
+          brand: org.brandName || propertyName,
+          city: org.city || propertyCity,
+          state: org.state || propertyState,
+          url: org.domain || propertyUrl,
+        };
+        const competitors = Array.isArray(parsed.competitors) ? parsed.competitors : [];
+        const prompts = Array.isArray(parsed.promptsBatch) ? parsed.promptsBatch : [];
+
+        onImportBatch?.({
+          property: newProperty,
+          competitors,
+          prompts,
+        });
+
+        setImportedSummary(
+          `Loaded "${newProperty.name}" (${newProperty.city}, ${newProperty.state}) with ${competitors.length} competitors and ${prompts.length} prompts.`
+        );
+        setSyncStatus({
+          type: "success",
+          msg: `Batch file ingested! Active hotel updated to ${newProperty.name}.`,
+        });
+        return true;
+      } else if (parsed.score || parsed.citationScore || parsed.geoScore) {
+        const score = parsed.score || parsed.citationScore || parsed.geoScore || 82;
+        onImportScore?.(score);
+        setSyncStatus({
+          type: "success",
+          msg: `Imported VisibilitySuite score: ${score}%`,
+        });
+        return true;
+      } else {
+        throw new Error("Missing organization or score keys in JSON.");
+      }
+    } catch (err: any) {
+      setSyncStatus({
+        type: "error",
+        msg: `Failed to parse batch JSON: ${err.message}`,
+      });
+      return false;
+    }
+  };
+
+  const handleFileDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        if (text) {
+          setPasteJson(text);
+          processBatchJsonString(text);
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  const handleFileInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result as string;
+        if (text) {
+          setPasteJson(text);
+          processBatchJsonString(text);
+        }
+      };
+      reader.readAsText(file);
+    }
   };
 
   const handleDirectSync = async () => {
@@ -166,26 +255,10 @@ export function VisibilitySuiteModal({
 
   const handleImportReport = () => {
     if (!pasteJson.trim()) {
-      setSyncStatus({ type: "error", msg: "Paste VisibilitySuite snapshot JSON or score first." });
+      setSyncStatus({ type: "error", msg: "Paste VisibilitySuite snapshot JSON or batch file first." });
       return;
     }
-    try {
-      let score = 82;
-      try {
-        const parsed = JSON.parse(pasteJson);
-        score = parsed.score || parsed.citationScore || parsed.geoScore || 82;
-      } catch {
-        const matchedNum = pasteJson.match(/\b([0-9]{2,3})\b/);
-        if (matchedNum) score = parseInt(matchedNum[1], 10);
-      }
-      if (onImportScore) onImportScore(score);
-      setSyncStatus({
-        type: "success",
-        msg: `Successfully imported VisibilitySuite score (${score}%) into your GEO Radar.`,
-      });
-    } catch (err: any) {
-      setSyncStatus({ type: "error", msg: "Invalid format. Paste JSON from VisibilitySuite." });
-    }
+    processBatchJsonString(pasteJson);
   };
 
   return (
@@ -223,6 +296,17 @@ export function VisibilitySuiteModal({
       <div className="flex flex-wrap gap-2 border-b border-slate-100 pb-3 dark:border-slate-800">
         <button
           type="button"
+          onClick={() => setActiveTab("ingest")}
+          className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+            activeTab === "ingest"
+              ? "bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-300"
+              : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
+          }`}
+        >
+          Drop Batch JSON (Fast Import)
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab("export")}
           className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
             activeTab === "export"
@@ -230,7 +314,7 @@ export function VisibilitySuiteModal({
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
           }`}
         >
-          1-Click Batch Export (Recommended)
+          1-Click Batch Export
         </button>
         <button
           type="button"
@@ -252,50 +336,94 @@ export function VisibilitySuiteModal({
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
           }`}
         >
-          Import Citation Report
+          Paste Raw Report
         </button>
       </div>
 
       {syncStatus && (
         <div
-          className={`rounded-2xl p-3.5 text-xs font-semibold ${
+          className={`rounded-xl border p-3.5 text-xs font-medium ${
             syncStatus.type === "success"
-              ? "border border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
-              : "border border-rose-300 bg-rose-50 text-rose-800 dark:border-rose-800 dark:bg-rose-950/60 dark:text-rose-300"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
+              : "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"
           }`}
         >
           {syncStatus.msg}
         </div>
       )}
 
-      {/* Tab 1: Export */}
+      {/* Tab 1: Drop Batch JSON (Fast Ingestion) */}
+      {activeTab === "ingest" && (
+        <div className="space-y-4">
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setIsDragging(true);
+            }}
+            onDragLeave={() => setIsDragging(false)}
+            onDrop={handleFileDrop}
+            className={`flex flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition ${
+              isDragging
+                ? "border-purple-500 bg-purple-50/70 dark:bg-purple-950/40"
+                : "border-slate-300 bg-slate-50/60 hover:border-purple-400 dark:border-slate-700 dark:bg-slate-800/40"
+            }`}
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-100 dark:bg-purple-950/80">
+              <svg className="h-6 w-6 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+            </div>
+            <h3 className="mt-3 font-display text-sm font-bold text-slate-900 dark:text-white">
+              Drop VisibilitySuite Batch File Here
+            </h3>
+            <p className="mt-1 max-w-sm text-xs text-slate-500 dark:text-slate-400">
+              Drag and drop any <code className="rounded bg-slate-200 px-1 py-0.5 text-slate-800 dark:bg-slate-700 dark:text-slate-200">*__VisibilitySuite_Batch.json</code> file to auto-configure this property.
+            </p>
+
+            <div className="mt-4">
+              <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-purple-700">
+                Browse Files
+                <input
+                  type="file"
+                  accept=".json,application/json"
+                  onChange={handleFileInputChange}
+                  className="hidden"
+                />
+              </label>
+            </div>
+          </div>
+
+          {importedSummary && (
+            <div className="rounded-xl border border-purple-200 bg-purple-50/80 p-3.5 text-xs text-purple-900 dark:border-purple-900/60 dark:bg-purple-950/40 dark:text-purple-300">
+              <div className="font-bold">Active Property Configured:</div>
+              <div className="mt-0.5 text-[11px]">{importedSummary}</div>
+            </div>
+          )}
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-300">
+            <span className="font-semibold text-slate-900 dark:text-white">What gets auto-filled:</span>
+            <ul className="mt-1 list-disc pl-4 space-y-0.5 text-[11px]">
+              <li>Hotel name, brand, official URL, and city/state location</li>
+              <li>Local comp-set competitor domains &amp; names</li>
+              <li>GEO AI prompts calibrated for ChatGPT Search, Google AI Overviews &amp; Perplexity</li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      {/* Tab 2: 1-Click Batch Export */}
       {activeTab === "export" && (
         <div className="space-y-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">
             <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">
-              Prepared VisibilitySuite Batch Payload
+              Export AI Prompts &amp; Comp-Set Batch
             </h3>
             <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-              Includes your property details, 5 conversational GEO prompts targeting ChatGPT, Perplexity &amp; Google AI Overviews, and 3 local comp-set competitors.
+              Download this prepared JSON configuration to upload directly into VisibilitySuite.ai batch processor.
             </p>
 
-            <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-3 text-xs">
-              <div className="rounded-xl border border-slate-200 bg-white p-2.5 dark:border-slate-700 dark:bg-slate-900">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Brand Domain</span>
-                <div className="font-semibold text-slate-800 dark:text-white truncate">{propertyUrl}</div>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-2.5 dark:border-slate-700 dark:bg-slate-900">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Prompts Count</span>
-                <div className="font-semibold text-slate-800 dark:text-white">5 High-Intent Prompts</div>
-              </div>
-              <div className="rounded-xl border border-slate-200 bg-white p-2.5 dark:border-slate-700 dark:bg-slate-900">
-                <span className="text-[10px] uppercase font-bold text-slate-400">Competitors</span>
-                <div className="font-semibold text-slate-800 dark:text-white">3 Local Properties</div>
-              </div>
-            </div>
-
             <div className="mt-3">
-              <pre className="max-h-48 overflow-y-auto rounded-xl border border-slate-200 bg-slate-950 p-3 font-mono text-[11px] text-purple-300 dark:border-slate-800">
+              <pre className="max-h-48 overflow-auto rounded-xl bg-slate-900 p-3 font-mono text-[11px] text-emerald-400">
                 {jsonString}
               </pre>
             </div>
@@ -318,7 +446,7 @@ export function VisibilitySuiteModal({
         </div>
       )}
 
-      {/* Tab 2: API Direct Sync */}
+      {/* Tab 3: API Direct Sync */}
       {activeTab === "api" && (
         <div className="space-y-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">
@@ -370,7 +498,7 @@ export function VisibilitySuiteModal({
         </div>
       )}
 
-      {/* Tab 3: Import Report */}
+      {/* Tab 4: Paste Raw Report */}
       {activeTab === "import" && (
         <div className="space-y-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">

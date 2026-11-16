@@ -48,6 +48,12 @@ const LabsView = dynamic(() => import("./LabsView").then((m) => m.LabsView));
 const VisibilitySuiteModal = dynamic(() =>
   import("./VisibilitySuiteModal").then((m) => m.VisibilitySuiteModal),
 );
+const CommandPalette = dynamic(() =>
+  import("./CommandPalette").then((m) => m.CommandPalette),
+);
+const SitemapAuditModal = dynamic(() =>
+  import("./SitemapAuditModal").then((m) => m.SitemapAuditModal),
+);
 
 const CRAWL_TASK_IDS = new Set([
   "title-meta",
@@ -122,10 +128,12 @@ export default function PropertyDashboard() {
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
   const [showAiTraining, setShowAiTraining] = useState(false);
-  const [deliverablesTab, setDeliverablesTab] = useState<"pptx" | "slides" | "preview" | "memo" | "email" | null>(null);
+  const [deliverablesTab, setDeliverablesTab] = useState<"pptx" | "slides" | "preview" | "memo" | "email" | "deck" | null>(null);
   const [isDark, setIsDark] = useState(false);
   const [showAutoPilot, setShowAutoPilot] = useState(false);
   const [showVisibilitySuite, setShowVisibilitySuite] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [showSitemapAudit, setShowSitemapAudit] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
   const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
   const [comingSoonTask, setComingSoonTask] = useState<TaskConfig | null>(null);
@@ -184,7 +192,13 @@ export default function PropertyDashboard() {
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setShowCommandPalette((prev) => !prev);
+      }
       if (e.key === "Escape") {
+        setShowCommandPalette(false);
+        setShowSitemapAudit(false);
         setShowAiTraining(false);
         setShowVisibilitySuite(false);
         setDeliverablesTab(null);
@@ -440,6 +454,17 @@ export default function PropertyDashboard() {
               }`}
             >
               Train AI ({aiStatus.activeRules})
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowCommandPalette(true)}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              title="Open Command Palette (Cmd + K)"
+            >
+              <svg className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <span className="font-mono text-[10px] text-slate-400">Cmd K</span>
             </button>
             <button
               type="button"
@@ -809,13 +834,20 @@ export default function PropertyDashboard() {
                       Sync batch prompts, comp-set radars, and citation snapshots directly with your dashboard.
                     </p>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
                     <button
                       type="button"
                       onClick={() => setShowVisibilitySuite(true)}
                       className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300"
                     >
                       Connect &amp; Sync Data <span>&rarr;</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowVisibilitySuite(true)}
+                      className="rounded-lg bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300"
+                    >
+                      Drop Batch File
                     </button>
                   </div>
                 </div>
@@ -901,9 +933,14 @@ export default function PropertyDashboard() {
                     Crawl your hotel website first, or run the full automated pipeline in one click.
                   </p>
                 </div>
-                <Button variant="primary" onClick={() => setShowAutoPilot(true)}>
-                  Auto-Run Full Pipeline
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="secondary" onClick={() => setShowSitemapAudit(true)}>
+                    Audit XML Sitemap
+                  </Button>
+                  <Button variant="primary" onClick={() => setShowAutoPilot(true)}>
+                    Auto-Run Full Pipeline
+                  </Button>
+                </div>
               </div>
               <SiteCrawlCard defaultUrl={activeProperty.url} onCompleted={() => void refreshRuns()} />
             </div>
@@ -921,7 +958,17 @@ export default function PropertyDashboard() {
                 Access underlying site crawler and 78-keyword matrix allocation for this property.
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setShowSitemapAudit(true)}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-purple-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
+              >
+                <svg className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Audit /sitemap.xml
+              </button>
               <button
                 type="button"
                 onClick={() => setMainTab("crawl")}
@@ -1346,10 +1393,52 @@ export default function PropertyDashboard() {
             <VisibilitySuiteModal
               property={activeProperty}
               onClose={() => setShowVisibilitySuite(false)}
+              onImportBatch={(batch) => {
+                updateActiveProperty(batch.property);
+                if (batch.competitors && batch.competitors.length > 0) {
+                  try {
+                    window.localStorage.setItem("cogwheel_compset_override", JSON.stringify(batch.competitors));
+                  } catch {}
+                }
+              }}
             />
           </div>
         </div>
       )}
+
+      {showSitemapAudit && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowSitemapAudit(false);
+          }}
+        >
+          <div className="w-full max-w-3xl">
+            <SitemapAuditModal
+              defaultUrl={activeProperty.url}
+              onClose={() => setShowSitemapAudit(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      <CommandPalette
+        isOpen={showCommandPalette}
+        onClose={() => setShowCommandPalette(false)}
+        onSelectProperty={(prop) => updateActiveProperty(prop)}
+        onNavigateTab={(t) => setMainTab(t)}
+        onNavigateLabsSubTab={(st) => setLabsSubTab(st)}
+        onOpenDeliverables={(tab) => setDeliverablesTab(tab || "deck")}
+        onOpenVisibilitySuite={() => setShowVisibilitySuite(true)}
+        onOpenSitemapAudit={() => setShowSitemapAudit(true)}
+        onOpenAiTraining={() => setShowAiTraining(true)}
+        onRunAutoPilot={() => setShowAutoPilot(true)}
+        onSelectTask={(task) => {
+          setActiveTab(task.section);
+          setMainTab("tasks");
+        }}
+        onToggleTheme={toggleTheme}
+      />
     </div>
   );
 }

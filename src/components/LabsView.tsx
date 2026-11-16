@@ -91,6 +91,7 @@ export function LabsView({
   // --- 3. Schema Generator State ---
   const [schemaType, setSchemaType] = useState<"Hotel" | "FAQ" | "Breadcrumbs">("Hotel");
   const [copiedSchema, setCopiedSchema] = useState(false);
+  const [copiedGoogleTest, setCopiedGoogleTest] = useState(false);
 
   const generatedSchema = useMemo(() => {
     if (schemaType === "Hotel") {
@@ -135,6 +136,16 @@ export function LabsView({
     navigator.clipboard?.writeText(generatedSchema);
     setCopiedSchema(true);
     setTimeout(() => setCopiedSchema(false), 2000);
+  };
+
+  const handleValidateWithGoogle = () => {
+    navigator.clipboard?.writeText(generatedSchema);
+    setCopiedGoogleTest(true);
+    const targetUrl = property?.url
+      ? `https://search.google.com/test/rich-results?url=${encodeURIComponent(property.url)}`
+      : "https://search.google.com/test/rich-results";
+    window.open(targetUrl, "_blank", "noopener,noreferrer");
+    setTimeout(() => setCopiedGoogleTest(false), 3500);
   };
 
   // --- 4. Robots.txt Tester State ---
@@ -561,15 +572,28 @@ export function LabsView({
             </pre>
           </div>
 
-          <div className="mt-3 flex items-center justify-between">
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
             <span className="text-[11px] text-slate-500">Includes schema.org @context &amp; @graph structure</span>
-            <button
-              type="button"
-              onClick={handleCopySchema}
-              className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700"
-            >
-              {copiedSchema ? "Copied!" : "Copy JSON-LD"}
-            </button>
+            <div className="flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={handleValidateWithGoogle}
+                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 transition hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
+                title="Copies JSON-LD and opens Google's Rich Results Testing Tool"
+              >
+                <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                </svg>
+                {copiedGoogleTest ? "Opening Tester (Code Copied!)" : "Google Rich Results Test"}
+              </button>
+              <button
+                type="button"
+                onClick={handleCopySchema}
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700"
+              >
+                {copiedSchema ? "Copied!" : "Copy JSON-LD"}
+              </button>
+            </div>
           </div>
         </div>
 
