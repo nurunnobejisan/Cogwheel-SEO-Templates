@@ -13,6 +13,7 @@
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
     "@supabase/supabase-js": "^2.109.0",
+    "@vercel/speed-insights": "^2.1.0",
     "googleapis": "^178.0.0",
     "next": "^14.2.25",
     "papaparse": "^5.4.1",
