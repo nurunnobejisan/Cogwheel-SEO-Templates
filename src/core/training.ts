@@ -208,8 +208,31 @@ export async function listTrainingRules(taskId?: string | null): Promise<AiTrain
     return memoryRules.filter((r) => !taskId || r.taskId === null || r.taskId === taskId);
   }
 
-  const rows = data.map(mapRow);
-  return rows.filter((r) => !taskId || r.taskId === null || r.taskId === taskId);
+  const dbRows = data.map(mapRow);
+  const dbIds = new Set(dbRows.map((r) => r.id));
+  const missingSeeds = DEFAULT_SEED_RULES.filter((seed) => !dbIds.has(seed.id));
+
+  if (missingSeeds.length > 0) {
+    // Auto-seed newly added core rules into Supabase
+    void db
+      .from("ai_training_rules")
+      .upsert(
+        missingSeeds.map((seed) => ({
+          id: seed.id,
+          task_id: seed.taskId,
+          title: seed.title,
+          rule_text: seed.ruleText,
+          example_bad: seed.exampleBad,
+          example_good: seed.exampleGood,
+          active: seed.active,
+          created_at: seed.createdAt,
+        }))
+      )
+      .then(undefined, () => {});
+  }
+
+  const combined = [...dbRows, ...missingSeeds];
+  return combined.filter((r) => !taskId || r.taskId === null || r.taskId === taskId);
 }
 
 export async function addTrainingRule(input: {
