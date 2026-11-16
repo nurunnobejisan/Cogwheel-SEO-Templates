@@ -117,6 +117,7 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
 
 export default function PropertyDashboard() {
   const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs">("home");
+  const [labsSubTab, setLabsSubTab] = useState<"geo" | "compset" | "sandbox">("geo");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
@@ -412,10 +413,8 @@ export default function PropertyDashboard() {
             {(
               [
                 { id: "home", label: "Home" },
-                { id: "geo", label: "AI & GEO" },
-                { id: "compset", label: "Comp-Set" },
-                { id: "labs", label: "Labs 🧪" },
                 { id: "tasks", label: `Tasks (${readyCount})` },
+                { id: "labs", label: "Labs" },
               ] as const
             ).map((tab) => (
               <button
@@ -424,9 +423,7 @@ export default function PropertyDashboard() {
                 onClick={() => setMainTab(tab.id)}
                 className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
                   mainTab === tab.id
-                    ? tab.id === "geo"
-                      ? "bg-brand text-slate-900 shadow-sm"
-                      : "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                    ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
                     : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
                 }`}
               >
@@ -752,7 +749,10 @@ export default function PropertyDashboard() {
                   <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button
                       type="button"
-                      onClick={() => setMainTab("geo")}
+                      onClick={() => {
+                        setLabsSubTab("geo");
+                        setMainTab("labs");
+                      }}
                       className="inline-flex items-center gap-1 text-xs font-semibold text-purple-700 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
                     >
                       Inspect AI Readiness <span>&rarr;</span>
@@ -780,7 +780,10 @@ export default function PropertyDashboard() {
                   <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
                     <button
                       type="button"
-                      onClick={() => setMainTab("compset")}
+                      onClick={() => {
+                        setLabsSubTab("compset");
+                        setMainTab("labs");
+                      }}
                       className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
                     >
                       View Local Matrix <span>&rarr;</span>
@@ -879,21 +882,15 @@ export default function PropertyDashboard() {
             </>
           )}
 
-          {mainTab === "geo" && (
-            <GeoReadinessRadar
+          {(mainTab === "labs" || mainTab === "geo" || mainTab === "compset") && (
+            <LabsView
               property={activeProperty}
+              activeSubTab={mainTab === "geo" ? "geo" : mainTab === "compset" ? "compset" : labsSubTab}
+              onSubTabChange={(tab) => setLabsSubTab(tab)}
               onRunDeckGeneration={() => setDeliverablesTab("pptx")}
-            />
-          )}
-
-          {mainTab === "compset" && (
-            <CompsetRankingMatrix
-              property={activeProperty}
               onExportMemo={() => setDeliverablesTab("memo")}
             />
           )}
-
-          {mainTab === "labs" && <LabsView property={activeProperty} />}
 
           {mainTab === "crawl" && (
             <div className="space-y-4">

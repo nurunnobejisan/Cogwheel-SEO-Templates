@@ -6,6 +6,8 @@ import { buildSchemaGraph, buildLocalBusinessSchema, buildFAQPageSchema, buildBr
 import { exportToHtml, exportToShopifyLiquid, exportToWordPressPhp, exportToWebflowCsv } from "../../exporters";
 import { cleanContent, countWords, generateNgrams, calculateJaccardSimilarity } from "../../validators/uniquenessGate";
 import { normalizeCanonicalUrl } from "../../validators/canonicalNormalizer";
+import { GeoReadinessRadar } from "./GeoReadinessRadar";
+import { CompsetRankingMatrix } from "./CompsetRankingMatrix";
 
 interface LabsViewProps {
   property?: {
@@ -15,9 +17,28 @@ interface LabsViewProps {
     state: string;
     url: string;
   };
+  activeSubTab?: "geo" | "compset" | "sandbox";
+  onSubTabChange?: (tab: "geo" | "compset" | "sandbox") => void;
+  onRunDeckGeneration?: () => void;
+  onExportMemo?: () => void;
 }
 
-export function LabsView({ property }: LabsViewProps) {
+export function LabsView({
+  property,
+  activeSubTab,
+  onSubTabChange,
+  onRunDeckGeneration,
+  onExportMemo,
+}: LabsViewProps) {
+  const [internalSubTab, setInternalSubTab] = useState<"geo" | "compset" | "sandbox">(
+    activeSubTab || "geo"
+  );
+
+  const currentTab = activeSubTab || internalSubTab;
+  const setTab = (t: "geo" | "compset" | "sandbox") => {
+    setInternalSubTab(t);
+    onSubTabChange?.(t);
+  };
   // --- 1. SERP Preview State ---
   const [serpTitle, setSerpTitle] = useState(
     property?.name ? `${property.name} | Boutique Hotel in ${property.city || "Downtown"}` : "Luxury Downtown Hotel & Suites | Official Site"
@@ -325,23 +346,79 @@ export function LabsView({ property }: LabsViewProps) {
 
   return (
     <div className="space-y-6">
-      {/* Labs Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
+      {/* Labs Studio Master Navigation */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div>
           <div className="flex items-center gap-2">
-            <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Labs</h2>
-            <span className="rounded-full border border-violet-300/60 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-700 dark:border-violet-700/60 dark:bg-violet-950/40 dark:text-violet-300">
-              Interactive Diagnostic &amp; Export Suite (8 Tools)
+            <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-light dark:bg-brand dark:text-slate-900">
+              Labs Studio
+            </span>
+            <span className="font-display text-sm font-bold text-slate-900 dark:text-white">
+              SEO &amp; GEO Intelligence Suite
             </span>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Real-time SEO sandbox utilities: SERP pixel analyzer, Schema generator, Multi-CMS exporters, GEO AI simulator, duplicate scanner, canonical normalizer, keyword clustering, and crawler checks.
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Generative Engine Optimization (GEO), Local Comp-Set benchmarking, and interactive diagnostic utilities.
           </p>
+        </div>
+
+        <div className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1 text-xs font-semibold dark:bg-slate-800">
+          <button
+            type="button"
+            onClick={() => setTab("geo")}
+            className={`rounded-lg px-3.5 py-1.5 transition ${
+              currentTab === "geo"
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            AI &amp; GEO Radar
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("compset")}
+            className={`rounded-lg px-3.5 py-1.5 transition ${
+              currentTab === "compset"
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            Local Comp-Set Matrix
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("sandbox")}
+            className={`rounded-lg px-3.5 py-1.5 transition ${
+              currentTab === "sandbox"
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            Diagnostic Sandbox (8 Tools)
+          </button>
         </div>
       </div>
 
-      {/* Grid of Tools: 6 Tools in 2-column layout */}
-      <div className="grid gap-6 lg:grid-cols-2">
+      {/* Sub-tab 1: AI & GEO Radar */}
+      {currentTab === "geo" && (
+        <GeoReadinessRadar
+          property={property}
+          onRunDeckGeneration={onRunDeckGeneration}
+        />
+      )}
+
+      {/* Sub-tab 2: Local Comp-Set Matrix */}
+      {currentTab === "compset" && (
+        <CompsetRankingMatrix
+          property={property}
+          onExportMemo={onExportMemo}
+        />
+      )}
+
+      {/* Sub-tab 3: Diagnostic Sandbox */}
+      {currentTab === "sandbox" && (
+        <div className="space-y-6">
+          <div className="grid gap-6 lg:grid-cols-2">
 
         {/* 1. SERP Pixel-Width Simulator with Rich Snippets */}
         <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -423,7 +500,7 @@ export function LabsView({ property }: LabsViewProps) {
               {/* Rich Snippet Elements: Stars, Price, Reviews */}
               {showRichSnippet && (
                 <div className="flex items-center gap-2 mt-1 text-xs">
-                  <span className="text-amber-500 font-bold">★★★★★</span>
+                  <span className="rounded bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400">Score 4.9</span>
                   <span className="font-bold text-slate-700 dark:text-slate-200 text-[11px]">4.9</span>
                   <span className="text-slate-400 text-[11px]">(342 reviews)</span>
                   <span className="text-slate-300 dark:text-slate-600">•</span>
@@ -439,10 +516,10 @@ export function LabsView({ property }: LabsViewProps) {
               {/* Status Indicator Pill */}
               <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
                 <span className={isTitleDesktopOver && serpDevice === "desktop" ? "text-amber-600 font-bold" : "text-emerald-600 font-bold"}>
-                  {isTitleDesktopOver && serpDevice === "desktop" ? "⚠️ Title exceeds Desktop width" : "✔ Title pixel width optimal"}
+                  {isTitleDesktopOver && serpDevice === "desktop" ? "Title exceeds Desktop width" : "Title pixel width optimal"}
                 </span>
                 <span className={isDescOver ? "text-amber-600 font-medium" : "text-slate-500"}>
-                  {isDescOver ? "⚠️ Long meta description" : "✔ Meta length compliant"}
+                  {isDescOver ? "Long meta description" : "Meta length compliant"}
                 </span>
               </div>
             </div>
@@ -491,7 +568,7 @@ export function LabsView({ property }: LabsViewProps) {
               onClick={handleCopySchema}
               className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700"
             >
-              {copiedSchema ? "✔ Copied!" : "Copy JSON-LD"}
+              {copiedSchema ? "Copied!" : "Copy JSON-LD"}
             </button>
           </div>
         </div>
@@ -541,7 +618,7 @@ export function LabsView({ property }: LabsViewProps) {
                 onClick={handleCopyCms}
                 className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300"
               >
-                {copiedCms ? "✔ Copied!" : "Copy Code"}
+                {copiedCms ? "Copied!" : "Copy Code"}
               </button>
               <button
                 type="button"
@@ -606,7 +683,7 @@ export function LabsView({ property }: LabsViewProps) {
 
           <div className="mt-3 flex items-center justify-between">
             <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-              ✔ 94% Citation Readiness Score
+              94% Citation Readiness Score
             </span>
             <span className="text-[10px] text-slate-400">Schema-backed authority</span>
           </div>
@@ -697,7 +774,7 @@ export function LabsView({ property }: LabsViewProps) {
 
             {robotsResult && (
               <div className={`mt-3 rounded-xl border p-3 text-xs ${robotsResult.allowed ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300" : "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"}`}>
-                <div className="font-bold">{robotsResult.allowed ? "✔ ALLOWED" : "✖ BLOCKED"}</div>
+                <div className="font-bold">{robotsResult.allowed ? "ALLOWED" : "BLOCKED"}</div>
                 <div className="text-[11px] mt-0.5 font-mono">{robotsResult.rule}</div>
               </div>
             )}
@@ -801,7 +878,7 @@ export function LabsView({ property }: LabsViewProps) {
 
               {duplicateAnalysis.isThin && (
                 <div className="mt-2 text-[10px] font-semibold text-amber-700 dark:text-amber-400">
-                  ⚠️ Note: One or both documents contain under 50 words (thin content risk).
+                  Note: One or both documents contain under 50 words (thin content risk).
                 </div>
               )}
 
@@ -912,7 +989,7 @@ export function LabsView({ property }: LabsViewProps) {
                   onClick={handleCopyCanonical}
                   className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-300"
                 >
-                  {copiedCanonical ? "✔ Copied URL!" : "Copy URL"}
+                  {copiedCanonical ? "Copied URL!" : "Copy URL"}
                 </button>
               </div>
               <div className="font-mono text-xs font-bold text-slate-800 dark:text-slate-100 break-all">
@@ -928,7 +1005,7 @@ export function LabsView({ property }: LabsViewProps) {
                       onClick={handleCopyTag}
                       className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-300"
                     >
-                      {copiedTag ? "✔ Copied Tag!" : "Copy <link> Tag"}
+                      {copiedTag ? "Copied Tag!" : "Copy <link> Tag"}
                     </button>
                   </div>
                   <pre className="rounded-lg bg-white/80 p-2 font-mono text-[11px] text-slate-800 dark:bg-slate-900 dark:text-slate-200 overflow-x-auto border border-teal-100 dark:border-teal-950">
@@ -961,12 +1038,14 @@ export function LabsView({ property }: LabsViewProps) {
       {/* Roadmap Banner */}
       <div className="rounded-2xl border border-dashed border-violet-300 bg-violet-50/50 p-4 text-center dark:border-violet-800/60 dark:bg-violet-950/20">
         <p className="text-xs font-semibold text-violet-800 dark:text-violet-300">
-          🧪 Enterprise SEO Labs Suite — Powered by Razib Marketing
+          Enterprise SEO Labs Suite — Powered by Razib Marketing
         </p>
         <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
           Integrated with 10-Gate SEO Quality Engine • Multi-CMS Export Support (HTML5, Shopify Liquid, WordPress PHP, Webflow CSV)
         </p>
       </div>
+        </div>
+      )}
     </div>
   );
 }
