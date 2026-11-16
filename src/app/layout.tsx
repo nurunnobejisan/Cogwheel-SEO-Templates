@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DownloadFeedbackModal } from "@/components/DownloadFeedbackModal";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -21,6 +22,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="font-sans text-slate-800 antialiased selection:bg-brand selection:text-slate-900">
         {children}
         <DownloadFeedbackModal />
+        <SpeedInsights />
       </body>
     </html>
   );
