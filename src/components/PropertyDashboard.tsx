@@ -54,6 +54,9 @@ const CommandPalette = dynamic(() =>
 const SitemapAuditModal = dynamic(() =>
   import("./SitemapAuditModal").then((m) => m.SitemapAuditModal),
 );
+const KeywordResearchView = dynamic(() =>
+  import("./KeywordResearchView").then((m) => m.KeywordResearchView),
+);
 
 const CRAWL_TASK_IDS = new Set([
   "title-meta",
@@ -122,7 +125,7 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
 };
 
 export default function PropertyDashboard() {
-  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs">("home");
+  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords">("home");
   const [labsSubTab, setLabsSubTab] = useState<"geo" | "compset" | "sandbox">("geo");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
@@ -324,6 +327,10 @@ export default function PropertyDashboard() {
       setActiveCrawlTask(task);
       return;
     }
+    if (task.id === "keyword-research") {
+      setMainTab("keywords");
+      return;
+    }
     if (task.id === "usp-headline-optimization") {
       setStudioStep(4);
     } else {
@@ -427,6 +434,7 @@ export default function PropertyDashboard() {
             {(
               [
                 { id: "home", label: "Home" },
+                { id: "keywords", label: "Keyword Research" },
                 { id: "tasks", label: `Tasks (${readyCount})` },
                 { id: "labs", label: "Labs" },
               ] as const
@@ -686,8 +694,7 @@ export default function PropertyDashboard() {
                   <button
                     type="button"
                     onClick={() => {
-                      setStudioStep(1);
-                      setMainTab("studio");
+                      setMainTab("keywords");
                     }}
                     className="card-hover group flex flex-col justify-between gap-2 rounded-2xl border border-slate-200/90 bg-white/80 p-4 text-left backdrop-blur-xs transition hover:border-brand dark:border-slate-800 dark:bg-slate-800/60 dark:hover:border-brand"
                   >
@@ -703,8 +710,8 @@ export default function PropertyDashboard() {
                       )}
                     </div>
                     <div>
-                      <div className="font-display text-sm font-bold text-slate-900 group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand">Keyword Matrix</div>
-                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">78-keyword mapping &amp; USP copy.</p>
+                      <div className="font-display text-sm font-bold text-slate-900 group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand">Keyword Research</div>
+                      <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">Trained client benchmarks &amp; page mapping.</p>
                     </div>
                   </button>
 
@@ -912,6 +919,17 @@ export default function PropertyDashboard() {
                 </button>
               </section>
             </>
+          )}
+
+          {mainTab === "keywords" && (
+            <KeywordResearchView
+              activeProperty={activeProperty}
+              onOpenCopyStudio={() => {
+                setStudioStep(4);
+                setMainTab("studio");
+              }}
+              onSelectProperty={(p) => updateActiveProperty(p)}
+            />
           )}
 
           {(mainTab === "labs" || mainTab === "geo" || mainTab === "compset") && (
@@ -1434,6 +1452,10 @@ export default function PropertyDashboard() {
         onOpenAiTraining={() => setShowAiTraining(true)}
         onRunAutoPilot={() => setShowAutoPilot(true)}
         onSelectTask={(task) => {
+          if (task.id === "keyword-research") {
+            setMainTab("keywords");
+            return;
+          }
           setActiveTab(task.section);
           setMainTab("tasks");
         }}

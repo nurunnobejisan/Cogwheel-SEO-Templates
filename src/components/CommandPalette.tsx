@@ -18,7 +18,7 @@ export interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
   onSelectProperty: (property: TrainedProperty) => void;
-  onNavigateTab: (tab: "home" | "tasks" | "labs" | "crawl") => void;
+  onNavigateTab: (tab: "home" | "tasks" | "labs" | "crawl" | "keywords") => void;
   onNavigateLabsSubTab?: (subTab: "geo" | "compset" | "sandbox") => void;
   onOpenDeliverables?: (initialTab?: "deck" | "pptx" | "memo") => void;
   onOpenVisibilitySuite?: () => void;
@@ -136,6 +136,18 @@ export function CommandPalette({
       action: () => {
         onClose();
         onNavigateTab("home");
+      },
+    });
+
+    list.push({
+      id: "nav-keywords",
+      title: "Go to Keyword Research Matrix",
+      subtitle: "Grounded client deliverables, 3-step rationales & page-to-keyword mapping",
+      category: "Navigation",
+      badge: "Trained",
+      action: () => {
+        onClose();
+        onNavigateTab("keywords");
       },
     });
 
