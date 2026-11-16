@@ -169,6 +169,8 @@ node --test --experimental-strip-types tests/*.test.ts
 - **Multi-CMS Exporter Playground**: Live side-by-side compilation and one-click code copy or file download for HTML5, Shopify Liquid, WordPress PHP, and Webflow CSV.
 - **GEO AI Search Simulator**: Live emulation of citations and response summaries across Google Gemini Overviews, ChatGPT Search, and Perplexity Pro.
 - **Rich SERP Snippet Preview**: Desktop & mobile SERP previews featuring Google hotel star ratings (`★★★★★`), localized pricing tags, and amenity pill badges.
+- **Content Duplicate & Thin-Content Scanner**: Live Jaccard tri-gram similarity analysis comparing website copy against OTA channels (Expedia, Booking.com) to block duplicate penalty risks (&lt;70% ceiling).
+- **Dirty URL & Canonical Normalizer**: Instant stripping of campaign/tracking parameters (`utm_*`, `gclid`, `fbclid`), trailing slash normalization, and copyable `<link rel="canonical">` HTML tags.
 - **Luxury Hospitality Visual Polish**: Dual-mode radial ambient glow, spring-curve card hover physics (`.card-hover`), and real-time pulsing workflow pipeline telemetry.
 
 ---

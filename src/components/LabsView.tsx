@@ -4,6 +4,8 @@ import { useState, useMemo } from "react";
 import { calculatePixelWidth, smartTrimTitle, DEFAULT_SERP_LIMITS } from "../../validators/serpOptimizer";
 import { buildSchemaGraph, buildLocalBusinessSchema, buildFAQPageSchema, buildBreadcrumbSchema } from "../../schemas";
 import { exportToHtml, exportToShopifyLiquid, exportToWordPressPhp, exportToWebflowCsv } from "../../exporters";
+import { cleanContent, countWords, generateNgrams, calculateJaccardSimilarity } from "../../validators/uniquenessGate";
+import { normalizeCanonicalUrl } from "../../validators/canonicalNormalizer";
 
 interface LabsViewProps {
   property?: {
@@ -212,6 +214,115 @@ export function LabsView({ property }: LabsViewProps) {
   // --- 6. GEO AI Search Overview State ---
   const [aiEngine, setAiEngine] = useState<"ChatGPT" | "Gemini" | "Perplexity">("Gemini");
 
+  // --- 7. Content Duplicate & Thin-Content Scanner State ---
+  const [docA, setDocA] = useState(
+    property?.name
+      ? `${property.name} offers boutique accommodations in downtown ${property.city}. Enjoy plush pillowtop mattresses, custom local artwork, signature bath products, and high-speed Wi-Fi. Dine at our award-winning on-site bistro featuring locally sourced ingredients.`
+      : "Our boutique hotel offers luxury accommodations in the downtown arts district. Enjoy plush pillowtop mattresses, custom artwork, signature amenities, and complimentary high-speed Wi-Fi. Dine at our award-winning bistro featuring seasonal farm-to-table cuisine."
+  );
+  const [docB, setDocB] = useState(
+    property?.name
+      ? `Stay at ${property.name} located in downtown ${property.city}. Featuring plush pillowtop mattresses, custom local artwork, signature bath products, and high-speed Wi-Fi. On-site bistro serves locally sourced ingredients and craft cocktails daily.`
+      : "Book a stay at the downtown boutique hotel. Each room features plush pillowtop mattresses, custom artwork, signature amenities, and complimentary high-speed Wi-Fi. On-site bistro serves farm-to-table breakfast and dinner."
+  );
+
+  const duplicateAnalysis = useMemo(() => {
+    const cleanedA = cleanContent(docA);
+    const cleanedB = cleanContent(docB);
+    const wordsA = countWords(cleanedA);
+    const wordsB = countWords(cleanedB);
+
+    const ngramsA = generateNgrams(cleanedA, 3);
+    const ngramsB = generateNgrams(cleanedB, 3);
+    const similarity = calculateJaccardSimilarity(ngramsA, ngramsB);
+    const simPercent = Math.round(similarity * 100);
+
+    const overlapping: string[] = [];
+    for (const ng of ngramsA) {
+      if (ngramsB.has(ng)) {
+        overlapping.push(ng);
+        if (overlapping.length >= 8) break;
+      }
+    }
+
+    const isDuplicate = simPercent >= 70;
+    const isThin = wordsA < 50 || wordsB < 50;
+
+    return {
+      wordsA,
+      wordsB,
+      simPercent,
+      isDuplicate,
+      isThin,
+      overlapping
+    };
+  }, [docA, docB]);
+
+  // --- 8. Dirty URL & Canonical Normalizer Playground State ---
+  const [rawUrlInput, setRawUrlInput] = useState(
+    property?.url
+      ? `http://${property.url.replace(/^https?:\/\//, "").replace(/\/$/, "")}//rooms///deluxe-suite?utm_source=facebook&utm_medium=cpc&gclid=CjwKCAiA_123&fbclid=IwAR098#photos`
+      : "http://HOTEL-DENVER.COM//hotels///downtown-suites/?utm_source=google_ads&utm_medium=cpc&utm_campaign=winter_promo&gclid=789xyz&fbclid=abc123#rates"
+  );
+  const [canonicalOpts, setCanonicalOpts] = useState({
+    forceHttps: true,
+    stripTracking: true,
+    trailingSlash: true,
+    stripHash: true
+  });
+  const [copiedCanonical, setCopiedCanonical] = useState(false);
+  const [copiedTag, setCopiedTag] = useState(false);
+
+  const normalizedResult = useMemo(() => {
+    try {
+      const cleanUrl = normalizeCanonicalUrl(rawUrlInput, canonicalOpts);
+      const tag = `<link rel="canonical" href="${cleanUrl}" />`;
+      
+      const removedParams: string[] = [];
+      try {
+        const u = new URL(rawUrlInput.startsWith("http") ? rawUrlInput : `https://${rawUrlInput}`);
+        u.searchParams.forEach((_, key) => {
+          if (canonicalOpts.stripTracking && (key.startsWith("utm_") || ["fbclid", "gclid", "ref", "mc_eid", "zanpid"].includes(key.toLowerCase()))) {
+            removedParams.push(key);
+          }
+        });
+      } catch {
+        // ignore parse error for partial inputs
+      }
+
+      return {
+        success: true,
+        url: cleanUrl,
+        tag,
+        removedParams
+      };
+    } catch (err) {
+      return {
+        success: false,
+        error: (err as Error).message,
+        url: "",
+        tag: "",
+        removedParams: []
+      };
+    }
+  }, [rawUrlInput, canonicalOpts]);
+
+  const handleCopyCanonical = () => {
+    if (normalizedResult.url) {
+      navigator.clipboard?.writeText(normalizedResult.url);
+      setCopiedCanonical(true);
+      setTimeout(() => setCopiedCanonical(false), 2000);
+    }
+  };
+
+  const handleCopyTag = () => {
+    if (normalizedResult.tag) {
+      navigator.clipboard?.writeText(normalizedResult.tag);
+      setCopiedTag(true);
+      setTimeout(() => setCopiedTag(false), 2000);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Labs Header */}
@@ -220,11 +331,11 @@ export function LabsView({ property }: LabsViewProps) {
           <div className="flex items-center gap-2">
             <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">Labs</h2>
             <span className="rounded-full border border-violet-300/60 bg-violet-50 px-2.5 py-0.5 text-[11px] font-semibold text-violet-700 dark:border-violet-700/60 dark:bg-violet-950/40 dark:text-violet-300">
-              Interactive Diagnostic &amp; Export Suite
+              Interactive Diagnostic &amp; Export Suite (8 Tools)
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Real-time SEO sandbox utilities: SERP pixel analyzer, Schema generator, Multi-CMS exporters, GEO AI simulator, and crawler checks.
+            Real-time SEO sandbox utilities: SERP pixel analyzer, Schema generator, Multi-CMS exporters, GEO AI simulator, duplicate scanner, canonical normalizer, keyword clustering, and crawler checks.
           </p>
         </div>
       </div>
@@ -599,6 +710,250 @@ export function LabsView({ property }: LabsViewProps) {
           >
             Simulate Crawler Access &rarr;
           </button>
+        </div>
+
+        {/* 7. Content Duplicate & Thin-Content Scanner */}
+        <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-100 dark:bg-rose-950/60">
+                  <svg className="h-4 w-4 text-rose-600 dark:text-rose-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Duplicate &amp; Thin-Content Scanner</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setDocA("The Curtis Denver - a DoubleTree by Hilton Hotel offers boutique downtown accommodations with themed floor decor, high-speed Wi-Fi, and convenient access to the Denver Performing Arts Complex. Enjoy on-site bistro dining, complimentary fitness center access, and flexible meeting spaces.");
+                  setDocB("Stay at The Curtis Denver - a DoubleTree by Hilton Hotel. Features downtown boutique accommodations, themed floor decor, high-speed Wi-Fi, and proximity to the Denver Performing Arts Complex. Amenities include on-site bistro dining, complimentary fitness center, and event space.");
+                }}
+                className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:underline"
+              >
+                Load Sample
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              Compare website copy against OTA (Expedia, Booking.com) to prevent Google duplicate content penalties (&lt;70% similarity ceiling):
+            </p>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                    Document A (Website Copy)
+                  </label>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    {duplicateAnalysis.wordsA} words
+                  </span>
+                </div>
+                <textarea
+                  rows={4}
+                  value={docA}
+                  onChange={(e) => setDocA(e.target.value)}
+                  placeholder="Paste website room copy or article text..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-800 focus:border-rose-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                />
+              </div>
+
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                    Document B (OTA / Syndicated Copy)
+                  </label>
+                  <span className="text-[10px] font-mono text-slate-400">
+                    {duplicateAnalysis.wordsB} words
+                  </span>
+                </div>
+                <textarea
+                  rows={4}
+                  value={docB}
+                  onChange={(e) => setDocB(e.target.value)}
+                  placeholder="Paste OTA listing copy or comparison text..."
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-800 focus:border-rose-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                />
+              </div>
+            </div>
+
+            {/* Live Similarity Score & Validation Result */}
+            <div className={`mt-3 rounded-xl border p-3 text-xs transition ${
+              duplicateAnalysis.isDuplicate
+                ? "border-rose-200 bg-rose-50/70 text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200"
+                : "border-emerald-200 bg-emerald-50/70 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
+            }`}>
+              <div className="flex items-center justify-between">
+                <span className="font-bold flex items-center gap-1.5">
+                  <span className={`h-2 w-2 rounded-full ${duplicateAnalysis.isDuplicate ? "bg-rose-600" : "bg-emerald-500"}`} />
+                  {duplicateAnalysis.isDuplicate ? "DUPLICATE CONTENT DETECTED" : "SAFE & UNIQUE CONTENT"}
+                </span>
+                <span className="font-mono text-sm font-extrabold">
+                  {duplicateAnalysis.simPercent}% Similarity
+                </span>
+              </div>
+              <p className="mt-1 text-[11px] leading-relaxed opacity-90">
+                {duplicateAnalysis.isDuplicate
+                  ? "Exceeds 70% Jaccard tri-gram threshold. Search engines may filter or de-index one of the pages. Rewrite key phrases to differentiate."
+                  : "Within safe uniqueness thresholds (< 70%). Independent topical signals established for organic search ranking."}
+              </p>
+
+              {duplicateAnalysis.isThin && (
+                <div className="mt-2 text-[10px] font-semibold text-amber-700 dark:text-amber-400">
+                  ⚠️ Note: One or both documents contain under 50 words (thin content risk).
+                </div>
+              )}
+
+              {duplicateAnalysis.overlapping.length > 0 && (
+                <div className="mt-2.5 pt-2 border-t border-slate-200/50 dark:border-slate-800/60">
+                  <span className="text-[10px] font-semibold text-slate-500 block mb-1">Overlapping 3-Gram Phrases:</span>
+                  <div className="flex flex-wrap gap-1">
+                    {duplicateAnalysis.overlapping.map((phrase, i) => (
+                      <span key={i} className="rounded-md bg-white/80 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                        &ldquo;{phrase}&rdquo;
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+            <span>Client-side Jaccard Tri-gram Algorithm</span>
+            <span className="font-medium text-slate-500 dark:text-slate-400">Zero Server Latency</span>
+          </div>
+        </div>
+
+        {/* 8. Dirty URL & Canonical Normalizer Playground */}
+        <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-teal-100 dark:bg-teal-950/60">
+                  <svg className="h-4 w-4 text-teal-600 dark:text-teal-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                </span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Dirty URL &amp; Canonical Normalizer</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  setRawUrlInput("http://HOTEL-DENVER.COM//hotels///downtown-suites/?utm_source=google_ads&utm_medium=cpc&utm_campaign=winter_promo&gclid=789xyz&fbclid=abc123#rates");
+                }}
+                className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 hover:underline"
+              >
+                Load Messy Ad URL
+              </button>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+              Normalize campaign URLs, strip tracking tags (`utm_*`, `gclid`, `fbclid`), deduplicate slashes, and generate canonical meta tags:
+            </p>
+
+            <input
+              type="text"
+              value={rawUrlInput}
+              onChange={(e) => setRawUrlInput(e.target.value)}
+              placeholder="Paste raw URL (e.g. http://hotel.com//rooms/?utm_source=fb)..."
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-800 focus:border-teal-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+            />
+
+            {/* Options Checkboxes */}
+            <div className="mt-2.5 flex flex-wrap items-center gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={canonicalOpts.forceHttps}
+                  onChange={(e) => setCanonicalOpts((o) => ({ ...o, forceHttps: e.target.checked }))}
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                />
+                <span>Force HTTPS</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={canonicalOpts.stripTracking}
+                  onChange={(e) => setCanonicalOpts((o) => ({ ...o, stripTracking: e.target.checked }))}
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                />
+                <span>Strip UTM / Tracking</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={canonicalOpts.trailingSlash}
+                  onChange={(e) => setCanonicalOpts((o) => ({ ...o, trailingSlash: e.target.checked }))}
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                />
+                <span>Trailing Slash</span>
+              </label>
+              <label className="flex items-center gap-1.5 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={canonicalOpts.stripHash}
+                  onChange={(e) => setCanonicalOpts((o) => ({ ...o, stripHash: e.target.checked }))}
+                  className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                />
+                <span>Strip Hash (#)</span>
+              </label>
+            </div>
+
+            {/* Normalized Result Box */}
+            <div className="mt-3 rounded-xl border border-teal-200/80 bg-teal-50/50 p-3.5 dark:border-teal-900/60 dark:bg-teal-950/30">
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-[10px] font-extrabold tracking-wider text-teal-800 uppercase dark:text-teal-300">
+                  Clean Canonical URL
+                </span>
+                <button
+                  type="button"
+                  onClick={handleCopyCanonical}
+                  className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-300"
+                >
+                  {copiedCanonical ? "✔ Copied URL!" : "Copy URL"}
+                </button>
+              </div>
+              <div className="font-mono text-xs font-bold text-slate-800 dark:text-slate-100 break-all">
+                {normalizedResult.url || "Invalid URL"}
+              </div>
+
+              {normalizedResult.tag && (
+                <div className="mt-2.5 pt-2 border-t border-teal-200/60 dark:border-teal-900/40">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-[10px] font-semibold text-slate-500">HTML Canonical Tag:</span>
+                    <button
+                      type="button"
+                      onClick={handleCopyTag}
+                      className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-300"
+                    >
+                      {copiedTag ? "✔ Copied Tag!" : "Copy <link> Tag"}
+                    </button>
+                  </div>
+                  <pre className="rounded-lg bg-white/80 p-2 font-mono text-[11px] text-slate-800 dark:bg-slate-900 dark:text-slate-200 overflow-x-auto border border-teal-100 dark:border-teal-950">
+                    {normalizedResult.tag}
+                  </pre>
+                </div>
+              )}
+
+              {normalizedResult.removedParams.length > 0 && (
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px]">
+                  <span className="font-semibold text-teal-800 dark:text-teal-300">Stripped:</span>
+                  {normalizedResult.removedParams.map((param, i) => (
+                    <span key={i} className="rounded bg-teal-200/60 dark:bg-teal-900/60 px-1.5 py-0.5 font-mono text-teal-900 dark:text-teal-200">
+                      -{param}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+            <span>RFC 3986 &amp; Google Canonical Guidelines</span>
+            <span className="font-semibold text-teal-600 dark:text-teal-400">100% Free &amp; Offline</span>
+          </div>
         </div>
 
       </div>
