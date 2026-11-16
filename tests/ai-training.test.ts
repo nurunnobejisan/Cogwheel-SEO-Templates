@@ -18,6 +18,22 @@ describe("AI Training Rules Store", () => {
     expect(reportContext).toContain("Strictly Grounded Property Claims");
   });
 
+  it("seeds Cogwheel keyword research rules from client deliverable training data", async () => {
+    const rules = await listTrainingRules("keyword-research");
+    expect(rules.some((r) => r.id === "seed-kw-beachfront-oceanfront-bucketing")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-low-kd-amenity-threshold")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-local-geo-anchoring")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-small-market-metro-feeder")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-specialty-venue-hierarchy")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-cogwheel-3step-rationale")).toBe(true);
+
+    const kwContext = await formatTrainingContext("keyword-research");
+    expect(kwContext).toContain("Beachfront, Oceanfront & Coastal Keyword Bucketing");
+    expect(kwContext).toContain("Secondary & Amenity Page Low-KD (< 45)");
+    expect(kwContext).toContain("Local/City Geo-Anchoring Over State-Wide Generics");
+    expect(kwContext).toContain("Cogwheel Client Rationale Structure");
+  });
+
   it("supports adding, toggling, and deleting custom training rules", async () => {
     const created = await addTrainingRule({
       taskId: "title-meta",

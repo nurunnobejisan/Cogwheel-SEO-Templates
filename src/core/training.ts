@@ -97,6 +97,84 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
     active: true,
     createdAt: "2026-11-14T00:00:00.000Z",
   },
+  {
+    id: "seed-kw-beachfront-oceanfront-bucketing",
+    taskId: "keyword-research",
+    title: "Beachfront, Oceanfront & Coastal Keyword Bucketing",
+    ruleText:
+      "When optimizing beachfront or coastal resort properties (e.g. Panama City Beach, Fort Walton Beach, Destin, Miami), always bucket terms referencing 'oceanfront', 'beachfront', 'ocean view', 'beach view', and 'gulf front' into a dedicated Beachfront / Oceanfront bucket. On Primary/Secondary pairings, pair general city hotel keywords (e.g. 'hotels beach panama city') with view- or location-specific high-intent qualifiers ('hotel rooms panama city beach', 'beachfront hotels').",
+    exampleGood:
+      "Targeting 'hotels beach panama city' (SV 27,100, KD 46) on Home paired with 'hotel rooms panama city beach' (SV 210, KD 56) on Accommodations, tagged under Beachfront / Oceanfront.",
+    exampleBad:
+      "Treating oceanfront keywords as generic 'Hotel' or 'Lodging' buckets without coastal intent differentiation.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-low-kd-amenity-threshold",
+    taskId: "keyword-research",
+    title: "Secondary & Amenity Page Low-KD (< 45) Opportunity Prioritization",
+    ruleText:
+      "While Home pages capture high-volume primary market demand (even at KD 45-65), secondary sub-pages (Offers, Amenities, Dining, Meetings, Policies) must strictly prioritize low-KD opportunities (KD < 45, ideally KD 10-35) with viable monthly search volume (> 50 SV). This ensures rapid organic ranking velocity and strong citation inclusion in AI answer engines.",
+    exampleGood:
+      "Selecting 'wedding reception venues panama city beach fl' (SV 110, KD 19) and 'discount hotels in panama city beach' (SV 2,400, KD 33) for secondary pages.",
+    exampleBad:
+      "Assigning KD 70+ broad terms to secondary meeting or dining pages when low-KD hyper-relevant alternatives exist.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-local-geo-anchoring",
+    taskId: "keyword-research",
+    title: "Local/City Geo-Anchoring Over State-Wide Generics",
+    ruleText:
+      "Never recommend state-wide generic keywords (e.g. 'florida hotel offers', 'california hotel packages', 'texas hotel deals') when property-level or city-specific intent exists. Enforce city or sub-market geo-anchoring (e.g. 'fort walton beach hotel deals', 'panama city beach dining') because state-wide terms lack localized booking conversion intent and dilute local SEO authority.",
+    exampleGood:
+      "Targeting 'dining fort walton beach' (SV 3,600, KD 44) and 'fort walton beach accommodations' instead of generic 'florida hotel dining'.",
+    exampleBad:
+      "Recommending 'florida hotel offers' for a Fort Walton Beach soft-brand boutique property.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-small-market-metro-feeder",
+    taskId: "keyword-research",
+    title: "Small-Market Hyper-Local & Metro Feeder Dual Targeting",
+    ruleText:
+      "For properties situated in smaller towns, outer suburbs, or secondary feeder markets (e.g. Casselton, ND; Milford, PA; Grapevine, TX), pair hyper-local town keywords (e.g. 'casselton hotel', SV 590, KD 17) with the nearest major metro demand feeder keywords (e.g. 'fargo hotel rooms', SV 480, KD 42; 'wedding venues fargo nd', SV 1,300, KD 21). Small-market standalone volume is insufficient without tapping the primary metropolitan feeder basin.",
+    exampleGood:
+      "Targeting 'casselton hotel' as primary and 'fargo hotel rooms' or 'rv parks near fargo nd' for regional attraction and accommodations.",
+    exampleBad:
+      "Restricting keyword selection purely to a small town name where monthly search volume is near zero.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-specialty-venue-hierarchy",
+    taskId: "keyword-research",
+    title: "Specialty Venue Intent & Multi-Purpose Demand Capture",
+    ruleText:
+      "For event venues, conference spaces, and educational facilities (e.g. Project Farmhouse), capture both high-volume commercial intent queries ('event space new york', SV 2,900, KD 52; 'nyc filming locations', SV 1,600, KD 44) on core entry pages and distinct niche differentiation terms ('sustainable event venues', KD 10; 'nonprofit meeting space') on brand and mission pages to maximize both reach and AI citation authority.",
+    exampleGood:
+      "Pairing 'event space rental nyc' for commercial venue booking with 'sustainable event venues' for brand ethos and eco-conscious event organizers.",
+    exampleBad:
+      "Classifying an urban sustainability conference venue with generic hotel room keywords.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-cogwheel-3step-rationale",
+    taskId: "keyword-research",
+    title: "Cogwheel Client Rationale Structure (Volume, Difficulty, Implementation)",
+    ruleText:
+      "Every keyword rationale delivered to hotel clients must follow the 3-step Cogwheel structure: (1) Primary keyword identification with Semrush monthly search volume and KD; (2) Strategic alignment to on-site offering (e.g. direct beach access, specific room configuration, pet policy, wedding capacity); (3) Explicit on-page implementation guidance (meta title/description placement, H1/H2 header incorporation, body copy optimization, alt-tag usage).",
+    exampleGood:
+      "Selected 'hotel rooms panama city beach' (SV 210, KD 56) to capture high-intent travelers seeking beachfront accommodations. The low competition relative to commercial intent makes this ideal for the Rooms page. Implementation: place in the meta title, feature in the first H2, and weave into room amenity copy.",
+    exampleBad:
+      "Good keyword with nice search volume for this page.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
 ];
 
 const memoryRules: AiTrainingRule[] = [...DEFAULT_SEED_RULES];

@@ -182,11 +182,11 @@
   {
     "name": "Governors' Inn",
     "brand": "Independent",
-    "city": "",
-    "state": "",
+    "city": "Casselton",
+    "state": "ND",
     "url": "https://governorsinnnd.com/",
     "propertyType": "Independent",
-    "category": "Independent",
+    "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
     "managementGroup": "Milford Hospitality Group",
@@ -194,8 +194,10 @@
       "ai_mode",
       "ai_overview",
       "chatgpt",
-      "gemini"
-    ]
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Independent hospitality resort with indoor waterpark, RV park, conference facilities, and arcade. Key demand feeder: Fargo metro."
   },
   {
     "name": "Hotel De La Poste French Quarter (Sage)",
@@ -1104,13 +1106,22 @@
   {
     "name": "Hyatt Place Panama City Beach - ECPZP (OTO)",
     "brand": "Hyatt Place",
-    "city": "",
-    "state": "",
-    "url": "",
+    "city": "Panama City Beach",
+    "state": "FL",
+    "url": "https://www.hyatt.com/hyatt-place/en-US/ecpzp-hyatt-place-panama-city-beach-beachfront",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "One-Time",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "OTO Development",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Full flag beachfront resort with 224 rooms & suites, Coconut Charlie's Beach Bar & Grill, beachfront pool, and pet-friendly policy."
   },
   {
     "name": "Hyatt Place, OSU (Columbus)",
@@ -1168,15 +1179,24 @@
     "status": "Active"
   },
   {
-    "name": "Hyatt Union Square & Project Farmhouse (HHM) Project Farm House",
+    "name": "Project Farmhouse (GrowNYC / Hyatt Union Square)",
     "brand": "Branded",
-    "city": "",
-    "state": "",
-    "url": "",
-    "propertyType": "Branded",
-    "category": "Light SEO Audit",
+    "city": "New York",
+    "state": "NY",
+    "url": "https://www.projectfarmhouse.org/",
+    "propertyType": "Independent",
+    "category": "Venue",
     "projectType": "One-Time",
-    "status": "Completed"
+    "status": "Completed",
+    "managementGroup": "HHM",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Sustainable event space, conference venue, and filming production studio in Union Square NYC operated with GrowNYC."
   },
   {
     "name": "JW Marriott Houston (HM Alpha)",
@@ -1491,14 +1511,23 @@
   },
   {
     "name": "Tapestry by Hilton, Beal House Fort Walton Beach - FWBBH (OTO)",
-    "brand": "Full Flag Brand",
-    "city": "",
-    "state": "",
-    "url": "",
+    "brand": "Tapestry Collection by Hilton",
+    "city": "Fort Walton Beach",
+    "state": "FL",
+    "url": "https://www.hilton.com/en/hotels/fwbbhup-beal-house-fort-walton-beach/",
     "propertyType": "Branded",
-    "category": "Full Flag Brand",
+    "category": "Soft Brand.com",
     "projectType": "One-Time",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "OTO Development",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Boutique beachfront property on Okaloosa Island featuring The Remedy restaurant, oceanfront balconies, and Hilton Honors integration."
   },
   {
     "name": "Template",

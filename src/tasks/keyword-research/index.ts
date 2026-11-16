@@ -154,7 +154,12 @@ export async function runKeywordResearchTask(
       if (isClaudeConfigured()) {
         try {
           const { system, prompt } = buildRationalePrompt(data, feedback);
-          const raw = await generateClaudeText({ system, prompt, maxTokens: 3000 });
+          const raw = await generateClaudeText({
+            system,
+            prompt,
+            maxTokens: 3000,
+            taskId: "keyword-research",
+          });
           return {
             rationales: parseRationales(raw, data.matrix),
             usedAi: true,
