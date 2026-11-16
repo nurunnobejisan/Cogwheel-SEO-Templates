@@ -51,4 +51,6 @@ The standardized production architecture organizes modular components under:
 | `src/components/PropertyDashboard.tsx` | UI | Updated | Labs experimental hub, luxury visual polish, pipeline telemetry |
 | `src/components/LabsView.tsx` | UI | Updated | 8-Tool Suite: Multi-CMS Exporters, Duplicate Scanner, Canonical Normalizer, GEO AI & SERP |
 | `tests/ts/edge-cases-and-defenses.test.ts` | Test | Created | Defensive unit tests covering regex leaks, quote sanitization & fallbacks |
+| `docs/ARCHITECTURE.md` | Docs | Created | System architecture and directory guide |
+| `docs/reports/TYPESCRIPT_CI_FIX_REPORT.md` | Docs | Created | CI failure investigation and repair report |
 | `README.md` | Docs | Updated | Comprehensive system documentation (v2.6.0) |
