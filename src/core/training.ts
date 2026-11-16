@@ -175,6 +175,71 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
     active: true,
     createdAt: "2026-11-16T00:00:00.000Z",
   },
+  {
+    id: "seed-kw-neighborhood-geo-anchoring",
+    taskId: "keyword-research",
+    title: "Metropolitan Cultural/Historic Neighborhood Geo-Anchoring",
+    ruleText:
+      "In major tier-1 metropolitan markets (e.g. Boston, New York, Chicago, Philadelphia), avoid targeting only hyper-competitive citywide generic keywords (e.g. 'boston hotels' KD 80+). Prioritize recognized historic and cultural neighborhood sub-market keywords (e.g. 'north end boston hotels' SV 1,300, KD 36; 'dining north end boston' SV 3,600, KD 26; 'hotels near quincy market'). Neighborhood-level intent yields drastically higher conversion rates and achieves immediate ranking momentum.",
+    exampleGood:
+      "Targeting 'north end boston hotels' (SV 1,300, KD 36) for Canopy by Hilton Boston Downtown instead of competing for 'boston hotels' (KD 82).",
+    exampleBad:
+      "Recommending broad generic 'massachusetts hotels' or 'boston hotels' for a boutique North End hotel.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-landmark-proximity-anchoring",
+    taskId: "keyword-research",
+    title: "High-Intent Landmark & Demand Generator Proximity Anchoring",
+    ruleText:
+      "For Experience, Location, and Area attraction pages, target specific high-foot-traffic demand generators and landmarks with proximity modifiers ('hotels closest to pier park panama city beach', KD 24; 'hotels near tropicana field', KD 30; 'hotels near td garden', KD 32). Leisure, event, and sports travelers search directly by venue and stadium names when booking accommodations.",
+    exampleGood:
+      "Assigning 'hotels closest to pier park panama city beach' (SV 590, KD 24) to the Experiences page to capture shopping and entertainment foot-traffic.",
+    exampleBad:
+      "Targeting generic 'things to do in florida' for a local hotel experience page.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-colloquial-vernacular-matching",
+    taskId: "keyword-research",
+    title: "Colloquial & Regional Vernacular Abbreviation Matching",
+    ruleText:
+      "In markets where traveler and local search volume heavily favors colloquial abbreviations over formal municipal names (e.g. 'st pete' vs 'st. petersburg', 'philly' vs 'philadelphia', 'vegas' vs 'las vegas', 'tahoe' vs 'lake tahoe'), include colloquial variants in the keyword pool and rationale ('downtown st pete hotels' SV 720, KD 35). Restricting keyword research exclusively to formal city names misses significant high-intent search volume.",
+    exampleGood:
+      "Recommending 'downtown st pete hotels' (SV 720, KD 35) alongside formal city terms for AC Hotel St. Petersburg.",
+    exampleBad:
+      "Rejecting 'st pete' terms as informal or non-standard when real monthly search volume is high.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-existing-rank-momentum",
+    taskId: "keyword-research",
+    title: "Organic Rank Momentum & Near-Win Capitalization",
+    ruleText:
+      "When crawl or Semrush tracking reveals that the property already ranks on Google page 1 or page 2 (Positions 4–15) for a target keyword (e.g. SpringHill Suites ranking #4 for 'hotels beach panama city' or Auburn Marriott seeing ranking improvements prior to on-page launch), explicitly highlight this current position in the rationale. Focus optimization on locking in top 3 rankings and featured snippet / AI Overview inclusion rather than treating the page as a zero-rank cold start.",
+    exampleGood:
+      "Currently ranking in Position 4 with 27,100 monthly searches; targeted on-page title and H1 optimization can bridge the gap to top 3 and capture the dominant direct-booking share.",
+    exampleBad:
+      "Recommending a keyword without acknowledging that the domain already ranks on page 1 for it.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
+  {
+    id: "seed-kw-room-page-depth-architecture",
+    taskId: null,
+    title: "Room-Level Page Depth Architecture vs Single-URL Consolidation",
+    ruleText:
+      "When auditing or performing keyword strategy for independent hotels where multiple distinct room types (e.g. standalone cabins, 3-bedroom suites, whirlpool honeymoon suites, pet-friendly units) all share a single consolidated URL (e.g. /rooms.htm), explicitly flag the lost keyword ranking opportunity. Recommend dedicated sub-pages for distinctive room categories to capture high-intent room queries without cannibalizing the main Accommodations page.",
+    exampleGood:
+      "Splitting 3-bedroom suites, standalone cabins, and pet-friendly rooms into dedicated URLs to capture specific high-value booking searches.",
+    exampleBad:
+      "Attempting to optimize one /rooms.htm page for 12 completely different room and cabin keywords simultaneously.",
+    active: true,
+    createdAt: "2026-11-16T00:00:00.000Z",
+  },
 ];
 
 const memoryRules: AiTrainingRule[] = [...DEFAULT_SEED_RULES];

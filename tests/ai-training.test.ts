@@ -26,12 +26,19 @@ describe("AI Training Rules Store", () => {
     expect(rules.some((r) => r.id === "seed-kw-small-market-metro-feeder")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-specialty-venue-hierarchy")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-cogwheel-3step-rationale")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-neighborhood-geo-anchoring")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-landmark-proximity-anchoring")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-colloquial-vernacular-matching")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-existing-rank-momentum")).toBe(true);
 
     const kwContext = await formatTrainingContext("keyword-research");
     expect(kwContext).toContain("Beachfront, Oceanfront & Coastal Keyword Bucketing");
     expect(kwContext).toContain("Secondary & Amenity Page Low-KD (< 45)");
     expect(kwContext).toContain("Local/City Geo-Anchoring Over State-Wide Generics");
     expect(kwContext).toContain("Cogwheel Client Rationale Structure");
+    expect(kwContext).toContain("Metropolitan Cultural/Historic Neighborhood Geo-Anchoring");
+    expect(kwContext).toContain("High-Intent Landmark & Demand Generator Proximity Anchoring");
+    expect(kwContext).toContain("Colloquial & Regional Vernacular Abbreviation Matching");
   });
 
   it("supports adding, toggling, and deleting custom training rules", async () => {

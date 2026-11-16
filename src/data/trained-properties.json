@@ -384,13 +384,13 @@
     ]
   },
   {
-    "name": "The Coachman (Sage)",
+    "name": "The Coachman Hotel (Sage)",
     "brand": "Independent",
-    "city": "Lake Tahoe",
+    "city": "South Lake Tahoe",
     "state": "CA",
     "url": "https://www.coachmantahoe.com/",
     "propertyType": "Independent",
-    "category": "Independent",
+    "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
     "managementGroup": "Sage Hospitality",
@@ -398,8 +398,10 @@
       "ai_mode",
       "ai_overview",
       "chatgpt",
-      "gemini"
-    ]
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Boutique independent alpine retreat in South Lake Tahoe near Heavenly Village with fire pits, heated pool, pet-friendly rooms, and stand-alone cabins."
   },
   {
     "name": "The Grand Hotel Golf Resort & Spa (PCH)",
@@ -577,14 +579,23 @@
   },
   {
     "name": "AC Hotel St. Petersburg Downtown - TPAPA (OTO)",
-    "brand": "Full Flag Brand",
-    "city": "",
-    "state": "",
-    "url": "",
+    "brand": "AC Hotels by Marriott",
+    "city": "St. Petersburg",
+    "state": "FL",
+    "url": "https://www.marriott.com/en-us/hotels/tpapa-ac-hotel-st-petersburg-downtown/overview/",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "One-Time",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "OTO Development",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Downtown boutique AC Hotel in St. Petersburg, FL near Tropicana Field, Vinoy Park, Sunken Gardens, and Chihuly Collection."
   },
   {
     "name": "Aloft New Orleans",
@@ -632,14 +643,23 @@
   },
   {
     "name": "Auburn Marriott Opelika Resort & Spa (PCH)",
-    "brand": "Branded",
-    "city": "",
-    "state": "",
-    "url": "",
+    "brand": "Marriott Hotels",
+    "city": "Opelika",
+    "state": "AL",
+    "url": "https://www.marriott.com/en-us/hotels/csbgs-auburn-marriott-opelika-resort-and-spa-at-grand-national/overview/",
     "propertyType": "Branded",
-    "category": "Marriot Brand",
+    "category": "Full Flag Brand",
     "projectType": "One-Time",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "PCH Hotels & Resorts",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Luxury golf resort & spa on Robert Trent Jones Golf Trail with 54 holes of championship golf, 3-story spa, and 13.8K monthly organic visits."
   },
   {
     "name": "Canopy Boston Downtown (Olshan)",
@@ -1467,14 +1487,23 @@
   },
   {
     "name": "Springhill Suites Panama City Beach - PFNSH (OTO)",
-    "brand": "Full Flag Brand",
-    "city": "",
-    "state": "",
-    "url": "",
+    "brand": "SpringHill Suites by Marriott",
+    "city": "Panama City Beach",
+    "state": "FL",
+    "url": "https://www.marriott.com/en-us/hotels/pfnsh-springhill-suites-panama-city-beach-beachfront/overview",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "One-Time",
-    "status": "Active"
+    "status": "Active",
+    "managementGroup": "OTO Development",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Beachfront all-suite hotel on Gulf of Mexico with outdoor pool, lazy river, proximity to Pier Park, and event space."
   },
   {
     "name": "Staybridge Suites IAH Airport (Om Woodbridge)",
@@ -3586,21 +3615,23 @@
   },
   {
     "name": "Canopy by Hilton Boston Downtown",
-    "brand": "Hilton",
-    "city": "Cambridge",
+    "brand": "Canopy by Hilton",
+    "city": "Boston",
     "state": "MA",
     "url": "https://www.hilton.com/en/hotels/bostnpy-canopy-boston-downtown/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Olshan",
+    "managementGroup": "Olshan Properties",
     "platforms": [
       "ai_mode",
       "ai_overview",
       "chatgpt",
-      "gemini"
-    ]
+      "gemini",
+      "perplexity"
+    ],
+    "notes": "Boutique lifestyle hotel located between historic North End, Quincy Market, and TD Garden, featuring Rose Town restaurant."
   },
   {
     "name": "Renaissance Shoals Resort & Spa",
