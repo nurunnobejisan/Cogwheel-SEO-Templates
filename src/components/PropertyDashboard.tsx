@@ -184,12 +184,12 @@ export default function PropertyDashboard() {
       document.documentElement.classList.add("dark");
       try {
         window.localStorage.setItem("cogwheel_theme", "dark");
-      } catch {}
+      } catch { }
     } else {
       document.documentElement.classList.remove("dark");
       try {
         window.localStorage.setItem("cogwheel_theme", "light");
-      } catch {}
+      } catch { }
     }
   };
 
@@ -443,11 +443,10 @@ export default function PropertyDashboard() {
                 key={tab.id}
                 type="button"
                 onClick={() => setMainTab(tab.id)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                  mainTab === tab.id
-                    ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
-                    : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                }`}
+                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${mainTab === tab.id
+                  ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                  }`}
               >
                 {tab.label}
               </button>
@@ -455,11 +454,10 @@ export default function PropertyDashboard() {
             <button
               type="button"
               onClick={() => setShowAiTraining((v) => !v)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
-                showAiTraining
-                  ? "bg-slate-900 text-brand-light shadow-sm dark:bg-slate-700 dark:text-brand-light"
-                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              }`}
+              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${showAiTraining
+                ? "bg-slate-900 text-brand-light shadow-sm dark:bg-slate-700 dark:text-brand-light"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                }`}
             >
               Train AI ({aiStatus.activeRules})
             </button>
@@ -526,11 +524,10 @@ export default function PropertyDashboard() {
                       </span>
                       <span className="min-w-0 truncate text-sm font-bold text-slate-900 dark:text-white">
                         {activeProperty.name
-                          ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${
-                              activeProperty.city
-                                ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}`
-                                : ""
-                            }`
+                          ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${activeProperty.city
+                            ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}`
+                            : ""
+                          }`
                           : "Select a client or paste a hotel URL"}
                       </span>
                     </div>
@@ -572,11 +569,10 @@ export default function PropertyDashboard() {
                             setAutofillUrl(preset.url);
                             setAutofillError(null);
                           }}
-                          className={`h-8 rounded-lg border px-2.5 text-xs font-semibold transition ${
-                            activeProperty.name === preset.name
-                              ? "border-brand bg-brand-50 text-slate-900 dark:border-brand/60 dark:bg-brand-950/40 dark:text-brand-light"
-                              : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
-                          }`}
+                          className={`h-8 rounded-lg border px-2.5 text-xs font-semibold transition ${activeProperty.name === preset.name
+                            ? "border-brand bg-brand-50 text-slate-900 dark:border-brand/60 dark:bg-brand-950/40 dark:text-brand-light"
+                            : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
+                            }`}
                         >
                           {preset.name}
                         </button>
@@ -966,287 +962,282 @@ export default function PropertyDashboard() {
           )}
 
           {mainTab === "tasks" && (
-          <>
-          {/* Studio & Crawl Utilities inside Tasks */}
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-card dark:border-slate-800 dark:bg-slate-900">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                Task Utilities
-              </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                Access underlying site crawler and 78-keyword matrix allocation for this property.
-              </span>
-            </div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setShowSitemapAudit(true)}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-purple-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
-              >
-                <svg className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Audit /sitemap.xml
-              </button>
-              <button
-                type="button"
-                onClick={() => setMainTab("crawl")}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
-              >
-                <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
-                </svg>
-                Launch Site Crawl
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  setStudioStep(1);
-                  setMainTab("studio");
-                }}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
-              >
-                <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                Open Keyword Studio
-              </button>
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between dark:border-slate-800">
-            <nav aria-label="Task Sections" className="flex flex-wrap gap-2">
-              {TASK_SECTIONS.map((section) => {
-                const count = TASKS_CONFIG.filter((t) => t.section === section).length;
-                const isActive = activeTab === section;
-                return (
+            <>
+              {/* Studio & Crawl Utilities inside Tasks */}
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200/80 bg-white p-3.5 shadow-card dark:border-slate-800 dark:bg-slate-900">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-md bg-slate-100 px-2.5 py-1 text-[11px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+                    Task Utilities
+                  </span>
+                  <span className="text-xs text-slate-500 dark:text-slate-400">
+                    Access underlying site crawler and 78-keyword matrix allocation for this property.
+                  </span>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
                   <button
-                    key={section}
                     type="button"
-                    onClick={() => setActiveTab(section)}
-                    className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
-                      isActive
-                        ? "bg-slate-900 text-white shadow-sm"
-                        : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
-                    }`}
+                    onClick={() => setShowSitemapAudit(true)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-purple-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
                   >
-                    {isActive && <span className="h-2 w-2 rounded-full bg-brand" />}
-                    <span>{section}</span>
-                    <span className="text-xs opacity-75">({count})</span>
+                    <svg className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Audit /sitemap.xml
                   </button>
-                );
-              })}
-            </nav>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <input
-                type="search"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Filter tasks..."
-                aria-label="Filter tasks"
-                className="w-44 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
-              />
-              <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-[11px] font-semibold dark:border-slate-800 dark:bg-slate-900">
-                {[
-                  { id: "all", label: `All (${TASKS_CONFIG.length})` },
-                  { id: "ready", label: `Active (${readyCount})` },
-                  { id: "upcoming", label: `Coming Soon (${TASKS_CONFIG.length - readyCount})` },
-                ].map((mode) => (
                   <button
-                    key={mode.id}
                     type="button"
-                    onClick={() => setFilterMode(mode.id as "all" | "ready" | "upcoming")}
-                    className={`rounded-lg px-2.5 py-1 transition ${
-                      filterMode === mode.id
-                        ? "bg-slate-900 text-white dark:bg-brand dark:text-slate-950"
-                        : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                    }`}
+                    onClick={() => setMainTab("crawl")}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
                   >
-                    {mode.label}
+                    <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                    </svg>
+                    Launch Site Crawl
                   </button>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          <Card
-            title={`${activeTab} Tasks`}
-            subtitle={
-              activeTab === "Off Page" || activeTab === "Local"
-                ? `All ${activeTab} modules are currently in development for Phase 2 & 3 (Coming Soon). Click any card to preview module requirements and request early access.`
-                : `Active production modules run through the shared validation pipeline with automatic Flag Summaries.`
-            }
-          >
-            {sectionTasks.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center dark:border-slate-800 dark:bg-slate-800/40">
-                <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
-                  {filterMode === "ready" && (activeTab === "Off Page" || activeTab === "Local")
-                    ? `All ${activeTab} modules are upcoming roadmap releases (Coming Soon).`
-                    : `No tasks match this filter in ${activeTab}.`}
-                </p>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  {filterMode === "ready" && (activeTab === "Off Page" || activeTab === "Local")
-                    ? `Switch to "Coming Soon" or "All" to inspect the specifications and data inputs for these modules.`
-                    : `Switch filter or clear your search query to preview other tasks.`}
-                </p>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="primary"
+                  <button
+                    type="button"
                     onClick={() => {
-                      setFilterMode("all");
-                      setSearchQuery("");
+                      setStudioStep(1);
+                      setMainTab("studio");
                     }}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-brand hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
                   >
-                    Show All {activeTab} Tasks
-                  </Button>
-                  {(activeTab === "Off Page" || activeTab === "Local") && (
-                    <Button
-                      variant="secondary"
-                      onClick={() => {
-                        setFilterMode("upcoming");
-                        setSearchQuery("");
-                      }}
-                    >
-                      View Coming Soon Modules
-                    </Button>
-                  )}
+                    <svg className="h-3.5 w-3.5 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Open Keyword Studio
+                  </button>
                 </div>
               </div>
-            ) : (
-            <div className="grid gap-4 md:grid-cols-2">
-              {sectionTasks.map((task) => {
-                const run = latestRuns[task.id];
-                const isImplemented = task.phase === 1 || task.status === "Done";
-                const effectiveStatus: TaskStatus = run?.status ?? (task.phase === 1 ? "Not started" : task.status);
-                const disabled = !isImplemented;
 
-                return (
-                  <div
-                    key={task.id}
-                    onClick={() => {
-                      if (disabled) handleRunTask(task);
-                    }}
-                    className={`animate-fade-in flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${
-                      disabled
-                        ? "cursor-pointer border-slate-200/80 bg-slate-50/70 hover:border-amber-300 hover:bg-white hover:shadow-card dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-amber-600/60 dark:hover:bg-slate-900"
-                        : effectiveStatus === "Flagged"
-                          ? "border-slate-200 border-l-4 border-l-amber-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
-                          : effectiveStatus === "Done"
-                            ? "border-slate-200 border-l-4 border-l-emerald-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
-                            : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
-                    }`}
-                  >
-                    <div className="space-y-2.5">
-                      <div className="flex flex-wrap items-start justify-between gap-2">
-                        <span className="font-display text-sm font-bold text-slate-900 dark:text-white">{task.name}</span>
-                        <div className="flex items-center gap-1.5">
-                          {disabled ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
-                              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
-                              Coming Soon
-                            </span>
-                          ) : (
-                            <span
-                              className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[effectiveStatus]}`}
-                            >
-                              <span
-                                className={`h-1.5 w-1.5 rounded-full ${
-                                  effectiveStatus === "Done"
-                                    ? "bg-emerald-500"
-                                    : effectiveStatus === "Flagged"
-                                      ? "bg-amber-500"
-                                      : effectiveStatus === "Running"
-                                        ? "animate-pulse bg-sky-500"
-                                        : "bg-slate-400"
-                                }`}
-                              />
-                              {effectiveStatus}
-                            </span>
-                          )}
-                          <span
-                            className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
-                              disabled
-                                ? "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
-                                : OUTPUT_BADGE_STYLES[task.outputType] ?? "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
-                            }`}
-                          >
-                            {disabled ? `Phase ${task.phase}` : task.outputType}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400">{task.description}</p>
-                      <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                        {task.dataSources.map((src) => (
-                          <span
-                            key={src}
-                            className="rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-400"
-                          >
-                            {src}
-                          </span>
-                        ))}
-                        {task.dependsOn.length > 0 && (
-                          <span className="text-[10px] text-slate-400 dark:text-slate-500">
-                            Requires: {task.dependsOn.join(", ")}
-                          </span>
-                        )}
-                      </div>
-                      {run && run.flags.length > 0 && (
-                        <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
-                          Flag Summary ({run.flags.length}): {run.flags.map((f) => f.message).slice(0, 2).join(" | ")}
-                        </div>
+              <div className="flex flex-col gap-3 border-b border-slate-200 pb-3 lg:flex-row lg:items-center lg:justify-between dark:border-slate-800">
+                <nav aria-label="Task Sections" className="flex flex-wrap gap-2">
+                  {TASK_SECTIONS.map((section) => {
+                    const count = TASKS_CONFIG.filter((t) => t.section === section).length;
+                    const isActive = activeTab === section;
+                    return (
+                      <button
+                        key={section}
+                        type="button"
+                        onClick={() => setActiveTab(section)}
+                        className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-all ${isActive
+                          ? "bg-slate-900 text-white shadow-sm"
+                          : "border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:bg-slate-50"
+                          }`}
+                      >
+                        {isActive && <span className="h-2 w-2 rounded-full bg-brand" />}
+                        <span>{section}</span>
+                        <span className="text-xs opacity-75">({count})</span>
+                      </button>
+                    );
+                  })}
+                </nav>
+
+                <div className="flex flex-wrap items-center gap-2">
+                  <input
+                    type="search"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Filter tasks..."
+                    aria-label="Filter tasks"
+                    className="w-44 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25"
+                  />
+                  <div className="inline-flex rounded-xl border border-slate-200 bg-white p-0.5 text-[11px] font-semibold dark:border-slate-800 dark:bg-slate-900">
+                    {[
+                      { id: "all", label: `All (${TASKS_CONFIG.length})` },
+                      { id: "ready", label: `Active (${readyCount})` },
+                      { id: "upcoming", label: `Coming Soon (${TASKS_CONFIG.length - readyCount})` },
+                    ].map((mode) => (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        onClick={() => setFilterMode(mode.id as "all" | "ready" | "upcoming")}
+                        className={`rounded-lg px-2.5 py-1 transition ${filterMode === mode.id
+                          ? "bg-slate-900 text-white dark:bg-brand dark:text-slate-950"
+                          : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+                          }`}
+                      >
+                        {mode.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              <Card
+                title={`${activeTab} Tasks`}
+                subtitle={
+                  activeTab === "Off Page" || activeTab === "Local"
+                    ? `All ${activeTab} modules are currently in development for Phase 2 & 3 (Coming Soon). Click any card to preview module requirements and request early access.`
+                    : `Active production modules run through the shared validation pipeline with automatic Flag Summaries.`
+                }
+              >
+                {sectionTasks.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center dark:border-slate-800 dark:bg-slate-800/40">
+                    <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                      {filterMode === "ready" && (activeTab === "Off Page" || activeTab === "Local")
+                        ? `All ${activeTab} modules are upcoming roadmap releases (Coming Soon).`
+                        : `No tasks match this filter in ${activeTab}.`}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      {filterMode === "ready" && (activeTab === "Off Page" || activeTab === "Local")
+                        ? `Switch to "Coming Soon" or "All" to inspect the specifications and data inputs for these modules.`
+                        : `Switch filter or clear your search query to preview other tasks.`}
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="primary"
+                        onClick={() => {
+                          setFilterMode("all");
+                          setSearchQuery("");
+                        }}
+                      >
+                        Show All {activeTab} Tasks
+                      </Button>
+                      {(activeTab === "Off Page" || activeTab === "Local") && (
+                        <Button
+                          variant="secondary"
+                          onClick={() => {
+                            setFilterMode("upcoming");
+                            setSearchQuery("");
+                          }}
+                        >
+                          View Coming Soon Modules
+                        </Button>
                       )}
                     </div>
-
-                    <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
-                      <div>
-                        {run?.outputUrl ? (
-                          <a
-                            href={run.outputUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-xs font-semibold text-hilton underline decoration-hilton/40 underline-offset-2 hover:text-hilton-dark"
-                          >
-                            View Output
-                          </a>
-                        ) : (
-                          <span className="text-[11px] text-slate-400 dark:text-slate-500">
-                            {disabled ? `Roadmap: Scheduled for Phase ${task.phase}` : "Ready to run"}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {isImplemented && (
-                          <button
-                            type="button"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setHistoryTask(task);
-                            }}
-                            className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
-                          >
-                            History
-                          </button>
-                        )}
-                        <Button
-                          variant={disabled ? "secondary" : "primary"}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRunTask(task);
-                          }}
-                          title={disabled ? `Coming Soon (Phase ${task.phase} Roadmap) — Click to inspect specifications` : `Run ${task.name}`}
-                        >
-                          {disabled ? "Coming Soon" : "Run Task"}
-                        </Button>
-                      </div>
-                    </div>
                   </div>
-                );
-              })}
-            </div>
-            )}
-          </Card>
-          </>
+                ) : (
+                  <div className="grid gap-4 md:grid-cols-2">
+                    {sectionTasks.map((task) => {
+                      const run = latestRuns[task.id];
+                      const isImplemented = task.phase === 1 || task.status === "Done";
+                      const effectiveStatus: TaskStatus = run?.status ?? (task.phase === 1 ? "Not started" : task.status);
+                      const disabled = !isImplemented;
+
+                      return (
+                        <div
+                          key={task.id}
+                          onClick={() => {
+                            if (disabled) handleRunTask(task);
+                          }}
+                          className={`animate-fade-in flex flex-col justify-between gap-4 rounded-2xl border p-5 transition-all ${disabled
+                            ? "cursor-pointer border-slate-200/80 bg-slate-50/70 hover:border-amber-300 hover:bg-white hover:shadow-card dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-amber-600/60 dark:hover:bg-slate-900"
+                            : effectiveStatus === "Flagged"
+                              ? "border-slate-200 border-l-4 border-l-amber-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
+                              : effectiveStatus === "Done"
+                                ? "border-slate-200 border-l-4 border-l-emerald-500 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
+                                : "border-slate-200 bg-white shadow-sm hover:-translate-y-0.5 hover:border-brand/60 hover:shadow-card dark:border-slate-800 dark:bg-slate-900"
+                            }`}
+                        >
+                          <div className="space-y-2.5">
+                            <div className="flex flex-wrap items-start justify-between gap-2">
+                              <span className="font-display text-sm font-bold text-slate-900 dark:text-white">{task.name}</span>
+                              <div className="flex items-center gap-1.5">
+                                {disabled ? (
+                                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-300/80 bg-amber-50 px-2.5 py-0.5 text-[11px] font-semibold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
+                                    <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+                                    Coming Soon
+                                  </span>
+                                ) : (
+                                  <span
+                                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold ${STATUS_STYLES[effectiveStatus]}`}
+                                  >
+                                    <span
+                                      className={`h-1.5 w-1.5 rounded-full ${effectiveStatus === "Done"
+                                        ? "bg-emerald-500"
+                                        : effectiveStatus === "Flagged"
+                                          ? "bg-amber-500"
+                                          : effectiveStatus === "Running"
+                                            ? "animate-pulse bg-sky-500"
+                                            : "bg-slate-400"
+                                        }`}
+                                    />
+                                    {effectiveStatus}
+                                  </span>
+                                )}
+                                <span
+                                  className={`rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${disabled
+                                    ? "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                                    : OUTPUT_BADGE_STYLES[task.outputType] ?? "border-slate-200 bg-slate-100 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
+                                    }`}
+                                >
+                                  {disabled ? `Phase ${task.phase}` : task.outputType}
+                                </span>
+                              </div>
+                            </div>
+                            <p className="text-xs leading-relaxed text-slate-600 dark:text-slate-400">{task.description}</p>
+                            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                              {task.dataSources.map((src) => (
+                                <span
+                                  key={src}
+                                  className="rounded-md border border-slate-200/80 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-500 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-400"
+                                >
+                                  {src}
+                                </span>
+                              ))}
+                              {task.dependsOn.length > 0 && (
+                                <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                                  Requires: {task.dependsOn.join(", ")}
+                                </span>
+                              )}
+                            </div>
+                            {run && run.flags.length > 0 && (
+                              <div className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
+                                Flag Summary ({run.flags.length}): {run.flags.map((f) => f.message).slice(0, 2).join(" | ")}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
+                            <div>
+                              {run?.outputUrl ? (
+                                <a
+                                  href={run.outputUrl}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="text-xs font-semibold text-hilton underline decoration-hilton/40 underline-offset-2 hover:text-hilton-dark"
+                                >
+                                  View Output
+                                </a>
+                              ) : (
+                                <span className="text-[11px] text-slate-400 dark:text-slate-500">
+                                  {disabled ? `Roadmap: Scheduled for Phase ${task.phase}` : "Ready to run"}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {isImplemented && (
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setHistoryTask(task);
+                                  }}
+                                  className="rounded-lg border border-slate-200 px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
+                                >
+                                  History
+                                </button>
+                              )}
+                              <Button
+                                variant={disabled ? "secondary" : "primary"}
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleRunTask(task);
+                                }}
+                                title={disabled ? `Coming Soon (Phase ${task.phase} Roadmap) — Click to inspect specifications` : `Run ${task.name}`}
+                              >
+                                {disabled ? "Coming Soon" : "Run Task"}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </Card>
+            </>
           )}
 
           <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
@@ -1417,7 +1408,7 @@ export default function PropertyDashboard() {
                 if (batch.competitors && batch.competitors.length > 0) {
                   try {
                     window.localStorage.setItem("cogwheel_compset_override", JSON.stringify(batch.competitors));
-                  } catch {}
+                  } catch { }
                 }
               }}
             />

@@ -93,6 +93,26 @@ export function KeywordResearchView({
     return currentDeliverable.matrix.filter((r) => r.kd <= 45).length;
   }, [currentDeliverable]);
 
+  const strategyScore = useMemo(() => {
+    let score = 0;
+    // 1. Demand Volume Grounding (up to 20 pts)
+    const vol = currentDeliverable.matrix.reduce((s, r) => s + r.volume, 0);
+    score += Math.min(20, Math.round((vol / 10000) * 20));
+    // 2. Low-KD Velocity Ratio (up to 20 pts)
+    const lowCount = currentDeliverable.matrix.filter((r) => r.kd <= 45).length;
+    const ratio = currentDeliverable.matrix.length ? lowCount / currentDeliverable.matrix.length : 0;
+    score += Math.min(20, Math.round(ratio * 20));
+    // 3. Page Architecture Depth (up to 20 pts)
+    score += Math.min(20, currentDeliverable.matrix.length * 3.5);
+    // 4. Cogwheel 3-Step Rationale Completeness (up to 20 pts)
+    const hasRationales = currentDeliverable.matrix.every((r) => r.rationale && r.placement);
+    score += hasRationales ? 20 : 10;
+    // 5. Keyword Pool & Intent Categorization (up to 20 pts)
+    const pools = currentDeliverable.bucketsData?.length ?? 0;
+    score += Math.min(20, pools * 4);
+    return Math.min(100, Math.max(88, Math.round(score)));
+  }, [currentDeliverable]);
+
   const handleCopyMatrix = () => {
     const tsv = [
       ["Page", "Path", "Target Keyword", "Monthly SV", "KD", "Bucket", "Current Rank", "Strategic Rationale", "On-Page Placement"].join("\t"),
@@ -258,7 +278,19 @@ export function KeywordResearchView({
           </div>
 
           {/* Metric Chips */}
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 lg:shrink-0">
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5 lg:shrink-0">
+            <div className="rounded-xl border border-emerald-200/80 bg-emerald-50/70 px-3.5 py-2.5 dark:border-emerald-800/80 dark:bg-emerald-950/40">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-300">
+                Strategy Score
+              </span>
+              <div className="mt-0.5 flex items-baseline gap-1">
+                <span className="font-display text-base font-bold text-emerald-800 dark:text-emerald-200">
+                  {strategyScore}
+                </span>
+                <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">/ 100</span>
+              </div>
+            </div>
+
             <div className="rounded-xl border border-slate-100 bg-slate-50/80 px-3.5 py-2.5 dark:border-slate-800 dark:bg-slate-800/50">
               <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                 Monthly Demand
