@@ -16,7 +16,19 @@ Cogwheel SEO Studio automates end-to-end technical SEO, metadata generation, str
 ### Standardized Folder Architecture
 ```
 Cogwheel-SEO-Templates/
-├── templates/                     # Production templates & sample data
+├── .agent/
+│   └── workflows/                 # Autonomous agent workflows
+│       └── new-hotel-seo-brief.md # Turnkey client brief generator
+├── templates/                     # Production Markdown & HTML templates
+│   ├── brand-compliant-hotel-onpage.md
+│   ├── hotel-geo-ai-visibility.md
+│   ├── hotel-gbp-unap-audit.md
+│   ├── hotel-lodging-schema.md
+│   ├── direct-booking-ota-displacement.md
+│   ├── local-proximity-destination-guide.md
+│   ├── hotel-meetings-events-rfp.md
+│   ├── hotel-opening-flag-change-seo.md
+│   ├── multi-property-cannibalization-matrix.md
 │   ├── hotel-destination-guide.html
 │   ├── hotel-room-showcase.html
 │   ├── hotel-faq-amenities.html
@@ -69,7 +81,36 @@ Cogwheel-SEO-Templates/
 
 ---
 
-## 2. Installation & Quick Start
+## 2. Master Template Catalog & Index
+
+The studio includes 9 production Markdown templates and 3 HTML component templates engineered for hospitality SEO, Generative Engine Optimization (GEO), and multi-property portfolio management:
+
+| Template | Category | Primary SEO / GEO Use Case | Target Search Engines |
+|---|---|---|---|
+| [`brand-compliant-hotel-onpage.md`](templates/brand-compliant-hotel-onpage.md) | Content & On-Page Architecture | Brand.com on-page copy complying with strict character caps and restricted terminology across Marriott, Hilton, IHG, and Hyatt. | Google SERP, Bing, Google Gemini, ChatGPT Search, Perplexity Pro |
+| [`hotel-geo-ai-visibility.md`](templates/hotel-geo-ai-visibility.md) | AI Search & GEO Optimization | Generative Engine Optimization via high-density entity positioning, conversational traveler prompt testing, and structured Q&A. | Google Gemini, ChatGPT Search, Perplexity Pro, Google AI Overviews |
+| [`hotel-gbp-unap-audit.md`](templates/hotel-gbp-unap-audit.md) | Local SEO & Citation Audit | UNAP consistency auditing across Google, TripAdvisor, Apple Maps, and OTAs, plus 30-day GBP update and review response workflows. | Google Maps, Google Local Pack, Apple Maps, TripAdvisor, Bing Places |
+| [`hotel-lodging-schema.md`](templates/hotel-lodging-schema.md) | Structured Data & Technical Schema | Copy-pasteable JSON-LD `@graph` schema for `Hotel`, `HotelRoom`, `FAQPage`, `AggregateRating`, coordinates, and entity links. | Google Rich Results, Schema.org Validators, Bing, Gemini |
+| [`direct-booking-ota-displacement.md`](templates/direct-booking-ota-displacement.md) | Direct Booking & Commercial CRO | Shifting searchers from high-commission OTAs via pre-booking window strategy, transparent pricing, and direct-booking perks. | Google Search, Google Travel / Hotel Ads, Bing Search, AI Search Engines |
+| [`local-proximity-destination-guide.md`](templates/local-proximity-destination-guide.md) | Local SEO & Geographic Proximity | Capturing demand near airports, convention centers, stadiums, universities, and hospitals with verified transit matrices. | Google Search, Google Maps, Google Gemini, Perplexity Pro |
+| [`hotel-meetings-events-rfp.md`](templates/hotel-meetings-events-rfp.md) | B2B Group Sales & Event RFP | Capturing high-margin corporate meetings, conferences, and wedding room blocks with standardized capacity charts and `EventVenue` schema. | Google Search, Bing Search, Google Gemini, ChatGPT Search, Perplexity Pro |
+| [`hotel-opening-flag-change-seo.md`](templates/hotel-opening-flag-change-seo.md) | Technical SEO & Brand Migration | 90-day phased checklist (T-60, Launch, T+30) and 1:1 301 redirect mapping for openings, brand conversions, and flag changes. | Google Search, Google Maps, Bing Search, Google Gemini, ChatGPT Search |
+| [`multi-property-cannibalization-matrix.md`](templates/multi-property-cannibalization-matrix.md) | Portfolio Strategy & Governance | Partitioning keyword targeting by sub-market, brand tier, and traveler intent across sibling properties in the same MSA. | Google Search, Google Maps, Google Gemini, ChatGPT Search, Perplexity Pro |
+| [`hotel-destination-guide.html`](templates/hotel-destination-guide.html) | HTML Production Components | Semantic HTML destination and neighborhood exploration layout with landmark proximity markers. | Google Desktop & Mobile Crawlers |
+| [`hotel-room-showcase.html`](templates/hotel-room-showcase.html) | HTML Production Components | Accessible HTML room and suite showcase layout with structured amenity badges and direct booking CTAs. | Google Desktop & Mobile Crawlers |
+| [`hotel-faq-amenities.html`](templates/hotel-faq-amenities.html) | HTML Production Components | Accessible HTML FAQ accordion layout with direct integration for `FAQPage` schema markup. | Google Desktop & Mobile Crawlers |
+
+### Autonomous Client Brief Generation
+Generate a comprehensive, custom SEO & GEO client brief using the built-in workflow:
+```bash
+# Workflow file located at:
+.agent/workflows/new-hotel-seo-brief.md
+```
+Pass property variables (`hotelName`, `brand`, `city`, `state`, `primaryKeyword`, `targetHub`) to assemble an executive-ready brief.
+
+---
+
+## 3. Installation & Quick Start
 
 ### Prerequisites
 - Node.js 20+ or 22+
@@ -93,7 +134,7 @@ npm run dev
 
 ---
 
-## 3. SEO Quality & Integrity Commands
+## 4. SEO Quality & Integrity Commands
 
 The repository provides automated CLI tools for testing, linting, and previewing SEO templates:
 
@@ -110,7 +151,7 @@ node --test --experimental-strip-types tests/*.test.ts
 
 ---
 
-## 4. The 10-Day Engineering Architecture
+## 5. The 10-Day Engineering Architecture
 
 ### Day 1 — Secret Cleanup & Standardized Architecture
 - Zero hardcoded API keys or credentials.
@@ -175,6 +216,6 @@ node --test --experimental-strip-types tests/*.test.ts
 
 ---
 
-## 5. License & Attribution
+## 6. License & Attribution
 Developed and maintained by **Razib Marketing** — Hospitality Digital Marketing & AI Search Optimization.
 Protected under private commercial license.

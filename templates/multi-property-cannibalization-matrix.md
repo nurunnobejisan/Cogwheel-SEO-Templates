@@ -1,3 +1,34 @@
+---
+title: "Multi-Property Hospitality Keyword Cannibalization Matrix"
+category: "Portfolio Strategy & Keyword Governance"
+useCase: "Separating keyword targeting across sub-markets, brand tiers, rate classes, and traveler intent for multi-property portfolios within the same MSA to prevent self-cannibalization"
+targetEngines:
+  - "Google Search (Desktop & Mobile SERP)"
+  - "Google Maps"
+  - "Google Gemini"
+  - "ChatGPT Search"
+  - "Perplexity Pro"
+variables:
+  - "metroArea"
+  - "propA_Brand"
+  - "propA_Submarket"
+  - "propB_Brand"
+  - "propB_Submarket"
+  - "propC_Brand"
+  - "propC_Submarket"
+  - "airportCode"
+  - "propD_Brand"
+  - "propD_Submarket"
+  - "propE_Brand"
+  - "propE_Submarket"
+  - "conventionCenterName"
+  - "techParkName"
+  - "propA_Name"
+  - "propA_Url"
+  - "propA_MeetingSqFt"
+version: "1.0.0"
+---
+
 # Multi-Property Hospitality Keyword Cannibalization Matrix
 
 A governance framework designed for hotel management groups, REITs, and hospitality ownership portfolios operating multiple properties within the same metropolitan statistical area (MSA). Prevents sibling properties from competing against one another for identical search terms in Google Organic SERPs, Google Maps Local Packs, and Generative AI answers (**ChatGPT Search**, **Google Gemini**, **Perplexity Pro**).

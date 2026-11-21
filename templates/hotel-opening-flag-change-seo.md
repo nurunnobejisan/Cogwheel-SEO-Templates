@@ -1,3 +1,23 @@
+---
+title: "Hotel Opening, Conversion & Flag-Change SEO Migration Playbook"
+category: "Technical SEO & Brand Migration"
+useCase: "Phased 90-day checklist and redirect framework for hotel openings, re-brandings, and flag changes to preserve backlink equity and local entity authority"
+targetEngines:
+  - "Google Search (Desktop & Mobile SERP)"
+  - "Google Maps"
+  - "Bing Search"
+  - "Google Gemini"
+  - "ChatGPT Search"
+  - "Perplexity Pro"
+variables:
+  - "legacyDomain"
+  - "newCanonicalUrl"
+  - "newHotelName"
+  - "airportName"
+  - "loyaltyProgram"
+version: "1.0.0"
+---
+
 # Hotel Opening, Conversion & Flag-Change SEO Migration Playbook
 
 A structured, 90-day phased migration framework for hotel openings, corporate brand conversions (e.g., Independent to Marriott Autograph Collection, or DoubleTree to Hilton Garden Inn), and property re-flagging. Prevents organic revenue collapse, eliminates 404 link rot, protects legacy backlink equity, and establishes local entity authority.

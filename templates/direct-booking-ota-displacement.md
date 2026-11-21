@@ -1,3 +1,30 @@
+---
+title: "Direct Booking Engine & OTA Displacement Playbook"
+category: "Conversion Rate Optimization & Commercial SEO"
+useCase: "Capturing pre-booking window travelers (4-10 weeks out) and displacing high-commission OTAs with direct-booking comparison tables and risk-reversal micro-copy"
+targetEngines:
+  - "Google Search (Desktop & Mobile SERP)"
+  - "Google Hotel Ads"
+  - "Google Gemini"
+  - "ChatGPT Search"
+variables:
+  - "cityName"
+  - "hotelName"
+  - "brandDomain"
+  - "loyaltyProgram"
+  - "localPhoneNumber"
+  - "packageTitle1"
+  - "packageDescription1"
+  - "parkingRate"
+  - "directBookingUrl"
+  - "packageCode1"
+  - "packageTitle2"
+  - "packageDescription2"
+  - "primaryAttraction"
+  - "packageCode2"
+version: "1.0.0"
+---
+
 # Direct Booking Engine & OTA Displacement Playbook
 
 A high-conversion on-page framework engineered to shift high-intent hospitality searchers from high-commission Online Travel Agencies (Expedia, Booking.com, Hotels.com, Priceline, Agoda) directly to the hotel's proprietary booking engine. Captures traveler demand 4 to 10 weeks prior to arrival while providing clear justification for booking direct.
