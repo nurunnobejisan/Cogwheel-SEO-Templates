@@ -8,9 +8,6 @@ import {
   Check,
   Code,
   ShieldAlert,
-  Send,
-  CheckCircle,
-  FileCode,
   AlertTriangle,
 } from "lucide-react";
 import {
@@ -139,44 +136,34 @@ const BRAND_GUARDRAILS: Record<BrandGuardrail, BrandRules> = {
         replacement: "World of Hyatt",
       },
       {
-        term: "guaranteed checkin",
-        reason: "Early check-in is subject to availability unless confirmed by tier benefit.",
-        replacement: "Early check-in upon availability",
+        term: "cheapest rooms",
+        reason: "Prohibited discount terminology. Use 'Hyatt Standard Rate' or 'Member Rate'.",
+        replacement: "Hyatt Member Rate",
       },
       {
-        term: "best luxury hotel",
-        reason: "Unverified superlative phrasing prohibited by Hyatt brand communications.",
-        replacement: "Luxury accommodations",
+        term: "free cancellation",
+        reason: "Must specify reservation deadline window.",
+        replacement: "Standard cancellation policy applies",
       },
     ],
   },
   Independent: {
     name: "Independent",
-    loyaltyProgram: "Direct Booking Perks",
+    loyaltyProgram: "Direct Booking / Independent",
     maxTitleChars: 60,
-    maxMetaChars: 158,
+    maxMetaChars: 160,
     maxH1Chars: 75,
-    brandPillColor: "#475569",
+    brandPillColor: "#6366f1",
     forbiddenTerms: [
       {
-        term: "marriott",
-        reason: "Chain trademark infringement for independent property.",
-        replacement: "Boutique",
+        term: "cheapest hotel in",
+        reason: "Diminishes property positioning. Use 'Best Direct Booking Value'.",
+        replacement: "Best Direct Booking Value",
       },
       {
-        term: "hilton",
-        reason: "Chain trademark infringement for independent property.",
-        replacement: "Boutique",
-      },
-      {
-        term: "hyatt",
-        reason: "Chain trademark infringement for independent property.",
-        replacement: "Boutique",
-      },
-      {
-        term: "ihg",
-        reason: "Chain trademark infringement for independent property.",
-        replacement: "Boutique",
+        term: "100% satisfaction guaranteed",
+        reason: "Unenforceable legal liability claim.",
+        replacement: "Dedicated guest hospitality",
       },
     ],
   },
@@ -196,91 +183,45 @@ export function TemplateStudio({
   activeTabId,
 }: Props) {
   // Brand Guardrail State
-  const [selectedBrand, setSelectedBrand] = useState<BrandGuardrail>(() => {
-    if (activeProfile?.brand) {
-      const b = activeProfile.brand.toLowerCase();
-      if (b.includes("marriott")) return "Marriott";
-      if (b.includes("hilton")) return "Hilton";
-      if (b.includes("ihg")) return "IHG";
-      if (b.includes("hyatt")) return "Hyatt";
-    }
-    return "Marriott";
-  });
+  const initialBrand: BrandGuardrail = useMemo(() => {
+    const raw = (activeProfile?.brand || "").toLowerCase();
+    if (raw.includes("marriott")) return "Marriott";
+    if (raw.includes("hilton")) return "Hilton";
+    if (raw.includes("ihg") || raw.includes("holiday inn")) return "IHG";
+    if (raw.includes("hyatt")) return "Hyatt";
+    return "Independent";
+  }, [activeProfile]);
 
+  const [selectedBrand, setSelectedBrand] = useState<BrandGuardrail>(initialBrand);
   const activeGuardrail = BRAND_GUARDRAILS[selectedBrand];
 
-  // Live Editable Inputs
-  const [liveTitle, setLiveTitle] = useState<string>(
-    pageData?.title || "Beachfront Hotel Panama City Beach | SpringHill Suites"
-  );
-  const [liveMeta, setLiveMeta] = useState<string>(
-    pageData?.metaDesc ||
-      "Book direct at SpringHill Suites Panama City Beach for oceanfront suites, lazy river pool, free hot breakfast, and lowest rates guaranteed on Gulf Coast."
-  );
-  const [liveH1, setLiveH1] = useState<string>(
-    pageData?.h1Elements?.[0] || "SpringHill Suites Panama City Beachfront"
-  );
-  const [liveGeoAnswer, setLiveGeoAnswer] = useState<string>(
-    "SpringHill Suites Panama City Beachfront is an all-suite beachfront hotel situated directly on the Gulf of Mexico in Panama City Beach, Florida. The resort features 200 oceanfront suites with private balconies, an expansive outdoor pool with lazy river, daily complimentary hot breakfast, 24/7 oceanfront fitness center, and direct boardwalk access to sugar-white sands. Located 15 minutes from Northwest Florida Beaches International Airport (ECP) and 2 miles from Pier Park shopping district."
-  );
+  // Live Editable Fields State
+  const [liveTitle, setLiveTitle] = useState(() => {
+    return pageData?.title || activeProfile?.name
+      ? `${activeProfile?.name || "Hotel"} in ${activeProfile?.city || "Downtown"} | Official Site`
+      : "SpringHill Suites Panama City Beachfront | Marriott Bonvoy";
+  });
 
-  // Sync with pageData when updated externally
-  useEffect(() => {
-    if (pageData?.title && pageData.title !== liveTitle) {
-      setLiveTitle(pageData.title);
-    }
-    if (pageData?.metaDesc && pageData.metaDesc !== liveMeta) {
-      setLiveMeta(pageData.metaDesc);
-    }
-    if (pageData?.h1Elements?.[0] && pageData.h1Elements[0] !== liveH1) {
-      setLiveH1(pageData.h1Elements[0]);
-    }
-  }, [pageData]);
+  const [liveMeta, setLiveMeta] = useState(() => {
+    return pageData?.metaDesc ||
+      "Stay beachfront in Panama City Beach, FL. Enjoy oceanfront suites, complimentary hot breakfast, resort pool, and direct Gulf access. Book direct & save.";
+  });
 
-  // Real-time Pixel Width Calculations
-  const titlePx = useMemo(() => calculatePixelWidth(liveTitle), [liveTitle]);
-  const descPx = useMemo(() => calculatePixelWidth(liveMeta), [liveMeta]);
+  const [liveH1, setLiveH1] = useState(() => {
+    return pageData?.h1Elements?.[0] || activeProfile?.name || "SpringHill Suites Panama City Beachfront";
+  });
 
-  const titlePercent = Math.min(100, Math.round((titlePx / TITLE_PIXEL_LIMIT) * 100));
-  const descPercent = Math.min(100, Math.round((descPx / META_DESC_PIXEL_LIMIT) * 100));
+  const [liveGeoAnswer, setLiveGeoAnswer] = useState(() => {
+    return `SpringHill Suites Panama City Beachfront is located at 12513 Front Beach Rd, Panama City Beach, FL 32407. The property features 200 all-suite oceanfront guestrooms with private balconies, an on-site beachfront pool bar, lazy river, 24/7 fitness center, and complimentary hot breakfast. Self-parking and EV charging stations are available on-site. Direct beach access is steps from the sun deck.`;
+  });
 
-  const isTitleOverBudget = titlePx > TITLE_PIXEL_LIMIT || liveTitle.length > activeGuardrail.maxTitleChars;
-  const isDescOverBudget = descPx > META_DESC_PIXEL_LIMIT || liveMeta.length > activeGuardrail.maxMetaChars;
+  const [showFullCode, setShowFullCode] = useState(false);
+  const [copiedExport, setCopiedExport] = useState(false);
 
-  // Forbidden-Terms Real-Time Scanner
-  const forbiddenTermAlerts = useMemo(() => {
-    const alerts: { field: string; term: string; reason: string; replacement: string }[] = [];
-    const fields = [
-      { name: "Title Tag", val: liveTitle },
-      { name: "Meta Description", val: liveMeta },
-      { name: "H1 Headline", val: liveH1 },
-      { name: "GEO Answer Block", val: liveGeoAnswer },
-    ];
-
-    fields.forEach((f) => {
-      const lower = f.val.toLowerCase();
-      activeGuardrail.forbiddenTerms.forEach((ft) => {
-        if (lower.includes(ft.term.toLowerCase())) {
-          alerts.push({
-            field: f.name,
-            term: ft.term,
-            reason: ft.reason,
-            replacement: ft.replacement,
-          });
-        }
-      });
-    });
-
-    return alerts;
-  }, [liveTitle, liveMeta, liveH1, liveGeoAnswer, activeGuardrail]);
-
-  // Template Catalog State
+  // Template Library State
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
-  const [exportCopied, setExportCopied] = useState(false);
-  const [showFullCode, setShowFullCode] = useState(false);
-
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem("cogwheel_favorite_templates") || "[]");
@@ -306,9 +247,11 @@ export function TemplateStudio({
     );
   }, [selectedTemplateId]);
 
-  // Template Variables State
+  // Variables state
   const [formVariables, setFormVariables] = useState<Record<string, string>>({});
+  const [copied, setCopied] = useState(false);
 
+  // Auto-fill variables from active page and activeProfile
   useEffect(() => {
     const vars = extractTemplateVariables(selectedTemplate.content);
     const initial: Record<string, string> = { ...selectedTemplate.defaultVariables };
@@ -316,7 +259,10 @@ export function TemplateStudio({
     vars.forEach((v) => {
       if (v === "hotelName" || v === "brand") {
         if (activeProfile?.name) initial[v] = activeProfile.name;
-        else initial[v] = liveH1 || "SpringHill Suites Panama City Beachfront";
+        else if (pageData?.title) {
+          const brandGuess = pageData.title.split("|")[0].split("-")[0].trim();
+          initial[v] = brandGuess;
+        }
       } else if (v === "cityName" || v === "city") {
         if (activeProfile?.city) initial[v] = activeProfile.city;
       } else if (v === "stateCode" || v === "state") {
@@ -325,8 +271,19 @@ export function TemplateStudio({
         if (pageData?.canonical || pageData?.url) {
           initial[v] = pageData.canonical || pageData.url;
         }
+      } else if (v === "originUrl") {
+        if (pageData?.origin) initial[v] = pageData.origin;
       } else if (v === "metaDescription") {
-        initial[v] = liveMeta;
+        if (liveMeta) initial[v] = liveMeta;
+        else if (pageData?.metaDesc) initial[v] = pageData.metaDesc;
+      } else if (v === "targetKeyword" && activeProfile?.primaryKeywords?.length) {
+        initial[v] = activeProfile.primaryKeywords[0];
+      } else if (v === "phoneNumber" && activeProfile?.phone) {
+        initial[v] = activeProfile.phone;
+      } else if (v === "streetAddress" && activeProfile?.address) {
+        initial[v] = activeProfile.address;
+      } else if (v === "postalCode" && activeProfile?.postalCode) {
+        initial[v] = activeProfile.postalCode;
       } else if (v === "primaryH1") {
         initial[v] = liveH1;
       }
@@ -334,6 +291,44 @@ export function TemplateStudio({
 
     setFormVariables(initial);
   }, [selectedTemplate, pageData, activeProfile, liveH1, liveMeta]);
+
+  // Live Pixel Width Calculations
+  const titlePx = useMemo(() => calculatePixelWidth(liveTitle), [liveTitle]);
+  const descPx = useMemo(() => calculatePixelWidth(liveMeta), [liveMeta]);
+
+  const titlePercent = Math.min(Math.round((titlePx / TITLE_PIXEL_LIMIT) * 100), 100);
+  const descPercent = Math.min(Math.round((descPx / META_DESC_PIXEL_LIMIT) * 100), 100);
+
+  const isTitleOverBudget = titlePx > TITLE_PIXEL_LIMIT || liveTitle.length > activeGuardrail.maxTitleChars;
+  const isDescOverBudget = descPx > META_DESC_PIXEL_LIMIT || liveMeta.length > activeGuardrail.maxMetaChars;
+
+  // Real-Time Forbidden Terms Scanner
+  const forbiddenTermAlerts = useMemo(() => {
+    const combined = `${liveTitle} ${liveMeta} ${liveH1} ${liveGeoAnswer}`.toLowerCase();
+    const alerts: { term: string; reason: string; replacement: string; field: string }[] = [];
+
+    activeGuardrail.forbiddenTerms.forEach((ft) => {
+      if (combined.includes(ft.term.toLowerCase())) {
+        let field = "Content";
+        if (liveTitle.toLowerCase().includes(ft.term.toLowerCase())) field = "Title";
+        else if (liveMeta.toLowerCase().includes(ft.term.toLowerCase())) field = "Meta Description";
+        else if (liveH1.toLowerCase().includes(ft.term.toLowerCase())) field = "H1 Headline";
+        else if (liveGeoAnswer.toLowerCase().includes(ft.term.toLowerCase())) field = "GEO Answer Block";
+
+        alerts.push({ ...ft, field });
+      }
+    });
+
+    return alerts;
+  }, [liveTitle, liveMeta, liveH1, liveGeoAnswer, activeGuardrail]);
+
+  const toggleFavorite = (id: string) => {
+    const next = favorites.includes(id)
+      ? favorites.filter((f) => f !== id)
+      : [...favorites, id];
+    setFavorites(next);
+    localStorage.setItem("cogwheel_favorite_templates", JSON.stringify(next));
+  };
 
   const categories = [
     "All",
@@ -363,9 +358,14 @@ export function TemplateStudio({
 
   // Production-Ready Bundled Export Code (HTML + JSON-LD)
   const readyToPasteSnippet = useMemo(() => {
-    const canonical = pageData?.canonical || pageData?.url || "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/";
+    const canonical =
+      pageData?.canonical ||
+      pageData?.url ||
+      "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/";
     const hotelName = liveH1 || "SpringHill Suites Panama City Beachfront";
-    const ogImage = pageData?.ogImage || "https://cache.marriott.com/content/dam/marriott-renditions/ECPSB/ecpsb-exterior-001.jpg";
+    const ogImage =
+      pageData?.ogImage ||
+      "https://cache.marriott.com/content/dam/marriott-renditions/ECPSB/ecpsb-exterior-001.jpg";
 
     return `<!-- Cogwheel SEO Studio v2.6 - Brand Guardrail Compliant Export -->
 <!-- Brand Framework: ${activeGuardrail.name} (${activeGuardrail.loyaltyProgram}) -->
@@ -380,22 +380,18 @@ export function TemplateStudio({
 <meta property="og:site_name" content="${activeGuardrail.loyaltyProgram}" />
 <meta property="og:title" content="${liveTitle}" />
 <meta property="og:description" content="${liveMeta}" />
-<meta property="og:image" content="${ogImage}" />
 <meta property="og:url" content="${canonical}" />
-<meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="${liveTitle}" />
-<meta name="twitter:description" content="${liveMeta}" />
-<meta name="twitter:image" content="${ogImage}" />
+<meta property="og:image" content="${ogImage}" />
 
-<!-- 3. Primary Content & Heading Architecture -->
-<h1 class="hotel-primary-headline">${hotelName}</h1>
+<!-- 3. Above-the-Fold Primary H1 -->
+<h1>${hotelName}</h1>
 
-<!-- 4. Generative Engine Optimization (GEO) Entity Knowledge Block -->
-<section class="geo-entity-knowledge" data-geo-target="ai-overviews" aria-label="Hotel Entity Overview">
+<!-- 4. Generative AI Knowledge Entity Block -->
+<section class="hotel-geo-entity-block" data-geo-entity="Hotel" aria-label="About the Property">
   <p>${liveGeoAnswer}</p>
 </section>
 
-<!-- 5. Composed Schema.org JSON-LD @graph -->
+<!-- 5. Validated JSON-LD Schema (@graph Hotel + BreadcrumbList) -->
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -407,88 +403,74 @@ export function TemplateStudio({
       "description": "${liveMeta}",
       "url": "${canonical}",
       "image": "${ogImage}",
-      "telephone": "+1-850-230-6004",
-      "priceRange": "$$$",
       "address": {
         "@type": "PostalAddress",
-        "streetAddress": "14401 Front Beach Rd",
-        "addressLocality": "Panama City Beach",
-        "addressRegion": "FL",
-        "postalCode": "32413",
+        "streetAddress": "${activeProfile?.address || "12513 Front Beach Rd"}",
+        "addressLocality": "${activeProfile?.city || "Panama City Beach"}",
+        "addressRegion": "${activeProfile?.state || "FL"}",
+        "postalCode": "${activeProfile?.postalCode || "32407"}",
         "addressCountry": "US"
       },
-      "geo": {
-        "@type": "GeoCoordinates",
-        "latitude": 30.2037,
-        "longitude": -85.8612
-      },
-      "checkinTime": "16:00",
-      "checkoutTime": "11:00",
-      "amenityFeature": [
-        { "@type": "LocationFeatureSpecification", "name": "Oceanfront Pool & Lazy River", "value": true },
-        { "@type": "LocationFeatureSpecification", "name": "Free High-Speed Wi-Fi", "value": true },
-        { "@type": "LocationFeatureSpecification", "name": "Complimentary Daily Hot Breakfast", "value": true }
-      ]
+      "telephone": "${activeProfile?.phone || "+1-850-230-6004"}",
+      "priceRange": "$$$",
+      "starRating": {
+        "@type": "Rating",
+        "ratingValue": "4.5"
+      }
     },
     {
-      "@type": "FAQPage",
-      "@id": "${canonical}#faq",
-      "mainEntity": [
+      "@type": "BreadcrumbList",
+      "@id": "${canonical}#breadcrumb",
+      "itemListElement": [
         {
-          "@type": "Question",
-          "name": "What time is check-in and check-out at ${hotelName}?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Check-in begins at 4:00 PM and check-out is at 11:00 AM local time. Digital check-in is available in the loyalty app."
-          }
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": "${pageData?.origin || "https://example.com"}"
         },
         {
-          "@type": "Question",
-          "name": "Does the hotel provide complimentary breakfast and parking?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Yes, complimentary daily hot buffet breakfast is included for all direct booking guests. On-site self-parking is provided in our secure garage."
-          }
+          "@type": "ListItem",
+          "position": 2,
+          "name": "${activeProfile?.city || "Panama City Beach"}",
+          "item": "${canonical}"
         }
       ]
     }
   ]
 }
 </script>`;
-  }, [liveTitle, liveMeta, liveH1, liveGeoAnswer, activeGuardrail, pageData]);
+  }, [liveTitle, liveMeta, liveH1, liveGeoAnswer, activeGuardrail, pageData, activeProfile]);
 
-  // 1-Click Export Handler
-  const handleExportReadyToPaste = async () => {
-    try {
-      await navigator.clipboard.writeText(readyToPasteSnippet);
-      setExportCopied(true);
-      setActionFeedback("Export Ready-to-Paste HTML + JSON-LD copied to clipboard!");
-      setTimeout(() => {
-        setExportCopied(false);
-        setActionFeedback(null);
-      }, 3500);
-    } catch {
-      const ta = document.createElement("textarea");
-      ta.value = readyToPasteSnippet;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand("copy");
-      document.body.removeChild(ta);
-      setExportCopied(true);
-      setActionFeedback("Export Ready-to-Paste HTML + JSON-LD copied to clipboard!");
-      setTimeout(() => {
-        setExportCopied(false);
-        setActionFeedback(null);
-      }, 3500);
-    }
+  const handleCopyExport = () => {
+    navigator.clipboard.writeText(readyToPasteSnippet).then(() => {
+      setCopiedExport(true);
+      setTimeout(() => setCopiedExport(false), 2000);
+    });
   };
 
   const handleDownloadExport = () => {
-    const blob = new Blob([readyToPasteSnippet], { type: "text/html;charset=utf-8" });
+    const blob = new Blob([readyToPasteSnippet], { type: "text/html;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `cogwheel-seo-export-${selectedBrand.toLowerCase()}.html`;
+    a.download = `${(activeProfile?.name || "hotel").replace(/\s+/g, "_")}_SEO_GEO_Bundle.html`;
+    a.click();
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(resolvedOutput).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
+
+  const handleDownload = () => {
+    const ext = selectedTemplate.format === "json" ? "json" : selectedTemplate.format === "markdown" ? "md" : "html";
+    const blob = new Blob([resolvedOutput], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${selectedTemplate.id}.${ext}`;
     a.click();
   };
 
@@ -505,11 +487,14 @@ export function TemplateStudio({
       return;
     }
 
-    const payload = {
+    const payload: { title?: string; metaDesc?: string; h1?: string; schemaJson?: string } = {
       title: liveTitle,
       metaDesc: liveMeta,
       h1: liveH1,
     };
+    if (selectedTemplate.format === "json") {
+      payload.schemaJson = resolvedOutput;
+    }
 
     chrome.tabs.sendMessage(activeTabId, { type: "INJECT_PREVIEW", payload }, (res) => {
       if (chrome.runtime.lastError) {
@@ -520,12 +505,46 @@ export function TemplateStudio({
       if (res && res.injected && res.injected.length > 0) {
         setActionFeedback(`Injected ${res.injected.join(", ")} on active page!`);
       } else {
-        setActionFeedback("Live title, meta, and H1 preview injected into page DOM.");
+        setActionFeedback("Preview injected into live page DOM.");
       }
       setTimeout(() => setActionFeedback(null), 3000);
     });
   };
 
+  const handleAutoFillCms = () => {
+    if (!activeTabId || typeof chrome === "undefined" || !chrome.tabs) {
+      setActionFeedback("Target tab not connected.");
+      setTimeout(() => setActionFeedback(null), 2500);
+      return;
+    }
+
+    if (isRestrictedUrl(pageData?.url)) {
+      setActionFeedback("CMS auto-fill is disabled on browser system pages.");
+      setTimeout(() => setActionFeedback(null), 3000);
+      return;
+    }
+
+    const payload = {
+      title: liveTitle,
+      metaDesc: liveMeta,
+    };
+
+    chrome.tabs.sendMessage(activeTabId, { type: "AUTO_FILL_CMS", payload }, (res) => {
+      if (chrome.runtime.lastError) {
+        setActionFeedback("Please refresh target webpage to enable CMS auto-fill.");
+        setTimeout(() => setActionFeedback(null), 3000);
+        return;
+      }
+      if (res && res.result && res.result.filledFields.length > 0) {
+        setActionFeedback(`Auto-filled ${res.result.detectedCms}: ${res.result.filledFields.join(", ")}`);
+      } else {
+        setActionFeedback("No compatible CMS input fields detected on page.");
+      }
+      setTimeout(() => setActionFeedback(null), 3500);
+    });
+  };
+
+  // Launch pre-encoded prompt in AI engines
   const launchAi = (engine: "chatgpt" | "claude" | "gemini" | "perplexity") => {
     const promptText = encodeURIComponent(
       `Optimize this hotel content for Google SERPs and Generative Search Engines:\n\nBrand Framework: ${activeGuardrail.name} (${activeGuardrail.loyaltyProgram})\nTitle: ${liveTitle}\nMeta Description: ${liveMeta}\nH1: ${liveH1}\nGEO Answer Block: ${liveGeoAnswer}`
@@ -538,6 +557,10 @@ export function TemplateStudio({
 
     window.open(targetUrl, "_blank");
   };
+
+  const extractedVariables = useMemo(() => {
+    return extractTemplateVariables(selectedTemplate.content);
+  }, [selectedTemplate]);
 
   const brands: BrandGuardrail[] = ["Marriott", "Hilton", "IHG", "Hyatt", "Independent"];
 
@@ -768,83 +791,50 @@ export function TemplateStudio({
             </h4>
           </div>
 
-          {/* Primary 1-Click Export Button */}
-          <button
-            type="button"
-            onClick={handleExportReadyToPaste}
-            className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-black shadow-md transition active:scale-95 ${
-              exportCopied
-                ? "bg-emerald-700 text-white dark:bg-emerald-600"
-                : "bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400"
-            }`}
-          >
-            {exportCopied ? (
-              <>
-                <Check className="h-4 w-4" />
-                <span>Copied Ready-to-Paste HTML + JSON-LD!</span>
-              </>
-            ) : (
-              <>
-                <FileCode className="h-4 w-4" />
-                <span>Export Ready-to-Paste HTML + JSON-LD</span>
-              </>
-            )}
-          </button>
-        </div>
-
-        {/* Secondary Action Toolbar */}
-        <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-1.5">
+          <div className="flex items-center gap-1.5 flex-wrap">
             <button
               type="button"
-              onClick={handleInjectOnPage}
-              className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800 shadow-xs transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+              onClick={handleCopyExport}
+              className="inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-brand dark:text-slate-950 dark:hover:bg-brand-light"
             >
-              <span>Inject on Page</span>
+              {copiedExport ? <Check className="h-3.5 w-3.5 text-emerald-400" /> : <Copy className="h-3.5 w-3.5" />}
+              <span>{copiedExport ? "Copied!" : "Copy Bundle"}</span>
             </button>
 
             <button
               type="button"
               onClick={handleDownloadExport}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
-              <Download className="h-3 w-3" />
-              <span>Download HTML</span>
+              <Download className="h-3.5 w-3.5" />
+              <span>Export HTML</span>
             </button>
 
             <button
               type="button"
               onClick={() => setShowFullCode(!showFullCode)}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
-              <Code className="h-3 w-3" />
-              <span>{showFullCode ? "Hide Code Preview" : "View Code"}</span>
+              <Code className="h-3.5 w-3.5 text-slate-500" />
+              <span>{showFullCode ? "Hide Code" : "View Code"}</span>
             </button>
-          </div>
 
-          {/* AI Quick-Launch Bar */}
-          <div className="flex items-center gap-1">
-            <span className="text-[10px] font-bold text-slate-400">Launch in:</span>
             <button
               type="button"
-              onClick={() => launchAi("chatgpt")}
-              className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              onClick={handleInjectOnPage}
+              title="Preview changes live in current browser tab"
+              className="inline-flex items-center gap-1 rounded-xl border border-emerald-300 bg-emerald-50 px-2.5 py-1.5 text-xs font-bold text-emerald-800 shadow-xs transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
             >
-              ChatGPT
+              <span>Inject DOM</span>
             </button>
+
             <button
               type="button"
-              onClick={() => launchAi("gemini")}
-              className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+              onClick={handleAutoFillCms}
+              title="Auto-fill WordPress, Webflow, or Shopify SEO fields"
+              className="inline-flex items-center gap-1 rounded-xl border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-xs font-bold text-sky-800 shadow-xs transition hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
             >
-              Gemini
-            </button>
-            <button
-              type="button"
-              onClick={() => launchAi("perplexity")}
-              className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
-            >
-              Perplexity
+              <span>Auto-Fill CMS</span>
             </button>
           </div>
         </div>
@@ -870,9 +860,48 @@ export function TemplateStudio({
             </pre>
           </div>
         )}
+
+        {/* AI Quick-Launch Bar */}
+        <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+          <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400">
+            <Sparkles className="h-3 w-3 text-amber-500" />
+            <span>Launch prompt in AI:</span>
+          </div>
+
+          <div className="flex items-center gap-1">
+            <button
+              type="button"
+              onClick={() => launchAi("chatgpt")}
+              className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            >
+              ChatGPT
+            </button>
+            <button
+              type="button"
+              onClick={() => launchAi("claude")}
+              className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            >
+              Claude
+            </button>
+            <button
+              type="button"
+              onClick={() => launchAi("gemini")}
+              className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            >
+              Gemini
+            </button>
+            <button
+              type="button"
+              onClick={() => launchAi("perplexity")}
+              className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
+            >
+              Perplexity
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* 4. TEMPLATE LIBRARY & VARIABLE INJECTOR */}
+      {/* 4. HOSPITALITY TEMPLATE LIBRARY & SMART FORM BUILDER */}
       <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70 space-y-3">
         <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
@@ -912,6 +941,8 @@ export function TemplateStudio({
         <div className="flex gap-2 overflow-x-auto pb-1.5">
           {filteredTemplates.map((t) => {
             const isSelected = t.id === selectedTemplate.id;
+            const isFav = favorites.includes(t.id);
+
             return (
               <div
                 key={t.id}
@@ -926,9 +957,16 @@ export function TemplateStudio({
                   <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-bold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                     {t.category}
                   </span>
-                  <span className="text-[9px] font-mono font-bold uppercase text-slate-400">
-                    {t.format}
-                  </span>
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFavorite(t.id);
+                    }}
+                    className="text-slate-400 hover:text-amber-500"
+                  >
+                    <Star className={`h-3.5 w-3.5 ${isFav ? "fill-amber-400 text-amber-500" : ""}`} />
+                  </button>
                 </div>
                 <h4 className="mt-1 line-clamp-1 text-xs font-bold text-slate-900 dark:text-white">
                   {t.title}
@@ -939,6 +977,59 @@ export function TemplateStudio({
               </div>
             );
           })}
+        </div>
+
+        {/* Smart Form Builder for Selected Template */}
+        <div className="rounded-xl border border-slate-100 bg-slate-50/60 p-3 dark:border-slate-800 dark:bg-slate-800/40">
+          <div className="flex items-center justify-between border-b border-slate-200/60 pb-2 dark:border-slate-700/60">
+            <div>
+              <span className="text-[9px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                TEMPLATE VARIABLES ({extractedVariables.length})
+              </span>
+              <h5 className="font-display text-xs font-bold text-slate-900 dark:text-white">
+                {selectedTemplate.title}
+              </h5>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[10px] font-bold text-slate-700 shadow-xs hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200"
+              >
+                {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
+                <span>{copied ? "Copied" : "Copy"}</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleDownload}
+                className="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[10px] font-bold text-slate-700 shadow-xs hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-200"
+              >
+                <Download className="h-3 w-3" />
+                <span>Download</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="mt-2.5 grid gap-2 sm:grid-cols-2 max-h-48 overflow-y-auto p-0.5">
+            {extractedVariables.map((variable) => (
+              <div key={variable} className="space-y-0.5">
+                <label className="text-[9px] font-mono font-bold text-slate-500 dark:text-slate-400 uppercase">
+                  {`{{${variable}}}`}
+                </label>
+                <input
+                  type="text"
+                  value={formVariables[variable] || ""}
+                  onChange={(e) =>
+                    setFormVariables((prev) => ({
+                      ...prev,
+                      [variable]: e.target.value,
+                    }))
+                  }
+                  className="h-7 w-full rounded-lg border border-slate-200 bg-white px-2 text-xs text-slate-800 shadow-xs focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </div>

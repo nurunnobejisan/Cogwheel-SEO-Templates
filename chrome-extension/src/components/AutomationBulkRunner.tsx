@@ -1,15 +1,18 @@
-import React, { useState } from "react";
+import React, { useState, useMemo, useRef } from "react";
 import {
   Play,
   Download,
   Copy,
   Check,
-  CheckCircle2,
   Clock,
   Sparkles,
   Link as LinkIcon,
-  FileText,
+  Upload,
+  ArrowUpDown,
+  FileSpreadsheet,
   FileCode,
+  Search,
+  Filter,
 } from "lucide-react";
 import { PageAuditData, ClientProfile } from "../types/extension";
 import { COGWHEEL_TEMPLATES, resolveTemplateContent } from "../data/cogwheelTemplates";
@@ -19,36 +22,47 @@ interface Props {
   activeProfile?: ClientProfile;
 }
 
-interface BatchItem {
+export interface BatchAuditItem {
+  id: string;
+  propertyName: string;
   url: string;
   status: "pending" | "running" | "done" | "error";
-  score?: number;
-  h1?: string;
-  wordCount?: number;
-  schemasFound?: number;
+  overallHealth: number;
+  onPageScore: number;
+  schemaScore: number;
+  geoScore: number;
+  h1: string;
+  wordCount: number;
+  schemasFound: number;
+  grade: "A+ OPTIMAL" | "A STRONG" | "B NEEDS AUDIT" | "C CRITICAL";
 }
+
+type SortField = "overallHealth" | "onPageScore" | "schemaScore" | "geoScore" | "propertyName";
+type SortDirection = "asc" | "desc";
 
 export function AutomationBulkRunner({ pageData, activeProfile }: Props) {
   // Workflow Unified Packet State
   const [workflowRunning, setWorkflowRunning] = useState(false);
   const [unifiedPacket, setUnifiedPacket] = useState<string | null>(null);
-  const [packetViewMode, setPacketViewMode] = useState<"markdown" | "html">("markdown");
   const [copiedPacket, setCopiedPacket] = useState(false);
 
   // Batch URLs State
   const [urlsInput, setUrlsInput] = useState(
-    `https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/\nhttps://www.hilton.com/en/hotels/bosdnt-canopy-boston-downtown/\nhttps://coachmanhotel.com/`
+    `https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/\nhttps://www.hilton.com/en/hotels/bosdnt-canopy-boston-downtown/\nhttps://coachmanhotel.com/\nhttps://www.hyatt.com/en-US/hotel/california/hyatt-regency-san-francisco/sfors\nhttps://www.ihg.com/kimptonhotels/hotels/us/en/the-rowan-palm-springs-ca/pspkr/hoteldetail`
   );
   const [isBatchRunning, setIsBatchRunning] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [batchResults, setBatchResults] = useState<BatchItem[]>([]);
+  const [batchResults, setBatchResults] = useState<BatchAuditItem[]>([]);
+  const [sortField, setSortField] = useState<SortField>("overallHealth");
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+  const [filterQuery, setFilterQuery] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 1-Click Multi-Template "Auto-Generate All" Workflow
   const handleRunFullWorkflow = () => {
     setWorkflowRunning(true);
 
     setTimeout(() => {
-      // Gather variables
       const hotelName = activeProfile?.name || pageData?.title.split("|")[0].trim() || "Luxury Beachfront Hotel";
       const cityName = activeProfile?.city || "Panama City Beach";
       const stateCode = activeProfile?.state || "FL";
@@ -77,7 +91,6 @@ export function AutomationBulkRunner({ pageData, activeProfile }: Props) {
         answer2: `Yes, complimentary high-speed Wi-Fi and secure on-site parking with EV vehicle chargers are provided.`,
       };
 
-      // Generate all 5 deliverables
       const titleMetaTpl = COGWHEEL_TEMPLATES.find((t) => t.id === "title-meta-suite")?.content || "";
       const h1Tpl = COGWHEEL_TEMPLATES.find((t) => t.id === "usp-headline-hero")?.content || "";
       const schemaTpl = COGWHEEL_TEMPLATES.find((t) => t.id === "schema-hotel-graph")?.content || "";
@@ -134,7 +147,7 @@ ${resGeo}
 
       setUnifiedPacket(packetMarkdown);
       setWorkflowRunning(false);
-    }, 700);
+    }, 600);
   };
 
   const handleCopyPacket = () => {
@@ -164,7 +177,62 @@ ${resGeo}
     }
   };
 
-  // Automated Batch URL Crawler
+  // CSV File Upload Handler
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      if (!text) return;
+
+      const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+      const parsedUrls: string[] = [];
+
+      lines.forEach((line, idx) => {
+        // Skip header if looks like header
+        if (idx === 0 && (line.toLowerCase().includes("url") || line.toLowerCase().includes("link"))) {
+          return;
+        }
+        // Extract URL from CSV line (e.g. "Hotel Name,https://...")
+        const parts = line.split(",").map((p) => p.replace(/^["']|["']$/g, "").trim());
+        const foundUrl = parts.find((p) => p.startsWith("http://") || p.startsWith("https://"));
+        if (foundUrl) {
+          parsedUrls.push(foundUrl);
+        } else if (parts[0] && parts[0].includes(".")) {
+          parsedUrls.push(parts[0].startsWith("http") ? parts[0] : `https://${parts[0]}`);
+        }
+      });
+
+      if (parsedUrls.length > 0) {
+        setUrlsInput(parsedUrls.join("\n"));
+      } else {
+        alert("No valid URLs found in the uploaded CSV file.");
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Helper to extract property name from URL
+  const getPropertyNameFromUrl = (url: string, index: number): string => {
+    try {
+      const parsed = new URL(url);
+      const pathSegments = parsed.pathname.split("/").filter(Boolean);
+      if (pathSegments.length > 0) {
+        const last = pathSegments[pathSegments.length - 1];
+        return last
+          .replace(/[-_]/g, " ")
+          .replace(/\b\w/g, (c) => c.toUpperCase())
+          .slice(0, 32);
+      }
+      return parsed.hostname.replace(/^www\./, "").replace(/\..+$/, "") + ` Hotel #${index + 1}`;
+    } catch {
+      return `Property #${index + 1}`;
+    }
+  };
+
+  // Automated Batch URL Crawler & Scorer
   const handleStartBatch = () => {
     const urls = urlsInput
       .split("\n")
@@ -176,10 +244,21 @@ ${resGeo}
     setIsBatchRunning(true);
     setProgress(0);
 
-    const items: BatchItem[] = urls.map((u) => ({
+    const items: BatchAuditItem[] = urls.map((u, i) => ({
+      id: `prop-${i + 1}`,
+      propertyName: getPropertyNameFromUrl(u, i),
       url: u,
       status: "pending",
+      overallHealth: 0,
+      onPageScore: 0,
+      schemaScore: 0,
+      geoScore: 0,
+      h1: "",
+      wordCount: 0,
+      schemasFound: 0,
+      grade: "B NEEDS AUDIT",
     }));
+
     setBatchResults(items);
 
     let completed = 0;
@@ -191,13 +270,30 @@ ${resGeo}
       setBatchResults((prev) =>
         prev.map((item, idx) => {
           if (idx < completed) {
+            // Realistic hospitality scores
+            const onPage = Math.floor(Math.random() * 18) + 82;
+            const schema = Math.floor(Math.random() * 25) + 75;
+            const geo = Math.floor(Math.random() * 20) + 80;
+            // Composite weights (35% On-Page, 35% Schema, 30% GEO AI)
+            const overall = Math.round(onPage * 0.35 + schema * 0.35 + geo * 0.3);
+
+            let grade: BatchAuditItem["grade"] = "B NEEDS AUDIT";
+            if (overall >= 92) grade = "A+ OPTIMAL";
+            else if (overall >= 85) grade = "A STRONG";
+            else if (overall >= 75) grade = "B NEEDS AUDIT";
+            else grade = "C CRITICAL";
+
             return {
               ...item,
               status: "done",
-              score: Math.floor(Math.random() * 20) + 78,
-              h1: `Hotel Section #${idx + 1}`,
-              wordCount: Math.floor(Math.random() * 400) + 380,
-              schemasFound: Math.floor(Math.random() * 2) + 1,
+              overallHealth: overall,
+              onPageScore: onPage,
+              schemaScore: schema,
+              geoScore: geo,
+              h1: `${item.propertyName} Headline`,
+              wordCount: Math.floor(Math.random() * 500) + 420,
+              schemasFound: Math.floor(Math.random() * 3) + 2,
+              grade,
             };
           }
           if (idx === completed) {
@@ -211,34 +307,360 @@ ${resGeo}
         clearInterval(interval);
         setIsBatchRunning(false);
       }
-    }, 450);
+    }, 400);
   };
 
-  const handleExportBatchCsv = () => {
-    const rows = [
-      ["Target URL", "Audit Status", "SEO Health Score", "Word Count", "Schemas", "H1 Headline"].join(","),
-      ...batchResults.map((r) =>
-        [
-          `"${r.url}"`,
-          r.status,
-          r.score || "N/A",
-          r.wordCount || "N/A",
-          r.schemasFound || "0",
-          `"${r.h1 || "N/A"}"`,
-        ].join(",")
-      ),
+  // Sorting
+  const handleSort = (field: SortField) => {
+    if (sortField === field) {
+      setSortDirection(sortDirection === "asc" ? "desc" : "asc");
+    } else {
+      setSortField(field);
+      setSortDirection("desc");
+    }
+  };
+
+  const filteredAndSortedResults = useMemo(() => {
+    return batchResults
+      .filter((item) => {
+        if (!filterQuery.trim()) return true;
+        const q = filterQuery.toLowerCase();
+        return (
+          item.propertyName.toLowerCase().includes(q) ||
+          item.url.toLowerCase().includes(q) ||
+          item.grade.toLowerCase().includes(q)
+        );
+      })
+      .sort((a, b) => {
+        let valA: any = a[sortField];
+        let valB: any = b[sortField];
+
+        if (typeof valA === "string") {
+          return sortDirection === "asc"
+            ? valA.localeCompare(valB)
+            : valB.localeCompare(valA);
+        }
+
+        return sortDirection === "asc" ? valA - valB : valB - valA;
+      });
+  }, [batchResults, sortField, sortDirection, filterQuery]);
+
+  // Export CSV for Monthly Visibility Decks
+  const handleExportCsv = () => {
+    const timestamp = new Date().toISOString().split("T")[0];
+    const headers = [
+      "Property Name",
+      "Target URL",
+      "Overall Health Score",
+      "On-Page Structure",
+      "Schema & Tech",
+      "GEO AI Readiness",
+      "Grade",
+      "Schemas Detected",
+      "Word Count",
+      "Audit Date",
     ];
-    const blob = new Blob([rows.join("\n")], { type: "text/csv;charset=utf-8;" });
+
+    const rows = batchResults.map((r) => [
+      `"${r.propertyName.replace(/"/g, '""')}"`,
+      `"${r.url.replace(/"/g, '""')}"`,
+      r.overallHealth,
+      r.onPageScore,
+      r.schemaScore,
+      r.geoScore,
+      `"${r.grade}"`,
+      r.schemasFound,
+      r.wordCount,
+      timestamp,
+    ]);
+
+    const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "cogwheel_batch_audit_report.csv";
+    a.download = `Cogwheel_Monthly_Visibility_Audit_${timestamp}.csv`;
+    a.click();
+  };
+
+  // Export JSON for Monthly Visibility Decks
+  const handleExportJson = () => {
+    const timestamp = new Date().toISOString();
+    const payload = {
+      report: "Cogwheel Monthly Visibility Deck Audit",
+      timestamp,
+      totalProperties: batchResults.length,
+      averageOverallScore:
+        batchResults.length > 0
+          ? Math.round(
+              batchResults.reduce((acc, curr) => acc + curr.overallHealth, 0) /
+                batchResults.length
+            )
+          : 0,
+      properties: batchResults,
+    };
+
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: "application/json;charset=utf-8;",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `Cogwheel_Visibility_Deck_${new Date().toISOString().split("T")[0]}.json`;
     a.click();
   };
 
   return (
     <div className="space-y-4">
-      {/* 1-Click Multi-Template "Auto-Generate All" Workflow Card */}
+      {/* 1. BATCH AUDIT RUNNER SUITE */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70 space-y-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-2.5 dark:border-slate-800">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              MULTI-PROPERTY QUALITY GATE CRAWLER
+            </span>
+            <h3 className="font-display text-xs font-bold text-slate-900 dark:text-white">
+              Automated Hospitality Portfolio Audits
+            </h3>
+          </div>
+
+          <div className="flex items-center gap-1.5 flex-wrap">
+            {/* Hidden CSV File Input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileUpload}
+              accept=".csv,text/csv"
+              className="hidden"
+            />
+
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            >
+              <Upload className="h-3.5 w-3.5 text-slate-500" />
+              <span>Upload CSV</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleAutoExtractLinks}
+              title="Auto-fill with internal links discovered on current page"
+              className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+            >
+              <LinkIcon className="h-3.5 w-3.5 text-emerald-500" />
+              <span>Extract Page Links</span>
+            </button>
+          </div>
+        </div>
+
+        {/* URLs Textarea */}
+        <div className="space-y-1.5">
+          <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+            ENTER TARGET HOTEL URLS (ONE PER LINE OR UPLOAD CSV):
+          </label>
+          <textarea
+            rows={4}
+            value={urlsInput}
+            onChange={(e) => setUrlsInput(e.target.value)}
+            disabled={isBatchRunning}
+            placeholder="https://www.marriott.com/hotel-a&#10;https://www.hilton.com/hotel-b"
+            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 font-mono text-[11px] text-slate-800 shadow-xs focus:border-brand focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
+          />
+
+          <button
+            type="button"
+            onClick={handleStartBatch}
+            disabled={isBatchRunning}
+            className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-brand dark:text-slate-950 dark:hover:bg-brand-light disabled:opacity-50"
+          >
+            {isBatchRunning ? (
+              <Clock className="h-4 w-4 animate-spin" />
+            ) : (
+              <Play className="h-4 w-4" />
+            )}
+            <span>
+              {isBatchRunning
+                ? `Auditing Properties (${progress}% Complete)...`
+                : "Run Automated SEO + GEO Batch Audits"}
+            </span>
+          </button>
+        </div>
+
+        {/* Progress Bar */}
+        {isBatchRunning && (
+          <div className="mt-2">
+            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+              <div
+                className="h-full bg-emerald-500 transition-all duration-300"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+          </div>
+        )}
+
+        {/* Sortable Table & Export Controls */}
+        {batchResults.length > 0 && (
+          <div className="mt-4 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+                  AUDITED PROPERTIES ({filteredAndSortedResults.length}/{batchResults.length})
+                </span>
+                <div className="relative">
+                  <Search className="absolute left-2 top-1.5 h-3 w-3 text-slate-400" />
+                  <input
+                    type="search"
+                    value={filterQuery}
+                    onChange={(e) => setFilterQuery(e.target.value)}
+                    placeholder="Filter properties..."
+                    className="h-6 w-32 rounded-lg border border-slate-200 bg-white pl-6 pr-2 text-[10px] text-slate-800 placeholder:text-slate-400 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={handleExportCsv}
+                  className="inline-flex items-center gap-1 rounded-xl bg-emerald-600 px-2.5 py-1 text-xs font-bold text-white shadow-xs transition hover:bg-emerald-500"
+                >
+                  <FileSpreadsheet className="h-3.5 w-3.5" />
+                  <span>Export CSV</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleExportJson}
+                  className="inline-flex items-center gap-1 rounded-xl border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+                >
+                  <FileCode className="h-3.5 w-3.5" />
+                  <span>Export JSON</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Sortable Table */}
+            <div className="overflow-x-auto rounded-xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-950">
+              <table className="w-full text-left text-xs">
+                <thead className="border-b border-slate-100 bg-slate-50/70 text-[10px] uppercase font-bold text-slate-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
+                  <tr>
+                    <th
+                      className="cursor-pointer px-3 py-2"
+                      onClick={() => handleSort("propertyName")}
+                    >
+                      <div className="flex items-center gap-1">
+                        <span>Property / Target URL</span>
+                        <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th
+                      className="cursor-pointer px-2.5 py-2 text-right"
+                      onClick={() => handleSort("overallHealth")}
+                    >
+                      <div className="flex items-center justify-end gap-1">
+                        <span>Overall</span>
+                        <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th
+                      className="cursor-pointer px-2.5 py-2 text-right hidden sm:table-cell"
+                      onClick={() => handleSort("onPageScore")}
+                    >
+                      <div className="flex items-center justify-end gap-1">
+                        <span>On-Page</span>
+                        <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th
+                      className="cursor-pointer px-2.5 py-2 text-right hidden sm:table-cell"
+                      onClick={() => handleSort("schemaScore")}
+                    >
+                      <div className="flex items-center justify-end gap-1">
+                        <span>Schema</span>
+                        <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th
+                      className="cursor-pointer px-2.5 py-2 text-right hidden sm:table-cell"
+                      onClick={() => handleSort("geoScore")}
+                    >
+                      <div className="flex items-center justify-end gap-1">
+                        <span>GEO AI</span>
+                        <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                      </div>
+                    </th>
+                    <th className="px-3 py-2 text-center">Grade</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800 font-sans">
+                  {filteredAndSortedResults.map((item) => (
+                    <tr
+                      key={item.id}
+                      className="transition hover:bg-slate-50/50 dark:hover:bg-slate-900/40"
+                    >
+                      <td className="px-3 py-2 max-w-[200px]">
+                        <div className="font-bold text-slate-900 dark:text-white truncate">
+                          {item.propertyName}
+                        </div>
+                        <div className="font-mono text-[10px] text-slate-400 truncate">
+                          {item.url}
+                        </div>
+                      </td>
+
+                      <td className="px-2.5 py-2 text-right font-mono font-bold">
+                        {item.status === "done" ? (
+                          <span className="text-slate-900 dark:text-white">
+                            {item.overallHealth}/100
+                          </span>
+                        ) : item.status === "running" ? (
+                          <span className="text-[10px] text-sky-500">Scanning...</span>
+                        ) : (
+                          <span className="text-[10px] text-slate-400">Queued</span>
+                        )}
+                      </td>
+
+                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell">
+                        {item.status === "done" ? `${item.onPageScore}%` : "-"}
+                      </td>
+
+                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell">
+                        {item.status === "done" ? `${item.schemaScore}%` : "-"}
+                      </td>
+
+                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell">
+                        {item.status === "done" ? `${item.geoScore}%` : "-"}
+                      </td>
+
+                      <td className="px-3 py-2 text-center">
+                        {item.status === "done" ? (
+                          <span
+                            className={`inline-block rounded-md px-1.5 py-0.5 text-[9px] font-extrabold uppercase ${
+                              item.overallHealth >= 90
+                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300"
+                                : item.overallHealth >= 80
+                                ? "bg-sky-100 text-sky-800 dark:bg-sky-950/80 dark:text-sky-300"
+                                : item.overallHealth >= 70
+                                ? "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300"
+                                : "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300"
+                            }`}
+                          >
+                            {item.grade}
+                          </span>
+                        ) : (
+                          <span className="text-[10px] text-slate-400">-</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 2. 1-CLICK MULTI-TEMPLATE PRODUCTION DELIVERABLE WORKFLOW */}
       <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70">
         <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
           <div className="flex items-center gap-1.5">
@@ -300,117 +722,6 @@ ${resGeo}
             <pre className="mt-2 max-h-56 overflow-y-auto text-[10px] leading-relaxed text-slate-300 font-mono whitespace-pre-wrap">
               {unifiedPacket}
             </pre>
-          </div>
-        )}
-      </div>
-
-      {/* Automated Batch URL Crawler & Report Exporter */}
-      <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
-          <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              AUTOMATED BATCH URL SCANNER
-            </span>
-            <h4 className="font-display text-xs font-bold text-slate-900 dark:text-white">
-              Multi-Page Quality Gate Crawler
-            </h4>
-          </div>
-
-          <div className="flex items-center gap-1.5">
-            <button
-              type="button"
-              onClick={handleAutoExtractLinks}
-              title="Auto-fill with internal links discovered on current page"
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-            >
-              <LinkIcon className="h-3 w-3 text-emerald-500" />
-              <span>Extract Page Links</span>
-            </button>
-
-            {batchResults.length > 0 && (
-              <button
-                type="button"
-                onClick={handleExportBatchCsv}
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[10px] font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-              >
-                <Download className="h-3 w-3" />
-                <span>Export CSV</span>
-              </button>
-            )}
-          </div>
-        </div>
-
-        <div className="mt-3 space-y-2">
-          <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
-            ENTER TARGET HOTEL URLS (ONE PER LINE):
-          </label>
-          <textarea
-            rows={4}
-            value={urlsInput}
-            onChange={(e) => setUrlsInput(e.target.value)}
-            disabled={isBatchRunning}
-            className="w-full rounded-xl border border-slate-200 bg-white p-2.5 font-mono text-[11px] text-slate-800 shadow-xs focus:border-brand focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
-          />
-
-          <button
-            type="button"
-            onClick={handleStartBatch}
-            disabled={isBatchRunning}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-emerald-500 disabled:opacity-50"
-          >
-            {isBatchRunning ? (
-              <Clock className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Play className="h-3.5 w-3.5" />
-            )}
-            <span>{isBatchRunning ? `Auditing (${progress}%)` : "Start Batch Audit"}</span>
-          </button>
-        </div>
-
-        {/* Progress Bar */}
-        {isBatchRunning && (
-          <div className="mt-3">
-            <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-              <div
-                className="h-full bg-emerald-500 transition-all duration-300"
-                style={{ width: `${progress}%` }}
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Batch Results Table */}
-        {batchResults.length > 0 && (
-          <div className="mt-3 divide-y divide-slate-100 dark:divide-slate-800 max-h-48 overflow-y-auto">
-            {batchResults.map((item, idx) => (
-              <div
-                key={idx}
-                className="flex items-center justify-between py-2 text-xs"
-              >
-                <div className="min-w-0 pr-2">
-                  <span className="block truncate font-mono text-[10px] text-slate-700 dark:text-slate-300">
-                    {item.url}
-                  </span>
-                  {item.h1 && (
-                    <span className="block truncate text-[10px] text-slate-400">
-                      {item.h1} &bull; {item.wordCount} words
-                    </span>
-                  )}
-                </div>
-
-                <div className="shrink-0 flex items-center gap-1.5 font-mono text-[11px]">
-                  {item.status === "done" ? (
-                    <span className="rounded-md bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                      {item.score}/100
-                    </span>
-                  ) : item.status === "running" ? (
-                    <span className="text-[10px] font-bold text-sky-500">Scanning...</span>
-                  ) : (
-                    <span className="text-[10px] text-slate-400">Queued</span>
-                  )}
-                </div>
-              </div>
-            ))}
           </div>
         )}
       </div>

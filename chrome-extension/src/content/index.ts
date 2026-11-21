@@ -15,6 +15,12 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     return true;
   }
 
+  if (request.type === "CLEAR_ALL_OVERLAYS") {
+    handleClearAllOverlays();
+    sendResponse({ success: true });
+    return true;
+  }
+
   if (request.type === "INJECT_PREVIEW") {
     const result = handleInjectPreview(request.payload);
     sendResponse({ success: true, ...result });
@@ -405,16 +411,50 @@ function handleAutoFillCms(payload: { title?: string; metaDesc?: string; slug?: 
 }
 
 // Visual DOM Overlay Handlers
-function handleToggleOverlay(type: "headings" | "missingAlts" | "links", enabled: boolean) {
-  const overlayId = `__cogwheel_${type}_overlay__`;
+export type OverlayType = "headings" | "missingAlts" | "schemas" | "bookingLinks" | "geoBlocks";
+
+function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
+  const normalizedType = type === "links" ? "bookingLinks" : type;
+  const overlayId = `__cogwheel_${normalizedType}_overlay__`;
   const existing = document.getElementById(overlayId);
 
   if (!enabled) {
     if (existing) existing.remove();
-    document.querySelectorAll(`[data-cogwheel-${type}]`).forEach((el) => {
-      (el as HTMLElement).style.outline = "";
-      (el as HTMLElement).removeAttribute(`data-cogwheel-${type}`);
-    });
+
+    if (normalizedType === "headings") {
+      document.querySelectorAll(".cogwheel-heading-badge").forEach((el) => el.remove());
+      document.querySelectorAll("[data-cogwheel-headings]").forEach((el) => {
+        (el as HTMLElement).style.outline = "";
+        (el as HTMLElement).removeAttribute("data-cogwheel-headings");
+      });
+    } else if (normalizedType === "missingAlts") {
+      document.querySelectorAll(".cogwheel-alt-badge").forEach((el) => el.remove());
+      document.querySelectorAll("[data-cogwheel-missingAlts]").forEach((el) => {
+        (el as HTMLElement).style.outline = "";
+        (el as HTMLElement).style.outlineOffset = "";
+        (el as HTMLElement).removeAttribute("data-cogwheel-missingAlts");
+      });
+    } else if (normalizedType === "schemas") {
+      const banner = document.getElementById("cogwheel_schema_banner");
+      if (banner) banner.remove();
+      document.querySelectorAll("[data-cogwheel-schemas]").forEach((el) => {
+        (el as HTMLElement).style.outline = "";
+        (el as HTMLElement).removeAttribute("data-cogwheel-schemas");
+      });
+    } else if (normalizedType === "bookingLinks") {
+      document.querySelectorAll(".cogwheel-booking-badge").forEach((el) => el.remove());
+      document.querySelectorAll("[data-cogwheel-bookingLinks]").forEach((el) => {
+        (el as HTMLElement).style.outline = "";
+        (el as HTMLElement).removeAttribute("data-cogwheel-bookingLinks");
+      });
+    } else if (normalizedType === "geoBlocks") {
+      document.querySelectorAll(".cogwheel-geo-badge").forEach((el) => el.remove());
+      document.querySelectorAll("[data-cogwheel-geoBlocks]").forEach((el) => {
+        (el as HTMLElement).style.outline = "";
+        (el as HTMLElement).style.outlineOffset = "";
+        (el as HTMLElement).removeAttribute("data-cogwheel-geoBlocks");
+      });
+    }
     return;
   }
 
@@ -425,14 +465,14 @@ function handleToggleOverlay(type: "headings" | "missingAlts" | "links", enabled
     document.head.appendChild(styleEl);
   }
 
-  if (type === "headings") {
+  if (normalizedType === "headings") {
     styleEl.textContent = `
       .cogwheel-heading-badge {
         position: absolute;
         top: -10px;
         left: 0;
         z-index: 999999;
-        font-family: -apple-system, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 10px;
         font-weight: 800;
         padding: 2px 6px;
@@ -451,7 +491,7 @@ function handleToggleOverlay(type: "headings" | "missingAlts" | "links", enabled
     h1s.forEach((h1, i) => {
       h1.setAttribute("data-cogwheel-headings", "true");
       (h1 as HTMLElement).style.position = "relative";
-      (h1 as HTMLElement).style.outline = i === 0 ? "2px dashed #10b981" : "3px solid #ef4444";
+      (h1 as HTMLElement).style.outline = i === 0 ? "2.5px dashed #10b981" : "3px solid #ef4444";
       const badge = document.createElement("span");
       badge.className = `cogwheel-heading-badge ${i === 0 ? "cogwheel-badge-h1" : "cogwheel-badge-h1-dup"}`;
       badge.textContent = i === 0 ? "H1 (Primary)" : `H1 Duplicate #${i + 1}`;
@@ -467,20 +507,32 @@ function handleToggleOverlay(type: "headings" | "missingAlts" | "links", enabled
       badge.textContent = `H2 #${i + 1}`;
       h2.appendChild(badge);
     });
-  } else if (type === "missingAlts") {
+
+    document.querySelectorAll("h3").forEach((h3, i) => {
+      h3.setAttribute("data-cogwheel-headings", "true");
+      (h3 as HTMLElement).style.position = "relative";
+      (h3 as HTMLElement).style.outline = "2px dotted #8b5cf6";
+      const badge = document.createElement("span");
+      badge.className = "cogwheel-heading-badge cogwheel-badge-h3";
+      badge.textContent = `H3 #${i + 1}`;
+      h3.appendChild(badge);
+    });
+  } else if (normalizedType === "missingAlts") {
     styleEl.textContent = `
       .cogwheel-alt-badge {
         position: absolute;
-        bottom: 4px;
+        top: 4px;
         left: 4px;
         z-index: 999999;
         background: #ef4444;
         color: #fff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         font-size: 10px;
         font-weight: 800;
         padding: 3px 6px;
         border-radius: 4px;
         box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        pointer-events: none;
       }
     `;
 
@@ -490,26 +542,203 @@ function handleToggleOverlay(type: "headings" | "missingAlts" | "links", enabled
         img.setAttribute("data-cogwheel-missingAlts", "true");
         (img as HTMLElement).style.outline = "3px solid #ef4444";
         (img as HTMLElement).style.outlineOffset = "2px";
+
+        if (img.parentElement && getComputedStyle(img.parentElement).position === "static") {
+          img.parentElement.style.position = "relative";
+        }
+        const badge = document.createElement("span");
+        badge.className = "cogwheel-alt-badge";
+        badge.textContent = "MISSING ALT";
+        if (img.parentElement) {
+          img.parentElement.appendChild(badge);
+        }
       }
     });
-  } else if (type === "links") {
-    const currentHost = window.location.hostname;
-    document.querySelectorAll("a[href]").forEach((a) => {
-      a.setAttribute("data-cogwheel-links", "true");
-      const href = a.getAttribute("href") || "";
-      const rel = a.getAttribute("rel") || "";
+  } else if (normalizedType === "schemas") {
+    // Injects non-destructive top floating banner displaying validated JSON-LD entities
+    const existingBanner = document.getElementById("cogwheel_schema_banner");
+    if (existingBanner) existingBanner.remove();
+
+    const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
+    const detectedTypes: string[] = [];
+
+    scripts.forEach((s) => {
       try {
-        const url = new URL(href, window.location.origin);
-        if (rel.includes("nofollow")) {
-          (a as HTMLElement).style.outline = "2px solid #f59e0b";
-        } else if (url.hostname === currentHost || !url.hostname) {
-          (a as HTMLElement).style.outline = "1.5px solid #10b981";
-        } else {
-          (a as HTMLElement).style.outline = "1.5px solid #0284c7";
+        const json = JSON.parse(s.textContent || "{}");
+        if (json["@type"]) detectedTypes.push(json["@type"]);
+        if (Array.isArray(json["@graph"])) {
+          json["@graph"].forEach((item: any) => {
+            if (item["@type"]) detectedTypes.push(item["@type"]);
+          });
         }
       } catch {
-        (a as HTMLElement).style.outline = "1.5px solid #10b981";
+        // Ignored
       }
     });
+
+    const banner = document.createElement("div");
+    banner.id = "cogwheel_schema_banner";
+    banner.setAttribute("style", `
+      position: fixed;
+      top: 14px;
+      right: 14px;
+      z-index: 99999999;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: #ffffff;
+      padding: 10px 14px;
+      border-radius: 12px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(8px);
+      max-width: 320px;
+      font-size: 11px;
+    `);
+
+    banner.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px;">
+        <span style="font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: #34d399;">
+          VALIDATED JSON-LD SCHEMA
+        </span>
+        <span style="font-size: 9px; font-weight: 700; color: #94a3b8;">
+          ${scripts.length} script block${scripts.length === 1 ? "" : "s"}
+        </span>
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px;">
+        ${
+          detectedTypes.length > 0
+            ? detectedTypes
+                .map(
+                  (t) =>
+                    `<span style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.4); color: #6ee7b7; padding: 2px 6px; border-radius: 4px; font-weight: 700; font-family: monospace; font-size: 10px;">@type: ${t}</span>`
+                )
+                .join("")
+            : `<span style="background: rgba(245, 158, 11, 0.2); color: #fcd34d; padding: 2px 6px; border-radius: 4px; font-weight: 700;">No JSON-LD Schema Found</span>`
+        }
+      </div>
+    `;
+
+    document.body.appendChild(banner);
+  } else if (normalizedType === "bookingLinks") {
+    styleEl.textContent = `
+      .cogwheel-booking-badge {
+        position: absolute;
+        top: -8px;
+        right: 0;
+        z-index: 999999;
+        background: #10b981;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 9px;
+        font-weight: 800;
+        padding: 1px 5px;
+        border-radius: 3px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        pointer-events: none;
+      }
+    `;
+
+    const currentHost = window.location.hostname;
+    const bookingPattern = /book|reserv|stay|room|rate|checkout|check-avail|cart/i;
+
+    document.querySelectorAll("a[href]").forEach((a) => {
+      a.setAttribute("data-cogwheel-bookingLinks", "true");
+      const href = a.getAttribute("href") || "";
+      const text = a.textContent || "";
+      const isBooking = bookingPattern.test(href) || bookingPattern.test(text);
+
+      try {
+        const url = new URL(href, window.location.origin);
+        const isInternal = url.hostname === currentHost || !url.hostname;
+
+        if (isBooking && isInternal) {
+          (a as HTMLElement).style.position = "relative";
+          (a as HTMLElement).style.outline = "2.5px solid #10b981";
+          const badge = document.createElement("span");
+          badge.className = "cogwheel-booking-badge";
+          badge.textContent = "DIRECT BOOKING CTA";
+          a.appendChild(badge);
+        } else if (isInternal) {
+          (a as HTMLElement).style.outline = "1.5px solid #0284c7";
+        } else {
+          (a as HTMLElement).style.outline = "1.5px dashed #f59e0b";
+        }
+      } catch {
+        (a as HTMLElement).style.outline = "1.5px solid #0284c7";
+      }
+    });
+  } else if (normalizedType === "geoBlocks") {
+    styleEl.textContent = `
+      .cogwheel-geo-badge {
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        z-index: 999999;
+        background: #8b5cf6;
+        color: #ffffff;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 10px;
+        font-weight: 800;
+        padding: 3px 7px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px rgba(139, 92, 246, 0.4);
+        pointer-events: none;
+      }
+    `;
+
+    const geoSelector = `
+      details,
+      [data-faq],
+      .faq,
+      #faq,
+      [id*="faq"],
+      [class*="faq"],
+      .amenities,
+      #amenities,
+      [id*="amenit"],
+      .location,
+      #location,
+      [id*="location"],
+      section[aria-label*="FAQ" i],
+      section[aria-label*="Amenities" i],
+      section[aria-label*="Location" i]
+    `;
+
+    const geoNodes = Array.from(document.querySelectorAll(geoSelector));
+
+    // Also check headings with FAQ or Amenities keywords
+    document.querySelectorAll("h2, h3, h4").forEach((h) => {
+      const headingText = (h.textContent || "").toLowerCase();
+      if (
+        headingText.includes("faq") ||
+        headingText.includes("frequently asked") ||
+        headingText.includes("amenities") ||
+        headingText.includes("getting here") ||
+        headingText.includes("location") ||
+        headingText.includes("policies") ||
+        headingText.includes("check-in")
+      ) {
+        if (h.parentElement && !geoNodes.includes(h.parentElement)) {
+          geoNodes.push(h.parentElement);
+        }
+      }
+    });
+
+    geoNodes.forEach((node) => {
+      node.setAttribute("data-cogwheel-geoBlocks", "true");
+      (node as HTMLElement).style.position = "relative";
+      (node as HTMLElement).style.outline = "2.5px dashed #8b5cf6";
+      (node as HTMLElement).style.outlineOffset = "3px";
+
+      const badge = document.createElement("span");
+      badge.className = "cogwheel-geo-badge";
+      badge.textContent = "GEO AI KNOWLEDGE TARGET";
+      node.appendChild(badge);
+    });
   }
+}
+
+function handleClearAllOverlays() {
+  const types: OverlayType[] = ["headings", "missingAlts", "schemas", "bookingLinks", "geoBlocks"];
+  types.forEach((t) => handleToggleOverlay(t, false));
 }

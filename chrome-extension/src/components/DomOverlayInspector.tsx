@@ -1,5 +1,16 @@
 import React, { useState } from "react";
-import { Eye, Image as ImageIcon, Link as LinkIcon, Code2, ChevronDown, ChevronRight, CheckCircle2 } from "lucide-react";
+import {
+  Eye,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  Code2,
+  ChevronDown,
+  ChevronRight,
+  Sparkles,
+  RotateCcw,
+  CheckCircle2,
+  BookmarkCheck,
+} from "lucide-react";
 import { PageAuditData } from "../types/extension";
 
 interface Props {
@@ -7,48 +18,104 @@ interface Props {
   activeTabId?: number;
 }
 
+export type OverlayType = "headings" | "missingAlts" | "schemas" | "bookingLinks" | "geoBlocks";
+
 export function DomOverlayInspector({ data, activeTabId }: Props) {
   const [headingsActive, setHeadingsActive] = useState(false);
   const [missingAltsActive, setMissingAltsActive] = useState(false);
-  const [linksActive, setLinksActive] = useState(false);
+  const [schemasActive, setSchemasActive] = useState(false);
+  const [bookingLinksActive, setBookingLinksActive] = useState(false);
+  const [geoBlocksActive, setGeoBlocksActive] = useState(false);
   const [expandedSchemaIndex, setExpandedSchemaIndex] = useState<number | null>(0);
 
-  const toggleOverlay = (type: "headings" | "missingAlts" | "links", currentState: boolean, setter: (v: boolean) => void) => {
+  const toggleOverlay = (type: OverlayType, currentState: boolean, setter: (v: boolean) => void) => {
     const nextState = !currentState;
     setter(nextState);
 
     if (activeTabId && typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.sendMessage) {
-      chrome.tabs.sendMessage(activeTabId, {
-        type: "TOGGLE_OVERLAY",
-        overlayType: type,
-        enabled: nextState,
-      }, () => {
-        if (chrome.runtime.lastError) {
-          // Handled gracefully when active tab is not scriptable or disconnected
+      chrome.tabs.sendMessage(
+        activeTabId,
+        {
+          type: "TOGGLE_OVERLAY",
+          overlayType: type,
+          enabled: nextState,
+        },
+        () => {
+          if (chrome.runtime.lastError) {
+            // Handled gracefully when active tab is not scriptable or disconnected
+          }
         }
-      });
+      );
     }
   };
+
+  const handleClearAllOverlays = () => {
+    setHeadingsActive(false);
+    setMissingAltsActive(false);
+    setSchemasActive(false);
+    setBookingLinksActive(false);
+    setGeoBlocksActive(false);
+
+    if (activeTabId && typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.sendMessage) {
+      chrome.tabs.sendMessage(
+        activeTabId,
+        {
+          type: "CLEAR_ALL_OVERLAYS",
+        },
+        () => {
+          if (chrome.runtime.lastError) {
+            // Handled gracefully
+          }
+        }
+      );
+    }
+  };
+
+  const activeOverlayCount =
+    (headingsActive ? 1 : 0) +
+    (missingAltsActive ? 1 : 0) +
+    (schemasActive ? 1 : 0) +
+    (bookingLinksActive ? 1 : 0) +
+    (geoBlocksActive ? 1 : 0);
 
   return (
     <div className="space-y-4">
       {/* Visual Toggles Grid */}
       <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70">
-        <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-          LIVE ON-PAGE VISUAL OVERLAYS
-        </span>
-        <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-          Injects real-time visual inspection badges and outlines directly onto the active hotel page.
-        </p>
+        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
+          <div>
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              LIVE ON-PAGE VISUAL OVERLAYS
+            </span>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+              Injects non-destructive visual highlight badges and inspection outlines onto the active page.
+            </p>
+          </div>
 
-        <div className="mt-3 grid gap-2.5 sm:grid-cols-3">
-          {/* Toggle 1: Headings */}
+          {/* Clear All Overlays Reset Button */}
+          <button
+            type="button"
+            onClick={handleClearAllOverlays}
+            disabled={activeOverlayCount === 0}
+            className={`flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-bold transition shadow-xs ${
+              activeOverlayCount > 0
+                ? "bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900/70 border border-rose-200 dark:border-rose-900"
+                : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed"
+            }`}
+          >
+            <RotateCcw className="h-3 w-3" />
+            <span>Clear All Overlays {activeOverlayCount > 0 && `(${activeOverlayCount})`}</span>
+          </button>
+        </div>
+
+        <div className="mt-3 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          {/* Toggle 1: H1–H3 Heading Hierarchy */}
           <button
             type="button"
             onClick={() => toggleOverlay("headings", headingsActive, setHeadingsActive)}
-            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition ${
+            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition shadow-xs ${
               headingsActive
-                ? "border-emerald-500 bg-emerald-50/80 shadow-xs dark:border-emerald-700 dark:bg-emerald-950/40"
+                ? "border-emerald-500 bg-emerald-50/80 dark:border-emerald-700 dark:bg-emerald-950/40"
                 : "border-slate-200 bg-slate-50/80 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/50"
             }`}
           >
@@ -59,18 +126,20 @@ export function DomOverlayInspector({ data, activeTabId }: Props) {
               </span>
             </div>
             <div className="mt-2">
-              <div className="text-xs font-bold text-slate-900 dark:text-white">Headings Tree</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400">H1–H6 Badges</div>
+              <div className="text-xs font-bold text-slate-900 dark:text-white">Heading Hierarchy</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                H1–H3 Badges ({data.h1Elements.length} H1, {data.h2Elements.length} H2)
+              </div>
             </div>
           </button>
 
-          {/* Toggle 2: Missing Alts */}
+          {/* Toggle 2: Images Missing Alt Text */}
           <button
             type="button"
             onClick={() => toggleOverlay("missingAlts", missingAltsActive, setMissingAltsActive)}
-            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition ${
+            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition shadow-xs ${
               missingAltsActive
-                ? "border-rose-500 bg-rose-50/80 shadow-xs dark:border-rose-700 dark:bg-rose-950/40"
+                ? "border-rose-500 bg-rose-50/80 dark:border-rose-700 dark:bg-rose-950/40"
                 : "border-slate-200 bg-slate-50/80 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/50"
             }`}
           >
@@ -82,29 +151,77 @@ export function DomOverlayInspector({ data, activeTabId }: Props) {
             </div>
             <div className="mt-2">
               <div className="text-xs font-bold text-slate-900 dark:text-white">Missing Alt Text</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400">{data.imagesWithoutAlt} issues</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400">{data.imagesWithoutAlt} images detected</div>
             </div>
           </button>
 
-          {/* Toggle 3: Links */}
+          {/* Toggle 3: Validated JSON-LD Entities */}
           <button
             type="button"
-            onClick={() => toggleOverlay("links", linksActive, setLinksActive)}
-            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition ${
-              linksActive
-                ? "border-sky-500 bg-sky-50/80 shadow-xs dark:border-sky-700 dark:bg-sky-950/40"
+            onClick={() => toggleOverlay("schemas", schemasActive, setSchemasActive)}
+            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition shadow-xs ${
+              schemasActive
+                ? "border-emerald-500 bg-emerald-50/80 dark:border-emerald-700 dark:bg-emerald-950/40"
                 : "border-slate-200 bg-slate-50/80 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/50"
             }`}
           >
             <div className="flex items-center justify-between w-full">
-              <LinkIcon className={`h-4 w-4 ${linksActive ? "text-sky-600 dark:text-sky-400" : "text-slate-400"}`} />
-              <span className={`text-[10px] font-bold ${linksActive ? "text-sky-700 dark:text-sky-300" : "text-slate-400"}`}>
-                {linksActive ? "ON" : "OFF"}
+              <Code2 className={`h-4 w-4 ${schemasActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"}`} />
+              <span className={`text-[10px] font-bold ${schemasActive ? "text-emerald-700 dark:text-emerald-300" : "text-slate-400"}`}>
+                {schemasActive ? "ON" : "OFF"}
               </span>
             </div>
             <div className="mt-2">
-              <div className="text-xs font-bold text-slate-900 dark:text-white">Link Classifier</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400">Int / Ext / Nofollow</div>
+              <div className="text-xs font-bold text-slate-900 dark:text-white">Validated JSON-LD</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                {data.schemas.length} schema entities pinned
+              </div>
+            </div>
+          </button>
+
+          {/* Toggle 4: Internal Direct-Booking Links */}
+          <button
+            type="button"
+            onClick={() => toggleOverlay("bookingLinks", bookingLinksActive, setBookingLinksActive)}
+            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition shadow-xs ${
+              bookingLinksActive
+                ? "border-sky-500 bg-sky-50/80 dark:border-sky-700 dark:bg-sky-950/40"
+                : "border-slate-200 bg-slate-50/80 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/50"
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <LinkIcon className={`h-4 w-4 ${bookingLinksActive ? "text-sky-600 dark:text-sky-400" : "text-slate-400"}`} />
+              <span className={`text-[10px] font-bold ${bookingLinksActive ? "text-sky-700 dark:text-sky-300" : "text-slate-400"}`}>
+                {bookingLinksActive ? "ON" : "OFF"}
+              </span>
+            </div>
+            <div className="mt-2">
+              <div className="text-xs font-bold text-slate-900 dark:text-white">Direct-Booking CTAs</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                {(data.internalUrls?.length || 0)} internal navigation links
+              </div>
+            </div>
+          </button>
+
+          {/* Toggle 5: GEO AI Answer Blocks */}
+          <button
+            type="button"
+            onClick={() => toggleOverlay("geoBlocks", geoBlocksActive, setGeoBlocksActive)}
+            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition shadow-xs sm:col-span-2 lg:col-span-1 ${
+              geoBlocksActive
+                ? "border-purple-500 bg-purple-50/80 dark:border-purple-700 dark:bg-purple-950/40"
+                : "border-slate-200 bg-slate-50/80 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/50"
+            }`}
+          >
+            <div className="flex items-center justify-between w-full">
+              <Sparkles className={`h-4 w-4 ${geoBlocksActive ? "text-purple-600 dark:text-purple-400" : "text-slate-400"}`} />
+              <span className={`text-[10px] font-bold ${geoBlocksActive ? "text-purple-700 dark:text-purple-300" : "text-slate-400"}`}>
+                {geoBlocksActive ? "ON" : "OFF"}
+              </span>
+            </div>
+            <div className="mt-2">
+              <div className="text-xs font-bold text-slate-900 dark:text-white">GEO AI Answer Blocks</div>
+              <div className="text-[10px] text-slate-500 dark:text-slate-400">FAQ &amp; spatial targets</div>
             </div>
           </button>
         </div>
