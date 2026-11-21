@@ -532,171 +532,137 @@ export function calculateSeoScores(data: PageAuditData): ScoreBreakdown {
 
   // 1. On-Page Structure (0 - 100)
   let onPage = 0;
-  // Title tag length
-  const tLen = data.title.length;
-  if (tLen >= 45 && tLen <= 65) {
+
+  // Title tag length & pixel width (Optimal: 50-60 chars, max 580px)
+  const tLen = (data.title || "").trim().length;
+  const isTitleOptimal = tLen >= 45 && tLen <= 65 && (!data.titlePixelWidth || data.titlePixelWidth <= 580);
+
+  if (isTitleOptimal) {
     onPage += 35;
-  } else if (tLen > 0) {
-    onPage += 20;
+  } else {
+    onPage += tLen > 0 ? 10 : 0;
     quickWins.push({
       id: "title-len",
-      title: `Title length is ${tLen} characters (Optimal: 50-60)`,
-      severity: "medium",
-      impact: "Prevents SERP truncation and boosts search click-through rate.",
-      templateIdToFix: "title-meta-suite",
-      fixActionLabel: "Fix with Title/Meta Suite",
-    });
-  } else {
-    quickWins.push({
-      id: "title-missing",
-      title: "Missing Title Tag",
+      title: "Title Length Optimization (Title length)",
       severity: "high",
-      impact: "Critical ranking factor: search engines cannot index page topic.",
+      impact: tLen > 0
+        ? `Title is ${tLen} characters / ${data.titlePixelWidth || 680}px (Optimal: 50-60 chars within 580px limit).`
+        : "Missing Title Tag: search engines cannot determine page topic.",
       templateIdToFix: "title-meta-suite",
-      fixActionLabel: "Generate Title Tag",
+      fixActionLabel: "Fix ->",
     });
   }
 
-  // Meta Description
-  const mLen = data.metaDesc.length;
-  if (mLen >= 120 && mLen <= 160) {
+  // Meta Description (Optimal: 130-155 chars, max 920px)
+  const mLen = (data.metaDesc || "").trim().length;
+  const isMetaOptimal = mLen >= 120 && mLen <= 160 && (!data.metaDescPixelWidth || data.metaDescPixelWidth <= 920);
+
+  if (isMetaOptimal) {
     onPage += 35;
-  } else if (mLen > 0) {
-    onPage += 20;
+  } else {
+    onPage += mLen > 0 ? 10 : 0;
     quickWins.push({
       id: "meta-len",
-      title: `Meta description is ${mLen} characters (Optimal: 130-155)`,
-      severity: "low",
-      impact: "Short or long descriptions get replaced by Google snippets.",
-      templateIdToFix: "title-meta-suite",
-      fixActionLabel: "Optimize Description",
-    });
-  } else {
-    quickWins.push({
-      id: "meta-missing",
-      title: "Missing Meta Description",
+      title: "Meta Description Length & Compliance (Meta description)",
       severity: "high",
-      impact: "Lowers organic CTR by up to 28% across mobile and desktop.",
+      impact: mLen > 0
+        ? `Meta description is ${mLen} characters (Optimal: 130-155 chars within 920px limit).`
+        : "Missing Meta Description: lowers organic CTR by up to 28%.",
       templateIdToFix: "title-meta-suite",
-      fixActionLabel: "Draft Meta Description",
+      fixActionLabel: "Fix ->",
     });
   }
 
-  // Single H1 tag
-  if (data.h1Elements.length === 1) {
+  // Single H1 tag and Canonical (Combined Canonical/H1 Quality Gate)
+  const hasValidH1 = data.h1Elements && data.h1Elements.length === 1;
+  const hasCanonical = Boolean(data.canonical && data.canonical.trim().length > 0);
+
+  if (hasValidH1) {
     onPage += 30;
-  } else if (data.h1Elements.length > 1) {
-    onPage += 15;
+  }
+  if (hasCanonical) {
+    // Canonical score in Schema & Technical
+  }
+
+  if (!hasCanonical || !hasValidH1) {
     quickWins.push({
-      id: "h1-multiple",
-      title: `Multiple H1 tags found (${data.h1Elements.length} tags)`,
-      severity: "medium",
-      impact: "Dilutes page topical focus and confuses Google crawler hierarchy.",
-      templateIdToFix: "usp-headline-hero",
-      fixActionLabel: "Consolidate into 1 H1",
-    });
-  } else {
-    quickWins.push({
-      id: "h1-missing",
-      title: "No H1 Tag Detected",
+      id: "canonical-h1",
+      title: "Canonical URL & H1 Structure (Canonical/H1)",
       severity: "high",
-      impact: "Essential heading missing; hurts content hierarchy and accessibility.",
+      impact: !hasCanonical
+        ? "Missing self-referencing canonical tag and non-standard H1 hierarchy."
+        : `Multiple H1 tags found (${data.h1Elements?.length || 0} tags); dilutes keyword focus.`,
       templateIdToFix: "usp-headline-hero",
-      fixActionLabel: "Create H1 Banner",
+      fixActionLabel: "Fix ->",
     });
   }
 
   // 2. Schema & Technical (0 - 100)
   let schemaTechnical = 0;
-  if (data.canonical) schemaTechnical += 25;
-  else {
-    quickWins.push({
-      id: "canonical-missing",
-      title: "Missing Canonical Tag",
-      severity: "high",
-      impact: "Risk of duplicate content penalties across tracking URLs.",
-      templateIdToFix: "title-meta-suite",
-      fixActionLabel: "Add Canonical Tag",
-    });
-  }
-
+  if (hasCanonical) schemaTechnical += 25;
   if (data.hasViewport) schemaTechnical += 20;
 
-  // Schema presence
-  const hasHotelSchema = data.schemas.some((s) => {
+  // Schema presence (Schema.org/Hotel)
+  const hasHotelSchema = (data.schemas || []).some((s) => {
     const t = String(s["@type"] || "").toLowerCase();
     return t.includes("hotel") || t.includes("lodging") || t.includes("resort") || t.includes("localbusiness");
   });
 
   if (hasHotelSchema) {
     schemaTechnical += 35;
-  } else if (data.schemas.length > 0) {
-    schemaTechnical += 15;
-    quickWins.push({
-      id: "schema-hotel-missing",
-      title: "Missing Schema.org/Hotel Structured Data",
-      severity: "high",
-      impact: "Prevents hotel rich snippets (star rating, amenities, price) on SERP.",
-      templateIdToFix: "schema-hotel-graph",
-      fixActionLabel: "Generate Hotel Schema",
-    });
   } else {
     quickWins.push({
-      id: "schema-none",
-      title: "Zero JSON-LD Schema Markup Found",
+      id: "schema-hotel-missing",
+      title: "Missing JSON-LD Hotel Schema (Missing JSON-LD Schema)",
       severity: "high",
-      impact: "Competitors with schema capture 40% more SERP click volume.",
+      impact: "Missing Schema.org/Hotel structured data blocks Google rich snippets, pricing badges, and map entities.",
       templateIdToFix: "schema-hotel-graph",
-      fixActionLabel: "Build @graph Schema",
+      fixActionLabel: "Fix ->",
     });
   }
 
   if (data.imagesWithoutAlt === 0) {
     schemaTechnical += 20;
   } else {
-    quickWins.push({
-      id: "image-alt-missing",
-      title: `${data.imagesWithoutAlt} images missing alt text`,
-      severity: "medium",
-      impact: "Hurts Google Image search rankings and accessibility compliance.",
-      fixActionLabel: "Highlight Missing Alts",
-    });
+    schemaTechnical += 5;
   }
 
   // 3. GEO / AI Visibility Readiness (0 - 100)
   let geoAiReadiness = 0;
-  if (data.words >= 450) geoAiReadiness += 35;
-  else if (data.words >= 250) geoAiReadiness += 20;
-  else {
-    quickWins.push({
-      id: "thin-content",
-      title: `Thin content detected (${data.words} words on page)`,
-      severity: "medium",
-      impact: "Pages under 350 words rarely trigger AI search citations or ranking.",
-      templateIdToFix: "hotel-destination-guide",
-      fixActionLabel: "Expand with Guide Template",
-    });
-  }
 
-  // Has FAQ schema
-  const hasFaq = data.schemas.some((s) => String(s["@type"] || "").toLowerCase().includes("faq"));
-  if (hasFaq) geoAiReadiness += 35;
-  else {
+  // Has FAQ schema & Content Depth (GEO AI Readiness)
+  const hasFaq = (data.schemas || []).some((s) => String(s["@type"] || "").toLowerCase().includes("faq"));
+  const hasAdequateWords = data.words >= 450;
+
+  if (hasAdequateWords && hasFaq) {
+    geoAiReadiness += 70; // 35 for words + 35 for FAQ
+  } else {
     quickWins.push({
-      id: "faq-missing",
-      title: "No FAQ Schema Detected",
-      severity: "medium",
-      impact: "Missing voice search triggers and AI overview summary answers.",
+      id: "geo-ai-readiness",
+      title: "GEO AI Readiness & FAQ Entity Signals (GEO AI Readiness)",
+      severity: "high",
+      impact: "Thin content or missing FAQPage schema prevents citation in Gemini Overviews and ChatGPT Search.",
       templateIdToFix: "schema-faq-rich",
-      fixActionLabel: "Add FAQPage Schema",
+      fixActionLabel: "Fix ->",
     });
   }
 
   // Social OpenGraph
-  if (data.hasOgTitle && data.hasOgImage) geoAiReadiness += 30;
-  else geoAiReadiness += 15;
+  const hasOg = Boolean(data.hasOgTitle && data.hasOgImage);
+  if (hasOg) {
+    geoAiReadiness += 30;
+  } else {
+    quickWins.push({
+      id: "og-missing",
+      title: "Social Open Graph Tags Missing (Open Graph tags)",
+      severity: "medium",
+      impact: "Missing og:title, og:image, and Twitter cards degrades social click share and brand entity recognition.",
+      templateIdToFix: "title-meta-suite",
+      fixActionLabel: "Fix ->",
+    });
+  }
 
-  // Overall Score
+  // Overall Score (Weighted: 35% On-Page, 35% Schema/Tech, 30% GEO AI)
   const overall = Math.round(onPage * 0.35 + schemaTechnical * 0.35 + geoAiReadiness * 0.3);
 
   let grade: ScoreBreakdown["grade"] = "NEEDS AUDIT";
@@ -716,13 +682,13 @@ export function calculateSeoScores(data: PageAuditData): ScoreBreakdown {
   }
 
   return {
-    overall,
-    onPage: Math.min(100, onPage),
-    schemaTechnical: Math.min(100, schemaTechnical),
-    geoAiReadiness: Math.min(100, geoAiReadiness),
+    overall: Math.min(100, Math.max(0, overall)),
+    onPage: Math.min(100, Math.max(0, onPage)),
+    schemaTechnical: Math.min(100, Math.max(0, schemaTechnical)),
+    geoAiReadiness: Math.min(100, Math.max(0, geoAiReadiness)),
     grade,
     gradeColor,
-    passedGates: 10 - quickWins.length,
+    passedGates: Math.max(0, 10 - quickWins.length),
     totalGates: 10,
     quickWins,
   };

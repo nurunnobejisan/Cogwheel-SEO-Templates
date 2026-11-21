@@ -4,10 +4,11 @@ import { QuickWinItem } from "../types/extension";
 
 interface Props {
   quickWins: QuickWinItem[];
-  onFixWithTemplate: (templateId: string) => void;
+  onFixWithTemplate?: (templateId: string) => void;
+  onFixIssue?: (win: QuickWinItem) => void;
 }
 
-export function QuickWinsList({ quickWins, onFixWithTemplate }: Props) {
+export function QuickWinsList({ quickWins, onFixWithTemplate, onFixIssue }: Props) {
   if (quickWins.length === 0) {
     return (
       <div className="rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-4 text-center dark:border-emerald-800/80 dark:bg-emerald-950/30">
@@ -15,11 +16,19 @@ export function QuickWinsList({ quickWins, onFixWithTemplate }: Props) {
           All 10 Core Quality Gates Passed
         </div>
         <p className="mt-1 text-xs text-emerald-700/80 dark:text-emerald-300/80">
-          Zero critical SEO or GEO blocking issues detected on this live page.
+          Zero critical SEO or GEO blocking issues detected on this live page. All 4 health gauges are at 100/100.
         </p>
       </div>
     );
   }
+
+  const handleFixClick = (win: QuickWinItem) => {
+    if (onFixIssue) {
+      onFixIssue(win);
+    } else if (onFixWithTemplate && win.templateIdToFix) {
+      onFixWithTemplate(win.templateIdToFix);
+    }
+  };
 
   return (
     <div className="space-y-2.5">
@@ -64,16 +73,15 @@ export function QuickWinsList({ quickWins, onFixWithTemplate }: Props) {
                   </div>
                 </div>
 
-                {win.templateIdToFix && (
-                  <button
-                    type="button"
-                    onClick={() => onFixWithTemplate(win.templateIdToFix!)}
-                    className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-slate-900 px-2 py-1 text-[10px] font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-brand dark:text-slate-950 dark:hover:bg-brand-light"
-                  >
-                    <span>Fix</span>
-                    <ArrowRight className="h-2.5 w-2.5" />
-                  </button>
-                )}
+                <button
+                  type="button"
+                  onClick={() => handleFixClick(win)}
+                  title={`Auto-fix ${win.title}`}
+                  className="shrink-0 inline-flex items-center gap-1 rounded-lg bg-emerald-600 px-2.5 py-1 text-[10px] font-extrabold text-white shadow-xs transition hover:bg-emerald-700 active:scale-95 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400"
+                >
+                  <span>Fix</span>
+                  <ArrowRight className="h-2.5 w-2.5 stroke-[2.5]" />
+                </button>
               </div>
             </div>
           );
