@@ -126,7 +126,7 @@ export function SidePanelApp() {
                 tabId: tab.id,
                 score: sc.overall,
               }, () => {
-                if (chrome.runtime.lastError) {}
+                if (chrome.runtime.lastError) { }
               });
             }
             setLoading(false);
@@ -434,7 +434,7 @@ export function SidePanelApp() {
                 onClick={() => {
                   if (activeTabId && typeof chrome !== "undefined" && chrome.tabs?.reload) {
                     chrome.tabs.reload(activeTabId, {}, () => {
-                      if (chrome.runtime.lastError) {}
+                      if (chrome.runtime.lastError) { }
                       setNeedsReload(false);
                       setTimeout(fetchActivePage, 750);
                     });
@@ -453,11 +453,10 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("dashboard")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
-              activeTab === "dashboard"
-                ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "dashboard"
+              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
+              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
           >
             <LayoutDashboard className="h-3.5 w-3.5" />
             <span>Audit</span>
@@ -466,11 +465,10 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("studio")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
-              activeTab === "studio"
-                ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "studio"
+              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
+              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
           >
             <Layers className="h-3.5 w-3.5" />
             <span>Studio</span>
@@ -479,11 +477,10 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("overlay")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
-              activeTab === "overlay"
-                ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "overlay"
+              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
+              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
           >
             <Eye className="h-3.5 w-3.5" />
             <span>Overlays</span>
@@ -492,11 +489,10 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("automation")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
-              activeTab === "automation"
-                ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "automation"
+              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
+              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
           >
             <PlayCircle className="h-3.5 w-3.5" />
             <span>Batch</span>
@@ -505,11 +501,10 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
-              activeTab === "settings"
-                ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "settings"
+              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
+              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              }`}
           >
             <Settings className="h-3.5 w-3.5" />
             <span>Settings</span>
