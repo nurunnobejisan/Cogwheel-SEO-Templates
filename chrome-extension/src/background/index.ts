@@ -1,5 +1,9 @@
 // Background Service Worker for Cogwheel Chrome Extension
 import { isRestrictedUrl } from "../utils/urlSecurity";
+import { initAutoUpdater } from "./auto-updater";
+
+// Initialize GitHub Auto-Update & Silent OTA Live Sync Engine
+initAutoUpdater();
 
 chrome.runtime.onInstalled.addListener(() => {
   // Allow Side Panel to open upon clicking the action if supported

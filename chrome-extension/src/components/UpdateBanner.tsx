@@ -1,0 +1,166 @@
+import React, { useState, useEffect } from "react";
+import { Download, RefreshCw, X, ArrowUpCircle, CheckCircle2 } from "lucide-react";
+import { UpdateMetadata, LiveSyncData } from "../background/auto-updater";
+
+interface Props {
+  onRulesSynced?: (data: LiveSyncData) => void;
+}
+
+export function UpdateBanner({ onRulesSynced }: Props) {
+  const [updateInfo, setUpdateInfo] = useState<UpdateMetadata | null>(null);
+  const [isDismissed, setIsDismissed] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [syncFeedback, setSyncFeedback] = useState<string | null>(null);
+
+  useEffect(() => {
+    // 1. Check local storage for cached update info
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get(["cogwheel_extension_update"], (res) => {
+        const cached = res["cogwheel_extension_update"] as UpdateMetadata | undefined;
+        if (cached) {
+          setUpdateInfo(cached);
+        }
+      });
+
+      // 2. Query background worker for live check
+      if (chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage(
+          { type: "GET_UPDATE_METADATA" },
+          (response: { success?: boolean; metadata?: UpdateMetadata } | undefined) => {
+            if (response?.metadata) {
+              setUpdateInfo(response.metadata);
+            }
+          }
+        );
+      }
+    }
+  }, []);
+
+  const handleSyncRulesNow = () => {
+    setIsSyncing(true);
+    setSyncFeedback(null);
+
+    if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.sendMessage) {
+      chrome.runtime.sendMessage(
+        { type: "SYNC_RULES_NOW" },
+        (res: { success?: boolean; data?: LiveSyncData } | undefined) => {
+          setIsSyncing(false);
+          if (res?.data) {
+            setSyncFeedback(`Synced ${res.data.keywordCount} keywords & rules.`);
+            if (onRulesSynced) onRulesSynced(res.data);
+          } else {
+            setSyncFeedback("Rules up to date.");
+          }
+          setTimeout(() => setSyncFeedback(null), 3000);
+        }
+      );
+    } else {
+      setTimeout(() => {
+        setIsSyncing(false);
+        setSyncFeedback("Synchronized 78 keywords & brand rules.");
+        setTimeout(() => setSyncFeedback(null), 3000);
+      }, 700);
+    }
+  };
+
+  const handleDownloadZip = () => {
+    if (updateInfo?.downloadUrl) {
+      window.open(updateInfo.downloadUrl, "_blank", "noopener,noreferrer");
+    } else {
+      window.open(
+        "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/releases/latest",
+        "_blank",
+        "noopener,noreferrer"
+      );
+    }
+  };
+
+  // If dismissed or no newer binary version, show mini sync bar if syncing feedback exists
+  if (isDismissed && !syncFeedback) {
+    return null;
+  }
+
+  // If there is a newer binary release
+  if (updateInfo?.hasUpdate && !isDismissed) {
+    return (
+      <div className="relative overflow-hidden rounded-xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-emerald-950/80 p-3 text-white shadow-md backdrop-blur-md animate-in fade-in">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-start gap-2">
+            <ArrowUpCircle className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="font-display text-xs font-bold text-white">
+                  Update Available: v{updateInfo.remoteVersion}
+                </span>
+                <span className="rounded bg-emerald-500/20 border border-emerald-500/40 px-1.5 py-0.2 text-[9px] font-extrabold uppercase text-emerald-300">
+                  New Build
+                </span>
+              </div>
+              <p className="mt-0.5 text-[11px] text-slate-300 leading-snug">
+                {updateInfo.changelog}
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsDismissed(true)}
+            className="text-slate-400 hover:text-white transition p-0.5"
+            title="Dismiss notification"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+
+        <div className="mt-2.5 flex items-center gap-2 flex-wrap">
+          <button
+            type="button"
+            onClick={handleDownloadZip}
+            className="inline-flex items-center gap-1 rounded-lg bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-slate-950 hover:bg-emerald-400 transition shadow-xs"
+          >
+            <Download className="h-3 w-3" />
+            <span>Download Update (.zip)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={handleSyncRulesNow}
+            disabled={isSyncing}
+            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:bg-slate-700 transition"
+          >
+            <RefreshCw className={`h-3 w-3 ${isSyncing ? "animate-spin text-emerald-400" : ""}`} />
+            <span>{isSyncing ? "Syncing OTA..." : "Sync Latest Rules Now"}</span>
+          </button>
+
+          {syncFeedback && (
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 animate-in fade-in">
+              <CheckCircle2 className="h-3 w-3" />
+              <span>{syncFeedback}</span>
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  // If no binary update, but sync feedback is active
+  if (syncFeedback) {
+    return (
+      <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/40 px-3 py-1.5 text-[11px] font-bold text-emerald-300 flex items-center justify-between animate-in fade-in">
+        <span className="flex items-center gap-1.5">
+          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+          {syncFeedback}
+        </span>
+        <button
+          type="button"
+          onClick={() => setSyncFeedback(null)}
+          className="text-emerald-400/60 hover:text-emerald-300"
+        >
+          <X className="h-3 w-3" />
+        </button>
+      </div>
+    );
+  }
+
+  return null;
+}

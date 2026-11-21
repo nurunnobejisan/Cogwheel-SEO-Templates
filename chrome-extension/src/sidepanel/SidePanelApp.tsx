@@ -21,6 +21,7 @@ import { TemplateStudio } from "../components/TemplateStudio";
 import { DomOverlayInspector } from "../components/DomOverlayInspector";
 import { AutomationBulkRunner } from "../components/AutomationBulkRunner";
 import { SettingsBrandProfiles } from "../components/SettingsBrandProfiles";
+import { UpdateBanner } from "../components/UpdateBanner";
 import { CopyFixedCodeDrawer } from "../components/CopyFixedCodeDrawer";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
@@ -96,6 +97,14 @@ export function SidePanelApp() {
 
   const fetchActivePage = async () => {
     setLoading(true);
+
+    // Trigger Layer A Silent OTA Live Sync on manual refresh
+    if (typeof chrome !== "undefined" && chrome.runtime?.sendMessage) {
+      chrome.runtime.sendMessage({ type: "SYNC_RULES_NOW" }, () => {
+        if (chrome.runtime.lastError) { }
+      });
+    }
+
     try {
       if (typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.query) {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
@@ -397,6 +406,11 @@ export function SidePanelApp() {
                 {isDarkMode ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5 text-slate-600" />}
               </button>
             </div>
+          </div>
+
+          {/* GitHub Auto-Update Notification Banner */}
+          <div className="mt-2.5">
+            <UpdateBanner />
           </div>
 
           {/* Active URL bar */}
