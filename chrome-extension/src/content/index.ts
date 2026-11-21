@@ -1,4 +1,5 @@
 import { PageAuditData, CmsAutoFillResult } from "../types/extension";
+import { calculatePixelWidth } from "../utils/pixelCalculator";
 
 // Listen for messages from Side Panel, Popup, or Background Worker
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
@@ -48,9 +49,9 @@ function extractComprehensivePageData(): PageAuditData {
   const metaRobots = document.querySelector('meta[name="robots"]')?.getAttribute("content") || "index, follow";
   const language = document.documentElement.lang || "en";
 
-  // Google SERP Pixel Width Estimation (~9.2px avg per character for 20px Arial Title; ~8.2px for 14px Meta Desc)
-  const titlePixelWidth = Math.round(title.length * 9.2);
-  const metaDescPixelWidth = Math.round(metaDesc.length * 8.2);
+  // Accurate Google SERP Pixel Width Estimation (580px Title / 920px Meta Desc)
+  const titlePixelWidth = calculatePixelWidth(title);
+  const metaDescPixelWidth = calculatePixelWidth(metaDesc);
 
   // Full H1 - H6 Headings Outline
   const headingElements = Array.from(document.querySelectorAll("h1, h2, h3, h4, h5, h6"));
