@@ -1,0 +1,154 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "KeywordStrategyMatrix",
+  "description": "Standard JSON Schema for the Cogwheel 78-keyword hospitality strategy matrix.",
+  "$ref": "#/definitions/KeywordStrategyMatrix",
+  "definitions": {
+    "KeywordStrategyMatrix": {
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "type": "object",
+          "properties": {
+            "version": {
+              "type": "string"
+            },
+            "datasetName": {
+              "type": "string"
+            },
+            "totalKeywords": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "lastUpdated": {
+              "type": "string"
+            },
+            "author": {
+              "type": "string"
+            },
+            "targetIndustries": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "categorySummary": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "number"
+              }
+            }
+          },
+          "required": [
+            "version",
+            "datasetName",
+            "totalKeywords",
+            "lastUpdated",
+            "author",
+            "targetIndustries",
+            "categorySummary"
+          ],
+          "additionalProperties": false
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1
+        },
+        "keywords": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "keyword": {
+                "type": "string",
+                "minLength": 1
+              },
+              "category": {
+                "type": "string",
+                "enum": [
+                  "Brand/Direct Booking",
+                  "Local/Neighborhood",
+                  "Airport/Transit",
+                  "Meetings/Weddings",
+                  "Extended Stay",
+                  "Conversational AI Prompts"
+                ]
+              },
+              "subCategory": {
+                "type": "string"
+              },
+              "searchIntent": {
+                "type": "string",
+                "enum": [
+                  "Navigational",
+                  "Informational",
+                  "Commercial",
+                  "Transactional"
+                ]
+              },
+              "searchVolumeTier": {
+                "type": "string",
+                "enum": [
+                  "High",
+                  "Medium",
+                  "Low",
+                  "Long-Tail / Conversational"
+                ]
+              },
+              "cpcEstimate": {
+                "type": "string"
+              },
+              "targetPageType": {
+                "type": "string"
+              },
+              "recommendedSchema": {
+                "type": "string"
+              },
+              "geoEngineRelevance": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1
+              },
+              "targetEntityPrompt": {
+                "type": "string"
+              },
+              "competitiveContext": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "id",
+              "keyword",
+              "category",
+              "subCategory",
+              "searchIntent",
+              "searchVolumeTier",
+              "cpcEstimate",
+              "targetPageType",
+              "recommendedSchema",
+              "geoEngineRelevance",
+              "targetEntityPrompt",
+              "competitiveContext"
+            ],
+            "additionalProperties": false
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "metadata",
+        "categories",
+        "keywords"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

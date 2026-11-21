@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BrandGuardrails",
+  "description": "Standard JSON Schema for multi-brand hospitality SEO character caps and prohibited terminology.",
+  "$ref": "#/definitions/BrandGuardrails",
+  "definitions": {
+    "BrandGuardrails": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "Marriott",
+              "Hilton",
+              "IHG",
+              "Hyatt",
+              "Independent"
+            ]
+          },
+          "loyaltyProgram": {
+            "type": "string"
+          },
+          "maxTitleChars": {
+            "type": "integer",
+            "minimum": 30,
+            "maximum": 100
+          },
+          "maxMetaChars": {
+            "type": "integer",
+            "minimum": 80,
+            "maximum": 250
+          },
+          "maxH1Chars": {
+            "type": "integer",
+            "minimum": 20,
+            "maximum": 120
+          },
+          "brandPillColor": {
+            "type": "string"
+          },
+          "forbiddenTerms": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "term": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "reason": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "replacement": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "required": [
+                "term",
+                "reason",
+                "replacement"
+              ],
+              "additionalProperties": false
+            }
+          }
+        },
+        "required": [
+          "name",
+          "loyaltyProgram",
+          "maxTitleChars",
+          "maxMetaChars",
+          "maxH1Chars",
+          "brandPillColor",
+          "forbiddenTerms"
+        ],
+        "additionalProperties": false
+      },
+      "propertyNames": {
+        "enum": [
+          "Marriott",
+          "Hilton",
+          "IHG",
+          "Hyatt",
+          "Independent"
+        ]
+      }
+    }
+  }
+}

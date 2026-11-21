@@ -1,0 +1,80 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "OtaConfig",
+  "description": "Standard JSON Schema for Over-the-Air (OTA) live sync rules, pixel thresholds, and scoring weights.",
+  "$ref": "#/definitions/OtaConfig",
+  "definitions": {
+    "OtaConfig": {
+      "type": "object",
+      "properties": {
+        "schemaVersion": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "pixelLimits": {
+          "type": "object",
+          "properties": {
+            "titleMaxPx": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            },
+            "descriptionMaxPx": {
+              "type": "integer",
+              "exclusiveMinimum": 0
+            }
+          },
+          "required": [
+            "titleMaxPx",
+            "descriptionMaxPx"
+          ],
+          "additionalProperties": false
+        },
+        "scoringWeights": {
+          "type": "object",
+          "properties": {
+            "onPage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "schema": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            },
+            "geoAi": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1
+            }
+          },
+          "required": [
+            "onPage",
+            "schema",
+            "geoAi"
+          ],
+          "additionalProperties": false
+        },
+        "keywordMatrixUrl": {
+          "type": "string",
+          "format": "uri"
+        },
+        "brandGuardrailsUrl": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "required": [
+        "schemaVersion",
+        "updatedAt",
+        "pixelLimits",
+        "scoringWeights",
+        "keywordMatrixUrl",
+        "brandGuardrailsUrl"
+      ],
+      "additionalProperties": false
+    }
+  }
+}

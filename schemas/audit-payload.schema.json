@@ -1,0 +1,399 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "AuditPayload",
+  "description": "Standard JSON Schema for comprehensive page audit data, KPI radial scores, and detected issues.",
+  "$ref": "#/definitions/AuditPayload",
+  "definitions": {
+    "AuditPayload": {
+      "type": "object",
+      "properties": {
+        "pageData": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "origin": {
+              "type": "string"
+            },
+            "pathname": {
+              "type": "string"
+            },
+            "protocol": {
+              "type": "string"
+            },
+            "hostname": {
+              "type": "string"
+            },
+            "title": {
+              "type": "string"
+            },
+            "titlePixelWidth": {
+              "type": "number"
+            },
+            "metaDesc": {
+              "type": "string"
+            },
+            "metaDescPixelWidth": {
+              "type": "number"
+            },
+            "metaRobots": {
+              "type": "string"
+            },
+            "language": {
+              "type": "string"
+            },
+            "canonical": {
+              "type": "string"
+            },
+            "h1Elements": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "h2Elements": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "h3Elements": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "allHeadings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "tag": {
+                    "type": "string"
+                  },
+                  "text": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "tag",
+                  "text"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "totalImages": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "imagesWithoutAlt": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "oversizedImages": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "imagesList": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "src": {
+                    "type": "string"
+                  },
+                  "alt": {
+                    "type": "string"
+                  },
+                  "loading": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "src",
+                  "alt"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "words": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "extractedAmenities": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "topKeywords": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "term": {
+                    "type": "string"
+                  },
+                  "count": {
+                    "type": "number"
+                  },
+                  "density": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "term",
+                  "count",
+                  "density"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "schemas": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": {}
+              }
+            },
+            "links": {
+              "type": "object",
+              "properties": {
+                "internal": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "external": {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                "nofollow": {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              },
+              "required": [
+                "internal",
+                "external",
+                "nofollow"
+              ],
+              "additionalProperties": false
+            },
+            "internalUrls": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "hasViewport": {
+              "type": "boolean"
+            },
+            "hasOgTitle": {
+              "type": "boolean"
+            },
+            "hasOgImage": {
+              "type": "boolean"
+            },
+            "ogTitle": {
+              "type": "string"
+            },
+            "ogDescription": {
+              "type": "string"
+            },
+            "ogImage": {
+              "type": "string"
+            },
+            "twitterTags": {
+              "type": "object",
+              "properties": {
+                "card": {
+                  "type": "string"
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "image": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "detectedNap": {
+              "type": "object",
+              "properties": {
+                "phone": {
+                  "type": "string"
+                },
+                "address": {
+                  "type": "string"
+                },
+                "email": {
+                  "type": "string"
+                }
+              },
+              "additionalProperties": false
+            },
+            "socialLinks": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "platform": {
+                    "type": "string"
+                  },
+                  "url": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "platform",
+                  "url"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "loadTimeMs": {
+              "type": "number"
+            }
+          },
+          "required": [
+            "url",
+            "origin",
+            "pathname",
+            "protocol",
+            "hostname",
+            "title",
+            "metaDesc",
+            "canonical",
+            "h1Elements",
+            "h2Elements",
+            "h3Elements",
+            "totalImages",
+            "imagesWithoutAlt",
+            "oversizedImages",
+            "words",
+            "schemas",
+            "links",
+            "hasViewport",
+            "hasOgTitle",
+            "hasOgImage",
+            "ogTitle",
+            "ogDescription",
+            "ogImage"
+          ],
+          "additionalProperties": false
+        },
+        "scores": {
+          "type": "object",
+          "properties": {
+            "overall": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "onPage": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "schemaTechnical": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "geoAiReadiness": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "grade": {
+              "type": "string",
+              "enum": [
+                "A+",
+                "A",
+                "B",
+                "C",
+                "NEEDS AUDIT"
+              ]
+            },
+            "gradeColor": {
+              "type": "string"
+            },
+            "passedGates": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 10
+            },
+            "totalGates": {
+              "type": "integer",
+              "minimum": 1
+            },
+            "quickWins": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "high",
+                      "medium",
+                      "low"
+                    ]
+                  },
+                  "impact": {
+                    "type": "string"
+                  },
+                  "templateIdToFix": {
+                    "type": "string"
+                  },
+                  "fixActionLabel": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "title",
+                  "severity",
+                  "impact"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "overall",
+            "onPage",
+            "schemaTechnical",
+            "geoAiReadiness",
+            "grade",
+            "gradeColor",
+            "passedGates",
+            "totalGates",
+            "quickWins"
+          ],
+          "additionalProperties": false
+        },
+        "timestamp": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "pageData",
+        "scores"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
