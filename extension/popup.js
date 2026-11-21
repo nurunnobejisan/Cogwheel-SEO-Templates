@@ -45,17 +45,37 @@ function setupTabs() {
   });
 }
 
+// Restricted URL prefixes where content scripts / executeScript cannot run
+const RESTRICTED_PREFIXES = [
+  "chrome://",
+  "chrome-extension://",
+  "edge://",
+  "about:",
+  "view-source:",
+  "https://chromewebstore.google.com",
+  "chrome-search://",
+  "devtools://",
+];
+
+function isRestrictedUrl(url) {
+  if (!url || typeof url !== "string") return true;
+  const trimmed = url.trim().toLowerCase();
+  return RESTRICTED_PREFIXES.some((prefix) => trimmed.startsWith(prefix.toLowerCase()));
+}
+
 // Scans active tab via chrome.scripting
 async function scanActiveTab() {
+  let activeTab = null;
   try {
     const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    activeTab = tab;
     if (!tab || !tab.id) {
-      showError("No active browser tab found.");
+      showRestrictedNotice("No active browser tab found.");
       return;
     }
 
-    if (tab.url?.startsWith("chrome://") || tab.url?.startsWith("chrome-extension://")) {
-      showError("Chrome system pages cannot be audited. Open any hotel website.");
+    if (isRestrictedUrl(tab.url)) {
+      handleRestrictedTab(tab);
       return;
     }
 
@@ -71,12 +91,80 @@ async function scanActiveTab() {
       currentAuditData = data;
       renderAudit(data);
     } else {
-      showError("Could not inspect page content.");
+      showReloadPrompt(tab.id);
     }
   } catch (err) {
-    console.error("Scan error:", err);
-    showError("Please refresh the tab and re-open the inspector.");
+    const errStr = (err && err.message) || String(err);
+    if (errStr.includes("Cannot access") || errStr.includes("chrome://")) {
+      handleRestrictedTab(activeTab);
+    } else if (activeTab && activeTab.id) {
+      showReloadPrompt(activeTab.id);
+    } else {
+      showRestrictedNotice("Live page scan unavailable — open any https:// site to auto-fill from DOM.");
+    }
   }
+}
+
+function handleRestrictedTab(tab) {
+  showRestrictedNotice("Live page scan unavailable on browser system pages — open any https:// site to auto-fill from DOM");
+  // Pre-load benchmark data so Studio Bridge and 10-Gate Audit remain 100% functional
+  const fallback = {
+    url: tab?.url || "chrome://extensions",
+    origin: "Browser System",
+    pathname: "/",
+    protocol: "system:",
+    hostname: "system-page",
+    title: "System Page (Template Studio Offline Mode)",
+    metaDesc: "Live DOM scanner is paused on browser system pages. Cogwheel SEO templates and benchmarks are fully accessible.",
+    canonical: "",
+    h1Elements: ["Cogwheel SEO Workstation"],
+    h2Elements: ["Templates & Benchmarks Active", "Open any live hotel website to auto-audit DOM"],
+    totalImages: 0,
+    imagesWithoutAlt: 0,
+    words: 500,
+    schemas: [{ "@type": "Hotel", name: "SpringHill Suites Panama City Beach" }],
+    hasViewport: true,
+    hasOgTitle: true,
+    hasOgDesc: true,
+    hasOgImage: true,
+  };
+  currentAuditData = fallback;
+  renderAudit(fallback);
+  const gradeBadge = document.getElementById("score-grade");
+  if (gradeBadge) {
+    gradeBadge.textContent = "OFFLINE READY";
+    gradeBadge.style.background = "#334155";
+    gradeBadge.style.color = "#94a3b8";
+  }
+  const scoreSummary = document.getElementById("score-summary");
+  if (scoreSummary) {
+    scoreSummary.textContent = "Live page scan unavailable on browser system pages — open any https:// site to auto-fill from DOM";
+  }
+}
+
+function showRestrictedNotice(msg) {
+  const summaryEl = document.getElementById("score-summary");
+  if (summaryEl) {
+    summaryEl.textContent = msg;
+  }
+}
+
+function showReloadPrompt(tabId) {
+  const summaryEl = document.getElementById("score-summary");
+  if (!summaryEl) return;
+  summaryEl.innerHTML = `
+    <span>Tab needs reload after update. </span>
+    <button id="btn-quick-reload" style="margin-left:6px;padding:3px 8px;border-radius:4px;background:#10b981;color:#0f172a;font-weight:700;font-size:10px;border:none;cursor:pointer;">
+      Refresh Webpage
+    </button>
+  `;
+  document.getElementById("btn-quick-reload")?.addEventListener("click", () => {
+    if (tabId && chrome.tabs && chrome.tabs.reload) {
+      chrome.tabs.reload(tabId, () => {
+        window.close();
+      });
+    }
+  });
 }
 
 // Function injected and executed in the active tab context

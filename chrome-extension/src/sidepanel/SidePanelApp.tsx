@@ -9,6 +9,8 @@ import {
   Moon,
   Sun,
   ExternalLink,
+  Info,
+  AlertCircle,
 } from "lucide-react";
 import { PageAuditData, ClientProfile } from "../types/extension";
 import { PRESET_CLIENT_PROFILES, calculateSeoScores } from "../data/cogwheelTemplates";
@@ -19,6 +21,7 @@ import { TemplateStudio } from "../components/TemplateStudio";
 import { DomOverlayInspector } from "../components/DomOverlayInspector";
 import { AutomationBulkRunner } from "../components/AutomationBulkRunner";
 import { SettingsBrandProfiles } from "../components/SettingsBrandProfiles";
+import { isRestrictedUrl } from "../utils/urlSecurity";
 
 export function SidePanelApp() {
   const [activeTab, setActiveTab] = useState<
@@ -30,6 +33,8 @@ export function SidePanelApp() {
   const [activeProfile, setActiveProfile] = useState<ClientProfile>(PRESET_CLIENT_PROFILES[0]);
   const [activeTabId, setActiveTabId] = useState<number | undefined>();
   const [loading, setLoading] = useState(false);
+  const [isRestrictedTab, setIsRestrictedTab] = useState(false);
+  const [needsReload, setNeedsReload] = useState(false);
 
   // Default fallback mock data
   const [pageData, setPageData] = useState<PageAuditData>({
@@ -80,15 +85,32 @@ export function SidePanelApp() {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (tab && tab.id) {
           setActiveTabId(tab.id);
+
+          if (isRestrictedUrl(tab.url)) {
+            setIsRestrictedTab(true);
+            setNeedsReload(false);
+            setLoading(false);
+            return;
+          }
+
+          setIsRestrictedTab(false);
           chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, (res) => {
+            if (chrome.runtime.lastError) {
+              setNeedsReload(true);
+              setLoading(false);
+              return;
+            }
             if (res && res.data) {
               setPageData(res.data);
+              setNeedsReload(false);
               // Update badge
               const sc = calculateSeoScores(res.data);
               chrome.runtime.sendMessage({
                 type: "UPDATE_BADGE",
                 tabId: tab.id,
                 score: sc.overall,
+              }, () => {
+                if (chrome.runtime.lastError) {}
               });
             }
             setLoading(false);
@@ -169,15 +191,50 @@ export function SidePanelApp() {
           {/* Active URL bar */}
           <div className="mt-2 flex items-center gap-2">
             <span className="rounded-md border border-emerald-300 bg-emerald-50 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-              {pageData.protocol.replace(":", "").toUpperCase()}
+              {isRestrictedTab ? "SYSTEM" : pageData.protocol.replace(":", "").toUpperCase()}
             </span>
             <span className="truncate text-xs font-bold text-slate-800 dark:text-slate-200">
-              {pageData.hostname}
+              {isRestrictedTab ? "System / New Tab Page" : pageData.hostname}
             </span>
             <span className="truncate text-[10px] text-slate-400">
-              {pageData.pathname}
+              {isRestrictedTab ? "(Offline Studio Mode)" : pageData.pathname}
             </span>
           </div>
+
+          {/* System Page Notice Banner */}
+          {isRestrictedTab && (
+            <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-sky-800/40 bg-sky-950/40 p-2.5 text-[11px] text-sky-200">
+              <Info className="h-4 w-4 shrink-0 text-sky-400 mt-0.5" />
+              <span>
+                Live page scan unavailable on browser system pages — open any https:// site to auto-fill from DOM. Template Studio and Brand Profiles below are active.
+              </span>
+            </div>
+          )}
+
+          {/* Needs Tab Reload Notice Banner */}
+          {needsReload && !isRestrictedTab && (
+            <div className="mt-2.5 flex items-center justify-between gap-2 rounded-xl border border-amber-800/50 bg-amber-950/40 p-2.5 text-[11px] text-amber-200">
+              <div className="flex items-center gap-1.5 truncate">
+                <AlertCircle className="h-4 w-4 shrink-0 text-amber-400" />
+                <span className="truncate">Refresh this webpage to inspect live DOM</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => {
+                  if (activeTabId && typeof chrome !== "undefined" && chrome.tabs?.reload) {
+                    chrome.tabs.reload(activeTabId, {}, () => {
+                      if (chrome.runtime.lastError) {}
+                      setNeedsReload(false);
+                      setTimeout(fetchActivePage, 750);
+                    });
+                  }
+                }}
+                className="shrink-0 rounded bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-slate-950 hover:bg-amber-400 transition"
+              >
+                Refresh Page
+              </button>
+            </div>
+          )}
         </header>
 
         {/* 5 Tab Navigation Bar */}

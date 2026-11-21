@@ -15,6 +15,7 @@ import {
   resolveTemplateContent,
 } from "../data/cogwheelTemplates";
 import { CogwheelTemplate, PageAuditData, ClientProfile } from "../types/extension";
+import { isRestrictedUrl } from "../utils/urlSecurity";
 
 interface Props {
   pageData?: PageAuditData;
@@ -150,6 +151,12 @@ export function TemplateStudio({
       return;
     }
 
+    if (isRestrictedUrl(pageData?.url)) {
+      setActionFeedback("DOM injection is disabled on browser system pages.");
+      setTimeout(() => setActionFeedback(null), 3000);
+      return;
+    }
+
     const payload: { title?: string; metaDesc?: string; h1?: string; schemaJson?: string } = {};
     if (formVariables["targetKeyword"] && formVariables["hotelName"]) {
       payload.title = `${formVariables["targetKeyword"]} | ${formVariables["hotelName"]}`;
@@ -165,6 +172,11 @@ export function TemplateStudio({
     }
 
     chrome.tabs.sendMessage(activeTabId, { type: "INJECT_PREVIEW", payload }, (res) => {
+      if (chrome.runtime.lastError) {
+        setActionFeedback("Please refresh target webpage to enable DOM preview.");
+        setTimeout(() => setActionFeedback(null), 3000);
+        return;
+      }
       if (res && res.injected && res.injected.length > 0) {
         setActionFeedback(`Injected ${res.injected.join(", ")} on active page!`);
       } else {
@@ -181,6 +193,12 @@ export function TemplateStudio({
       return;
     }
 
+    if (isRestrictedUrl(pageData?.url)) {
+      setActionFeedback("CMS auto-fill is disabled on browser system pages.");
+      setTimeout(() => setActionFeedback(null), 3000);
+      return;
+    }
+
     const payload = {
       title: formVariables["targetKeyword"]
         ? `${formVariables["targetKeyword"]} | ${formVariables["hotelName"] || ""}`
@@ -189,6 +207,11 @@ export function TemplateStudio({
     };
 
     chrome.tabs.sendMessage(activeTabId, { type: "AUTO_FILL_CMS", payload }, (res) => {
+      if (chrome.runtime.lastError) {
+        setActionFeedback("Please refresh target webpage to enable CMS auto-fill.");
+        setTimeout(() => setActionFeedback(null), 3000);
+        return;
+      }
       if (res && res.result && res.result.filledFields.length > 0) {
         setActionFeedback(`Auto-filled ${res.result.detectedCms}: ${res.result.filledFields.join(", ")}`);
       } else {

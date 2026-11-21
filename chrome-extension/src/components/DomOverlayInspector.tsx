@@ -17,11 +17,15 @@ export function DomOverlayInspector({ data, activeTabId }: Props) {
     const nextState = !currentState;
     setter(nextState);
 
-    if (activeTabId && chrome.tabs && chrome.tabs.sendMessage) {
+    if (activeTabId && typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.sendMessage) {
       chrome.tabs.sendMessage(activeTabId, {
         type: "TOGGLE_OVERLAY",
         overlayType: type,
         enabled: nextState,
+      }, () => {
+        if (chrome.runtime.lastError) {
+          // Handled gracefully when active tab is not scriptable or disconnected
+        }
       });
     }
   };

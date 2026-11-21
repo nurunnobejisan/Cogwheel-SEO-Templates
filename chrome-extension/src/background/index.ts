@@ -1,11 +1,14 @@
 // Background Service Worker for Cogwheel Chrome Extension
+import { isRestrictedUrl } from "../utils/urlSecurity";
 
 chrome.runtime.onInstalled.addListener(() => {
   // Allow Side Panel to open upon clicking the action if supported
   if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
     chrome.sidePanel
       .setPanelBehavior({ openPanelOnActionClick: false })
-      .catch((err) => console.log("Sidepanel behavior error:", err));
+      .catch(() => {
+        // Handled silently
+      });
   }
 
   // Create Right-Click Context Menus
@@ -34,16 +37,21 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 
   if (info.menuItemId === "cogwheel-audit-page") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
-      chrome.sidePanel.open({ tabId: tab.id });
+      chrome.sidePanel.open({ tabId: tab.id }).catch(() => {});
     }
   } else if (info.menuItemId === "cogwheel-generate-schema") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
       chrome.sidePanel.open({ tabId: tab.id }).then(() => {
-        // Send message to jump to schema
         setTimeout(() => {
-          chrome.runtime.sendMessage({ type: "NAVIGATE_TAB", tab: "studio", templateId: "schema-hotel-graph" });
+          chrome.runtime.sendMessage({
+            type: "NAVIGATE_TAB",
+            tab: "studio",
+            templateId: "schema-hotel-graph",
+          }, () => {
+            if (chrome.runtime.lastError) {}
+          });
         }, 500);
-      });
+      }).catch(() => {});
     }
   } else if (info.menuItemId === "cogwheel-template-selection") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
@@ -52,35 +60,48 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
           chrome.runtime.sendMessage({
             type: "SELECTION_RECEIVED",
             text: info.selectionText || "",
+          }, () => {
+            if (chrome.runtime.lastError) {}
           });
         }, 500);
-      });
+      }).catch(() => {});
     }
   }
 });
 
 // Auto-Update Badge & Auto-Inform Side Panel on Tab Switch
 chrome.tabs.onActivated.addListener((activeInfo) => {
-  chrome.tabs.sendMessage(activeInfo.tabId, { type: "EXTRACT_PAGE_DATA" }, (res) => {
-    if (res && res.data) {
-      chrome.runtime.sendMessage({
-        type: "AUTO_PAGE_CONTEXT_UPDATED",
-        tabId: activeInfo.tabId,
-        data: res.data,
-      });
+  chrome.tabs.get(activeInfo.tabId, (tab) => {
+    if (chrome.runtime.lastError || !tab || !tab.url || isRestrictedUrl(tab.url)) {
+      return;
     }
+    chrome.tabs.sendMessage(activeInfo.tabId, { type: "EXTRACT_PAGE_DATA" }, (res) => {
+      if (chrome.runtime.lastError) return;
+      if (res && res.data) {
+        chrome.runtime.sendMessage({
+          type: "AUTO_PAGE_CONTEXT_UPDATED",
+          tabId: activeInfo.tabId,
+          data: res.data,
+        }, () => {
+          if (chrome.runtime.lastError) {}
+        });
+      }
+    });
   });
 });
 
 // Auto-Extract when page finishes loading
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete" && tab.url && !tab.url.startsWith("chrome://")) {
+  if (changeInfo.status === "complete" && tab && tab.url && !isRestrictedUrl(tab.url)) {
     chrome.tabs.sendMessage(tabId, { type: "EXTRACT_PAGE_DATA" }, (res) => {
+      if (chrome.runtime.lastError) return;
       if (res && res.data) {
         chrome.runtime.sendMessage({
           type: "AUTO_PAGE_CONTEXT_UPDATED",
           tabId,
           data: res.data,
+        }, () => {
+          if (chrome.runtime.lastError) {}
         });
       }
     });

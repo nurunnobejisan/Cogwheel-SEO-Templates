@@ -1,43 +1,73 @@
 import React, { useState, useEffect } from "react";
-import { ExternalLink, ArrowRight, CheckCircle2, AlertTriangle, ShieldCheck } from "lucide-react";
+import { ExternalLink, ArrowRight, Info, RotateCw } from "lucide-react";
 import { PageAuditData } from "../types/extension";
 import { calculateSeoScores } from "../data/cogwheelTemplates";
 import { ScoreGauge } from "../components/ScoreGauge";
+import { isRestrictedUrl } from "../utils/urlSecurity";
 
 export function PopupApp() {
   const [pageData, setPageData] = useState<PageAuditData | null>(null);
   const [tabId, setTabId] = useState<number | undefined>();
+  const [isRestricted, setIsRestricted] = useState(false);
+  const [needsReload, setNeedsReload] = useState(false);
 
   useEffect(() => {
     if (typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.query) {
       chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-        if (tab && tab.id) {
-          setTabId(tab.id);
-          chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, (res) => {
-            if (res && res.data) {
-              setPageData(res.data);
-            }
-          });
+        if (!tab || !tab.id) return;
+        setTabId(tab.id);
+
+        if (isRestrictedUrl(tab.url)) {
+          setIsRestricted(true);
+          return;
         }
+
+        setIsRestricted(false);
+        chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, (res) => {
+          if (chrome.runtime.lastError) {
+            // Handled: tab needs a refresh to connect to the content script
+            setNeedsReload(true);
+            return;
+          }
+          if (res && res.data) {
+            setPageData(res.data);
+            setNeedsReload(false);
+          }
+        });
       });
     }
   }, []);
 
   const openSidePanel = () => {
     if (typeof chrome !== "undefined" && tabId) {
-      chrome.runtime.sendMessage({ type: "OPEN_SIDEPANEL", tabId });
+      chrome.runtime.sendMessage({ type: "OPEN_SIDEPANEL", tabId }, () => {
+        if (chrome.runtime.lastError) {
+          // Handled
+        }
+      });
       window.close(); // Close popup so sidepanel takes focus
+    }
+  };
+
+  const handleReload = () => {
+    if (tabId && typeof chrome !== "undefined" && chrome.tabs?.reload) {
+      chrome.tabs.reload(tabId, {}, () => {
+        if (chrome.runtime.lastError) {
+          // Handled
+        }
+        window.close();
+      });
     }
   };
 
   const scores = pageData
     ? calculateSeoScores(pageData)
     : {
-        overall: 92,
+        overall: isRestricted ? 100 : 92,
         onPage: 90,
         schemaTechnical: 95,
         geoAiReadiness: 90,
-        grade: "A+",
+        grade: isRestricted ? "A" : "A+",
         gradeColor: "#10b981",
         quickWins: [],
       };
@@ -53,15 +83,42 @@ export function PopupApp() {
           </span>
         </div>
         <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[9px] font-bold text-slate-400">
-          COGWHEEL v2.6
+          COGWHEEL v2.7
         </span>
       </div>
 
+      {/* Restricted System Page Banner */}
+      {isRestricted && (
+        <div className="mt-3 flex items-start gap-2 rounded-xl border border-sky-800/40 bg-sky-950/40 p-2.5 text-[11px] text-sky-200">
+          <Info className="h-4 w-4 shrink-0 text-sky-400 mt-0.5" />
+          <span>
+            Live page scan unavailable on browser system pages — open any https:// site to auto-fill from DOM
+          </span>
+        </div>
+      )}
+
+      {/* Needs Reload Banner */}
+      {needsReload && !isRestricted && (
+        <div className="mt-3 flex items-center justify-between gap-2 rounded-xl border border-amber-800/50 bg-amber-950/40 p-2.5 text-[11px] text-amber-200">
+          <div className="flex items-center gap-1.5">
+            <RotateCw className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+            <span>Refresh this webpage to inspect live DOM</span>
+          </div>
+          <button
+            type="button"
+            onClick={handleReload}
+            className="rounded bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-slate-950 hover:bg-amber-400 transition"
+          >
+            Refresh
+          </button>
+        </div>
+      )}
+
       {/* Main Score Hero */}
-      <div className="my-4 flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-3.5">
+      <div className="my-3 flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/70 p-3.5">
         <div className="space-y-1">
           <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">
-            SEO &amp; GEO HEALTH
+            {isRestricted ? "STUDIO OFFLINE MODE" : "SEO & GEO HEALTH"}
           </span>
           <div className="flex items-baseline gap-2">
             <span className="font-display text-2xl font-black text-emerald-400">
@@ -72,7 +129,11 @@ export function PopupApp() {
             </span>
           </div>
           <p className="text-[10px] text-slate-400">
-            {pageData ? `${pageData.hostname}` : "Auditing active hotel page..."}
+            {isRestricted
+              ? "All templates & brand profiles active"
+              : pageData
+              ? `${pageData.hostname}`
+              : "Auditing active hotel page..."}
           </p>
         </div>
 
