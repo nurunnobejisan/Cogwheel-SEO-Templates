@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Cogwheel SEO & GEO Studio Inspector",
-  "version": "2.6.0",
+  "version": "2.7.0",
   "description": "Hospitality SEO & GEO AI inspector by Razib Marketing. Live 100-point page audit, JSON-LD schema validator & direct studio bridge.",
   "update_url": "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/updates.xml",
   "icons": {

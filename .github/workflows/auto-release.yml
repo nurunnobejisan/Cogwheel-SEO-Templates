@@ -1,102 +1,80 @@
-name: Chrome Extension Automated Release & Updates.xml Pipeline
+name: Auto-Build & Release Chrome Extension
 
 on:
   push:
     branches:
       - main
     paths:
+      - 'manifest.json'
+      - 'src/**'
       - 'chrome-extension/**'
       - 'data/**'
-      - 'templates/**'
-      - 'package.json'
 
 permissions:
   contents: write
 
 jobs:
-  auto-release:
-    name: Build Bundle, Update Manifests & Publish Release
+  build-and-release:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Node.js Runtime
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22
-          cache: 'npm'
-          cache-dependency-path: 'chrome-extension/package-lock.json'
+          node-version: '20'
 
-      - name: Extract Extension Version
-        id: get_version
+      - name: Install & Build Extension
         run: |
-          EXT_VERSION=$(node -p "require('./chrome-extension/public/manifest.json').version")
-          echo "EXT_VERSION=${EXT_VERSION}" >> $GITHUB_ENV
-          echo "Detected extension version: ${EXT_VERSION}"
-
-      - name: Check Existing Release
-        id: check_release
-        run: |
-          TAG_EXISTS=$(git tag -l "v${{ env.EXT_VERSION }}")
-          if [ -n "$TAG_EXISTS" ]; then
-            echo "Release v${{ env.EXT_VERSION }} already exists. Skipping duplicate build."
-            echo "release_exists=true" >> $GITHUB_OUTPUT
+          if [ -d "chrome-extension" ]; then
+            cd chrome-extension
+            npm ci
+            npm run build
+            cd dist
+            zip -r ../../cogwheel-seo-studio.zip .
+            cd ../..
           else
-            echo "Release v${{ env.EXT_VERSION }} is new."
-            echo "release_exists=false" >> $GITHUB_OUTPUT
+            npm ci
+            npm run build
+            cd dist
+            zip -r ../cogwheel-seo-studio.zip .
+            cd ..
           fi
 
-      - name: Install Extension Dependencies & Build
-        if: steps.check_release.outputs.release_exists == 'false'
+      - name: Read Extension Version from manifest.json
+        id: meta
         run: |
-          cd chrome-extension
-          npm ci
-          npm run build
+          if [ -f "./manifest.json" ]; then
+            VERSION=$(node -p "require('./manifest.json').version")
+          else
+            VERSION=$(node -p "require('./chrome-extension/public/manifest.json').version")
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Package Extension ZIP Bundle
-        if: steps.check_release.outputs.release_exists == 'false'
-        run: |
-          cd chrome-extension/dist
-          zip -r ../../cogwheel-seo-studio-v${{ env.EXT_VERSION }}.zip .
-          cd ../..
-          ls -lh cogwheel-seo-studio-v${{ env.EXT_VERSION }}.zip
-
-      - name: Regenerate updates.xml for Enterprise/CRX Auto-Updates
-        if: steps.check_release.outputs.release_exists == 'false'
+      - name: Generate Chrome updates.xml
         run: |
           cat <<EOF > updates.xml
           <?xml version='1.0' encoding='UTF-8'?>
           <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
             <app appid='cogwheelseostudioinspectorid0001'>
-              <updatecheck codebase='https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/releases/download/v${{ env.EXT_VERSION }}/cogwheel-seo-studio-v${{ env.EXT_VERSION }}.zip' version='${{ env.EXT_VERSION }}' />
+              <updatecheck codebase='https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/releases/latest/download/cogwheel-seo-studio.zip' version='${{ steps.meta.outputs.version }}' />
             </app>
           </gupdate>
           EOF
 
-      - name: Commit & Push updates.xml
-        if: steps.check_release.outputs.release_exists == 'false'
+      - name: Commit Updated updates.xml
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add updates.xml
-          git diff --staged --quiet || git commit -m "chore(release): auto-update updates.xml for v${{ env.EXT_VERSION }} [skip ci]"
-          git push origin main
+          git diff --staged --quiet || git commit -m "chore: update updates.xml to v${{ steps.meta.outputs.version }}"
+          git push
 
-      - name: Publish GitHub Release with Production Assets
-        if: steps.check_release.outputs.release_exists == 'false'
+      - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: "v${{ env.EXT_VERSION }}"
-          name: "Cogwheel SEO Studio v${{ env.EXT_VERSION }}"
-          draft: false
-          prerelease: false
+          tag_name: v${{ steps.meta.outputs.version }}
+          name: Cogwheel SEO GEO Studio v${{ steps.meta.outputs.version }}
+          files: cogwheel-seo-studio.zip
           generate_release_notes: true
-          files: cogwheel-seo-studio-v${{ env.EXT_VERSION }}.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

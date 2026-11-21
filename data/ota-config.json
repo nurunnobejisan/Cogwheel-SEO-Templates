@@ -1,0 +1,15 @@
+{
+  "schemaVersion": "2.7.0",
+  "updatedAt": "2026-11-21T18:00:00Z",
+  "pixelLimits": {
+    "titleMaxPx": 580,
+    "descriptionMaxPx": 920
+  },
+  "scoringWeights": {
+    "onPage": 0.35,
+    "schema": 0.35,
+    "geoAi": 0.30
+  },
+  "keywordMatrixUrl": "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/data/78-keyword-strategy-matrix.json",
+  "brandGuardrailsUrl": "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/data/ota-config.json"
+}

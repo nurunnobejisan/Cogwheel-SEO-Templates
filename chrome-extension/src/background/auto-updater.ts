@@ -1,262 +1,140 @@
-/**
- * Cogwheel SEO Studio - Free GitHub-Hosted Auto-Update Engine (Manifest V3)
- * 
- * Layer A: Silent Over-the-Air (OTA) Live Sync for templates, keyword matrices, and brand rules
- * Layer B: Extension Binary / UI SemVer Checker & Action Badge Notifier
- */
+/// <reference types="chrome" />
+import {
+  ExtensionUpdateState,
+  OtaConfigPayload,
+  RemoteManifest,
+} from "../types/updater.types";
 
-export interface RemoteManifest {
-  name: string;
-  version: string;
-  description?: string;
-}
+export * from "../types/updater.types";
 
-export interface UpdateMetadata {
-  hasUpdate: boolean;
-  currentVersion: string;
-  remoteVersion: string;
-  releaseUrl: string;
-  downloadUrl: string;
-  changelog: string;
-  lastChecked: number;
-}
-
-export interface LiveSyncData {
-  lastSynced: number;
-  keywordCount: number;
-  matrixSha: string;
-  status: "success" | "error" | "cached";
-  message: string;
-}
-
-const GITHUB_REPO_OWNER = "jisan-razibmarketing";
-const GITHUB_REPO_NAME = "Cogwheel-SEO-Templates";
-const GITHUB_BRANCH = "main";
-
-const RAW_GITHUB_BASE = `https://raw.githubusercontent.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/${GITHUB_BRANCH}`;
-const REMOTE_MANIFEST_URL = `${RAW_GITHUB_BASE}/chrome-extension/public/manifest.json`;
-const REMOTE_KEYWORD_MATRIX_URL = `${RAW_GITHUB_BASE}/data/78-keyword-strategy-matrix.json`;
-
-const STORAGE_KEY_UPDATE = "cogwheel_extension_update";
-const STORAGE_KEY_OTA_KEYWORDS = "cogwheel_ota_keyword_matrix";
-const STORAGE_KEY_OTA_METADATA = "cogwheel_ota_sync_metadata";
-
-const ALARM_NAME_SYNC = "cogwheel-ota-sync";
-const ALARM_INTERVAL_MINUTES = 360; // Every 6 hours
+const REPO_OWNER = "jisan-razibmarketing";
+const REPO_NAME = "Cogwheel-SEO-Templates";
+const RAW_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
+const RELEASE_ZIP_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download/cogwheel-seo-studio.zip`;
+const RELEASES_PAGE_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
+const ALARM_NAME = "cogwheel_auto_update_check";
 
 /**
- * SemVer comparison utility (v1 > v2 => 1, v1 < v2 => -1, v1 == v2 => 0)
+ * Compares two SemVer strings (e.g., "2.7.0" vs "2.6.1").
+ * Returns true if remoteVersion is strictly newer than localVersion.
  */
-export function compareSemVer(v1: string, v2: string): number {
-  const clean1 = v1.replace(/^v/, "").trim();
-  const clean2 = v2.replace(/^v/, "").trim();
+export function isNewerVersion(localVersion: string, remoteVersion: string): boolean {
+  const localParts = localVersion.replace(/^v/, "").split(".").map(Number);
+  const remoteParts = remoteVersion.replace(/^v/, "").split(".").map(Number);
+  const maxLen = Math.max(localParts.length, remoteParts.length);
 
-  const parts1 = clean1.split(".").map((n) => parseInt(n, 10) || 0);
-  const parts2 = clean2.split(".").map((n) => parseInt(n, 10) || 0);
-
-  const maxLen = Math.max(parts1.length, parts2.length);
   for (let i = 0; i < maxLen; i++) {
-    const num1 = parts1[i] ?? 0;
-    const num2 = parts2[i] ?? 0;
-    if (num1 > num2) return 1;
-    if (num1 < num2) return -1;
+    const localNum = localParts[i] ?? 0;
+    const remoteNum = remoteParts[i] ?? 0;
+    if (remoteNum > localNum) return true;
+    if (remoteNum < localNum) return false;
   }
-  return 0;
+  return false;
 }
 
 /**
- * Layer A — Silent Over-the-Air (OTA) Live Sync
- * Fetches latest 78-keyword strategy matrix and brand rules from GitHub main
+ * Runs both OTA data sync (silent live rules/templates update)
+ * and extension binary version check against GitHub main.
  */
-export async function triggerLiveSync(): Promise<LiveSyncData> {
-  try {
-    const response = await fetch(REMOTE_KEYWORD_MATRIX_URL, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Cache-Control": "no-cache",
-      },
-    });
+export async function runAutoUpdateCheck(): Promise<ExtensionUpdateState> {
+  const currentVersion =
+    typeof chrome !== "undefined" && chrome.runtime?.getManifest
+      ? chrome.runtime.getManifest().version
+      : "2.7.0";
+  const nowIso = new Date().toISOString();
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch keyword matrix: HTTP ${response.status}`);
-    }
-
-    const jsonText = await response.text();
-    const parsedData = JSON.parse(jsonText) as {
-      metadata?: { totalKeywords?: number };
-      keywords?: unknown[];
-    };
-
-    const keywordCount = parsedData.metadata?.totalKeywords ?? (Array.isArray(parsedData.keywords) ? parsedData.keywords.length : 78);
-
-    // Compute simple checksum
-    let hash = 0;
-    for (let i = 0; i < jsonText.length; i++) {
-      hash = (hash << 5) - hash + jsonText.charCodeAt(i);
-      hash |= 0;
-    }
-    const matrixSha = `sha_${Math.abs(hash).toString(16)}`;
-
-    // Cache in chrome.storage.local
-    await new Promise<void>((resolve) => {
-      chrome.storage.local.set(
-        {
-          [STORAGE_KEY_OTA_KEYWORDS]: jsonText,
-          [STORAGE_KEY_OTA_METADATA]: {
-            lastSynced: Date.now(),
-            keywordCount,
-            matrixSha,
-          },
-        },
-        () => resolve()
-      );
-    });
-
-    return {
-      lastSynced: Date.now(),
-      keywordCount,
-      matrixSha,
-      status: "success",
-      message: `Synchronized ${keywordCount} hospitality SEO & GEO keywords and brand rules.`,
-    };
-  } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown sync error";
-    return {
-      lastSynced: Date.now(),
-      keywordCount: 78,
-      matrixSha: "fallback",
-      status: "error",
-      message: msg,
-    };
-  }
-}
-
-/**
- * Layer B — Extension Binary / UI SemVer Version Checker
- * Compares current installed manifest against remote GitHub main manifest.json
- */
-export async function checkForExtensionUpdate(): Promise<UpdateMetadata> {
-  const currentVersion = chrome.runtime.getManifest().version;
+  let latestVersion = currentVersion;
+  let updateAvailable = false;
+  let otaDataVersion = "local-default";
 
   try {
-    const response = await fetch(REMOTE_MANIFEST_URL, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-        "Cache-Control": "no-cache",
-      },
+    // 1. Check remote manifest.json for UI / Extension code updates
+    const manifestRes = await fetch(`${RAW_BASE}/manifest.json?t=${Date.now()}`, {
+      cache: "no-store",
     });
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch remote manifest: HTTP ${response.status}`);
+    if (manifestRes.ok) {
+      const remoteManifest = (await manifestRes.json()) as RemoteManifest;
+      latestVersion = remoteManifest.version;
+      updateAvailable = isNewerVersion(currentVersion, latestVersion);
     }
 
-    const remoteManifest = (await response.json()) as RemoteManifest;
-    const remoteVersion = remoteManifest.version;
-
-    const isNewer = compareSemVer(remoteVersion, currentVersion) > 0;
-    const releaseUrl = `https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/releases/tag/v${remoteVersion}`;
-    const downloadUrl = `https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/releases/download/v${remoteVersion}/cogwheel-seo-studio-v${remoteVersion}.zip`;
-
-    const metadata: UpdateMetadata = {
-      hasUpdate: isNewer,
-      currentVersion,
-      remoteVersion,
-      releaseUrl,
-      downloadUrl,
-      changelog: isNewer
-        ? `Cogwheel SEO Studio v${remoteVersion} is available with updated hospitality templates, live SERP width tools, and GEO AI rules.`
-        : "Installed version is optimal and up to date with GitHub main.",
-      lastChecked: Date.now(),
-    };
-
-    // Store in storage
-    await new Promise<void>((resolve) => {
-      chrome.storage.local.set({ [STORAGE_KEY_UPDATE]: metadata }, () => resolve());
+    // 2. Silently sync latest SEO/GEO rules, pixel limits & keyword matrix (OTA)
+    const otaRes = await fetch(`${RAW_BASE}/data/ota-config.json?t=${Date.now()}`, {
+      cache: "no-store",
     });
-
-    // Update Action Badge
-    if (chrome.action && chrome.action.setBadgeText) {
-      if (isNewer) {
-        chrome.action.setBadgeText({ text: "NEW" });
-        chrome.action.setBadgeBackgroundColor({ color: "#10b981" });
-      } else {
-        chrome.action.setBadgeText({ text: "" });
+    if (otaRes.ok) {
+      const otaConfig = (await otaRes.json()) as OtaConfigPayload;
+      otaDataVersion = otaConfig.schemaVersion;
+      if (typeof chrome !== "undefined" && chrome.storage?.local) {
+        await chrome.storage.local.set({
+          cogwheel_ota_config: otaConfig,
+        });
       }
     }
-
-    return metadata;
   } catch (error) {
-    const fallbackMetadata: UpdateMetadata = {
-      hasUpdate: false,
-      currentVersion,
-      remoteVersion: currentVersion,
-      releaseUrl: `https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/releases/latest`,
-      downloadUrl: `https://github.com/${GITHUB_REPO_OWNER}/${GITHUB_REPO_NAME}/releases/latest`,
-      changelog: "Offline or unable to connect to GitHub.",
-      lastChecked: Date.now(),
-    };
-
-    return fallbackMetadata;
+    console.warn("[Cogwheel Auto-Updater] Offline or rate-limited:", error);
   }
+
+  const updateState: ExtensionUpdateState = {
+    currentVersion,
+    latestVersion,
+    updateAvailable,
+    releaseDownloadUrl: RELEASE_ZIP_URL,
+    releaseNotesUrl: RELEASES_PAGE_URL,
+    lastCheckedAt: nowIso,
+    otaDataVersion,
+    otaSyncedAt: nowIso,
+  };
+
+  if (typeof chrome !== "undefined" && chrome.storage?.local) {
+    await chrome.storage.local.set({ cogwheel_update_state: updateState });
+  }
+
+  // Highlight extension toolbar icon when a new build is ready
+  if (typeof chrome !== "undefined" && chrome.action?.setBadgeText) {
+    if (updateAvailable) {
+      await chrome.action.setBadgeText({ text: "NEW" });
+      await chrome.action.setBadgeBackgroundColor({ color: "#10B981" });
+    } else {
+      await chrome.action.setBadgeText({ text: "" });
+    }
+  }
+
+  return updateState;
 }
 
-/**
- * Retrieve cached update metadata
- */
-export async function getStoredUpdateInfo(): Promise<UpdateMetadata | null> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get([STORAGE_KEY_UPDATE], (result) => {
-      const info = result[STORAGE_KEY_UPDATE] as UpdateMetadata | undefined;
-      resolve(info ?? null);
-    });
-  });
-}
-
-/**
- * Initialize 6-hour alarm schedule and startup listeners
- */
 export function initAutoUpdater(): void {
-  // 1. Setup recurring alarm (every 6 hours)
-  if (chrome.alarms && chrome.alarms.create) {
-    chrome.alarms.create(ALARM_NAME_SYNC, {
-      periodInMinutes: ALARM_INTERVAL_MINUTES,
-    });
+  if (typeof chrome === "undefined" || !chrome.runtime) return;
 
-    chrome.alarms.onAlarm.addListener((alarm) => {
-      if (alarm.name === ALARM_NAME_SYNC) {
-        void triggerLiveSync();
-        void checkForExtensionUpdate();
-      }
-    });
-  }
+  // Register periodic 6-hour background check
+  chrome.runtime.onInstalled?.addListener(() => {
+    chrome.alarms?.create(ALARM_NAME, { periodInMinutes: 360 });
+    void runAutoUpdateCheck();
+  });
 
-  // 2. Run initial check on install or startup
-  void triggerLiveSync();
-  void checkForExtensionUpdate();
+  chrome.runtime.onStartup?.addListener(() => {
+    void runAutoUpdateCheck();
+  });
 
-  // 3. Listen for direct UI messages from SidePanel
-  chrome.runtime.onMessage.addListener((message: { type?: string }, _sender, sendResponse) => {
-    if (message.type === "CHECK_FOR_UPDATES") {
-      checkForExtensionUpdate().then((res) => {
-        sendResponse({ success: true, metadata: res });
-      });
+  chrome.alarms?.onAlarm?.addListener((alarm) => {
+    if (alarm.name === ALARM_NAME) {
+      void runAutoUpdateCheck();
+    }
+  });
+
+  // Allow manual "Check for Updates" trigger from the Inspector UI
+  chrome.runtime.onMessage?.addListener((message: { type?: string }, _sender, sendResponse) => {
+    if (message.type === "COGWHEEL_CHECK_UPDATES" || message.type === "SYNC_RULES_NOW") {
+      void runAutoUpdateCheck().then((state) => sendResponse(state));
       return true;
     }
-
-    if (message.type === "SYNC_RULES_NOW") {
-      triggerLiveSync().then((res) => {
-        sendResponse({ success: true, data: res });
-      });
-      return true;
-    }
-
     if (message.type === "GET_UPDATE_METADATA") {
-      getStoredUpdateInfo().then((res) => {
-        sendResponse({ success: true, metadata: res });
+      void chrome.storage.local.get(["cogwheel_update_state"], (res) => {
+        const state = res["cogwheel_update_state"] as ExtensionUpdateState | undefined;
+        sendResponse({ success: true, metadata: state });
       });
       return true;
     }
+    return false;
   });
 }
