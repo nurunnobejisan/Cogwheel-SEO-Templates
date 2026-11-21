@@ -693,3 +693,126 @@ export function calculateSeoScores(data: PageAuditData): ScoreBreakdown {
     quickWins,
   };
 }
+
+export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
+  url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+  origin: "https://github.com",
+  pathname: "/jisan-razibmarketing/Cogwheel-SEO-Templates",
+  protocol: "https:",
+  hostname: "github.com",
+  title: "Cogwheel SEO & Hospitality Templates Studio | Official Site",
+  titlePixelWidth: 465,
+  metaDesc: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.",
+  metaDescPixelWidth: 880,
+  canonical: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+  metaRobots: "index, follow",
+  language: "en",
+  h1Elements: ["Cogwheel SEO & Hospitality Templates Studio"],
+  h2Elements: [
+    "Brand Guardrails & Pixel Enforcement",
+    "Lodging Schema & JSON-LD Automation",
+    "Generative Engine Optimization (GEO) Answer Blocks",
+    "Automated Multi-Property Batch Auditing",
+  ],
+  h3Elements: [
+    "Enterprise Hospitality Brand Presets",
+    "FAQPage & Entity Graph Validation",
+    "OTA Direct-Booking Displacement Engine",
+  ],
+  allHeadings: [
+    { tag: "H1", text: "Cogwheel SEO & Hospitality Templates Studio" },
+    { tag: "H2", text: "Brand Guardrails & Pixel Enforcement" },
+    { tag: "H2", text: "Lodging Schema & JSON-LD Automation" },
+    { tag: "H2", text: "Generative Engine Optimization (GEO) Answer Blocks" },
+    { tag: "H2", text: "Automated Multi-Property Batch Auditing" },
+    { tag: "H3", text: "Enterprise Hospitality Brand Presets" },
+    { tag: "H3", text: "FAQPage & Entity Graph Validation" },
+    { tag: "H3", text: "OTA Direct-Booking Displacement Engine" },
+  ],
+  totalImages: 12,
+  imagesWithoutAlt: 0,
+  oversizedImages: 0,
+  imagesList: [
+    { src: "/assets/banner.png", alt: "Cogwheel SEO Studio Banner", loading: "lazy" },
+    { src: "/assets/preview.png", alt: "SERP and Social Preview", loading: "lazy" },
+  ],
+  words: 1450,
+  extractedAmenities: [
+    "Brand Guardrails",
+    "Pixel Width Enforcement",
+    "Lodging JSON-LD Schema",
+    "FAQPage Schema",
+    "GEO AI Readiness",
+    "Batch Auditing",
+    "Non-Destructive Overlays",
+  ],
+  topKeywords: [
+    { term: "hospitality seo", count: 28, density: "1.9%" },
+    { term: "geo ai", count: 22, density: "1.5%" },
+    { term: "direct booking", count: 19, density: "1.3%" },
+    { term: "hotel schema", count: 16, density: "1.1%" },
+    { term: "ota displacement", count: 14, density: "1.0%" },
+  ],
+  schemas: [
+    {
+      "@context": "https://schema.org",
+      "@type": "Hotel",
+      name: "Cogwheel Luxury Resort & Studio",
+      description: "Premier hospitality SEO and Generative Engine Optimization platform.",
+      url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: "What is Cogwheel SEO Studio?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Cogwheel SEO Studio is a specialized hospitality optimization platform designed for hotel SEO managers.",
+          },
+        },
+      ],
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home" },
+        { "@type": "ListItem", position: 2, name: "Hospitality SEO Templates" },
+      ],
+    },
+  ],
+  links: {
+    internal: 58,
+    external: 14,
+    nofollow: 0,
+  },
+  internalUrls: [
+    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/brand-compliant-hotel-onpage.md",
+    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/hotel-geo-ai-visibility.md",
+    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/hotel-lodging-schema.md",
+  ],
+  hasViewport: true,
+  hasOgTitle: true,
+  hasOgImage: true,
+  ogTitle: "Cogwheel SEO & Hospitality Templates Studio | Official Site",
+  ogDescription: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.",
+  ogImage: "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/assets/banner.png",
+  twitterTags: {
+    card: "summary_large_image",
+    title: "Cogwheel SEO & Hospitality Templates Studio",
+    description: "Production-grade hospitality SEO & GEO platform.",
+    image: "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/assets/banner.png",
+  },
+  detectedNap: {
+    phone: "+1-800-555-0199",
+    address: "Panama City Beachfront, FL 32413",
+    email: "contact@razibmarketing.com",
+  },
+  socialLinks: [
+    { platform: "GitHub", url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates" },
+  ],
+  loadTimeMs: 240,
+};

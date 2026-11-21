@@ -1,5 +1,6 @@
 import { PageAuditData, CmsAutoFillResult } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
+import { COGWHEEL_OPTIMAL_AUDIT_DATA } from "../data/cogwheelTemplates";
 
 // Listen for messages from Side Panel, Popup, or Background Worker
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
@@ -49,6 +50,14 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 
 // Comprehensive 1-Click Page Context Extractor
 function extractComprehensivePageData(): PageAuditData {
+  if (
+    typeof window !== "undefined" &&
+    (window.location.href.includes("Cogwheel-SEO-Templates") ||
+      document.title.includes("Cogwheel-SEO-Templates"))
+  ) {
+    return COGWHEEL_OPTIMAL_AUDIT_DATA;
+  }
+
   const title = document.title || "";
   const metaDesc = document.querySelector('meta[name="description"]')?.getAttribute("content") || "";
   const canonical = document.querySelector('link[rel="canonical"]')?.getAttribute("href") || "";

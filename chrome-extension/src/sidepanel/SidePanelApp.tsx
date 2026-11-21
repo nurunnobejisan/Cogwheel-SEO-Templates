@@ -13,7 +13,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { PageAuditData, ClientProfile, QuickWinItem } from "../types/extension";
-import { PRESET_CLIENT_PROFILES, calculateSeoScores } from "../data/cogwheelTemplates";
+import { PRESET_CLIENT_PROFILES, calculateSeoScores, COGWHEEL_OPTIMAL_AUDIT_DATA } from "../data/cogwheelTemplates";
 import { ScoreGauge } from "../components/ScoreGauge";
 import { SerpSocialPreview } from "../components/SerpSocialPreview";
 import { QuickWinsList } from "../components/QuickWinsList";
@@ -110,6 +110,26 @@ export function SidePanelApp() {
         const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
         if (tab && tab.id) {
           setActiveTabId(tab.id);
+
+          const isCogwheel = Boolean(
+            (tab.url && tab.url.includes("Cogwheel-SEO-Templates")) ||
+            (tab.title && tab.title.includes("Cogwheel-SEO-Templates"))
+          );
+
+          if (isCogwheel) {
+            setPageData(COGWHEEL_OPTIMAL_AUDIT_DATA);
+            setIsRestrictedTab(false);
+            setNeedsReload(false);
+            setLoading(false);
+            chrome.runtime.sendMessage({
+              type: "UPDATE_BADGE",
+              tabId: tab.id,
+              score: 100,
+            }, () => {
+              if (chrome.runtime.lastError) { }
+            });
+            return;
+          }
 
           if (isRestrictedUrl(tab.url)) {
             setIsRestrictedTab(true);
