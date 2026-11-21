@@ -13,7 +13,8 @@
     "test:seo": "node --experimental-strip-types tests/seoLinter.ts && node --test --experimental-strip-types tests/*.test.ts",
     "preview:seo": "node --experimental-strip-types scripts/seo-preview-cli.ts",
     "test:ts": "node --test --experimental-strip-types tests/ts/*.test.ts",
-    "export:schemas": "node --experimental-strip-types scripts/export-schemas.ts"
+    "export:schemas": "node --experimental-strip-types scripts/export-schemas.ts",
+    "extension:pack": "cd extension && zip -r ../public/cogwheel-chrome-extension.zip . -x '*.DS_Store'"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

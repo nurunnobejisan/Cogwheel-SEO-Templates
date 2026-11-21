@@ -461,6 +461,17 @@ export default function PropertyDashboard() {
             >
               Train AI ({aiStatus.activeRules})
             </button>
+            <a
+              href="/cogwheel-chrome-extension.zip"
+              download="cogwheel-chrome-extension.zip"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              title="Download Chrome Extension (100-Point Live Inspector)"
+            >
+              <svg className="h-3.5 w-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+              <span>Extension</span>
+            </a>
             <button
               type="button"
               onClick={() => setShowCommandPalette(true)}

@@ -117,6 +117,21 @@ export function CommandPalette({
     });
 
     list.push({
+      id: "action-extension",
+      title: "Download Chrome Extension (.zip)",
+      subtitle: "Install the Cogwheel SEO & GEO Inspector extension for real-time hotel page audits",
+      category: "Actions",
+      badge: "Extension",
+      action: () => {
+        onClose();
+        const a = document.createElement("a");
+        a.href = "/cogwheel-chrome-extension.zip";
+        a.download = "cogwheel-chrome-extension.zip";
+        a.click();
+      },
+    });
+
+    list.push({
       id: "action-theme",
       title: "Toggle Light / Dark Mode",
       subtitle: "Switch dashboard color scheme",
