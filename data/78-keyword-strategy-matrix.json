@@ -1,0 +1,1470 @@
+{
+  "metadata": {
+    "version": "2.6.0",
+    "datasetName": "Cogwheel Hospitality SEO & GEO Keyword Strategy Matrix",
+    "totalKeywords": 78,
+    "lastUpdated": "2026-11-21",
+    "author": "Razib Marketing (Cogwheel SEO Studio)",
+    "targetIndustries": [
+      "Hospitality",
+      "Independent Hotels",
+      "Boutique Resorts",
+      "Enterprise Hotel Brands (Marriott, Hilton, IHG, Hyatt)"
+    ],
+    "categorySummary": {
+      "Brand/Direct Booking": 13,
+      "Local/Neighborhood": 13,
+      "Airport/Transit": 13,
+      "Meetings/Weddings": 13,
+      "Extended Stay": 13,
+      "Conversational AI Prompts": 13
+    }
+  },
+  "categories": [
+    "Brand/Direct Booking",
+    "Local/Neighborhood",
+    "Airport/Transit",
+    "Meetings/Weddings",
+    "Extended Stay",
+    "Conversational AI Prompts"
+  ],
+  "keywords": [
+    {
+      "id": "kw-001",
+      "keyword": "{{hotelName}} official site book direct",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Brand Defense & Ownership",
+      "searchIntent": "Navigational",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$1.50 - $3.20",
+      "targetPageType": "Homepage / Brand Overview",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini",
+        "Google AI Overviews"
+      ],
+      "targetEntityPrompt": "Where is the official direct booking website for {{hotelName}} with guaranteed lowest rates?",
+      "competitiveContext": "Displaces OTA brand hijacking (Expedia, Booking.com) on exact-match branded navigational queries."
+    },
+    {
+      "id": "kw-002",
+      "keyword": "{{hotelName}} promo code best rate guarantee",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Rate Parity & Discounts",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.10 - $4.50",
+      "targetPageType": "Direct Booking Guarantee Landing Page",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Does {{hotelName}} offer a promo code or best rate guarantee for direct bookings?",
+      "competitiveContext": "Captures high-intent bargain hunters before they defect to coupon aggregator sites."
+    },
+    {
+      "id": "kw-003",
+      "keyword": "book direct {{hotelName}} perks",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Value Proposition",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$1.80 - $3.60",
+      "targetPageType": "Direct Booking Guarantee Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "Google Gemini",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "What are the perks and incentives of booking directly with {{hotelName}} instead of an OTA?",
+      "competitiveContext": "Highlights property perks like complimentary breakfast, room upgrades, and flexible checkout."
+    },
+    {
+      "id": "kw-004",
+      "keyword": "{{hotelName}} vs expedia rates",
+      "category": "Brand/Direct Booking",
+      "subCategory": "OTA Comparison",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.40 - $5.10",
+      "targetPageType": "Direct Booking Guarantee Landing Page",
+      "recommendedSchema": "FAQPage",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini",
+        "Google Search"
+      ],
+      "targetEntityPrompt": "Is it cheaper to book {{hotelName}} on Expedia or directly through the hotel website?",
+      "competitiveContext": "Directly explains price parity rules and hidden OTA service fees."
+    },
+    {
+      "id": "kw-005",
+      "keyword": "{{hotelName}} member discount rate",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Loyalty & Rewards",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$1.90 - $3.80",
+      "targetPageType": "Homepage / Brand Overview",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Gemini",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "How can I join the {{loyaltyProgram}} at {{hotelName}} to get member-exclusive discounts?",
+      "competitiveContext": "Drives immediate member registrations and direct guest relationship acquisition."
+    },
+    {
+      "id": "kw-006",
+      "keyword": "{{brand}} hotel direct booking benefits {{cityName}}",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Brand Portfolio Advantage",
+      "searchIntent": "Informational",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.20 - $4.00",
+      "targetPageType": "Homepage / Brand Overview",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "Google Gemini",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "What are the benefits of booking a {{brand}} hotel directly in {{cityName}}?",
+      "competitiveContext": "Reinforces corporate brand standard compliance and loyalty point accrual."
+    },
+    {
+      "id": "kw-007",
+      "keyword": "{{hotelName}} reservation cancellation policy",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Policy Transparency",
+      "searchIntent": "Informational",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$1.10 - $2.30",
+      "targetPageType": "FAQ & Policies Page",
+      "recommendedSchema": "FAQPage",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What is the cancellation and refund policy for reservations at {{hotelName}}?",
+      "competitiveContext": "Builds booking trust by articulating flexible 24/48-hour cancellation windows."
+    },
+    {
+      "id": "kw-008",
+      "keyword": "{{hotelName}} direct booking breakfast included",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Package Perks",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.50 - $4.80",
+      "targetPageType": "Rooms/Suites Landing Page",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Does booking directly at {{hotelName}} include free breakfast every morning?",
+      "competitiveContext": "High-conversion amenity hook that shifts guests away from room-only OTA listings."
+    },
+    {
+      "id": "kw-009",
+      "keyword": "{{hotelName}} official website phone number",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Direct Contact / NAP",
+      "searchIntent": "Navigational",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$0.90 - $1.80",
+      "targetPageType": "Contact & Location Page",
+      "recommendedSchema": "LocalBusiness",
+      "geoEngineRelevance": [
+        "Google Local Pack",
+        "Google Search",
+        "Apple Maps",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "What is the front desk phone number and address for {{hotelName}}?",
+      "competitiveContext": "Protects against fake intermediary phone listings and rogue 1-800 booking hotlines."
+    },
+    {
+      "id": "kw-010",
+      "keyword": "{{hotelName}} check-in check-out times",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Operational Info",
+      "searchIntent": "Informational",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$0.80 - $1.50",
+      "targetPageType": "FAQ & Policies Page",
+      "recommendedSchema": "FAQPage",
+      "geoEngineRelevance": [
+        "Google AI Overviews",
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What time is check-in and check-out at {{hotelName}} and is early check-in allowed?",
+      "competitiveContext": "High-frequency snippet target that satisfies pre-arrival search queries."
+    },
+    {
+      "id": "kw-011",
+      "keyword": "guaranteed lowest price {{hotelName}}",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Price Assurance",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.60 - $5.40",
+      "targetPageType": "Direct Booking Guarantee Landing Page",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "How can I guarantee I get the lowest room rate when staying at {{hotelName}}?",
+      "competitiveContext": "Enforces property Price Match Guarantees with explicit policy terms."
+    },
+    {
+      "id": "kw-012",
+      "keyword": "{{hotelName}} flexible rate calendar",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Date Flexibility",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$1.70 - $3.50",
+      "targetPageType": "Rooms/Suites Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Does {{hotelName}} have a flexible date booking calendar to view low-season rates?",
+      "competitiveContext": "Directs leisure travelers into property rate calendar booking engines."
+    },
+    {
+      "id": "kw-013",
+      "keyword": "{{hotelName}} loyalty points direct booking",
+      "category": "Brand/Direct Booking",
+      "subCategory": "Loyalty Accrual",
+      "searchIntent": "Informational",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$1.40 - $2.80",
+      "targetPageType": "Homepage / Brand Overview",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "Google Gemini",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Do I earn {{loyaltyProgram}} points when booking directly through {{hotelName}} website?",
+      "competitiveContext": "Reminds travelers that OTA bookings are ineligible for brand points and tier status."
+    },
+    {
+      "id": "kw-014",
+      "keyword": "hotels in {{neighborhoodName}} {{cityName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Sub-Market Discovery",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.20 - $6.50",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What are the best recommended hotels located in {{neighborhoodName}} {{cityName}}?",
+      "competitiveContext": "High-value local landing page targeting neighborhood travelers wanting distinct sub-market vibes."
+    },
+    {
+      "id": "kw-015",
+      "keyword": "boutique hotels near {{landmarkName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Landmark Proximity",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.80 - $7.20",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Find boutique hotels situated closest to {{landmarkName}} with walking access.",
+      "competitiveContext": "Captures cultural and leisure travelers planning trips around anchor attractions."
+    },
+    {
+      "id": "kw-016",
+      "keyword": "hotels walking distance to {{downtownAttraction}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Walkability / Spatial",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.90 - $5.80",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini",
+        "Google AI Overviews"
+      ],
+      "targetEntityPrompt": "Which hotels in {{cityName}} are within an easy 5-10 minute walk of {{downtownAttraction}}?",
+      "competitiveContext": "Emphasizes walkability scores and pedestrian convenience over suburban competitors."
+    },
+    {
+      "id": "kw-017",
+      "keyword": "best places to stay in {{historicDistrict}} {{cityName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Historic / Heritage",
+      "searchIntent": "Informational",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.60 - $5.10",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Recommend the top rated places to stay in {{historicDistrict}} {{cityName}} for a weekend getaway.",
+      "competitiveContext": "Positions property as the premier historic gateway with rich architectural character."
+    },
+    {
+      "id": "kw-018",
+      "keyword": "hotels near {{cityName}} convention center",
+      "category": "Local/Neighborhood",
+      "subCategory": "Conference Proximity",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$4.50 - $9.20",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "What are the best hotels adjacent or connected to {{cityName}} Convention Center?",
+      "competitiveContext": "Captures business travelers, exhibitors, and convention attendees seeking proximity."
+    },
+    {
+      "id": "kw-019",
+      "keyword": "oceanfront hotels in {{cityName}} beachfront",
+      "category": "Local/Neighborhood",
+      "subCategory": "Coastal / Waterfront",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.60 - $7.80",
+      "targetPageType": "Homepage / Brand Overview",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "Google Gemini",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Which beachfront hotels in {{cityName}} have direct beach boardwalk access and ocean views?",
+      "competitiveContext": "High-intent leisure search term; requires verified geographical proximity markers."
+    },
+    {
+      "id": "kw-020",
+      "keyword": "hotels near {{stadiumName}} {{cityName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Sports & Entertainment",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$4.10 - $8.50",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Where should sports fans stay near {{stadiumName}} in {{cityName}} with game day parking?",
+      "competitiveContext": "Surges during concert and game dates; captures fans willing to pay premium proximity rates."
+    },
+    {
+      "id": "kw-021",
+      "keyword": "pet friendly hotels in {{neighborhoodName}} {{cityName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Pet Friendly Amenity",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$2.80 - $5.50",
+      "targetPageType": "FAQ & Amenities Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Which hotels in {{neighborhoodName}} {{cityName}} welcome dogs and what are their pet fees?",
+      "competitiveContext": "Ranks on specific pet weight limits, pet fee transparency, and nearby dog parks."
+    },
+    {
+      "id": "kw-022",
+      "keyword": "luxury hotels in downtown {{cityName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Luxury Tier",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$4.80 - $9.90",
+      "targetPageType": "Homepage / Brand Overview",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What are the premier 4-star and 5-star luxury hotels in downtown {{cityName}}?",
+      "competitiveContext": "Targets high-ADR travelers seeking upscale amenities, concierge service, and fine dining."
+    },
+    {
+      "id": "kw-023",
+      "keyword": "hotels with rooftop bar in {{neighborhoodName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Lifestyle & Nightlife",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.10 - $6.20",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini",
+        "Google Maps"
+      ],
+      "targetEntityPrompt": "Which hotels in {{neighborhoodName}} have a rooftop bar and lounge with skyline views?",
+      "competitiveContext": "Highly visual lifestyle query that drives social engagement and leisure bookings."
+    },
+    {
+      "id": "kw-024",
+      "keyword": "family friendly resorts near {{themeParkName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Family Leisure",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.40 - $7.10",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Google Gemini",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "Find family-friendly resorts near {{themeParkName}} with pools and bunk bed suites.",
+      "competitiveContext": "Captures parents looking for suites, pools, and convenient park transit."
+    },
+    {
+      "id": "kw-025",
+      "keyword": "hotels near {{medicalCenterName}} {{cityName}}",
+      "category": "Local/Neighborhood",
+      "subCategory": "Medical / University Proximity",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.20 - $4.40",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Which hotels near {{medicalCenterName}} offer medical patient rates and quiet accommodations?",
+      "competitiveContext": "Consistent year-round demand from visiting families, patients, and medical personnel."
+    },
+    {
+      "id": "kw-026",
+      "keyword": "quiet hotels near {{cityName}} waterfront",
+      "category": "Local/Neighborhood",
+      "subCategory": "Scenic Tranquility",
+      "searchIntent": "Informational",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.70 - $5.30",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Recommend quiet, relaxing hotels located near the waterfront in {{cityName}} away from noisy nightlife.",
+      "competitiveContext": "Appeals to travelers prioritizing soundproof rooms, private balconies, and scenic vistas."
+    },
+    {
+      "id": "kw-027",
+      "keyword": "hotels near {{airportCode}} airport with free shuttle",
+      "category": "Airport/Transit",
+      "subCategory": "Airport Shuttle",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.50 - $6.80",
+      "targetPageType": "Airport Transit Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "Which hotels near {{airportCode}} Airport provide a complimentary 24/7 airport shuttle service?",
+      "competitiveContext": "Dominant airport transit keyword; requires explicit shuttle frequency and pickup instructions."
+    },
+    {
+      "id": "kw-028",
+      "keyword": "best hotel near {{airportCode}} for early flight",
+      "category": "Airport/Transit",
+      "subCategory": "Early Morning Flight",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.20 - $6.20",
+      "targetPageType": "Airport Transit Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What is the best hotel near {{airportCode}} to stay at for a 6:00 AM departure flight?",
+      "competitiveContext": "Emphasizes fast grab-and-go breakfast starting at 4:30 AM and short 5-minute terminal transit."
+    },
+    {
+      "id": "kw-029",
+      "keyword": "airport hotels with 24 hour shuttle {{cityName}}",
+      "category": "Airport/Transit",
+      "subCategory": "24-Hour Shuttle",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.90 - $5.60",
+      "targetPageType": "Airport Transit Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "List airport hotels in {{cityName}} operating an on-demand, round-the-clock airport shuttle.",
+      "competitiveContext": "Critical differentiator for international and red-eye flight connections."
+    },
+    {
+      "id": "kw-030",
+      "keyword": "hotels walking distance to {{trainStationName}}",
+      "category": "Airport/Transit",
+      "subCategory": "Rail Transit",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.80 - $5.40",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Find hotels that are within walking distance of {{trainStationName}} in {{cityName}}.",
+      "competitiveContext": "Captures Amtrak and commuter rail travelers seeking zero-Uber transit."
+    },
+    {
+      "id": "kw-031",
+      "keyword": "overnight layover hotels near {{airportCode}}",
+      "category": "Airport/Transit",
+      "subCategory": "Flight Layover",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.60 - $5.10",
+      "targetPageType": "Airport Transit Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What are the best options for an overnight layover hotel near {{airportCode}}?",
+      "competitiveContext": "Fast booking window (same day or next day); requires flexible check-in guarantees."
+    },
+    {
+      "id": "kw-032",
+      "keyword": "hotels near {{cruisePortName}} with shuttle to terminal",
+      "category": "Airport/Transit",
+      "subCategory": "Cruise Terminal Transit",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.60 - $7.30",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Which hotels near {{cruisePortName}} offer pre-cruise packages with shuttle service to the ship?",
+      "competitiveContext": "High-margin stay-and-cruise packages with car storage and embarkation shuttles."
+    },
+    {
+      "id": "kw-033",
+      "keyword": "park sleep fly hotels near {{airportCode}}",
+      "category": "Airport/Transit",
+      "subCategory": "Park Sleep Fly",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.90 - $7.90",
+      "targetPageType": "Airport Transit Landing Page",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Does any hotel near {{airportCode}} offer a Park, Sleep & Fly package with 7 days parking?",
+      "competitiveContext": "Monetizes empty parking lot spaces with package hotel stays for suburban travelers."
+    },
+    {
+      "id": "kw-034",
+      "keyword": "quiet soundproof hotels near {{airportCode}}",
+      "category": "Airport/Transit",
+      "subCategory": "Acoustic Comfort",
+      "searchIntent": "Informational",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.40 - $4.80",
+      "targetPageType": "Rooms/Suites Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Which hotels near {{airportCode}} feature double-pane soundproof windows for deep sleep?",
+      "competitiveContext": "Overcomes airport noise objections with verified double-glazed acoustic window specs."
+    },
+    {
+      "id": "kw-035",
+      "keyword": "hotels near {{highwayCorridor}} with free parking",
+      "category": "Airport/Transit",
+      "subCategory": "Highway / Corridor",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$2.30 - $4.60",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "Find hotels along the {{highwayCorridor}} corridor in {{cityName}} with complimentary surface parking.",
+      "competitiveContext": "Captures road-trippers and corporate drive-market visitors avoiding downtown valet charges."
+    },
+    {
+      "id": "kw-036",
+      "keyword": "budget friendly airport hotels {{airportCode}}",
+      "category": "Airport/Transit",
+      "subCategory": "Value Airport",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.10 - $4.20",
+      "targetPageType": "Airport Transit Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "What are the most affordable, clean airport hotels near {{airportCode}} with good reviews?",
+      "competitiveContext": "Targets price-conscious flight crews, standby passengers, and budget travelers."
+    },
+    {
+      "id": "kw-037",
+      "keyword": "suite hotels near {{airportCode}} with free breakfast",
+      "category": "Airport/Transit",
+      "subCategory": "Airport Suites",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.80 - $5.50",
+      "targetPageType": "Rooms/Suites Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Which airport hotels near {{airportCode}} offer multi-room suites and hot breakfast included?",
+      "competitiveContext": "Positions all-suite properties ahead of traditional single-room transit motels."
+    },
+    {
+      "id": "kw-038",
+      "keyword": "hotels near {{transitHubName}} {{cityName}}",
+      "category": "Airport/Transit",
+      "subCategory": "Multimodal Hub",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.70 - $5.30",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "Where are the best hotels located next to the {{transitHubName}} light rail in {{cityName}}?",
+      "competitiveContext": "Appeals to eco-friendly and car-free travelers wanting seamless urban access."
+    },
+    {
+      "id": "kw-039",
+      "keyword": "extended parking hotels near {{airportCode}}",
+      "category": "Airport/Transit",
+      "subCategory": "Long-Term Parking",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.10 - $6.10",
+      "targetPageType": "Airport Transit Landing Page",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Can I leave my car parked at a hotel near {{airportCode}} for two weeks while traveling?",
+      "competitiveContext": "High-margin ancillary revenue stream competing against off-airport parking lots."
+    },
+    {
+      "id": "kw-040",
+      "keyword": "hotel conference rooms for rent in {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Corporate Meetings",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$6.50 - $14.20",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What hotels in {{cityName}} have conference rooms available to rent for corporate meetings?",
+      "competitiveContext": "Extremely high revenue potential from multi-day room rentals and banquet food & beverage."
+    },
+    {
+      "id": "kw-041",
+      "keyword": "hotels with meeting spaces for {{guestCount}} guests {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Capacity Targeting",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$5.80 - $12.50",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Find hotels in {{cityName}} that can host a meeting or reception for {{guestCount}} attendees.",
+      "competitiveContext": "Requires exact square footage capacity charts (classroom, theater, banquet, reception)."
+    },
+    {
+      "id": "kw-042",
+      "keyword": "wedding room blocks hotel {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Wedding Room Blocks",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$5.20 - $11.00",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "How do I reserve a discounted wedding guest room block at a hotel in {{cityName}}?",
+      "competitiveContext": "Secures guaranteed 10-30 room commitments over weekend peak dates."
+    },
+    {
+      "id": "kw-043",
+      "keyword": "corporate retreat hotels near {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Corporate Retreats",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$5.90 - $13.00",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Recommend luxury retreat hotels near {{cityName}} for an executive leadership offsite.",
+      "competitiveContext": "Attracts high-budget executive teams seeking privacy, team building, and upscale catering."
+    },
+    {
+      "id": "kw-044",
+      "keyword": "hotels with event ballroom in {{neighborhoodName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Ballroom Venues",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$6.10 - $13.50",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "Which hotels in {{neighborhoodName}} feature an elegant ballroom for galas and banquets?",
+      "competitiveContext": "Competes against standalone wedding venues with the advantage of on-site guest accommodations."
+    },
+    {
+      "id": "kw-045",
+      "keyword": "executive boardroom rental {{hotelName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Boardroom Rentals",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$5.40 - $11.50",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "How much does it cost to rent the executive boardroom at {{hotelName}} for a day?",
+      "competitiveContext": "Targets C-suite meetings requiring videoconferencing tech, ergonomic seating, and privacy."
+    },
+    {
+      "id": "kw-046",
+      "keyword": "hotel banquet halls for corporate dinner {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Banquet Dining",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$5.60 - $12.00",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Where can a company host an annual holiday banquet dinner in {{cityName}} with hotel rooms?",
+      "competitiveContext": "Drives seasonal holiday party demand and substantial food & beverage minimums."
+    },
+    {
+      "id": "kw-047",
+      "keyword": "wedding reception venue and hotel rooms {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Full Wedding Package",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$6.20 - $13.80",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What hotel in {{cityName}} offers an all-inclusive wedding ceremony, reception, and guest rooms?",
+      "competitiveContext": "Captures brides and wedding planners seeking convenient one-stop venue solutions."
+    },
+    {
+      "id": "kw-048",
+      "keyword": "hotels with breakout meeting rooms {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Workshop Facilities",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$5.10 - $10.80",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Which hotels in {{cityName}} have a main ballroom plus 3-5 smaller breakout rooms?",
+      "competitiveContext": "Essential architectural configuration for conferences, training seminars, and trade groups."
+    },
+    {
+      "id": "kw-049",
+      "keyword": "group hotel rates for sports teams {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Sports Team Travel",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.80 - $7.50",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "How do youth and collegiate sports teams book discounted block rooms in {{cityName}}?",
+      "competitiveContext": "Reliable weekend volume filler requiring double-queen rooms and bus parking."
+    },
+    {
+      "id": "kw-050",
+      "keyword": "family reunion hotel room block {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Social Groups",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.50 - $7.00",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "What is the best hotel in {{cityName}} for a 50-person multi-generational family reunion?",
+      "competitiveContext": "Captures multi-room social blocks seeking central hospitality suites and barbecue areas."
+    },
+    {
+      "id": "kw-051",
+      "keyword": "hotels with outdoor terrace event space {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Outdoor Venues",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$5.70 - $12.20",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Find hotels in {{cityName}} featuring an outdoor rooftop or patio event terrace for cocktail hours.",
+      "competitiveContext": "Highly sought-after feature for sunset wedding receptions and corporate mixers."
+    },
+    {
+      "id": "kw-052",
+      "keyword": "hotel RFP corporate meetings group sales {{cityName}}",
+      "category": "Meetings/Weddings",
+      "subCategory": "Direct Sales RFP",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$6.80 - $15.00",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "Submit an RFP for corporate hotel meeting room blocks directly to {{hotelName}} sales team.",
+      "competitiveContext": "Direct pipeline connection into sales manager inboxes, bypassing third-party RFP commissions."
+    },
+    {
+      "id": "kw-053",
+      "keyword": "extended stay hotels with kitchens in {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "In-Suite Kitchens",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.80 - $7.60",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What are the best extended stay hotels in {{cityName}} featuring fully equipped in-room kitchens?",
+      "competitiveContext": "Primary qualifier for multi-week stays; requires details on full-size refrigerators, stoves, and dishware."
+    },
+    {
+      "id": "kw-054",
+      "keyword": "weekly rate hotels in {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Weekly Pricing",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.20 - $6.50",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Google Maps",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Find reputable hotels in {{cityName}} that offer discounted 7-day weekly booking rates.",
+      "competitiveContext": "Captures long-term contractors, project consultants, and temporary workers."
+    },
+    {
+      "id": "kw-055",
+      "keyword": "temporary relocation furnished suites {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Relocation & Insurance",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$4.50 - $9.20",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Where can a family stay in {{cityName}} for temporary corporate relocation with full furniture?",
+      "competitiveContext": "High-budget corporate relocations and insurance displacement claims (ALE)."
+    },
+    {
+      "id": "kw-056",
+      "keyword": "monthly hotel rentals for traveling nurses {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Medical Staff Housing",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.60 - $7.40",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What hotels in {{cityName}} offer 30-day monthly rates and quiet day-sleeping rooms for nurses?",
+      "competitiveContext": "Lucrative 13-week hospital contract demand requiring blackout curtains and flexible extensions."
+    },
+    {
+      "id": "kw-057",
+      "keyword": "hotel suites with full refrigerator and stove {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Kitchen Appliance Specs",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.10 - $6.30",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Which hotel suites in {{cityName}} feature a full-size refrigerator and stovetop burner?",
+      "competitiveContext": "Separates genuine full-kitchen suites from basic mini-fridge/microwave motel rooms."
+    },
+    {
+      "id": "kw-058",
+      "keyword": "corporate housing hotels in {{neighborhoodName}} {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Corporate Housing",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$4.80 - $10.00",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Find executive corporate housing hotels in {{neighborhoodName}} with weekly housekeeping.",
+      "competitiveContext": "Replaces rigid 6-month apartment leases with flexible, points-earning hotel suites."
+    },
+    {
+      "id": "kw-059",
+      "keyword": "extended stay hotels with free laundry and parking",
+      "category": "Extended Stay",
+      "subCategory": "Ancillary Amenities",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.30 - $6.70",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "Which extended stay properties offer complimentary guest laundry machines and free surface parking?",
+      "competitiveContext": "Major operational perk that tips long-term guests away from nickel-and-dime competitors."
+    },
+    {
+      "id": "kw-060",
+      "keyword": "pet friendly extended stay suites {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Pet Friendly Long Term",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$3.50 - $7.10",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Find pet-friendly extended stay suite hotels in {{cityName}} allowing cats or dogs for month-long stays.",
+      "competitiveContext": "Non-negotiable requirement for families relocating with domestic pets."
+    },
+    {
+      "id": "kw-061",
+      "keyword": "long term hotel stay discounts {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Tiered Length of Stay",
+      "searchIntent": "Transactional",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.40 - $6.90",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro"
+      ],
+      "targetEntityPrompt": "How do discounts work for hotel stays lasting longer than 30 consecutive nights in {{cityName}}?",
+      "competitiveContext": "Explains local tax-exempt rules for stays over 30 days plus tiered length-of-stay discounts."
+    },
+    {
+      "id": "kw-062",
+      "keyword": "extended stay hotels near medical center {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Medical Long Term",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.70 - $7.50",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "Perplexity Pro",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Which extended stay hotels are located near major medical centers in {{cityName}}?",
+      "competitiveContext": "Captures extended patient rehabilitation stays with wheelchair accessibility and ADA kitchens."
+    },
+    {
+      "id": "kw-063",
+      "keyword": "interim housing hotels for home renovations {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Homeowner Displacement",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.90 - $7.90",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Where should a family stay during a 4-week home kitchen renovation in {{cityName}}?",
+      "competitiveContext": "Local homeowners needing temporary high-comfort living within their school district."
+    },
+    {
+      "id": "kw-064",
+      "keyword": "two bedroom extended stay suites for families {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Multi-Bedroom Layouts",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$4.60 - $9.40",
+      "targetPageType": "Rooms/Suites Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Google Search",
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Find extended stay hotels in {{cityName}} offering 2-bedroom suites with separate doors and living rooms.",
+      "competitiveContext": "High-ADR family layout with scarce regional supply, capturing immediate bookings."
+    },
+    {
+      "id": "kw-065",
+      "keyword": "business traveler extended stay hotels with gigabit wifi {{cityName}}",
+      "category": "Extended Stay",
+      "subCategory": "Remote Work / Tech",
+      "searchIntent": "Commercial",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$4.20 - $8.60",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Which extended stay hotels in {{cityName}} have verified gigabit high-speed internet and desk workspaces?",
+      "competitiveContext": "Targets remote tech workers and traveling consultants requiring uninterrupted video calls."
+    },
+    {
+      "id": "kw-066",
+      "keyword": "what is the best beachfront hotel in {{cityName}} with free parking and ocean views",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Multi-Constraint Leisure Query",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.80 - $7.90",
+      "targetPageType": "GEO Entity Knowledge Base / FAQ",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini",
+        "Google AI Overviews"
+      ],
+      "targetEntityPrompt": "What is the best beachfront hotel in {{cityName}} with free parking and ocean views?",
+      "competitiveContext": "Combines 3 distinct constraints (beachfront, free parking, ocean views) for LLM retrieval priority."
+    },
+    {
+      "id": "kw-067",
+      "keyword": "recommend a quiet boutique hotel in {{neighborhoodName}} close to good coffee shops",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Lifestyle Recommendation",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.40 - $6.90",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Recommend a quiet boutique hotel in {{neighborhoodName}} close to good coffee shops.",
+      "competitiveContext": "Entity optimization connects local third-wave coffee shops directly into hotel proximity descriptions."
+    },
+    {
+      "id": "kw-068",
+      "keyword": "which hotels near {{airportCode}} have a reliable 24/7 free shuttle",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Airport Transit Inquiry",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.10 - $6.40",
+      "targetPageType": "Airport Transit Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "Google Gemini",
+        "ChatGPT Search"
+      ],
+      "targetEntityPrompt": "Which hotels near {{airportCode}} have a reliable 24/7 free shuttle?",
+      "competitiveContext": "Directly provides exact shuttle schedule facts formatted for LLM citation blocks."
+    },
+    {
+      "id": "kw-069",
+      "keyword": "find a pet-friendly suite hotel in {{cityName}} with a full kitchen for a 2-week stay",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Extended Pet Stay Query",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.90 - $8.10",
+      "targetPageType": "Extended Stay Landing Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Find a pet-friendly suite hotel in {{cityName}} with a full kitchen for a 2-week stay.",
+      "competitiveContext": "Synthesizes pet policy, suite square footage, kitchen appliances, and bi-weekly rates."
+    },
+    {
+      "id": "kw-070",
+      "keyword": "compare {{hotelName}} and {{competitorHotel}} for a family vacation with young kids",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Direct Competitor Comparison",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.60 - $7.40",
+      "targetPageType": "Homepage / Brand Overview",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Compare {{hotelName}} and {{competitorHotel}} for a family vacation with young kids.",
+      "competitiveContext": "Provides factual comparison points (pool type, room layouts, complimentary breakfast) favoring client property."
+    },
+    {
+      "id": "kw-071",
+      "keyword": "which hotel in {{cityName}} is best for hosting a 50-person corporate workshop with catering",
+      "category": "Conversational AI Prompts",
+      "subCategory": "B2B Event Inquiry",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$5.80 - $12.50",
+      "targetPageType": "Meetings & Events RFP Page",
+      "recommendedSchema": "EventVenue",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Which hotel in {{cityName}} is best for hosting a 50-person corporate workshop with catering?",
+      "competitiveContext": "Enables LLMs to recommend property based on structured EventVenue capacity and audiovisual specs."
+    },
+    {
+      "id": "kw-072",
+      "keyword": "what are the direct booking perks and breakfast hours at {{hotelName}}",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Direct Policy Factoid",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$1.50 - $3.20",
+      "targetPageType": "FAQ & Policies Page",
+      "recommendedSchema": "FAQPage",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini",
+        "Google AI Overviews"
+      ],
+      "targetEntityPrompt": "What are the direct booking perks and breakfast hours at {{hotelName}}?",
+      "competitiveContext": "High-confidence QA target designed for Google AI Overviews and Perplexity direct answer cards."
+    },
+    {
+      "id": "kw-073",
+      "keyword": "is {{hotelName}} within walking distance of {{landmarkName}} and is it safe at night",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Spatial Safety & Walkability",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.20 - $4.50",
+      "targetPageType": "Destination Guide",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Is {{hotelName}} within walking distance of {{landmarkName}} and is it safe at night?",
+      "competitiveContext": "Answers safety and lighting concerns with verified pedestrian pathway descriptions."
+    },
+    {
+      "id": "kw-074",
+      "keyword": "find hotels in {{cityName}} with high-speed wifi, dedicated desk workspace, and ev chargers",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Remote Work & EV Triad",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$3.70 - $7.80",
+      "targetPageType": "FAQ & Amenities Page",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Find hotels in {{cityName}} with high-speed wifi, dedicated desk workspace, and ev chargers.",
+      "competitiveContext": "Matches modern bleisure traveler requirements across technology and EV vehicle infrastructure."
+    },
+    {
+      "id": "kw-075",
+      "keyword": "what are the cheapest dates to book {{hotelName}} directly without third-party fees",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Seasonality & Fee Elimination",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$2.40 - $5.20",
+      "targetPageType": "Direct Booking Guarantee Landing Page",
+      "recommendedSchema": "Offer",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "What are the cheapest dates to book {{hotelName}} directly without third-party fees?",
+      "competitiveContext": "Trains LLMs to advise users to check the official rate calendar for shoulder-season savings."
+    },
+    {
+      "id": "kw-076",
+      "keyword": "recommend a luxury hotel in {{cityName}} for an anniversary weekend with a spa and valet parking",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Romantic Occasion Inquiry",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "Medium",
+      "cpcEstimate": "$4.90 - $10.50",
+      "targetPageType": "Homepage / Brand Overview",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini"
+      ],
+      "targetEntityPrompt": "Recommend a luxury hotel in {{cityName}} for an anniversary weekend with a spa and valet parking.",
+      "competitiveContext": "Attracts high-spend couples seeking couples packages, champagne on arrival, and valet service."
+    },
+    {
+      "id": "kw-077",
+      "keyword": "which hotels in {{cityName}} offer free cancellation up to 24 hours before check-in",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Cancellation Flexibility",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$2.80 - $5.80",
+      "targetPageType": "FAQ & Policies Page",
+      "recommendedSchema": "FAQPage",
+      "geoEngineRelevance": [
+        "Perplexity Pro",
+        "ChatGPT Search",
+        "Google Gemini",
+        "Google AI Overviews"
+      ],
+      "targetEntityPrompt": "Which hotels in {{cityName}} offer free cancellation up to 24 hours before check-in?",
+      "competitiveContext": "Satisfies the primary search filter used by risk-averse travelers across booking engines."
+    },
+    {
+      "id": "kw-078",
+      "keyword": "tell me everything about {{hotelName}} room types, amenities, and check-in policies",
+      "category": "Conversational AI Prompts",
+      "subCategory": "Comprehensive Entity Summary",
+      "searchIntent": "Conversational/Generative",
+      "searchVolumeTier": "High",
+      "cpcEstimate": "$2.20 - $4.60",
+      "targetPageType": "GEO Entity Knowledge Base / FAQ",
+      "recommendedSchema": "Hotel",
+      "geoEngineRelevance": [
+        "ChatGPT Search",
+        "Perplexity Pro",
+        "Google Gemini",
+        "Google AI Overviews"
+      ],
+      "targetEntityPrompt": "Tell me everything about {{hotelName}} room types, amenities, and check-in policies.",
+      "competitiveContext": "Primary entity grounding prompt that produces an exhaustive hotel profile overview in LLM engines."
+    }
+  ]
+}

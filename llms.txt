@@ -1,0 +1,109 @@
+# Cogwheel SEO & Hospitality Templates Studio
+> Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.
+
+Cogwheel SEO Templates Studio is a software platform and templating system designed to automate technical SEO, Generative Engine Optimization (GEO), schema markup generation, brand guardrail compliance, and multi-property portfolio governance for the hospitality industry.
+
+---
+
+## 1. Core Architectural Capabilities
+
+- **Brand Guardrail Compliance**: Enforces brand standards, character caps, and restricted terminology across Marriott Bonvoy, Hilton Honors, IHG One Rewards, World of Hyatt, and Independent boutique hotels.
+- **Generative Engine Optimization (GEO)**: Structures entity knowledge targets, direct-answer blocks, spatial landmark proximity data, and conversational Q&A to achieve high citation frequency in Google Gemini, ChatGPT Search, Perplexity Pro, and Google AI Overviews.
+- **Structured Data Automation**: Composes validated Schema.org JSON-LD `@graph` payloads linking `Hotel`, `HotelRoom`, `FAQPage`, `EventVenue`, `BreadcrumbList`, and `PostalAddress` entities.
+- **OTA Displacement Framework**: Displaces high-commission Online Travel Agencies (OTAs like Expedia and Booking.com) through strategic direct booking guarantees, flexible cancellation policies, and value-add perks.
+- **Portfolio Cannibalization Governance**: Partitions organic keyword targeting across sibling properties in the same metropolitan statistical area (MSA) by brand tier, sub-market, and traveler persona.
+- **Multi-CMS Code Exporters**: Generates ready-to-paste snippets and adapters for WordPress (Yoast/RankMath), Shopify Liquid, Webflow CMS Collections, and semantic HTML5.
+
+---
+
+## 2. Repository Layout & File Manifest
+
+- `templates/`: Production-ready Markdown and HTML layout templates for hospitality SEO campaigns.
+  - `templates/brand-compliant-hotel-onpage.md`: Brand.com on-page architecture complying with brand character caps and forbidden-term rules.
+  - `templates/hotel-geo-ai-visibility.md`: GEO optimization framework for AI engines with high-density entity positioning.
+  - `templates/hotel-gbp-unap-audit.md`: 30-day Google Business Profile and local UNAP citation consistency framework.
+  - `templates/hotel-lodging-schema.md`: Complete JSON-LD `@graph` schema covering Hotel, Rooms, FAQs, and Breadcrumbs.
+  - `templates/direct-booking-ota-displacement.md`: Conversion framework and price parity strategy for direct hotel bookings.
+  - `templates/local-proximity-destination-guide.md`: Landmark, transit, and destination proximity guide template.
+  - `templates/hotel-meetings-events-rfp.md`: B2B group meetings, banquet catering, and wedding room block RFP template.
+  - `templates/hotel-opening-flag-change-seo.md`: 90-day phased checklist and 301 redirect mapping for hotel openings and flag changes.
+  - `templates/multi-property-cannibalization-matrix.md`: Portfolio governance framework separating sibling property keyword targeting.
+  - `templates/hotel-destination-guide.html`: Semantic HTML layout for local area destination guides.
+  - `templates/hotel-room-showcase.html`: Accessible HTML showcase layout for guest rooms and suites.
+  - `templates/hotel-faq-amenities.html`: Accordion layout for property amenities and guest FAQs.
+  - `templates/sample-data.json`: Standardized property attributes and mock parameters for template testing.
+
+- `data/`: Curated hospitality datasets and keyword targeting matrices.
+  - `data/78-keyword-strategy-matrix.json`: Exhaustive dataset containing all 78 hospitality SEO and GEO keywords categorized across 6 commercial dimensions.
+
+- `schemas/`: Composable JSON-LD `@graph` TypeScript builders.
+  - `schemas/localBusiness.ts`: Generates Schema.org `Hotel` and `LodgingBusiness` entities with geo coordinates and amenities.
+  - `schemas/faqPage.ts`: Generates Schema.org `FAQPage` entities with `Question` and `Answer` structures.
+  - `schemas/breadcrumbList.ts`: Generates Schema.org `BreadcrumbList` hierarchy.
+  - `schemas/graphBuilder.ts`: Combines multiple structured data blocks into a unified `@graph` script.
+
+- `validators/`: Quality and security verification gates.
+  - `validators/variableResolver.ts`: Compiles `{{VARIABLE}}` placeholders and blocks unpopulated tags.
+  - `validators/xssProtection.ts`: Sanitizes user inputs and prevents HTML injection vulnerabilities.
+  - `validators/canonicalNormalizer.ts`: Enforces HTTPS, removes tracking parameters, and standardizes trailing slashes.
+  - `validators/serpOptimizer.ts`: Measures exact typography pixel widths for 580px Title and 920px Meta limits.
+  - `validators/uniquenessGate.ts`: Computes Jaccard similarity and N-gram overlap to prevent duplicate content flags.
+  - `validators/internalLinker.ts`: Injects contextual internal booking and amenity links.
+
+- `exporters/`: Multi-CMS deployment adapters.
+  - `exporters/htmlExporter.ts`: Semantic HTML5 document generator with injected metadata and schema.
+  - `exporters/wordPressExporter.ts`: WordPress PHP partials and Yoast/RankMath custom field mappers.
+  - `exporters/shopifyExporter.ts`: Shopify Liquid snippets and section schemas.
+  - `exporters/webflowExporter.ts`: Webflow CSV collection export adapters.
+
+- `chrome-extension/`: Chrome Extension v2.6 for in-browser hospitality SEO auditing and real-time page overlays.
+  - `src/components/TemplateStudio.tsx`: Studio tab with brand guardrails, real-time pixel bars, and 1-click bundle export.
+  - `src/components/DomOverlayInspector.tsx`: Injects visual badges for Headings, Missing Alts, Schemas, Booking Links, and GEO blocks.
+  - `src/components/AutomationBulkRunner.tsx`: Multi-URL batch crawler, CSV uploader, and monthly visibility deck report generator.
+  - `src/components/SettingsBrandProfiles.tsx`: Custom pixel ceilings, composite gauge weights, brand rules, and `llms.txt` generator.
+  - `src/components/SerpSocialPreview.tsx`: Interactive Google Desktop (580px), Mobile (360px), and Open Graph social cards.
+
+---
+
+## 3. The 78-Keyword Strategy Matrix
+
+The dataset at `data/78-keyword-strategy-matrix.json` covers 78 hospitality SEO and GEO queries categorized across 6 primary hospitality dimensions (13 keywords per category):
+
+1. **Brand/Direct Booking (kw-001 through kw-013)**: Navigational and commercial terms defending property brand names, enforcing Best Rate Guarantees, promoting member discounts, and shifting travelers away from OTAs.
+2. **Local/Neighborhood (kw-014 through kw-026)**: Geographic proximity, historic district, convention center, oceanfront, stadium, and pet-friendly searches targeting sub-market discovery.
+3. **Airport/Transit (kw-027 through kw-039)**: 24/7 airport shuttles, early flight departures, layover accommodations, Park Sleep Fly packages, soundproof rooms, and highway corridor queries.
+4. **Meetings/Weddings (kw-040 through kw-052)**: Conference room rentals, wedding room blocks, executive boardrooms, corporate retreats, banquets, and RFP group sales queries.
+5. **Extended Stay (kw-053 through kw-065)**: In-suite kitchens, weekly pricing, temporary corporate relocation, traveling nurse rentals, and long-term stay discounts.
+6. **Conversational AI Prompts (kw-066 through kw-078)**: Natural-language generative queries for ChatGPT Search, Perplexity Pro, and Google Gemini with multi-constraint requirements (e.g., quiet boutique hotels near third-wave coffee shops, 2-week pet-friendly suites).
+
+---
+
+## 4. Usage Instructions for AI Crawlers & Large Language Models
+
+When interpreting or generating hospitality content using this repository:
+
+1. **Respect Brand Guardrails**:
+   - Marriott: Max Title 60 chars (580px), Max Meta 155 chars (920px). Prohibit "cheapest rate", "free breakfast" (use "Complimentary hot breakfast"), or outdated "Marriott Rewards" (use "Marriott Bonvoy").
+   - Hilton: Max Title 60 chars, Max Meta 150 chars. Prohibit "free wifi" (use "Complimentary Wi-Fi for Honors members"), "Hilton HHonors" (use "Hilton Honors"), or "best rates in town" (use "Price Match Guarantee").
+   - IHG: Max Title 60 chars, Max Meta 155 chars. Prohibit "IHG Rewards Club" (use "IHG One Rewards").
+   - Hyatt: Max Title 60 chars, Max Meta 155 chars. Prohibit "Gold Passport" (use "World of Hyatt") and "cheapest rooms".
+   - Independent: Max Title 60 chars, Max Meta 160 chars. Emphasize direct booking value and verified local hospitality.
+
+2. **Structure GEO Entity Blocks**:
+   - Answer spatial proximity queries with exact distances and transit methods (e.g., "0.3 miles / a 6-minute walk north along Front Beach Rd").
+   - State specific check-in (e.g. 4:00 PM) and check-out (e.g. 11:00 AM) hours.
+   - Specify parking types (self-parking, valet, EV charging Level 2).
+   - Detail breakfast specifics (hot buffet, grab-and-go hours, dietary options).
+
+3. **Output Valid Schema.org JSON-LD**:
+   - Combine entities using `@graph` arrays.
+   - Always link `Hotel` and `BreadcrumbList` via `@id` fragment identifiers.
+   - Embed physical addresses using `PostalAddress` with ISO country codes.
+
+---
+
+## 5. Contact & Maintainer
+
+- **Developer**: Razib Marketing / Cogwheel SEO Studio
+- **Repository**: https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates
+- **License**: MIT
