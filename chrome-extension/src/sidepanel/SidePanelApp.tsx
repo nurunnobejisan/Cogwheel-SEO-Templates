@@ -23,6 +23,7 @@ import { AutomationBulkRunner } from "../components/AutomationBulkRunner";
 import { SettingsBrandProfiles } from "../components/SettingsBrandProfiles";
 import { UpdateBanner } from "../components/UpdateBanner";
 import { CopyFixedCodeDrawer } from "../components/CopyFixedCodeDrawer";
+import { ExportAuditDropdown } from "../components/ExportAuditDropdown";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
 
@@ -408,6 +409,12 @@ export function SidePanelApp() {
             </div>
 
             <div className="flex items-center gap-1.5">
+              <ExportAuditDropdown
+                pageData={pageData}
+                scores={scores}
+                activeProfile={activeProfile}
+              />
+
               <button
                 type="button"
                 onClick={fetchActivePage}
