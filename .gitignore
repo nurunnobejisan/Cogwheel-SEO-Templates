@@ -1,5 +1,7 @@
 # Dependencies
 node_modules/
+chrome-extension/node_modules/
+source-repo/
 .pnp
 .pnp.js
 

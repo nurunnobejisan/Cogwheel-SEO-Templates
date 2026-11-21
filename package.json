@@ -14,7 +14,8 @@
     "preview:seo": "node --experimental-strip-types scripts/seo-preview-cli.ts",
     "test:ts": "node --test --experimental-strip-types tests/ts/*.test.ts",
     "export:schemas": "node --experimental-strip-types scripts/export-schemas.ts",
-    "extension:pack": "cd extension && zip -r ../public/cogwheel-chrome-extension.zip . -x '*.DS_Store'"
+    "extension:build": "cd chrome-extension && npm run build",
+    "extension:pack": "cd chrome-extension && npm run build && cd dist && zip -r ../../public/cogwheel-chrome-extension.zip . -x '*.DS_Store'"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
