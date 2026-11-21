@@ -657,17 +657,17 @@ export function TemplateStudio({
               Title Tag
             </label>
             <div className="flex items-center gap-1.5 text-[10px]">
-              <span className={isTitleOverBudget ? "font-bold text-rose-600 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}>
+              <span className={`tabular-nums ${isTitleOverBudget ? "font-semibold text-rose-400" : "text-[#A1A1AA]"}`}>
                 {liveTitle.length}/{activeGuardrail.maxTitleChars} chars • {titlePx}px / {TITLE_PIXEL_LIMIT}px
               </span>
               <span
-                className={`rounded px-1.5 py-0.2 font-extrabold uppercase ${
+                className={`rounded px-1.5 py-0.2 text-[9px] font-semibold uppercase ${
                   isTitleOverBudget
-                    ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
-                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                    ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                    : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                 }`}
               >
-                {titlePx > TITLE_PIXEL_LIMIT ? "Pixel Over Budget" : "Optimal"}
+                {titlePx > TITLE_PIXEL_LIMIT ? "OVER BUDGET" : "OPTIMAL"}
               </span>
             </div>
           </div>
@@ -702,17 +702,17 @@ export function TemplateStudio({
               Meta Description
             </label>
             <div className="flex items-center gap-1.5 text-[10px]">
-              <span className={isDescOverBudget ? "font-bold text-rose-600 dark:text-rose-400" : "text-slate-500 dark:text-slate-400"}>
+              <span className={`tabular-nums ${isDescOverBudget ? "font-semibold text-rose-400" : "text-[#A1A1AA]"}`}>
                 {liveMeta.length}/{activeGuardrail.maxMetaChars} chars • {descPx}px / {META_DESC_PIXEL_LIMIT}px
               </span>
               <span
-                className={`rounded px-1.5 py-0.2 font-extrabold uppercase ${
+                className={`rounded px-1.5 py-0.2 text-[9px] font-semibold uppercase ${
                   isDescOverBudget
-                    ? "bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300"
-                    : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300"
+                    ? "bg-rose-500/10 text-rose-400 border border-rose-500/20"
+                    : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
                 }`}
               >
-                {descPx > META_DESC_PIXEL_LIMIT ? "Pixel Over Budget" : "Optimal"}
+                {descPx > META_DESC_PIXEL_LIMIT ? "OVER BUDGET" : "OPTIMAL"}
               </span>
             </div>
           </div>
@@ -746,7 +746,7 @@ export function TemplateStudio({
             <label className="font-bold text-slate-700 dark:text-slate-300">
               Primary H1 Heading Tag
             </label>
-            <span className="text-[10px] text-slate-400">
+            <span className="text-[10px] text-[#A1A1AA] tabular-nums">
               {liveH1.length}/{activeGuardrail.maxH1Chars} chars
             </span>
           </div>

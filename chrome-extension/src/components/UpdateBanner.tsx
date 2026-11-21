@@ -84,21 +84,21 @@ export function UpdateBanner({ onRulesSynced }: Props) {
   // If there is a newer binary release
   if (updateState?.updateAvailable && !isDismissed) {
     return (
-      <div className="relative overflow-hidden rounded-xl border border-emerald-500/40 bg-gradient-to-r from-emerald-950/80 via-slate-900 to-emerald-950/80 p-3 text-white shadow-md backdrop-blur-md animate-in fade-in">
+      <div className="relative overflow-hidden rounded-xl border border-[#27272A] bg-[#111113] p-3 text-[#FAFAFA] shadow-xs animate-in fade-in">
         <div className="flex items-start justify-between gap-2">
-          <div className="flex items-start gap-2">
+          <div className="flex items-start gap-2.5">
             <ArrowUpCircle className="h-4 w-4 shrink-0 text-emerald-400 mt-0.5" />
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-display text-xs font-bold text-white">
+                <span className="text-xs font-semibold text-[#FAFAFA] tabular-nums">
                   Update Available: v{updateState.latestVersion}
                 </span>
-                <span className="rounded bg-emerald-500/20 border border-emerald-500/40 px-1.5 py-0.2 text-[9px] font-extrabold uppercase text-emerald-300">
+                <span className="rounded-full border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.2 text-[9px] font-semibold uppercase text-emerald-400">
                   New Build
                 </span>
               </div>
-              <p className="mt-0.5 text-[11px] text-slate-300 leading-snug">
-                New extension code available on GitHub main (Current: v{updateState.currentVersion}). Click below to download the latest release ZIP.
+              <p className="mt-0.5 text-[11px] text-[#A1A1AA] leading-snug">
+                New build available on GitHub main (<span className="tabular-nums">v{updateState.currentVersion}</span> installed). Download the latest release package below.
               </p>
             </div>
           </div>
@@ -106,7 +106,7 @@ export function UpdateBanner({ onRulesSynced }: Props) {
           <button
             type="button"
             onClick={() => setIsDismissed(true)}
-            className="text-slate-400 hover:text-white transition p-0.5"
+            className="text-[#71717A] hover:text-[#FAFAFA] transition p-0.5"
             title="Dismiss notification"
           >
             <X className="h-3.5 w-3.5" />
@@ -117,7 +117,7 @@ export function UpdateBanner({ onRulesSynced }: Props) {
           <button
             type="button"
             onClick={handleDownloadZip}
-            className="inline-flex items-center gap-1 rounded-lg bg-emerald-500 px-2.5 py-1 text-[11px] font-bold text-slate-950 hover:bg-emerald-400 transition shadow-xs"
+            className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-2.5 py-1 text-[11px] font-semibold text-slate-950 hover:bg-emerald-400 transition shadow-xs"
           >
             <Download className="h-3 w-3" />
             <span>Download Update (.zip)</span>
@@ -127,14 +127,14 @@ export function UpdateBanner({ onRulesSynced }: Props) {
             type="button"
             onClick={handleSyncRulesNow}
             disabled={isSyncing}
-            className="inline-flex items-center gap-1 rounded-lg border border-slate-700 bg-slate-800/80 px-2.5 py-1 text-[11px] font-bold text-slate-200 hover:bg-slate-700 transition"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-[#27272A] bg-[#18181B] px-2.5 py-1 text-[11px] font-medium text-[#FAFAFA] hover:bg-[#27272A] transition"
           >
             <RefreshCw className={`h-3 w-3 ${isSyncing ? "animate-spin text-emerald-400" : ""}`} />
-            <span>{isSyncing ? "Syncing OTA..." : "Sync Latest Rules Now"}</span>
+            <span>{isSyncing ? "Syncing..." : "Sync Rules Now"}</span>
           </button>
 
           {syncFeedback && (
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 animate-in fade-in">
+            <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400 animate-in fade-in">
               <CheckCircle2 className="h-3 w-3" />
               <span>{syncFeedback}</span>
             </span>
@@ -147,10 +147,10 @@ export function UpdateBanner({ onRulesSynced }: Props) {
   // If no binary update, but sync feedback is active
   if (syncFeedback) {
     return (
-      <div className="rounded-xl border border-emerald-500/30 bg-emerald-950/40 px-3 py-1.5 text-[11px] font-bold text-emerald-300 flex items-center justify-between animate-in fade-in">
+      <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 px-3 py-1.5 text-[11px] font-medium text-emerald-300 flex items-center justify-between animate-in fade-in">
         <span className="flex items-center gap-1.5">
           <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-          {syncFeedback}
+          <span>{syncFeedback}</span>
         </span>
         <button
           type="button"

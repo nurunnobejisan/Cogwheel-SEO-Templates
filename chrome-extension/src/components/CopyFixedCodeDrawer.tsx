@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Check, Copy, X, Code, CheckCircle } from "lucide-react";
+import { Check, Copy, X, Code, CheckCircle2 } from "lucide-react";
 
 interface Props {
   isOpen: boolean;
@@ -30,7 +30,6 @@ export function CopyFixedCodeDrawer({
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     } catch {
-      // Fallback
       const ta = document.createElement("textarea");
       ta.value = codeSnippet;
       document.body.appendChild(ta);
@@ -42,26 +41,28 @@ export function CopyFixedCodeDrawer({
     }
   };
 
+  const lineCount = codeSnippet.split("\n").length;
+
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-950/60 p-3 backdrop-blur-xs transition-opacity animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/70 p-3 backdrop-blur-xs transition-opacity animate-in fade-in duration-150">
       <div
-        className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl transition-all dark:border-slate-800 dark:bg-slate-900 animate-in slide-in-from-bottom-4 duration-250 max-h-[85vh] flex flex-col"
+        className="w-full max-w-lg rounded-xl border border-[#27272A] bg-[#111113] p-4 text-[#FAFAFA] shadow-2xl transition-all max-h-[85vh] flex flex-col"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-start justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+        <div className="flex items-start justify-between border-b border-[#27272A] pb-3">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-md bg-emerald-100 px-2 py-0.5 text-[10px] font-extrabold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                <CheckCircle className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                AUTO-FIX APPLIED
+              <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                <CheckCircle2 className="h-3 w-3" />
+                <span>AUTO-FIX APPLIED</span>
               </span>
-              <span className="text-[10px] font-bold uppercase text-slate-400">
+              <span className="text-[10px] font-medium uppercase text-[#71717A]">
                 {issueCategory}
               </span>
             </div>
-            <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">
+            <h3 className="text-sm font-semibold text-[#FAFAFA]">
               {issueTitle}
             </h3>
           </div>
@@ -69,7 +70,7 @@ export function CopyFixedCodeDrawer({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg p-1 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+            className="rounded-md p-1 text-[#71717A] hover:bg-[#18181B] hover:text-[#FAFAFA] transition"
             title="Close Drawer"
           >
             <X className="h-4 w-4" />
@@ -77,58 +78,58 @@ export function CopyFixedCodeDrawer({
         </div>
 
         {/* Fix Description */}
-        <div className="mt-3 rounded-xl border border-emerald-200/60 bg-emerald-50/50 p-2.5 text-xs text-emerald-900 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-emerald-200">
-          <p className="font-medium">{description}</p>
-          <p className="mt-1 text-[11px] text-emerald-800/80 dark:text-emerald-300/80">
-            Active state and radial scores updated. Copy the code snippet below to deploy this fix to your website or CMS.
+        <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-2.5 text-xs text-emerald-300">
+          <p className="font-medium text-emerald-200">{description}</p>
+          <p className="mt-1 text-[11px] text-[#A1A1AA]">
+            Active page state and health gauges updated. Copy the snippet below to deploy to your CMS.
           </p>
         </div>
 
         {/* Code Snippet Box */}
         <div className="mt-3 flex-1 min-h-0 flex flex-col">
-          <div className="flex items-center justify-between rounded-t-xl bg-slate-900 px-3 py-1.5 text-[10px] font-bold text-slate-400">
-            <span className="flex items-center gap-1.5 uppercase">
-              <Code className="h-3 w-3 text-emerald-400" />
-              {language === "json" ? "JSON-LD Script" : "HTML Snippet"}
+          <div className="flex items-center justify-between rounded-t-lg border-t border-x border-[#27272A] bg-[#18181B] px-3 py-1.5 text-[10px] font-mono text-[#A1A1AA]">
+            <span className="flex items-center gap-1.5 uppercase font-semibold">
+              <Code className="h-3.5 w-3.5 text-emerald-400" />
+              {language === "json" ? "JSON-LD Schema" : "HTML Snippet"}
             </span>
-            <span>{codeSnippet.split("\n").length} lines</span>
+            <span className="tabular-nums">{lineCount} lines</span>
           </div>
-          <div className="overflow-y-auto rounded-b-xl border border-slate-800 bg-slate-950 p-3 font-mono text-[11px] leading-relaxed text-emerald-400 max-h-56 select-all">
+          <div className="overflow-y-auto rounded-b-lg border border-[#27272A] bg-[#09090B] p-3 font-mono text-[11px] leading-relaxed text-emerald-300 max-h-56 select-all">
             <pre className="whitespace-pre-wrap break-all">{codeSnippet}</pre>
           </div>
         </div>
 
         {/* Footer Actions */}
-        <div className="mt-4 flex items-center justify-end gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-xl border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
-          >
-            Dismiss
-          </button>
-
-          <button
-            type="button"
-            onClick={handleCopy}
-            className={`inline-flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-bold text-white shadow-sm transition active:scale-95 ${
-              copied
-                ? "bg-emerald-700 dark:bg-emerald-600"
-                : "bg-emerald-600 hover:bg-emerald-700 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400"
-            }`}
-          >
-            {copied ? (
-              <>
-                <Check className="h-3.5 w-3.5" />
-                <span>Copied to Clipboard!</span>
-              </>
-            ) : (
-              <>
-                <Copy className="h-3.5 w-3.5" />
-                <span>Copy Fixed Code</span>
-              </>
-            )}
-          </button>
+        <div className="mt-3.5 flex items-center justify-between border-t border-[#27272A] pt-3">
+          <span className="text-[11px] text-[#71717A]">
+            Directly paste into your theme or CMS head tag
+          </span>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="rounded-lg border border-[#27272A] bg-[#18181B] px-3 py-1.5 text-xs font-medium text-[#A1A1AA] hover:bg-[#27272A] hover:text-[#FAFAFA] transition"
+            >
+              Close
+            </button>
+            <button
+              type="button"
+              onClick={handleCopy}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-500 px-3.5 py-1.5 text-xs font-semibold text-slate-950 hover:bg-emerald-400 transition shadow-xs"
+            >
+              {copied ? (
+                <>
+                  <Check className="h-3.5 w-3.5" />
+                  <span>Copied Patch</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="h-3.5 w-3.5" />
+                  <span>Copy Patch</span>
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

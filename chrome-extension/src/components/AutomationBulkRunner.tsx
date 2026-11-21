@@ -608,9 +608,9 @@ ${resGeo}
                         </div>
                       </td>
 
-                      <td className="px-2.5 py-2 text-right font-mono font-bold">
+                      <td className="px-2.5 py-2 text-right font-mono font-bold tabular-nums">
                         {item.status === "done" ? (
-                          <span className="text-slate-900 dark:text-white">
+                          <span className="text-slate-900 dark:text-white tabular-nums">
                             {item.overallHealth}/100
                           </span>
                         ) : item.status === "running" ? (
@@ -620,15 +620,15 @@ ${resGeo}
                         )}
                       </td>
 
-                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell">
+                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell tabular-nums">
                         {item.status === "done" ? `${item.onPageScore}%` : "-"}
                       </td>
 
-                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell">
+                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell tabular-nums">
                         {item.status === "done" ? `${item.schemaScore}%` : "-"}
                       </td>
 
-                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell">
+                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell tabular-nums">
                         {item.status === "done" ? `${item.geoScore}%` : "-"}
                       </td>
 

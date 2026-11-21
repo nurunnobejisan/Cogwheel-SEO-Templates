@@ -1,24 +1,62 @@
-# Cogwheel SEO & Hospitality Templates Studio
-> Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by **Razib Marketing**.
-
-[![SEO Integrity & Security CI](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions/workflows/seo-integrity.yml/badge.svg)](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions)
-[![Release v2.6.0](https://img.shields.io/badge/Release-v2.6.0-a3d11b?style=flat-square&logo=github)](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/releases/tag/v2.6.0)
-[![Next.js 14.2](https://img.shields.io/badge/Next.js-14.2-black?style=flat-square&logo=next.js)](https://nextjs.org/)
-[![TypeScript 5.5](https://img.shields.io/badge/TypeScript-5.5-blue?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
-[![Node.js v22](https://img.shields.io/badge/Node.js-v22-green?style=flat-square&logo=node.js)](https://nodejs.org/)
+<div align="center">
+  <h1>Cogwheel SEO & GEO Studio</h1>
+  <p><strong>Enterprise Hospitality Search & Generative Engine Optimization (GEO) Suite</strong></p>
+  <p>
+    <a href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions"><img src="https://img.shields.io/github/actions/workflow/status/jisan-razibmarketing/Cogwheel-SEO-Templates/ci.yml?style=flat-square&label=CI%20Build" alt="CI Build" /></a>
+    <img src="https://img.shields.io/badge/TypeScript-Strict%205.x-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+    <img src="https://img.shields.io/badge/Python-3.11%2B%20Typed-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
+    <img src="https://img.shields.io/badge/Chrome-Manifest%20V3-10B981?style=flat-square&logo=googlechrome&logoColor=white" alt="Manifest V3" />
+    <img src="https://img.shields.io/github/v/release/jisan-razibmarketing/Cogwheel-SEO-Templates?style=flat-square&color=6366F1" alt="Release" />
+  </p>
+</div>
 
 ---
 
-## 1. Project Overview & Architecture
+## Overview
 
-Cogwheel SEO Studio automates end-to-end technical SEO, metadata generation, structured data composition, internal linking, and multi-CMS exports for hotel portfolios. It provides strict validation gates ensuring no uncompiled placeholders, XSS vulnerabilities, thin content, duplicate content, or production `noindex` directives ever reach live deployments.
+**Cogwheel SEO & GEO Studio** is a production-grade Chrome Side Panel inspector, template engine, and batch auditing pipeline built for multi-property hospitality portfolios (**Marriott, Hilton, IHG, Hyatt, and Independent Luxury Hotels**).
 
-### Standardized Folder Architecture
+### Core Capabilities
+- **Real-Time SERP Pixel Engine**: Exact Arial `20px` (`580px` title) and `14px` (`920px` meta description) pixel-width budgeting with Desktop, Mobile, and Social Open Graph previews.
+- **Brand-Compliant Guardrails**: Automated enforcement of franchised brand rules, prohibited superlatives, and mandatory suffix structures.
+- **JSON-LD & Entity Graph Generator**: One-click `Hotel`, `LodgingBusiness`, `FAQPage`, `EventVenue`, and `sameAs` structured data injection.
+- **GEO AI Readiness Scoring**: Evaluates property pages for citation readiness across ChatGPT, Google Gemini, and Perplexity.
+- **Zero-Maintenance OTA Rule Sync**: Background Manifest V3 service worker automatically syncs updated keyword matrices and brand rules from GitHub.
+
+---
+
+## System Architecture
+
+```mermaid
+flowchart LR
+    A["Active Hotel DOM"] --> B["Manifest V3 Content Inspector"]
+    B --> C["Audit & Pixel Engine"]
+    D[("GitHub OTA Rules & 78-Keyword Matrix")] --> C
+    C --> E["Side Panel Studio UI"]
+    C --> F["JSON-LD & Executive Report Export"]
+    G["Python Batch Portfolio CLI"] --> D
+```
+
+---
+
+## Project Structure
+
 ```
 Cogwheel-SEO-Templates/
-├── .agent/
-│   └── workflows/                 # Autonomous agent workflows
-│       └── new-hotel-seo-brief.md # Turnkey client brief generator
+├── chrome-extension/              # Production Manifest V3 Chrome Extension
+│   ├── public/                    # Extension static assets & manifest.json
+│   ├── src/
+│   │   ├── background/            # Service worker & GitHub 2-layer auto-updater
+│   │   ├── components/            # Studio, Overlays, Batch, Settings, Gauges
+│   │   ├── content/               # 1-click DOM context extractor & visual overlays
+│   │   ├── data/                  # Pre-compiled hospitality templates & audit rules
+│   │   ├── sidepanel/             # Chrome Side Panel inspector application
+│   │   ├── types/                 # Strict TypeScript contracts & update schemas
+│   │   └── utils/                 # Arial pixel width engine & URL security
+│   └── package.json
+├── data/                          # Shared data & live sync assets
+│   ├── 78-keyword-strategy-matrix.json  # 78 hospitality SEO/GEO keyword dataset
+│   └── ota-config.json            # Live OTA rules, pixel thresholds & scoring weights
 ├── templates/                     # Production Markdown & HTML templates
 │   ├── brand-compliant-hotel-onpage.md
 │   ├── hotel-geo-ai-visibility.md
@@ -31,16 +69,14 @@ Cogwheel-SEO-Templates/
 │   ├── multi-property-cannibalization-matrix.md
 │   ├── hotel-destination-guide.html
 │   ├── hotel-room-showcase.html
-│   ├── hotel-faq-amenities.html
-│   └── sample-data.json
+│   └── hotel-faq-amenities.html
 ├── schemas/                       # Composable JSON-LD @graph Builders
 │   ├── article.ts                 # Schema.org Article
 │   ├── product.ts                 # Schema.org Product (Offer + AggregateRating)
 │   ├── faqPage.ts                 # Schema.org FAQPage (Question + Answer)
 │   ├── localBusiness.ts           # Schema.org Hotel / LodgingBusiness
 │   ├── breadcrumbList.ts          # Schema.org BreadcrumbList
-│   ├── graphBuilder.ts            # Unified @graph composer
-│   └── index.ts
+│   └── graphBuilder.ts            # Unified @graph composer
 ├── validators/                    # Core Quality & Security Gates
 │   ├── variableResolver.ts        # Strict template compiler, fallbacks & leak scanner
 │   ├── xssProtection.ts           # Context-aware HTML & attribute sanitization
@@ -53,35 +89,51 @@ Cogwheel-SEO-Templates/
 │   ├── htmlExporter.ts            # Clean HTML5 with metadata & minification
 │   ├── shopifyExporter.ts         # Shopify Liquid snippets (.liquid) & sections
 │   ├── wordPressExporter.ts       # WordPress PHP partials & Yoast/RankMath mapper
-│   ├── webflowExporter.ts         # Webflow Collection CSV & rich-text exporter
-│   └── index.ts
+│   └── webflowExporter.ts         # Webflow Collection CSV & rich-text exporter
 ├── tests/                         # Automated Regression & Linter Suite
+│   ├── auto-updater.test.ts       # SemVer comparison & auto-update test suite
+│   ├── cogwheel-optimal-audit.test.ts # 100/100 4-gauge optimal score verification
 │   ├── variableResolver.test.ts
 │   ├── securityGuardrails.test.ts
 │   ├── schemas.test.ts
 │   ├── serpOptimizer.test.ts
-│   ├── uniquenessGate.test.ts
-│   ├── internalLinker.test.ts
-│   ├── exporters.test.ts
 │   └── seoLinter.ts               # Master 10-Gate SEO Quality Checker
-├── scripts/                       # DevOps & CLI Tooling
-│   ├── seo-preview-cli.ts         # Local interactive marketing previewer
-│   └── pre-commit.sh              # Lightweight git pre-commit hook
-├── src/                           # Next.js 14 Web Application
-│   ├── app/                       # App Router pages and API routes
-│   ├── components/                # React components (PropertyDashboard, Studio, Labs)
-│   ├── core/                      # Hilton guidelines & training rules
-│   └── data/                      # 311+ pre-trained hotel property profiles
 ├── .github/workflows/             # Continuous Integration Pipelines
+│   ├── auto-release.yml           # Automated extension build, zip, & release pipeline
 │   └── seo-integrity.yml          # GitHub Actions automated linter & secret scanner
-├── .env.example                   # Exhaustive environment variable specification
-├── INVENTORY.md                   # Full repository file catalog
-└── package.json                   # Script definitions and dependencies
+├── updates.xml                    # Enterprise / CRX auto-update manifest
+├── llms.txt                       # Machine-readable AI crawler documentation index
+└── package.json                   # Root scripts and workspace dependencies
 ```
 
 ---
 
-## 2. Master Template Catalog & Index
+## Chrome Extension Setup
+
+### Installation (Developer Mode)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates.git
+   cd Cogwheel-SEO-Templates
+   ```
+2. Build the extension bundle:
+   ```bash
+   cd chrome-extension
+   npm ci
+   npm run build
+   ```
+3. Open Google Chrome and navigate to `chrome://extensions/`.
+4. Toggle **Developer mode** in the top-right corner.
+5. Click **Load unpacked** and select the `chrome-extension/dist` folder.
+6. Open any hotel website or property URL and click the Cogwheel extension icon to launch the Side Panel.
+
+### Two-Layer Free Auto-Update System
+- **Layer A (Silent OTA Live Sync)**: `chrome.alarms` triggers background synchronization every 6 hours, fetching the latest keyword matrices, scoring weights, and brand guardrails from GitHub `main` and caching them in `chrome.storage.local`.
+- **Layer B (Extension Binary Checker)**: Verifies the remote `manifest.json` version against the local installation and sets an action badge (`NEW`) with an in-app banner for 1-click update archive downloads.
+
+---
+
+## Master Template Catalog & Index
 
 The studio includes 9 production Markdown templates and 3 HTML component templates engineered for hospitality SEO, Generative Engine Optimization (GEO), and multi-property portfolio management:
 
@@ -100,122 +152,39 @@ The studio includes 9 production Markdown templates and 3 HTML component templat
 | [`hotel-room-showcase.html`](templates/hotel-room-showcase.html) | HTML Production Components | Accessible HTML room and suite showcase layout with structured amenity badges and direct booking CTAs. | Google Desktop & Mobile Crawlers |
 | [`hotel-faq-amenities.html`](templates/hotel-faq-amenities.html) | HTML Production Components | Accessible HTML FAQ accordion layout with direct integration for `FAQPage` schema markup. | Google Desktop & Mobile Crawlers |
 
-### Autonomous Client Brief Generation
-Generate a comprehensive, custom SEO & GEO client brief using the built-in workflow:
-```bash
-# Workflow file located at:
-.agent/workflows/new-hotel-seo-brief.md
-```
-Pass property variables (`hotelName`, `brand`, `city`, `state`, `primaryKeyword`, `targetHub`) to assemble an executive-ready brief.
+---
+
+## 78-Keyword Strategy Matrix
+
+The repository includes a comprehensive 78-keyword hospitality strategy matrix at [data/78-keyword-strategy-matrix.json](data/78-keyword-strategy-matrix.json) categorized across:
+1. **Brand & Direct Booking (13 keywords)**: Capturing high-intent branded reservations and OTA displacement.
+2. **Local & Neighborhood (13 keywords)**: Hyper-local downtown, beachfront, and district queries.
+3. **Airport & Transit (13 keywords)**: Airport shuttles, layover accommodations, and transit hubs.
+4. **Meetings & Weddings (13 keywords)**: Corporate banquet rooms, wedding venues, and RFP captures.
+5. **Extended Stay & Corporate (13 keywords)**: Kitchen suites, weekly rates, and business traveler packages.
+6. **Conversational AI Prompts (13 keywords)**: Voice assistant and generative AI prompt discovery.
 
 ---
 
-## 3. Installation & Quick Start
+## Testing & Quality Verification
 
-### Prerequisites
-- Node.js 20+ or 22+
-- NPM 10+
-
-### Setup
 ```bash
-# 1. Clone the repository
-git clone https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates.git
-cd Cogwheel-SEO-Templates
+# 1. Type check all TypeScript source files
+npm run typecheck
 
-# 2. Copy and configure environment variables
-cp .env.example .env.local
+# 2. Run the Vitest regression suite (73 passing tests across 24 test suites)
+npm test
 
-# 3. Install dependencies
-npm install
+# 3. Run the Master 10-Gate SEO Quality Linter
+npm run lint:seo
 
-# 4. Start Next.js Development Server
-npm run dev
+# 4. Build Chrome extension production dist bundle
+npm run extension:build
 ```
 
 ---
 
-## 4. SEO Quality & Integrity Commands
+## License & Attribution
 
-The repository provides automated CLI tools for testing, linting, and previewing SEO templates:
-
-| Command | Description |
-|---|---|
-| `npm run lint:seo` | **Master 10-Gate SEO Linter** — validates variables, XSS, robots, canonicals, schemas, SERP widths, uniqueness, internal links, and CMS exporters. Exits with code 1 on failure. |
-| `npm run preview:seo` | **Interactive Marketing Previewer** — compiles templates with sample data, generates Desktop/Mobile Google SERP previews, inspects JSON-LD, and generates all 4 CMS formats. |
-| `npm test` | Runs the Vitest automated test suite. |
-
-To run the complete automated test suite across all 10 milestones:
-```bash
-node --test --experimental-strip-types tests/*.test.ts
-```
-
----
-
-## 5. The 10-Day Engineering Architecture
-
-### Day 1 — Secret Cleanup & Standardized Architecture
-- Zero hardcoded API keys or credentials.
-- Multi-tier `.gitignore` preventing accidental commits of keys, `.env*`, and build caches.
-- Standardized top-level `/templates`, `/schemas`, `/validators`, `/exporters`, `/tests` directories.
-
-### Day 2 — Strict Variable Resolver & Fallback Engine (`/validators/variableResolver.ts`)
-- Pre-render schema validation enforcing required vs optional variables.
-- Multi-syntax placeholder replacement (`{{var}}`, `{var}`, `${var}`).
-- Post-render regex scan detecting and blocking any leaking placeholders (`{{raw}}`, `undefined`, `null`, `NaN`).
-
-### Day 3 — XSS Protection & Robots Guardrails (`/validators/`)
-- Context-aware HTML entity escaping and attribute sanitization (`xssProtection.ts`).
-- Canonical URL Normalizer (`canonicalNormalizer.ts`) enforcing HTTPS, stripping marketing parameters (`utm_*`, `fbclid`, `gclid`), and normalizing slashes.
-- Production Noindex Blocker (`robotsGuardrails.ts`) preventing catastrophic organic traffic loss by failing builds if `noindex` is detected in production.
-
-### Day 4 — Composable JSON-LD @graph Builder (`/schemas/`)
-- Modular Schema.org builders: `Article`, `Product` (with Offer & AggregateRating), `FAQPage`, `LocalBusiness` / `Hotel`, and `BreadcrumbList`.
-- Unified `@graph` composer under a single `https://schema.org` `@context`.
-- Prevents script tag breakout and escaped newline issues.
-
-### Day 5 — SERP Pixel-Width Optimizer (`/validators/serpOptimizer.ts`)
-- Character-width lookup based on Google's Arial typography (distinguishing wide characters like `W`, `M` from narrow `i`, `l`).
-- Desktop Title limit: 580px max.
-- Mobile Title limit: 920px max.
-- Meta Description limits: 70 chars min, 155–160 chars recommended, 920px ceiling.
-- Smart word-boundary title trimmer preserving core keyword phrases and peeling off brand suffixes.
-
-### Day 6 — Anti-Thin-Content Gate & Uniqueness Scorer (`/validators/uniquenessGate.ts`)
-- N-gram (tri-gram) tokenization and Jaccard similarity scoring across page batches.
-- Blocks pages exceeding **70% duplicate similarity**.
-- Enforces minimum non-boilerplate word count (**250 words** default).
-- Conditional section validator preventing empty feature or comparison tables.
-
-### Day 7 — Semantic Topic Clustering & Internal Linking (`/validators/internalLinker.ts`)
-- Manifest-driven contextual link injection connecting Hub, Child, and Sibling pages.
-- Guardrails:
-  - Never links a page to itself.
-  - Maximum 1 link per target URL per page.
-  - Never injects inside `<h1>`-`<h6>` headings or existing `<a>` anchor tags.
-  - Anchor text variation preventing over-optimization penalties.
-
-### Day 8 — Multi-CMS Export Adapters (`/exporters/`)
-- **HTML Exporter**: Clean HTML5 with canonicals, robots directives, JSON-LD, and optional minification.
-- **Shopify Liquid Exporter**: Generates `.liquid` snippets and sections mapped to `product.*`, `collection.*`, and `page.*`.
-- **WordPress Exporter**: Compatible PHP template partials and Yoast SEO / Rank Math custom field mappings.
-- **Webflow Exporter**: RFC 4180-compliant CSV generation with clean rich-text HTML escaping.
-
-### Day 9 — CI/CD Automation & Pre-Commit Guardrails
-- GitHub Actions pipeline (`.github/workflows/seo-integrity.yml`) executing secret scanning and the 10-gate SEO linter on every push and pull request.
-- Git pre-commit hook (`scripts/pre-commit.sh`) preventing bad commits locally.
-
-### Day 10 — Interactive Preview Tool & Labs Integration
-- Standalone CLI previewer (`scripts/seo-preview-cli.ts`) for marketing team members.
-- Next.js UI integration with experimental **Labs** hub in `PropertyDashboard.tsx`.
-- **Multi-CMS Exporter Playground**: Live side-by-side compilation and one-click code copy or file download for HTML5, Shopify Liquid, WordPress PHP, and Webflow CSV.
-- **GEO AI Search Simulator**: Live emulation of citations and response summaries across Google Gemini Overviews, ChatGPT Search, and Perplexity Pro.
-- **Rich SERP Snippet Preview**: Desktop & mobile SERP previews featuring Google hotel star ratings (`★★★★★`), localized pricing tags, and amenity pill badges.
-- **Content Duplicate & Thin-Content Scanner**: Live Jaccard tri-gram similarity analysis comparing website copy against OTA channels (Expedia, Booking.com) to block duplicate penalty risks (&lt;70% ceiling).
-- **Dirty URL & Canonical Normalizer**: Instant stripping of campaign/tracking parameters (`utm_*`, `gclid`, `fbclid`), trailing slash normalization, and copyable `<link rel="canonical">` HTML tags.
-- **Luxury Hospitality Visual Polish**: Dual-mode radial ambient glow, spring-curve card hover physics (`.card-hover`), and real-time pulsing workflow pipeline telemetry.
-
----
-
-## 6. License & Attribution
-Developed and maintained by **Razib Marketing** — Hospitality Digital Marketing & AI Search Optimization.
+Developed and maintained by **Razib Marketing** — Hospitality Digital Marketing & Generative Engine Optimization.
 Protected under private commercial license.

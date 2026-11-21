@@ -392,18 +392,18 @@ export function SidePanelApp() {
   };
 
   return (
-    <div className={`min-h-screen ${isDarkMode ? "dark bg-slate-950 text-slate-100" : "bg-slate-50 text-slate-800"}`}>
+    <div className="min-h-screen bg-[#09090B] text-[#FAFAFA] font-sans selection:bg-emerald-500/30">
       <div className="flex flex-col min-h-screen">
         {/* Top Header */}
-        <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 p-3 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/80">
+        <header className="sticky top-0 z-50 border-b border-[#27272A] bg-[#09090B]/90 p-3 backdrop-blur-md">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="h-2.5 w-2.5 rounded-full bg-brand shadow-[0_0_8px_#10b981]" />
-              <span className="font-display text-xs font-black tracking-wider text-slate-900 dark:text-white uppercase">
+              <div className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span className="text-xs font-semibold tracking-wider text-[#FAFAFA] uppercase">
                 COGWHEEL SEO STUDIO
               </span>
-              <span className="rounded-md bg-slate-100 px-1.5 py-0.5 text-[9px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-                v2.6
+              <span className="rounded-md border border-[#27272A] bg-[#18181B] px-1.5 py-0.5 text-[9px] font-semibold text-[#A1A1AA] tabular-nums">
+                v2.7
               </span>
             </div>
 
@@ -412,7 +412,7 @@ export function SidePanelApp() {
                 type="button"
                 onClick={fetchActivePage}
                 title="Re-scan active page"
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300"
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#27272A] bg-[#111113] text-[#A1A1AA] shadow-xs transition hover:bg-[#18181B] hover:text-[#FAFAFA]"
               >
                 <RotateCw className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
               </button>
@@ -421,9 +421,9 @@ export function SidePanelApp() {
                 type="button"
                 onClick={() => setIsDarkMode(!isDarkMode)}
                 title="Toggle Theme"
-                className="flex h-7 w-7 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-xs transition hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300"
+                className="flex h-7 w-7 items-center justify-center rounded-lg border border-[#27272A] bg-[#111113] text-[#A1A1AA] shadow-xs transition hover:bg-[#18181B] hover:text-[#FAFAFA]"
               >
-                {isDarkMode ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5 text-slate-600" />}
+                {isDarkMode ? <Sun className="h-3.5 w-3.5 text-amber-400" /> : <Moon className="h-3.5 w-3.5 text-[#A1A1AA]" />}
               </button>
             </div>
           </div>
@@ -434,21 +434,21 @@ export function SidePanelApp() {
           </div>
 
           {/* Active URL bar */}
-          <div className="mt-2 flex items-center gap-2">
-            <span className="rounded-md border border-emerald-300 bg-emerald-50 px-1.5 py-0.5 text-[9px] font-extrabold text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+          <div className="mt-2 flex items-center gap-2 rounded-lg border border-[#27272A] bg-[#111113] px-2.5 py-1.5">
+            <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400 uppercase">
               {isRestrictedTab ? "SYSTEM" : pageData.protocol.replace(":", "").toUpperCase()}
             </span>
-            <span className="truncate text-xs font-bold text-slate-800 dark:text-slate-200">
+            <span className="truncate text-xs font-medium text-[#FAFAFA]">
               {isRestrictedTab ? "System / New Tab Page" : pageData.hostname}
             </span>
-            <span className="truncate text-[10px] text-slate-400">
+            <span className="truncate text-[10px] text-[#71717A] tabular-nums">
               {isRestrictedTab ? "(Offline Studio Mode)" : pageData.pathname}
             </span>
           </div>
 
           {/* System Page Notice Banner */}
           {isRestrictedTab && (
-            <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-sky-800/40 bg-sky-950/40 p-2.5 text-[11px] text-sky-200">
+            <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-sky-500/20 bg-sky-500/5 p-2.5 text-[11px] text-sky-300">
               <Info className="h-4 w-4 shrink-0 text-sky-400 mt-0.5" />
               <span>
                 Live page scan unavailable on browser system pages — open any https:// site to auto-fill from DOM. Template Studio and Brand Profiles below are active.
@@ -458,7 +458,7 @@ export function SidePanelApp() {
 
           {/* Needs Tab Reload Notice Banner */}
           {needsReload && !isRestrictedTab && (
-            <div className="mt-2.5 flex items-center justify-between gap-2 rounded-xl border border-amber-800/50 bg-amber-950/40 p-2.5 text-[11px] text-amber-200">
+            <div className="mt-2.5 flex items-center justify-between gap-2 rounded-xl border border-amber-500/20 bg-amber-500/5 p-2.5 text-[11px] text-amber-300">
               <div className="flex items-center gap-1.5 truncate">
                 <AlertCircle className="h-4 w-4 shrink-0 text-amber-400" />
                 <span className="truncate">Refresh this webpage to inspect live DOM</span>
@@ -474,7 +474,7 @@ export function SidePanelApp() {
                     });
                   }
                 }}
-                className="shrink-0 rounded bg-amber-500 px-2 py-0.5 text-[10px] font-bold text-slate-950 hover:bg-amber-400 transition"
+                className="shrink-0 rounded-md bg-amber-500 px-2 py-0.5 text-[10px] font-semibold text-slate-950 hover:bg-amber-400 transition"
               >
                 Refresh Page
               </button>
@@ -483,14 +483,15 @@ export function SidePanelApp() {
         </header>
 
         {/* 5 Tab Navigation Bar */}
-        <nav className="sticky top-[73px] z-40 flex items-center justify-between border-b border-slate-200 bg-slate-100/90 p-1 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90 text-xs font-bold">
+        <nav className="sticky top-[73px] z-40 flex items-center justify-between border-b border-[#27272A] bg-[#09090B]/90 p-1 backdrop-blur-md text-xs font-medium">
           <button
             type="button"
             onClick={() => setActiveTab("dashboard")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "dashboard"
-              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+              activeTab === "dashboard"
+                ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
+                : "text-[#71717A] hover:text-[#FAFAFA]"
+            }`}
           >
             <LayoutDashboard className="h-3.5 w-3.5" />
             <span>Audit</span>
@@ -499,10 +500,11 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("studio")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "studio"
-              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+              activeTab === "studio"
+                ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
+                : "text-[#71717A] hover:text-[#FAFAFA]"
+            }`}
           >
             <Layers className="h-3.5 w-3.5" />
             <span>Studio</span>
@@ -511,10 +513,11 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("overlay")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "overlay"
-              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+              activeTab === "overlay"
+                ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
+                : "text-[#71717A] hover:text-[#FAFAFA]"
+            }`}
           >
             <Eye className="h-3.5 w-3.5" />
             <span>Overlays</span>
@@ -523,10 +526,11 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("automation")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "automation"
-              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+              activeTab === "automation"
+                ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
+                : "text-[#71717A] hover:text-[#FAFAFA]"
+            }`}
           >
             <PlayCircle className="h-3.5 w-3.5" />
             <span>Batch</span>
@@ -535,10 +539,11 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${activeTab === "settings"
-              ? "bg-white text-slate-900 shadow-xs dark:bg-slate-800 dark:text-white"
-              : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              }`}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+              activeTab === "settings"
+                ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
+                : "text-[#71717A] hover:text-[#FAFAFA]"
+            }`}
           >
             <Settings className="h-3.5 w-3.5" />
             <span>Settings</span>
@@ -550,44 +555,60 @@ export function SidePanelApp() {
           {/* TAB 1: Audit & Radial Gauges */}
           {activeTab === "dashboard" && (
             <div className="space-y-4">
-              {/* 4 Radial Gauges */}
-              <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70">
-                <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                    RADIAL SEO &amp; GEO GAUGES
+              {/* 4 Precision Micro-Gauges Card */}
+              <div className="rounded-xl border border-[#27272A] bg-[#111113] p-4 text-[#FAFAFA]">
+                <div className="flex items-center justify-between border-b border-[#27272A] pb-2.5">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#A1A1AA]">
+                    KPI Metrics &amp; Micro-Gauges
                   </span>
                   <span
-                    className="rounded-full px-2 py-0.5 text-[10px] font-black tracking-wide"
-                    style={{ backgroundColor: `${scores.gradeColor}20`, color: scores.gradeColor }}
+                    className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-semibold tracking-wide uppercase ${
+                      scores.overall >= 90
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                        : scores.overall >= 70
+                        ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                        : "bg-rose-500/10 text-rose-400 border-rose-500/20"
+                    }`}
                   >
-                    {scores.grade === "A+" ? "GRADE A+ OPTIMAL" : `GRADE ${scores.grade}`}
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        scores.overall >= 90
+                          ? "bg-emerald-400"
+                          : scores.overall >= 70
+                          ? "bg-amber-400"
+                          : "bg-rose-400"
+                      }`}
+                    />
+                    <span>
+                      {scores.overall >= 90
+                        ? "OPTIMAL (GRADE A+)"
+                        : scores.overall >= 70
+                        ? `NEEDS REVIEW (GRADE ${scores.grade})`
+                        : "CRITICAL (NEEDS AUDIT)"}
+                    </span>
                   </span>
                 </div>
 
-                <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
+                <div className="mt-3 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
                   <ScoreGauge
                     score={scores.overall}
                     label="Overall Health"
-                    sublabel="/100"
-                    color={scores.gradeColor}
+                    sublabel="/ 100"
                   />
                   <ScoreGauge
                     score={scores.onPage}
                     label="On-Page Structure"
-                    sublabel="/100"
-                    color="#0284c7"
+                    sublabel="/ 100"
                   />
                   <ScoreGauge
                     score={scores.schemaTechnical}
                     label="Schema & Technical"
-                    sublabel="/100"
-                    color="#10b981"
+                    sublabel="/ 100"
                   />
                   <ScoreGauge
                     score={scores.geoAiReadiness}
                     label="GEO AI Readiness"
-                    sublabel="/100"
-                    color="#8b5cf6"
+                    sublabel="/ 100"
                   />
                 </div>
               </div>

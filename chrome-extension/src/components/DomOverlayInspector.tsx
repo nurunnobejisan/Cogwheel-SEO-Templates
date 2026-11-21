@@ -81,13 +81,13 @@ export function DomOverlayInspector({ data, activeTabId }: Props) {
   return (
     <div className="space-y-4">
       {/* Visual Toggles Grid */}
-      <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
+      <div className="rounded-xl border border-[#27272A] bg-[#111113] p-4 text-[#FAFAFA]">
+        <div className="flex items-center justify-between border-b border-[#27272A] pb-2.5">
           <div>
-            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#A1A1AA]">
               LIVE ON-PAGE VISUAL OVERLAYS
             </span>
-            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-0.5 text-xs text-[#A1A1AA]">
               Injects non-destructive visual highlight badges and inspection outlines onto the active page.
             </p>
           </div>
@@ -97,14 +97,14 @@ export function DomOverlayInspector({ data, activeTabId }: Props) {
             type="button"
             onClick={handleClearAllOverlays}
             disabled={activeOverlayCount === 0}
-            className={`flex items-center gap-1 rounded-xl px-2.5 py-1.5 text-xs font-bold transition shadow-xs ${
+            className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-xs font-medium transition shadow-xs ${
               activeOverlayCount > 0
-                ? "bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-950/60 dark:text-rose-300 dark:hover:bg-rose-900/70 border border-rose-200 dark:border-rose-900"
-                : "bg-slate-100 text-slate-400 dark:bg-slate-800 dark:text-slate-500 cursor-not-allowed"
+                ? "bg-rose-500/10 text-rose-400 hover:bg-rose-500/20 border border-rose-500/20"
+                : "bg-[#18181B] text-[#71717A] border border-[#27272A] cursor-not-allowed"
             }`}
           >
-            <RotateCcw className="h-3 w-3" />
-            <span>Clear All Overlays {activeOverlayCount > 0 && `(${activeOverlayCount})`}</span>
+            <RotateCcw className="h-3.5 w-3.5" />
+            <span className="tabular-nums">Clear All Overlays {activeOverlayCount > 0 && `(${activeOverlayCount})`}</span>
           </button>
         </div>
 
@@ -113,21 +113,21 @@ export function DomOverlayInspector({ data, activeTabId }: Props) {
           <button
             type="button"
             onClick={() => toggleOverlay("headings", headingsActive, setHeadingsActive)}
-            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition shadow-xs ${
+            className={`flex flex-col justify-between rounded-xl border p-3 text-left transition ${
               headingsActive
-                ? "border-emerald-500 bg-emerald-50/80 dark:border-emerald-700 dark:bg-emerald-950/40"
-                : "border-slate-200 bg-slate-50/80 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-800/50"
+                ? "border-emerald-500/40 bg-emerald-500/10 text-[#FAFAFA]"
+                : "border-[#27272A] bg-[#18181B] hover:border-[#3F3F46] text-[#A1A1AA]"
             }`}
           >
             <div className="flex items-center justify-between w-full">
-              <Eye className={`h-4 w-4 ${headingsActive ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400"}`} />
-              <span className={`text-[10px] font-bold ${headingsActive ? "text-emerald-700 dark:text-emerald-300" : "text-slate-400"}`}>
+              <Eye className={`h-4 w-4 ${headingsActive ? "text-emerald-400" : "text-[#71717A]"}`} />
+              <span className={`text-[10px] font-semibold tracking-wide ${headingsActive ? "text-emerald-400" : "text-[#71717A]"}`}>
                 {headingsActive ? "ON" : "OFF"}
               </span>
             </div>
             <div className="mt-2">
-              <div className="text-xs font-bold text-slate-900 dark:text-white">Heading Hierarchy</div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-400">
+              <div className="text-xs font-semibold text-[#FAFAFA]">Heading Hierarchy</div>
+              <div className="text-[10px] text-[#A1A1AA] tabular-nums">
                 H1–H3 Badges ({data.h1Elements.length} H1, {data.h2Elements.length} H2)
               </div>
             </div>
