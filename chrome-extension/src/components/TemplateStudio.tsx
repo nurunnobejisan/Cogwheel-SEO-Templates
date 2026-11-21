@@ -20,15 +20,18 @@ interface Props {
   pageData?: PageAuditData;
   activeProfile?: ClientProfile;
   initialTemplateId?: string;
+  activeTabId?: number;
 }
 
 export function TemplateStudio({
   pageData,
   activeProfile,
   initialTemplateId,
+  activeTabId,
 }: Props) {
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
+  const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
       return JSON.parse(localStorage.getItem("cogwheel_favorite_templates") || "[]");
@@ -138,6 +141,61 @@ export function TemplateStudio({
     a.href = url;
     a.download = `${selectedTemplate.id}.${ext}`;
     a.click();
+  };
+
+  const handleInjectOnPage = () => {
+    if (!activeTabId || typeof chrome === "undefined" || !chrome.tabs) {
+      setActionFeedback("Target tab not connected.");
+      setTimeout(() => setActionFeedback(null), 2500);
+      return;
+    }
+
+    const payload: { title?: string; metaDesc?: string; h1?: string; schemaJson?: string } = {};
+    if (formVariables["targetKeyword"] && formVariables["hotelName"]) {
+      payload.title = `${formVariables["targetKeyword"]} | ${formVariables["hotelName"]}`;
+    }
+    if (formVariables["metaDescription"]) {
+      payload.metaDesc = formVariables["metaDescription"];
+    }
+    if (formVariables["primaryH1"]) {
+      payload.h1 = formVariables["primaryH1"];
+    }
+    if (selectedTemplate.format === "json") {
+      payload.schemaJson = resolvedOutput;
+    }
+
+    chrome.tabs.sendMessage(activeTabId, { type: "INJECT_PREVIEW", payload }, (res) => {
+      if (res && res.injected && res.injected.length > 0) {
+        setActionFeedback(`Injected ${res.injected.join(", ")} on active page!`);
+      } else {
+        setActionFeedback("Preview injected into live page DOM.");
+      }
+      setTimeout(() => setActionFeedback(null), 3000);
+    });
+  };
+
+  const handleAutoFillCms = () => {
+    if (!activeTabId || typeof chrome === "undefined" || !chrome.tabs) {
+      setActionFeedback("Target tab not connected.");
+      setTimeout(() => setActionFeedback(null), 2500);
+      return;
+    }
+
+    const payload = {
+      title: formVariables["targetKeyword"]
+        ? `${formVariables["targetKeyword"]} | ${formVariables["hotelName"] || ""}`
+        : formVariables["destinationTitle"] || formVariables["roomTitle"] || formVariables["hotelName"],
+      metaDesc: formVariables["metaDescription"] || formVariables["destinationSubtitle"] || formVariables["roomDescription"],
+    };
+
+    chrome.tabs.sendMessage(activeTabId, { type: "AUTO_FILL_CMS", payload }, (res) => {
+      if (res && res.result && res.result.filledFields.length > 0) {
+        setActionFeedback(`Auto-filled ${res.result.detectedCms}: ${res.result.filledFields.join(", ")}`);
+      } else {
+        setActionFeedback("No compatible CMS input fields detected on page.");
+      }
+      setTimeout(() => setActionFeedback(null), 3500);
+    });
   };
 
   // Launch pre-encoded prompt in AI engines
@@ -280,8 +338,26 @@ export function TemplateStudio({
           <div className="flex items-center gap-1.5">
             <button
               type="button"
+              onClick={handleInjectOnPage}
+              title="Preview changes live in current browser tab"
+              className="inline-flex items-center gap-1 rounded-lg border border-emerald-300 bg-emerald-50 px-2 py-1 text-xs font-bold text-emerald-800 shadow-xs transition hover:bg-emerald-100 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
+            >
+              <span>Inject on Page</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleAutoFillCms}
+              title="Auto-fill WordPress, Webflow, or Shopify SEO fields"
+              className="inline-flex items-center gap-1 rounded-lg border border-sky-300 bg-sky-50 px-2 py-1 text-xs font-bold text-sky-800 shadow-xs transition hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
+            >
+              <span>Auto-Fill CMS</span>
+            </button>
+
+            <button
+              type="button"
               onClick={handleCopy}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               {copied ? <Check className="h-3 w-3 text-emerald-500" /> : <Copy className="h-3 w-3" />}
               {copied ? "Copied" : "Copy"}
@@ -290,13 +366,19 @@ export function TemplateStudio({
             <button
               type="button"
               onClick={handleDownload}
-              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <Download className="h-3 w-3" />
               Download
             </button>
           </div>
         </div>
+
+        {actionFeedback && (
+          <div className="mt-2.5 rounded-lg bg-emerald-500/10 border border-emerald-500/30 px-3 py-1.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-300 animate-fade-in">
+            {actionFeedback}
+          </div>
+        )}
 
         {/* Code / Output Box */}
         <div className="mt-3">

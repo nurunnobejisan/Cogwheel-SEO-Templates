@@ -5,27 +5,48 @@ export interface PageAuditData {
   protocol: string;
   hostname: string;
   title: string;
+  titlePixelWidth?: number;
   metaDesc: string;
+  metaDescPixelWidth?: number;
+  metaRobots?: string;
+  language?: string;
   canonical: string;
   h1Elements: string[];
   h2Elements: string[];
   h3Elements: string[];
+  allHeadings?: Array<{ tag: string; text: string }>;
   totalImages: number;
   imagesWithoutAlt: number;
   oversizedImages: number;
+  imagesList?: Array<{ src: string; alt: string; loading?: string }>;
   words: number;
+  extractedAmenities?: string[];
+  topKeywords?: Array<{ term: string; count: number; density: string }>;
   schemas: any[];
   links: {
     internal: number;
     external: number;
     nofollow: number;
   };
+  internalUrls?: string[];
   hasViewport: boolean;
   hasOgTitle: boolean;
   hasOgImage: boolean;
   ogTitle: string;
   ogDescription: string;
   ogImage: string;
+  twitterTags?: {
+    card?: string;
+    title?: string;
+    description?: string;
+    image?: string;
+  };
+  detectedNap?: {
+    phone?: string;
+    address?: string;
+    email?: string;
+  };
+  socialLinks?: Array<{ platform: string; url: string }>;
   loadTimeMs?: number;
 }
 
@@ -82,4 +103,10 @@ export interface OverlayToggles {
   missingAlts: boolean;
   links: boolean;
   schemaTree: boolean;
+}
+
+export interface CmsAutoFillResult {
+  detectedCms: "WordPress/Yoast" | "WordPress/RankMath" | "WordPress/Classic" | "Webflow" | "Shopify" | "Generic/DOM";
+  filledFields: string[];
+  success: boolean;
 }

@@ -106,6 +106,20 @@ export function SidePanelApp() {
 
   useEffect(() => {
     fetchActivePage();
+
+    if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+      const listener = (msg: any) => {
+        if (msg.type === "AUTO_PAGE_CONTEXT_UPDATED" && msg.data) {
+          setPageData(msg.data);
+          if (msg.tabId) setActiveTabId(msg.tabId);
+        } else if (msg.type === "NAVIGATE_TAB") {
+          if (msg.tab) setActiveTab(msg.tab);
+          if (msg.templateId) setTargetTemplateId(msg.templateId);
+        }
+      };
+      chrome.runtime.onMessage.addListener(listener);
+      return () => chrome.runtime.onMessage.removeListener(listener);
+    }
   }, []);
 
   const scores = calculateSeoScores(pageData);
@@ -298,6 +312,7 @@ export function SidePanelApp() {
               pageData={pageData}
               activeProfile={activeProfile}
               initialTemplateId={targetTemplateId}
+              activeTabId={activeTabId}
             />
           )}
 
@@ -308,7 +323,7 @@ export function SidePanelApp() {
 
           {/* TAB 4: Automation & Batch Runner */}
           {activeTab === "automation" && (
-            <AutomationBulkRunner pageData={pageData} />
+            <AutomationBulkRunner pageData={pageData} activeProfile={activeProfile} />
           )}
 
           {/* TAB 5: Settings & Brand Profiles */}
