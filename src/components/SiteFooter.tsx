@@ -47,7 +47,27 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-8 flex flex-col gap-2 border-t border-slate-200/60 pt-6 text-[11px] text-slate-500 dark:border-slate-800/60 dark:text-slate-500 sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} Cogwheel Marketing &amp; SEO Contributors. Distributed under the MIT License.</p>
+          <p>
+            &copy; {new Date().getFullYear()} Cogwheel Marketing &amp;{" "}
+            <a
+              href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/graphs/contributors"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-slate-400 hover:text-slate-900 dark:hover:text-white"
+            >
+              Contributors
+            </a>
+            . Architected by{" "}
+            <a
+              href="https://github.com/jisan-razibmarketing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-slate-700 underline decoration-slate-400 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+            >
+              Shah Jisan (SJ)
+            </a>
+            . Distributed under the MIT License.
+          </p>
           <p className="flex items-center gap-2">
             <span>Marriott &bull; Hilton &bull; IHG &bull; Hyatt &bull; Independent Luxury</span>
           </p>

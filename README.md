@@ -7,6 +7,7 @@
     <img src="https://img.shields.io/badge/Python-3.11%2B%20Typed-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
     <img src="https://img.shields.io/badge/Chrome-Manifest%20V3-10B981?style=flat-square&logo=googlechrome&logoColor=white" alt="Manifest V3" />
     <img src="https://img.shields.io/github/v/release/jisan-razibmarketing/Cogwheel-SEO-Templates?style=flat-square&color=6366F1" alt="Release" />
+    <a href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/graphs/contributors"><img src="https://img.shields.io/github/contributors/jisan-razibmarketing/Cogwheel-SEO-Templates?style=flat-square&color=3B82F6" alt="Contributors" /></a>
     <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License: MIT" />
   </p>
 </div>
@@ -226,6 +227,35 @@ python3 scripts/python/fine_tune_pipeline.py \
 - [Changelog](CHANGELOG.md): Detailed release notes adhering to Keep a Changelog standards.
 - [Architecture Specifications](docs/ARCHITECTURE.md): Multi-tier architecture, engines, and CSP governance.
 - [Issue Template](.github/ISSUE_TEMPLATE/bug_report.md): Structured bug report intake template.
+
+---
+
+## Contributors
+
+Thanks to all contributors who have helped build, optimize, and maintain Cogwheel SEO & GEO Studio!
+
+### Lead Maintainer & Architect
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/jisan-razibmarketing">
+        <img src="https://github.com/jisan-razibmarketing.png?size=100" width="100px;" alt="Shah Jisan (SJ)" style="border-radius: 50%;" /><br />
+        <sub><b>Shah Jisan (SJ)</b></sub>
+      </a><br />
+      <sub>Lead Architect & Maintainer</sub><br />
+      <a href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/commits?author=jisan-razibmarketing" title="Code & Architecture">💻 🎨 🚀 📖 🛡️</a>
+    </td>
+  </tr>
+</table>
+
+### Automated Contributor Pipeline
+This repository automatically tracks all contributions dynamically via the GitHub Graph:
+
+<a href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=jisan-razibmarketing/Cogwheel-SEO-Templates" alt="Auto-generated Contributor List" />
+</a>
+
+Contributions of all types—code, SEO templates, hotel guardrail rules, schema specs, and documentation—are warmly welcomed.
 
 ---
 
