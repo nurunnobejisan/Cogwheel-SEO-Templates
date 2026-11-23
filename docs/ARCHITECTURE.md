@@ -22,6 +22,12 @@ Cogwheel SEO & GEO Studio is engineered as an enterprise hybrid web application,
 
 ## 2. Multi-Tier System Topology
 
+<div align="center">
+  <img src="assets/system-architecture.svg" alt="Cogwheel SEO & GEO Studio System Architecture Diagram" width="100%" />
+</div>
+
+<br />
+
 ```mermaid
 flowchart TD
     subgraph BrowserRuntime ["Browser Runtime (Chrome Manifest V3)"]

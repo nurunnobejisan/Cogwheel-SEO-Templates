@@ -1,0 +1,483 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="100%" height="100%" style="background:#09090b; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#09090b"/>
+      <stop offset="50%" stop-color="#0d0d12"/>
+      <stop offset="100%" stop-color="#121218"/>
+    </linearGradient>
+
+    <linearGradient id="blue-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#3b82f6"/>
+      <stop offset="100%" stop-color="#1d4ed8"/>
+    </linearGradient>
+
+    <linearGradient id="emerald-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+
+    <linearGradient id="purple-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5cf6"/>
+      <stop offset="100%" stop-color="#6d28d9"/>
+    </linearGradient>
+
+    <linearGradient id="amber-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+
+    <!-- Filters -->
+    <filter id="glow-blue" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+
+    <filter id="card-shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#3b82f6"/>
+    </marker>
+    <marker id="arrow-emerald" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#10b981"/>
+    </marker>
+    <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#8b5cf6"/>
+    </marker>
+    <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 8 5 L 0 9 z" fill="#52525b"/>
+    </marker>
+  </defs>
+
+  <!-- Background Canvas -->
+  <rect width="1200" height="780" fill="url(#bg-grad)"/>
+
+  <!-- Subtle Grid Pattern -->
+  <g opacity="0.05" stroke="#ffffff" stroke-width="1">
+    <line x1="0" y1="60" x2="1200" y2="60"/>
+    <line x1="0" y1="180" x2="1200" y2="180"/>
+    <line x1="0" y1="300" x2="1200" y2="300"/>
+    <line x1="0" y1="420" x2="1200" y2="420"/>
+    <line x1="0" y1="540" x2="1200" y2="540"/>
+    <line x1="0" y1="660" x2="1200" y2="660"/>
+    <line x1="280" y1="0" x2="280" y2="780"/>
+    <line x1="650" y1="0" x2="650" y2="780"/>
+    <line x1="920" y1="0" x2="920" y2="780"/>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- HEADER SECTION                                                            -->
+  <!-- ========================================================================= -->
+  <g transform="translate(30, 22)">
+    <text x="0" y="24" fill="#ffffff" font-size="20" font-weight="800" letter-spacing="0.5">COGWHEEL SEO &amp; GEO STUDIO</text>
+    <text x="325" y="24" fill="#10b981" font-size="13" font-weight="700" letter-spacing="1">SYSTEM ARCHITECTURE v2.7.0</text>
+    <text x="0" y="44" fill="#a1a1aa" font-size="12">Multi-Tier Architecture, AI Training Vault, Supervised Fine-Tuning &amp; Hybrid Inference Routing</text>
+
+    <!-- Header Badges -->
+    <g transform="translate(710, 8)">
+      <rect x="0" y="0" width="85" height="22" rx="4" fill="#18181b" stroke="#27272a"/>
+      <circle cx="10" cy="11" r="3.5" fill="#10b981"/>
+      <text x="20" y="15" fill="#e4e4e7" font-size="10" font-weight="600">Manifest V3</text>
+
+      <rect x="95" y="0" width="75" height="22" rx="4" fill="#18181b" stroke="#27272a"/>
+      <circle cx="105" cy="11" r="3.5" fill="#3b82f6"/>
+      <text x="115" y="15" fill="#e4e4e7" font-size="10" font-weight="600">React 18</text>
+
+      <rect x="180" y="0" width="80" height="22" rx="4" fill="#18181b" stroke="#27272a"/>
+      <circle cx="190" cy="11" r="3.5" fill="#f59e0b"/>
+      <text x="200" y="15" fill="#e4e4e7" font-size="10" font-weight="600">Python 3.11</text>
+
+      <rect x="270" y="0" width="80" height="22" rx="4" fill="#18181b" stroke="#27272a"/>
+      <circle cx="280" cy="11" r="3.5" fill="#8b5cf6"/>
+      <text x="290" y="15" fill="#e4e4e7" font-size="10" font-weight="600">Vertex AI</text>
+
+      <rect x="360" y="0" width="70" height="22" rx="4" fill="#18181b" stroke="#27272a"/>
+      <circle cx="370" cy="11" r="3.5" fill="#ec4899"/>
+      <text x="380" y="15" fill="#e4e4e7" font-size="10" font-weight="600">LoRA / SFT</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 1: BROWSER DOM & INGESTION (X: 30, W: 230)                           -->
+  <!-- ========================================================================= -->
+  <g transform="translate(30, 85)">
+    <!-- Zone Box -->
+    <rect width="230" height="665" rx="8" fill="#111116" stroke="#27272a" stroke-width="1.2" filter="url(#card-shadow)"/>
+    <rect width="230" height="32" rx="8" fill="#18181b"/>
+    <rect y="26" width="230" height="6" fill="#18181b"/>
+    <line x1="0" y1="32" x2="230" y2="32" stroke="#27272a"/>
+    <text x="14" y="21" fill="#10b981" font-size="11" font-weight="700" letter-spacing="0.8">1. DOM &amp; INGESTION LAYER</text>
+
+    <!-- Card 1.1: Active Hotel DOM -->
+    <g transform="translate(15, 48)">
+      <rect width="200" height="80" rx="6" fill="#18181f" stroke="#27272a"/>
+      <rect x="10" y="10" width="8" height="8" rx="2" fill="#10b981"/>
+      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">Active Hotel DOM</text>
+      <text x="10" y="38" fill="#a1a1aa" font-size="10.5">Live Property Landing Page</text>
+      <text x="10" y="52" fill="#71717a" font-size="9.5">Marriott, Hilton, IHG, Hyatt,</text>
+      <text x="10" y="65" fill="#71717a" font-size="9.5">Independent Luxury Sites</text>
+    </g>
+
+    <!-- Card 1.2: Content Inspector -->
+    <g transform="translate(15, 142)">
+      <rect width="200" height="96" rx="6" fill="#18181f" stroke="#27272a"/>
+      <rect x="10" y="10" width="8" height="8" rx="2" fill="#3b82f6"/>
+      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">Content Inspector</text>
+      <text x="10" y="36" fill="#60a5fa" font-size="9.5">chrome-extension/content/index.ts</text>
+      <text x="10" y="52" fill="#a1a1aa" font-size="10">• Title, Meta, Canonical URL</text>
+      <text x="10" y="66" fill="#a1a1aa" font-size="10">• H1/H2 Hierarchy &amp; Word Count</text>
+      <text x="10" y="80" fill="#a1a1aa" font-size="10">• Schema &amp; Image Alt Auditing</text>
+    </g>
+
+    <!-- Card 1.3: Visual Overlays -->
+    <g transform="translate(15, 252)">
+      <rect width="200" height="74" rx="6" fill="#18181f" stroke="#27272a"/>
+      <rect x="10" y="10" width="8" height="8" rx="2" fill="#8b5cf6"/>
+      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">Visual Page Overlays</text>
+      <text x="10" y="38" fill="#a1a1aa" font-size="10">• Non-destructive DOM badges</text>
+      <text x="10" y="52" fill="#a1a1aa" font-size="10">• Scoped inline CSS isolation</text>
+      <text x="10" y="65" fill="#71717a" font-size="9.5">Zero mutation of host stylesheets</text>
+    </g>
+
+    <!-- Card 1.4: Universal Training Capture -->
+    <g transform="translate(15, 340)">
+      <rect width="200" height="110" rx="6" fill="#18181f" stroke="#10b981" stroke-width="1.2"/>
+      <rect x="10" y="10" width="8" height="8" rx="2" fill="#10b981"/>
+      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">AI Training Capture</text>
+      <text x="10" y="34" fill="#34d399" font-size="9.5">content/training-capture.ts</text>
+      <text x="10" y="50" fill="#a1a1aa" font-size="10">• Read-only DOM snapshot</text>
+      <text x="10" y="64" fill="#a1a1aa" font-size="10">• OpenGraph &amp; Schema harvest</text>
+      <text x="10" y="78" fill="#a1a1aa" font-size="10">• Main content article text</text>
+      <text x="10" y="94" fill="#34d399" font-size="9.5">→ Returns CapturedWebSample</text>
+    </g>
+
+    <!-- Card 1.5: PII Sanitization Engine -->
+    <g transform="translate(15, 464)">
+      <rect width="200" height="106" rx="6" fill="#18181f" stroke="#ec4899" stroke-width="1.2"/>
+      <rect x="10" y="10" width="8" height="8" rx="2" fill="#ec4899"/>
+      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">PII Sanitizer Engine</text>
+      <text x="10" y="34" fill="#f472b6" font-size="9.5">sanitizeTextAndRedactPii()</text>
+      <text x="10" y="50" fill="#a1a1aa" font-size="10">• [REDACTED_EMAIL] (RFC 5322)</text>
+      <text x="10" y="64" fill="#a1a1aa" font-size="10">• [REDACTED_PHONE] (Intl/US)</text>
+      <text x="10" y="78" fill="#a1a1aa" font-size="10">• [REDACTED_QUERY] (Auth/Tokens)</text>
+      <text x="10" y="94" fill="#f472b6" font-size="9.5">Zero Data Leakage Guarantee</text>
+    </g>
+
+    <!-- Intra-column connectors -->
+    <line x1="115" y1="128" x2="115" y2="142" stroke="#52525b" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+    <line x1="115" y1="238" x2="115" y2="252" stroke="#52525b" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+    <line x1="115" y1="326" x2="115" y2="340" stroke="#10b981" stroke-width="1.5" marker-end="url(#arrow-emerald)"/>
+    <line x1="115" y1="450" x2="115" y2="464" stroke="#ec4899" stroke-width="1.5" marker-end="url(#arrow-gray)"/>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 2: CHROME EXTENSION RUNTIME (MV3) (X: 285, W: 360)                   -->
+  <!-- ========================================================================= -->
+  <g transform="translate(285, 85)">
+    <!-- Zone Box -->
+    <rect width="360" height="665" rx="8" fill="#111116" stroke="#27272a" stroke-width="1.2" filter="url(#card-shadow)"/>
+    <rect width="360" height="32" rx="8" fill="#18181b"/>
+    <rect y="26" width="360" height="6" fill="#18181b"/>
+    <line x1="0" y1="32" x2="360" y2="32" stroke="#27272a"/>
+    <text x="14" y="21" fill="#3b82f6" font-size="11" font-weight="700" letter-spacing="0.8">2. CHROME EXTENSION RUNTIME (MANIFEST V3)</text>
+
+    <!-- Side Panel React App Container -->
+    <g transform="translate(15, 44)">
+      <rect width="330" height="425" rx="6" fill="#18181f" stroke="#3b82f6" stroke-width="1.4"/>
+      
+      <!-- Tab Header Bar -->
+      <rect width="330" height="28" rx="6" fill="#1f1f27"/>
+      <rect y="22" width="330" height="6" fill="#1f1f27"/>
+      <text x="12" y="18" fill="#ffffff" font-size="11" font-weight="700">SidePanelApp.tsx (React 18 + Vite)</text>
+      
+      <!-- Mini Tabs -->
+      <g transform="translate(12, 34)">
+        <rect x="0" y="0" width="70" height="18" rx="3" fill="#3b82f6"/>
+        <text x="10" y="13" fill="#ffffff" font-size="9" font-weight="700">Audit &amp; SERP</text>
+
+        <rect x="76" y="0" width="72" height="18" rx="3" fill="#27272a"/>
+        <text x="83" y="13" fill="#a1a1aa" font-size="9" font-weight="600">Template Studio</text>
+
+        <rect x="154" y="0" width="75" height="18" rx="3" fill="#27272a"/>
+        <text x="160" y="13" fill="#34d399" font-size="9" font-weight="700">Dataset Vault</text>
+
+        <rect x="235" y="0" width="65" height="18" rx="3" fill="#27272a"/>
+        <text x="245" y="13" fill="#a1a1aa" font-size="9" font-weight="600">Settings</text>
+      </g>
+
+      <!-- Client-Side Engines Grid -->
+      <g transform="translate(10, 60)">
+        <!-- Engine 1: SERP Pixel Budget -->
+        <g transform="translate(0, 0)">
+          <rect width="150" height="82" rx="4" fill="#131317" stroke="#27272a"/>
+          <text x="8" y="16" fill="#60a5fa" font-size="10.5" font-weight="700">SERP Pixel Engine</text>
+          <text x="8" y="30" fill="#71717a" font-size="8.5">pixelCalculator.ts</text>
+          <text x="8" y="46" fill="#a1a1aa" font-size="9.5">Title: 580px Arial 20px</text>
+          <text x="8" y="60" fill="#a1a1aa" font-size="9.5">Desc: 920px Arial 14px</text>
+          <text x="8" y="74" fill="#34d399" font-size="9">Glyph Width Matrix</text>
+        </g>
+
+        <!-- Engine 2: Brand Guardrails -->
+        <g transform="translate(160, 0)">
+          <rect width="150" height="82" rx="4" fill="#131317" stroke="#27272a"/>
+          <text x="8" y="16" fill="#60a5fa" font-size="10.5" font-weight="700">Brand Guardrails</text>
+          <text x="8" y="30" fill="#71717a" font-size="8.5">brandGuardrails.ts</text>
+          <text x="8" y="46" fill="#a1a1aa" font-size="9.5">5 Hotel Portfolios</text>
+          <text x="8" y="60" fill="#a1a1aa" font-size="9.5">Lexical Superlative Ban</text>
+          <text x="8" y="74" fill="#f59e0b" font-size="9">Mandatory Suffix Rule</text>
+        </g>
+
+        <!-- Engine 3: JSON-LD Graph -->
+        <g transform="translate(0, 90)">
+          <rect width="150" height="82" rx="4" fill="#131317" stroke="#27272a"/>
+          <text x="8" y="16" fill="#60a5fa" font-size="10.5" font-weight="700">JSON-LD Graph Engine</text>
+          <text x="8" y="30" fill="#71717a" font-size="8.5">auditExporters.ts</text>
+          <text x="8" y="46" fill="#a1a1aa" font-size="9.5">Schema.org/Hotel</text>
+          <text x="8" y="60" fill="#a1a1aa" font-size="9.5">Schema.org/FAQPage</text>
+          <text x="8" y="74" fill="#8b5cf6" font-size="9">Zero Placeholder Leak</text>
+        </g>
+
+        <!-- Engine 4: Deliverable Exporter -->
+        <g transform="translate(160, 90)">
+          <rect width="150" height="82" rx="4" fill="#131317" stroke="#27272a"/>
+          <text x="8" y="16" fill="#60a5fa" font-size="10.5" font-weight="700">Export Deliverables</text>
+          <text x="8" y="30" fill="#71717a" font-size="8.5">ExportAuditDropdown.tsx</text>
+          <text x="8" y="46" fill="#a1a1aa" font-size="9.5">1. Exec HTML (Print CSS)</text>
+          <text x="8" y="60" fill="#a1a1aa" font-size="9.5">2. JSON-LD Package</text>
+          <text x="8" y="74" fill="#38bdf8" font-size="9">3. 26-Metric CSV</text>
+        </g>
+
+        <!-- Engine 5: SFT Dataset Builder -->
+        <g transform="translate(0, 180)">
+          <rect width="150" height="82" rx="4" fill="#131317" stroke="#10b981" stroke-width="1.2"/>
+          <text x="8" y="16" fill="#34d399" font-size="10.5" font-weight="700">SFT Dataset Builder</text>
+          <text x="8" y="30" fill="#71717a" font-size="8.5">dataset-builder.ts</text>
+          <text x="8" y="46" fill="#a1a1aa" font-size="9.5">• Gemini SFT (.jsonl)</text>
+          <text x="8" y="60" fill="#a1a1aa" font-size="9.5">• ChatML / Unsloth</text>
+          <text x="8" y="74" fill="#34d399" font-size="9">• Direct App API Sync</text>
+        </g>
+
+        <!-- Engine 6: Custom Model Client -->
+        <g transform="translate(160, 180)">
+          <rect width="150" height="82" rx="4" fill="#131317" stroke="#8b5cf6" stroke-width="1.2"/>
+          <text x="8" y="16" fill="#c084fc" font-size="10.5" font-weight="700">Model Client &amp; Router</text>
+          <text x="8" y="30" fill="#71717a" font-size="8.5">custom-model-client.ts</text>
+          <text x="8" y="46" fill="#a1a1aa" font-size="9.5">Multi-Provider Router</text>
+          <text x="8" y="60" fill="#a1a1aa" font-size="9.5">Tuned Gemini / Ollama</text>
+          <text x="8" y="74" fill="#ec4899" font-size="9">Zero-Latency Fallback</text>
+        </g>
+
+        <!-- In-App Remediator Bar -->
+        <g transform="translate(0, 270)">
+          <rect width="310" height="42" rx="4" fill="#1a1a24" stroke="#27272a"/>
+          <text x="10" y="18" fill="#e4e4e7" font-size="10" font-weight="700">Live Remediation &amp; Inline Code Diff Engine</text>
+          <text x="10" y="32" fill="#a1a1aa" font-size="9">SERP Desktop &amp; Mobile Preview • Social OG Cards • 1-Click Patch</text>
+        </g>
+      </g>
+    </g>
+
+    <!-- Storage Tier Cards -->
+    <g transform="translate(15, 480)">
+      <!-- IndexedDB Training Vault -->
+      <g transform="translate(0, 0)">
+        <rect width="330" height="96" rx="6" fill="#18181f" stroke="#10b981" stroke-width="1.3"/>
+        <text x="12" y="18" fill="#34d399" font-size="11.5" font-weight="700">IndexedDB: CogwheelTrainingVaultDB (v2)</text>
+        <text x="12" y="34" fill="#a1a1aa" font-size="10">• Canonical URL SHA-256 Deduplication</text>
+        <text x="12" y="48" fill="#a1a1aa" font-size="10">• Quality Scorer (0-100 pts: Completeness, Delta, GEO, Schema)</text>
+        <text x="12" y="62" fill="#a1a1aa" font-size="10">• Status Workflow: Pending → Approved → Rejected</text>
+        <text x="12" y="76" fill="#71717a" font-size="9.5">Persistent across browser restarts • Zero remote telemetry leaks</text>
+      </g>
+
+      <!-- chrome.storage.local & Service Worker -->
+      <g transform="translate(0, 104)">
+        <rect width="330" height="66" rx="6" fill="#18181f" stroke="#27272a"/>
+        <text x="12" y="18" fill="#ffffff" font-size="11" font-weight="700">chrome.storage.local &amp; Service Worker</text>
+        <text x="12" y="34" fill="#a1a1aa" font-size="10">• 6-Hour Scheduled Alarms (auto-updater.ts)</text>
+        <text x="12" y="48" fill="#a1a1aa" font-size="10">• Cached 78-KW Matrix, Scoring Weights, Active Profile</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 3: REMOTE DISTRIBUTION & CLOUD (X: 665, W: 240)                      -->
+  <!-- ========================================================================= -->
+  <g transform="translate(665, 85)">
+    <!-- Zone Box -->
+    <rect width="240" height="665" rx="8" fill="#111116" stroke="#27272a" stroke-width="1.2" filter="url(#card-shadow)"/>
+    <rect width="240" height="32" rx="8" fill="#18181b"/>
+    <rect y="26" width="240" height="6" fill="#18181b"/>
+    <line x1="0" y1="32" x2="240" y2="32" stroke="#27272a"/>
+    <text x="14" y="21" fill="#8b5cf6" font-size="11" font-weight="700" letter-spacing="0.8">3. REMOTE DISTRIBUTION &amp; CLOUD</text>
+
+    <!-- Card 3.1: GitHub Main Distribution -->
+    <g transform="translate(15, 48)">
+      <rect width="210" height="110" rx="6" fill="#18181f" stroke="#8b5cf6" stroke-width="1.2"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">GitHub Main Repository</text>
+      <text x="12" y="34" fill="#c084fc" font-size="9.5">Layer A: Free Silent OTA Sync</text>
+      <text x="12" y="52" fill="#a1a1aa" font-size="10">• 78-KW Strategy Matrix (JSON)</text>
+      <text x="12" y="66" fill="#a1a1aa" font-size="10">• OTA Scoring Weights (JSON)</text>
+      <text x="12" y="80" fill="#a1a1aa" font-size="10">• manifest.json (SemVer v2.7.0)</text>
+      <text x="12" y="96" fill="#a1a1aa" font-size="10">• releases/ &amp; updates.xml</text>
+    </g>
+
+    <!-- Card 3.2: Cogwheel Web App API -->
+    <g transform="translate(15, 170)">
+      <rect width="210" height="88" rx="6" fill="#18181f" stroke="#27272a"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">Cogwheel Web App API</text>
+      <text x="12" y="34" fill="#60a5fa" font-size="9.5">Direct Dataset Ingestion API</text>
+      <text x="12" y="52" fill="#a1a1aa" font-size="10">• HTTP POST /api/training/sync</text>
+      <text x="12" y="66" fill="#a1a1aa" font-size="10">• Bearer Token Authentication</text>
+      <text x="12" y="80" fill="#71717a" font-size="9.5">Batch Push from Dataset Vault</text>
+    </g>
+
+    <!-- Card 3.3: External Inference Providers -->
+    <g transform="translate(15, 270)">
+      <rect width="210" height="240" rx="6" fill="#18181f" stroke="#8b5cf6" stroke-width="1.2"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">Inference Providers</text>
+      <text x="12" y="34" fill="#c084fc" font-size="9.5">Custom &amp; Cloud LLM Endpoints</text>
+
+      <!-- Provider 1 -->
+      <g transform="translate(8, 44)">
+        <rect width="194" height="52" rx="4" fill="#131317" stroke="#27272a"/>
+        <text x="8" y="15" fill="#38bdf8" font-size="10" font-weight="700">Google Vertex AI / Gemini</text>
+        <text x="8" y="29" fill="#a1a1aa" font-size="9">tunedModels/hotel-seo-*</text>
+        <text x="8" y="43" fill="#71717a" font-size="8.5">Google AI Studio REST API</text>
+      </g>
+
+      <!-- Provider 2 -->
+      <g transform="translate(8, 102)">
+        <rect width="194" height="52" rx="4" fill="#131317" stroke="#27272a"/>
+        <text x="8" y="15" fill="#34d399" font-size="10" font-weight="700">Custom REST Endpoints</text>
+        <text x="8" y="29" fill="#a1a1aa" font-size="9">vLLM / HuggingFace TGI</text>
+        <text x="8" y="43" fill="#71717a" font-size="8.5">POST /v1/chat/completions</text>
+      </g>
+
+      <!-- Provider 3 -->
+      <g transform="translate(8, 160)">
+        <rect width="194" height="52" rx="4" fill="#131317" stroke="#27272a"/>
+        <text x="8" y="15" fill="#f59e0b" font-size="10" font-weight="700">Open-Weight Local Server</text>
+        <text x="8" y="29" fill="#a1a1aa" font-size="9">Ollama (localhost:11434)</text>
+        <text x="8" y="43" fill="#71717a" font-size="8.5">Llama-3-8B / Mistral LoRA</text>
+      </g>
+
+      <text x="12" y="228" fill="#ec4899" font-size="9" font-weight="600">⚡ Auto-Failover to Local Rules</text>
+    </g>
+
+    <!-- Card 3.4: Cloud CI/CD Actions -->
+    <g transform="translate(15, 522)">
+      <rect width="210" height="126" rx="6" fill="#18181f" stroke="#27272a"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">GitHub Actions CI Suite</text>
+      <text x="12" y="34" fill="#60a5fa" font-size="9.5">.github/workflows/ci.yml</text>
+      <text x="12" y="52" fill="#a1a1aa" font-size="10">• TypeScript Strict Typecheck</text>
+      <text x="12" y="66" fill="#a1a1aa" font-size="10">• Vitest Suites (122 tests)</text>
+      <text x="12" y="80" fill="#a1a1aa" font-size="10">• Next.js Web App Build</text>
+      <text x="12" y="94" fill="#a1a1aa" font-size="10">• Python Ruff / Mypy / Tests</text>
+      <text x="12" y="108" fill="#34d399" font-size="9.5">• SSOT Schema Verification</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- ZONE 4: PYTHON AUTOMATION & ML PIPELINE (X: 925, W: 245)                  -->
+  <!-- ========================================================================= -->
+  <g transform="translate(925, 85)">
+    <!-- Zone Box -->
+    <rect width="245" height="665" rx="8" fill="#111116" stroke="#27272a" stroke-width="1.2" filter="url(#card-shadow)"/>
+    <rect width="245" height="32" rx="8" fill="#18181b"/>
+    <rect y="26" width="245" height="6" fill="#18181b"/>
+    <line x1="0" y1="32" x2="245" y2="32" stroke="#27272a"/>
+    <text x="14" y="21" fill="#f59e0b" font-size="11" font-weight="700" letter-spacing="0.8">4. PYTHON 3.11+ AUTOMATION &amp; ML</text>
+
+    <!-- Card 4.1: SSOT Pydantic Models -->
+    <g transform="translate(15, 48)">
+      <rect width="215" height="96" rx="6" fill="#18181f" stroke="#f59e0b" stroke-width="1.2"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">Pydantic SSOT Models</text>
+      <text x="12" y="34" fill="#fbbf24" font-size="9.5">scripts/python/models.py</text>
+      <text x="12" y="52" fill="#a1a1aa" font-size="10">• KeywordStrategyMatrix</text>
+      <text x="12" y="66" fill="#a1a1aa" font-size="10">• BrandGuardrailProfile</text>
+      <text x="12" y="80" fill="#a1a1aa" font-size="10">• TargetSeoGeoOutput Schema</text>
+    </g>
+
+    <!-- Card 4.2: Schema Validation CLI -->
+    <g transform="translate(15, 154)">
+      <rect width="215" height="84" rx="6" fill="#18181f" stroke="#27272a"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">Schema Validator CLI</text>
+      <text x="12" y="34" fill="#fbbf24" font-size="9.5">scripts/python/validate_schemas.py</text>
+      <text x="12" y="52" fill="#a1a1aa" font-size="10">• Validates 78-KW matrix</text>
+      <text x="12" y="66" fill="#a1a1aa" font-size="10">• Validates ota-config.json</text>
+      <text x="12" y="78" fill="#71717a" font-size="9">Enforces JSON Schema Draft-7</text>
+    </g>
+
+    <!-- Card 4.3: Batch Portfolio Auditor -->
+    <g transform="translate(15, 248)">
+      <rect width="215" height="88" rx="6" fill="#18181f" stroke="#27272a"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">Batch Portfolio Auditor</text>
+      <text x="12" y="34" fill="#fbbf24" font-size="9.5">scripts/python/batch_portfolio_audit.py</text>
+      <text x="12" y="52" fill="#a1a1aa" font-size="10">• Multi-property URL crawler</text>
+      <text x="12" y="66" fill="#a1a1aa" font-size="10">• Evaluates On-Page, Schema, GEO</text>
+      <text x="12" y="80" fill="#71717a" font-size="9.5">Outputs Portfolio Executive CSV</text>
+    </g>
+
+    <!-- Card 4.4: SFT Fine-Tuning Pipeline -->
+    <g transform="translate(15, 346)">
+      <rect width="215" height="190" rx="6" fill="#18181f" stroke="#ec4899" stroke-width="1.3"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">SFT Fine-Tuning Pipeline</text>
+      <text x="12" y="34" fill="#f472b6" font-size="9.5">scripts/python/fine_tune_pipeline.py</text>
+
+      <text x="12" y="52" fill="#a1a1aa" font-size="10">1. Strict Pydantic Ingestion</text>
+      <text x="24" y="66" fill="#71717a" font-size="9">• Token length &amp; JSON check</text>
+
+      <text x="12" y="82" fill="#a1a1aa" font-size="10">2. Deterministic 90/10 Split</text>
+      <text x="24" y="96" fill="#71717a" font-size="9">• train.jsonl &amp; validation.jsonl</text>
+
+      <text x="12" y="112" fill="#a1a1aa" font-size="10">3. LoRA Script Generator</text>
+      <text x="24" y="126" fill="#71717a" font-size="9">• 4-bit Unsloth (Llama/Mistral)</text>
+
+      <text x="12" y="142" fill="#a1a1aa" font-size="10">4. Vertex AI Job Config</text>
+      <text x="24" y="156" fill="#71717a" font-size="9">• Remote Gemini Tuning SDK</text>
+
+      <text x="12" y="174" fill="#34d399" font-size="9.5" font-weight="600">5. SERP Accuracy Benchmark</text>
+    </g>
+
+    <!-- Card 4.5: Offline Model Weights -->
+    <g transform="translate(15, 546)">
+      <rect width="215" height="102" rx="6" fill="#18181f" stroke="#27272a"/>
+      <text x="12" y="18" fill="#ffffff" font-size="12" font-weight="700">Tuned Model Output</text>
+      <text x="12" y="34" fill="#a1a1aa" font-size="10">• LoRA Adapters (PEFT safetensors)</text>
+      <text x="12" y="48" fill="#a1a1aa" font-size="10">• GGUF Quantized Weights (Ollama)</text>
+      <text x="12" y="62" fill="#a1a1aa" font-size="10">• Vertex AI Model Registry Endpoint</text>
+      <text x="12" y="82" fill="#c084fc" font-size="9.5">⇄ Serves Back to Zone 2 &amp; 3</text>
+    </g>
+  </g>
+
+  <!-- ========================================================================= -->
+  <!-- CROSS-ZONE INTERCONNECTING ARROWS                                         -->
+  <!-- ========================================================================= -->
+
+  <!-- Flow 1: Training Capture -> IndexedDB Vault -->
+  <path d="M 245 480 Q 265 480, 285 520" fill="none" stroke="#10b981" stroke-width="2" stroke-dasharray="4,4" marker-end="url(#arrow-emerald)"/>
+
+  <!-- Flow 2: Content Inspector -> Side Panel UI -->
+  <path d="M 245 190 Q 265 190, 285 190" fill="none" stroke="#3b82f6" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <!-- Flow 3: Side Panel UI -> GitHub OTA Sync (bidirectional) -->
+  <path d="M 645 150 Q 655 150, 665 140" fill="none" stroke="#8b5cf6" stroke-width="1.8" marker-end="url(#arrow-purple)"/>
+
+  <!-- Flow 4: Dataset Vault -> Cogwheel Web App API -->
+  <path d="M 645 520 Q 655 520, 665 220" fill="none" stroke="#34d399" stroke-width="1.8" stroke-dasharray="4,4" marker-end="url(#arrow-emerald)"/>
+
+  <!-- Flow 5: Custom Model Client -> External Inference Tier -->
+  <path d="M 605 320 Q 645 320, 665 340" fill="none" stroke="#c084fc" stroke-width="2" marker-end="url(#arrow-purple)"/>
+
+  <!-- Flow 6: IndexedDB Vault -> Python SFT Pipeline -->
+  <path d="M 645 540 Q 780 730, 925 440" fill="none" stroke="#ec4899" stroke-width="2" stroke-dasharray="5,4" marker-end="url(#arrow-amber)"/>
+
+  <!-- Flow 7: Tuned Weights -> Custom Model Client (Feedback loop) -->
+  <path d="M 925 580 Q 790 580, 645 330" fill="none" stroke="#38bdf8" stroke-width="1.8" stroke-dasharray="4,4" marker-end="url(#arrow-blue)"/>
+
+</svg>

@@ -23,6 +23,13 @@ The suite combines real-time physical pixel budgeting (Arial 20px / 14px), autom
 
 ## System Architecture
 
+<div align="center">
+  <img src="docs/assets/system-architecture.svg" alt="Cogwheel SEO & GEO Studio System Architecture" width="100%" />
+</div>
+
+<details open>
+<summary><strong>System Topology Flowchart (Mermaid)</strong></summary>
+
 ```mermaid
 flowchart TD
     subgraph BrowserRuntime ["Browser Runtime (Chrome Manifest V3)"]
@@ -78,6 +85,8 @@ flowchart TD
     SchemaValidator --> PyModels
     PyModels -.->|"Mirrors"| SidePanelEngines
 ```
+
+</details>
 
 For complete technical specifications, review the [Architecture Guide](docs/ARCHITECTURE.md).
 
