@@ -9,6 +9,7 @@ import {
   Code,
   ShieldAlert,
   AlertTriangle,
+  Database,
 } from "lucide-react";
 import {
   COGWHEEL_TEMPLATES,
@@ -18,6 +19,7 @@ import {
 import { CogwheelTemplate, PageAuditData, ClientProfile } from "../types/extension";
 import { calculatePixelWidth, TITLE_PIXEL_LIMIT, META_DESC_PIXEL_LIMIT } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
+import { saveTrainingPair } from "../storage/training-vault";
 import {
   BrandGuardrail,
   BrandRules,
@@ -76,6 +78,50 @@ export function TemplateStudio({
 
   const [showFullCode, setShowFullCode] = useState(false);
   const [copiedExport, setCopiedExport] = useState(false);
+  const [capturedStatus, setCapturedStatus] = useState<string | null>(null);
+
+  const handleCaptureForAiTraining = async () => {
+    try {
+      const rawInput = {
+        url: pageData?.url || "https://example.com/hotel",
+        canonicalUrl: pageData?.canonical || pageData?.url || "https://example.com/hotel",
+        domain: pageData?.hostname || "example.com",
+        rawTitle: pageData?.title || "",
+        rawMetaDesc: pageData?.metaDesc || "",
+        rawH1: pageData?.h1Elements || [],
+        rawH2: pageData?.h2Elements || [],
+        rawBodyText: (pageData?.extractedAmenities || []).join(", ") || "Luxury beachfront hotel accommodations.",
+        detectedSchemas: (pageData?.schemas || []).map((s) => String(s["@type"] || "")),
+        wordCount: pageData?.words || 450,
+      };
+
+      const targetOutput = {
+        optimizedTitle: liveTitle,
+        optimizedMetaDesc: liveMeta,
+        optimizedH1: liveH1,
+        jsonLdSchema: {
+          "@context": "https://schema.org",
+          "@type": "Hotel",
+          name: liveH1,
+          description: liveMeta,
+        },
+        geoEntityBlock: liveGeoAnswer,
+        brandGuardrail: activeGuardrail.name,
+      };
+
+      const record = await saveTrainingPair({
+        rawInput,
+        targetOutput,
+        brand: activeGuardrail.name,
+      });
+
+      setCapturedStatus(`Vault Saved (${record.qualityScore}/100)`);
+      setTimeout(() => setCapturedStatus(null), 3000);
+    } catch {
+      setCapturedStatus("Capture Failed");
+      setTimeout(() => setCapturedStatus(null), 3000);
+    }
+  };
 
   // Template Library State
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
@@ -304,6 +350,7 @@ export function TemplateStudio({
     navigator.clipboard.writeText(readyToPasteSnippet).then(() => {
       setCopiedExport(true);
       setTimeout(() => setCopiedExport(false), 2000);
+      handleCaptureForAiTraining();
     });
   };
 
@@ -694,6 +741,16 @@ export function TemplateStudio({
               className="inline-flex items-center gap-1 rounded-xl border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-xs font-bold text-sky-800 shadow-xs transition hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
             >
               <span>Auto-Fill CMS</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleCaptureForAiTraining}
+              title="Save paired raw and optimized dataset sample to local IndexedDB training vault"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1.5 text-xs font-bold text-indigo-400 shadow-xs transition hover:bg-indigo-500/20"
+            >
+              <Database className="h-3.5 w-3.5 text-indigo-400" />
+              <span>{capturedStatus ? capturedStatus : "Capture for AI Training"}</span>
             </button>
           </div>
         </div>

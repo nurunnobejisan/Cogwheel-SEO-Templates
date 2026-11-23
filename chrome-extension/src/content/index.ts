@@ -1,9 +1,16 @@
 import { PageAuditData, CmsAutoFillResult } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { COGWHEEL_OPTIMAL_AUDIT_DATA } from "../data/cogwheelTemplates";
+import { extractCapturedWebSample } from "./training-capture";
 
 // Listen for messages from Side Panel, Popup, or Background Worker
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  if (request.type === "CAPTURE_TRAINING_SAMPLE") {
+    const sample = extractCapturedWebSample();
+    sendResponse({ success: true, sample });
+    return true;
+  }
+
   if (request.type === "EXTRACT_PAGE_DATA") {
     const data = extractComprehensivePageData();
     sendResponse({ success: true, data });
