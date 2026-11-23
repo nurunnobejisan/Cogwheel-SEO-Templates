@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import trainedPropertiesData from "@/data/trained-properties.json";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
@@ -451,6 +452,24 @@ export default function PropertyDashboard() {
                 {tab.label}
               </button>
             ))}
+            <Link
+              href="/templates"
+              className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            >
+              Templates
+            </Link>
+            <Link
+              href="/strategy-matrix"
+              className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            >
+              Matrix
+            </Link>
+            <Link
+              href="/architecture"
+              className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            >
+              Architecture
+            </Link>
             <button
               type="button"
               onClick={() => setShowAiTraining((v) => !v)}

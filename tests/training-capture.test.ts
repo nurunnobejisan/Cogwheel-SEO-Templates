@@ -1,5 +1,4 @@
 import { describe, it, expect } from "vitest";
-import { JSDOM } from "jsdom";
 import {
   sanitizeTextAndRedactPii,
   sanitizeUrlString,
@@ -60,10 +59,243 @@ describe("Training Data Capture & PII Sanitization Module", () => {
   });
 
   describe("Read-Only DOM Content Extraction", () => {
-    // Helper to create synthetic HTML documents in Node test environment
+    // Lightweight, zero-dependency mock Document generator for Node test runtime
+    interface MockNode {
+      tagName: string;
+      attrs: Record<string, string>;
+      textContent: string;
+      children: MockNode[];
+      parent?: MockNode;
+      isRemoved?: boolean;
+      getAttribute(name: string): string | null;
+      querySelectorAll(selector: string): MockNode[];
+      querySelector(selector: string): MockNode | null;
+      remove(): void;
+      cloneNode(deep?: boolean): MockNode;
+    }
+
+    function createMockElement(tag: string, attrs: Record<string, string> = {}, text = ""): MockNode {
+      const el: MockNode = {
+        tagName: tag.toUpperCase(),
+        attrs: { ...attrs },
+        textContent: text,
+        children: [],
+        getAttribute(name: string) {
+          const lower = name.toLowerCase();
+          for (const [k, v] of Object.entries(this.attrs)) {
+            if (k.toLowerCase() === lower) return v;
+          }
+          return null;
+        },
+        remove() {
+          this.isRemoved = true;
+          if (this.parent) {
+            this.parent.children = this.parent.children.filter((c) => c !== this);
+          }
+        },
+        querySelectorAll(selector: string): MockNode[] {
+          const matches: MockNode[] = [];
+          const testEl = (node: MockNode): boolean => {
+            if (node.isRemoved) return false;
+            if (selector === "*") return true;
+            if (selector === '[aria-hidden="true"]') return node.getAttribute("aria-hidden") === "true";
+            if (selector === "[hidden]") return node.getAttribute("hidden") !== null;
+            if (selector.startsWith(".")) {
+              const cls = selector.slice(1);
+              return (node.getAttribute("class") || "").split(/\s+/).includes(cls);
+            }
+            if (selector.includes("[")) {
+              const match = selector.match(/^([a-z0-9_-]+)?\[([a-z0-9_-]+)(?:="([^"]*)")?\]/i);
+              if (match) {
+                const [, sTag, attr, val] = match;
+                if (sTag && node.tagName.toLowerCase() !== sTag.toLowerCase()) return false;
+                const actual = node.getAttribute(attr);
+                if (val !== undefined) return actual === val;
+                return actual !== null;
+              }
+            }
+            return node.tagName.toLowerCase() === selector.toLowerCase();
+          };
+
+          const traverse = (node: MockNode) => {
+            for (const child of node.children) {
+              if (child.isRemoved) continue;
+              if (testEl(child)) matches.push(child);
+              traverse(child);
+            }
+          };
+          traverse(this);
+          return matches;
+        },
+        querySelector(selector: string): MockNode | null {
+          const res = this.querySelectorAll(selector);
+          return res.length > 0 ? res[0] : null;
+        },
+        cloneNode(deep = true): MockNode {
+          const cloned = createMockElement(this.tagName, { ...this.attrs }, this.textContent);
+          if (deep) {
+            cloned.children = this.children
+              .filter((c) => !c.isRemoved)
+              .map((c) => {
+                const childClone = c.cloneNode(true);
+                childClone.parent = cloned;
+                return childClone;
+              });
+          }
+          // Compute textContent dynamically from non-removed children
+          Object.defineProperty(cloned, "textContent", {
+            get() {
+              if (this.children.length === 0) return this._rawText || "";
+              return this.children
+                .filter((c: MockNode) => !c.isRemoved)
+                .map((c: MockNode) => c.textContent)
+                .join(" ");
+            },
+            set(v: string) {
+              this._rawText = v;
+            },
+          });
+          (cloned as any)._rawText = this.textContent;
+          return cloned;
+        },
+      };
+      return el;
+    }
+
     const createMockDocument = (html: string): Document => {
-      const dom = new JSDOM(html);
-      return dom.window.document;
+      const root = createMockElement("html");
+      const head = createMockElement("head");
+      const body = createMockElement("body");
+      head.parent = root;
+      body.parent = root;
+      root.children.push(head, body);
+
+      // Extract title
+      const titleMatch = html.match(/<title>([^<]*)<\/title>/i);
+      const titleText = titleMatch ? titleMatch[1].trim() : "";
+      if (titleMatch) {
+        const titleEl = createMockElement("title", {}, titleText);
+        titleEl.parent = head;
+        head.children.push(titleEl);
+      }
+
+      // Extract meta tags
+      const metaRegex = /<meta\s+([^>]+)>/gi;
+      let m: RegExpExecArray | null;
+      while ((m = metaRegex.exec(html)) !== null) {
+        const attrStr = m[1];
+        const attrs: Record<string, string> = {};
+        const attrRegex = /([a-z0-9_-]+)="([^"]*)"/gi;
+        let am: RegExpExecArray | null;
+        while ((am = attrRegex.exec(attrStr)) !== null) {
+          attrs[am[1]] = am[2];
+        }
+        const metaEl = createMockElement("meta", attrs);
+        metaEl.parent = head;
+        head.children.push(metaEl);
+      }
+
+      // Extract link canonical
+      const linkRegex = /<link\s+([^>]+)>/gi;
+      while ((m = linkRegex.exec(html)) !== null) {
+        const attrStr = m[1];
+        const attrs: Record<string, string> = {};
+        const attrRegex = /([a-z0-9_-]+)="([^"]*)"/gi;
+        let am: RegExpExecArray | null;
+        while ((am = attrRegex.exec(attrStr)) !== null) {
+          attrs[am[1]] = am[2];
+        }
+        const linkEl = createMockElement("link", attrs);
+        linkEl.parent = head;
+        head.children.push(linkEl);
+      }
+
+      // Extract script ld+json
+      const scriptRegex = /<script\s+type="application\/ld\+json">([\s\S]*?)<\/script>/gi;
+      while ((m = scriptRegex.exec(html)) !== null) {
+        const scriptEl = createMockElement("script", { type: "application/ld+json" }, m[1].trim());
+        scriptEl.parent = head;
+        head.children.push(scriptEl);
+      }
+
+      // Check for <main> block
+      const mainMatch = html.match(/<main>([\s\S]*?)<\/main>/i);
+      let mainEl: MockNode | null = null;
+      if (mainMatch) {
+        mainEl = createMockElement("main");
+        mainEl.parent = body;
+        body.children.push(mainEl);
+
+        // Parse inner tags of main or general content
+        const tagRegex = /<([a-z0-9_-]+)([^>]*)>([\s\S]*?)<\/\1>/gi;
+        let tm: RegExpExecArray | null;
+        while ((tm = tagRegex.exec(mainMatch[1])) !== null) {
+          const tag = tm[1];
+          const attrStr = tm[2];
+          const content = tm[3];
+          const attrs: Record<string, string> = {};
+          const attrRegex = /([a-z0-9_-]+)="([^"]*)"/gi;
+          let am: RegExpExecArray | null;
+          while ((am = attrRegex.exec(attrStr)) !== null) {
+            attrs[am[1]] = am[2];
+          }
+          const childEl = createMockElement(tag, attrs, content.replace(/<[^>]+>/g, "").trim());
+          childEl.parent = mainEl;
+          mainEl.children.push(childEl);
+        }
+      }
+
+      // Check for elements outside main: header, nav, aside, footer
+      const otherTags = ["header", "nav", "aside", "footer"];
+      for (const ot of otherTags) {
+        const reg = new RegExp(`<${ot}[^>]*>([\\s\\S]*?)<\\/${ot}>`, "gi");
+        let om: RegExpExecArray | null;
+        while ((om = reg.exec(html)) !== null) {
+          const el = createMockElement(ot, {}, om[1].replace(/<[^>]+>/g, "").trim());
+          el.parent = body;
+          body.children.push(el);
+        }
+      }
+
+      // Check for standalone h1, h2
+      const h1Regex = /<h1>([\s\S]*?)<\/h1>/gi;
+      while ((m = h1Regex.exec(html)) !== null) {
+        const text = m[1].trim();
+        if (!mainEl?.children.some((c) => c.tagName === "H1" && c.textContent === text)) {
+          const el = createMockElement("h1", {}, text);
+          el.parent = body;
+          body.children.push(el);
+        }
+      }
+      const h2Regex = /<h2>([\s\S]*?)<\/h2>/gi;
+      while ((m = h2Regex.exec(html)) !== null) {
+        const text = m[1].trim();
+        if (!mainEl?.children.some((c) => c.tagName === "H2" && c.textContent === text)) {
+          const el = createMockElement("h2", {}, text);
+          el.parent = body;
+          body.children.push(el);
+        }
+      }
+
+      const docMock = {
+        title: titleText,
+        location: {
+          href: "https://www.marriott.com/hotel/ecpsb?session=abc",
+          hostname: "www.marriott.com",
+        },
+        querySelector(selector: string) {
+          if (selector === "title") return head.querySelector("title");
+          if (selector === "main") return mainEl;
+          if (selector === "body") return body;
+          return root.querySelector(selector);
+        },
+        querySelectorAll(selector: string) {
+          return root.querySelectorAll(selector);
+        },
+        body,
+      };
+
+      return docMock as unknown as Document;
     };
 
     it("extracts clean main article text while excluding nav, footer, scripts, and hidden nodes", () => {

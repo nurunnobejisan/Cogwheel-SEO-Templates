@@ -1,26 +1,43 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
 import { DownloadFeedbackModal } from "@/components/DownloadFeedbackModal";
+import { SiteFooter } from "@/components/SiteFooter";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], weight: ["400", "500", "600", "700", "800"], variable: "--font-jakarta" });
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700", "800"],
+  variable: "--font-jakarta",
+});
 
 export const metadata: Metadata = {
-  title: "Razib Marketing — Cogwheel SEO - Templates",
+  metadataBase: new URL("https://cogwheel-seo-templates.vercel.app"),
+  title: {
+    default: "Cogwheel SEO & GEO Studio — Hotel Search Engine Suite",
+    template: "%s",
+  },
   description:
-    "Digital marketing, SEO, and GEO visibility automation studio for independent and branded hotels by Razib Marketing.",
+    "Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.",
   icons: {
     icon: "/razib-marketing-logo.png",
+  },
+  openGraph: {
+    title: "Cogwheel SEO & GEO Studio — Hotel Search Engine Suite",
+    description:
+      "Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.",
+    type: "website",
+    siteName: "Cogwheel SEO & GEO Studio",
   },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${jakarta.variable}`}>
-      <body className="font-sans text-slate-800 antialiased selection:bg-brand selection:text-slate-900">
-        {children}
+      <body className="flex min-h-screen flex-col font-sans text-slate-800 antialiased selection:bg-brand selection:text-slate-900 dark:bg-slate-950 dark:text-slate-100">
+        <div className="flex-1">{children}</div>
+        <SiteFooter />
         <DownloadFeedbackModal />
         <SpeedInsights />
       </body>
