@@ -10,12 +10,16 @@ export type ImageIssueCode =
 
 export interface ImageAuditItem {
   id: string;
+  placementId: string;
   imageUrl: string;
   pageUrl: string;
   pageTitle: string;
   pageStatus: number;
+  filename: string; // Decoded filename with extension for Title column
+  titleLength: number;
   currentAlt: string | null;
   proposedAlt: string;
+  altLength: number;
   isDecorative: boolean;
   htmlWidth: number | null;
   htmlHeight: number | null;
@@ -25,13 +29,15 @@ export interface ImageAuditItem {
   fileSizeKb: number | null;
   format: string;
   mimeType: string;
-  elementType: "img" | "picture" | "source" | "data-lazy" | "css-background";
+  elementType: "img" | "picture" | "source" | "data-lazy" | "css-background" | "wp-media";
   sourceAttribute: string;
   srcsetCandidates?: string[];
   loadingAttribute: "lazy" | "eager" | "auto" | "unspecified";
   httpStatus: number;
   isBroken: boolean;
   occurrenceCount: number;
+  placementIndex: number;
+  contextSnippet?: string;
   issues: {
     code: ImageIssueCode;
     label: string;
@@ -48,10 +54,14 @@ export interface ImageAuditSummary {
   crawledAt: string;
   durationMs: number;
   maxPagesLimit: number;
+  pagesDiscovered: number;
   pagesScanned: number;
   pagesFailed: number;
   totalImagesFound: number;
   uniqueImagesCount: number;
+  totalPlacementsCount: number;
+  imagesPreviewedSuccessfully: number;
+  imagesFailedLoading: number;
   brokenImagesCount: number;
   oversizedImagesCount: number; // > threshold
   missingAltCount: number;
@@ -59,6 +69,17 @@ export interface ImageAuditSummary {
   missingDimensionsCount: number;
   legacyFormatCount: number; // JPEG/PNG/GIF that could be WebP/AVIF
   aboveFoldLazyCount: number;
+  discoveryMethods: string[];
+  sitemapDiscoverySucceeded: boolean;
+  sitemapUrlsFound: number;
+  wpMediaApiFound: boolean;
+  wpMediaCount: number;
+  jsRenderingInspected: boolean;
+  crawlCompleted: boolean;
+  stoppedReason: string;
+  coverageStatement: string;
+  skippedAreas: string[];
+  unresolvedErrors: string[];
   formatBreakdown: Record<string, number>;
   topFindings: string[];
 }
@@ -75,12 +96,17 @@ export interface CrawlLogEntry {
 
 export interface ImageAuditOptions {
   maxPages?: number;
+  maxImages?: number;
   delayMs?: number;
   timeoutMs?: number;
   includeSubdomains?: boolean;
+  enableSitemaps?: boolean;
+  enableWordPressApi?: boolean;
   sizeThresholdKb?: number;
   saveToGoogleSheets?: boolean;
   sheetTitle?: string;
+  checkpointKey?: string;
+  resume?: boolean;
 }
 
 export interface ImageAuditResult {

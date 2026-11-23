@@ -15,10 +15,14 @@ describe("Website Image Optimization Audit Engine", () => {
     crawledAt: new Date().toISOString(),
     durationMs: 450,
     maxPagesLimit: 50,
+    pagesDiscovered: 6,
     pagesScanned: 5,
     pagesFailed: 0,
     totalImagesFound: 4,
     uniqueImagesCount: 4,
+    totalPlacementsCount: 4,
+    imagesPreviewedSuccessfully: 3,
+    imagesFailedLoading: 1,
     brokenImagesCount: 1,
     oversizedImagesCount: 1,
     missingAltCount: 1,
@@ -26,23 +30,38 @@ describe("Website Image Optimization Audit Engine", () => {
     missingDimensionsCount: 1,
     legacyFormatCount: 2,
     aboveFoldLazyCount: 0,
+    discoveryMethods: ["Internal HTML Link Crawler", "XML Sitemap & Index Parser", "Lazy-Load Attribute Parser"],
+    sitemapDiscoverySucceeded: true,
+    sitemapUrlsFound: 12,
+    wpMediaApiFound: false,
+    wpMediaCount: 0,
+    jsRenderingInspected: false,
+    crawlCompleted: true,
+    stoppedReason: "Completed all queue pages",
+    coverageStatement: "Complete within 5 scanned public HTML pages and discovered sitemaps under configured crawl parameters.",
+    skippedAreas: [],
+    unresolvedErrors: [],
     formatBreakdown: { JPEG: 2, PNG: 1, WebP: 1 },
     topFindings: [
-      "1 images are missing descriptive alt text.",
-      "1 images exceed 100 KB and should be compressed.",
-      "1 images return 4xx/5xx HTTP errors.",
+      "1 image placements are missing descriptive alt text.",
+      "1 image placements exceed 100 KB and should be compressed.",
+      "1 image links return 4xx/5xx HTTP errors.",
     ],
   };
 
   const mockItems: ImageAuditItem[] = [
     {
       id: "img-1",
+      placementId: "https://example-hotel.com/assets/hero-suite.jpg::https://example-hotel.com/::1",
       imageUrl: "https://example-hotel.com/assets/hero-suite.jpg",
       pageUrl: "https://example-hotel.com/",
       pageTitle: "Luxury Suites | Example Hotel",
       pageStatus: 200,
+      filename: "hero-suite.jpg",
+      titleLength: 14,
       currentAlt: null,
       proposedAlt: "Example Hotel Hero Suite Luxury Suites",
+      altLength: 38,
       isDecorative: false,
       htmlWidth: null,
       htmlHeight: null,
@@ -58,10 +77,11 @@ describe("Website Image Optimization Audit Engine", () => {
       httpStatus: 200,
       isBroken: false,
       occurrenceCount: 1,
+      placementIndex: 1,
       issues: [
         {
           code: "missing-alt",
-          label: "Missing Alt Text",
+          label: "Missing Alt Attribute",
           description: "Missing alt attribute.",
           severity: "high",
         },
@@ -89,12 +109,16 @@ describe("Website Image Optimization Audit Engine", () => {
     },
     {
       id: "img-2",
+      placementId: "https://example-hotel.com/assets/divider-icon.png::https://example-hotel.com/rooms::2",
       imageUrl: "https://example-hotel.com/assets/divider-icon.png",
       pageUrl: "https://example-hotel.com/rooms",
       pageTitle: "Guest Rooms | Example Hotel",
       pageStatus: 200,
+      filename: "divider-icon.png",
+      titleLength: 16,
       currentAlt: "",
-      proposedAlt: "Decorative background divider icon",
+      proposedAlt: "",
+      altLength: 0,
       isDecorative: true,
       htmlWidth: 24,
       htmlHeight: 24,
@@ -110,18 +134,23 @@ describe("Website Image Optimization Audit Engine", () => {
       httpStatus: 200,
       isBroken: false,
       occurrenceCount: 3,
+      placementIndex: 2,
       issues: [],
-      recommendation: "Decorative image correctly uses empty alt=\"\". Valid according to WCAG.",
+      recommendation: "Decorative image correctly uses empty alt=\"\". Valid per WCAG standards.",
       priority: "Good",
     },
     {
       id: "img-3",
+      placementId: "https://example-hotel.com/assets/pool-sunset.webp::https://example-hotel.com/amenities::1",
       imageUrl: "https://example-hotel.com/assets/pool-sunset.webp",
       pageUrl: "https://example-hotel.com/amenities",
       pageTitle: "Amenities & Pool | Example Hotel",
       pageStatus: 200,
+      filename: "pool-sunset.webp",
+      titleLength: 16,
       currentAlt: "Heated rooftop pool at sunset",
       proposedAlt: "Heated rooftop pool at sunset",
+      altLength: 29,
       isDecorative: false,
       htmlWidth: 800,
       htmlHeight: 600,
@@ -137,18 +166,23 @@ describe("Website Image Optimization Audit Engine", () => {
       httpStatus: 200,
       isBroken: false,
       occurrenceCount: 1,
+      placementIndex: 1,
       issues: [],
       recommendation: "Optimized modern format with descriptive alt text and explicit dimensions.",
       priority: "Good",
     },
     {
       id: "img-4",
+      placementId: "https://example-hotel.com/assets/broken-logo.jpg::https://example-hotel.com/contact::1",
       imageUrl: "https://example-hotel.com/assets/broken-logo.jpg",
       pageUrl: "https://example-hotel.com/contact",
       pageTitle: "Contact Us | Example Hotel",
       pageStatus: 200,
+      filename: "broken-logo.jpg",
+      titleLength: 15,
       currentAlt: "Hotel Logo",
       proposedAlt: "Hotel Logo",
+      altLength: 10,
       isDecorative: false,
       htmlWidth: 150,
       htmlHeight: 50,
@@ -164,6 +198,7 @@ describe("Website Image Optimization Audit Engine", () => {
       httpStatus: 404,
       isBroken: true,
       occurrenceCount: 1,
+      placementIndex: 1,
       issues: [
         {
           code: "broken-image",
@@ -226,7 +261,7 @@ describe("Website Image Optimization Audit Engine", () => {
     // Verify all 5 sheet names
     const expectedSheetNames = [
       "Image Optimization",
-      "Overview",
+      "Audit Summary",
       "Image Inventory",
       "Recommendations",
       "Crawl Log",
@@ -234,7 +269,7 @@ describe("Website Image Optimization Audit Engine", () => {
     assert.deepStrictEqual(workbook.SheetNames, expectedSheetNames);
   });
 
-  it("Image Optimization tab strictly mirrors reference Google Sheet headers and formulas", () => {
+  it("Image Optimization tab strictly preserves 6 columns matching reference sheet headers and formulas", () => {
     const { workbook } = generateImageAuditWorkbook(
       mockSummary,
       mockItems,
@@ -244,19 +279,23 @@ describe("Website Image Optimization Audit Engine", () => {
     const sheet = workbook.Sheets["Image Optimization"];
     assert(sheet, "Image Optimization sheet must exist");
 
-    // Check Header row (Row 1)
+    // Check Header row (Row 1): Exact 6 columns
     assert.strictEqual(sheet["A1"]?.v, "Image");
     assert.strictEqual(sheet["B1"]?.v, "URL ");
     assert.strictEqual(sheet["C1"]?.v, "Title ");
     assert.strictEqual(sheet["D1"]?.v, "Length");
     assert.strictEqual(sheet["E1"]?.v, "Optimized ALT Text");
     assert.strictEqual(sheet["F1"]?.v, "Length");
+    // Column G should NOT exist on main tab
+    assert.strictEqual(sheet["G1"], undefined);
 
     // Check Row 2 formulas
     // Col A should be =IMAGE(B2)
     assert.strictEqual(sheet["A2"]?.f, "IMAGE(B2)");
     // Col B should be image URL
     assert.strictEqual(sheet["B2"]?.v, "https://example-hotel.com/assets/hero-suite.jpg");
+    // Col C should be decoded filename
+    assert.strictEqual(sheet["C2"]?.v, "hero-suite.jpg");
     // Col D should be =LEN(C2)
     assert.strictEqual(sheet["D2"]?.f, "LEN(C2)");
     // Col F should be =LEN(E2)
@@ -280,22 +319,24 @@ describe("Website Image Optimization Audit Engine", () => {
     assert.strictEqual(missingAltItem.priority, "High");
   });
 
-  it("Overview sheet renders summary KPIs and format breakdown", () => {
+  it("Audit Summary sheet renders coverage metrics, discovery methods, and format breakdown", () => {
     const { workbook } = generateImageAuditWorkbook(
       mockSummary,
       mockItems,
       mockCrawlLog
     );
 
-    const sheet = workbook.Sheets["Overview"];
-    assert(sheet, "Overview sheet must exist");
+    const sheet = workbook.Sheets["Audit Summary"];
+    assert(sheet, "Audit Summary sheet must exist");
 
     const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as string[][];
     const textContent = json.flat().join(" ");
 
     assert(textContent.includes("https://example-hotel.com"));
-    assert(textContent.includes("Pages Scanned"));
-    assert(textContent.includes("Total Image Assets Audited"));
+    assert(textContent.includes("Pages Successfully Scanned"));
+    assert(textContent.includes("Total Image Placements"));
+    assert(textContent.includes("XML Sitemap Discovery"));
+    assert(textContent.includes("Coverage Statement"));
     assert(textContent.includes("FORMAT BREAKDOWN"));
     assert(textContent.includes("JPEG"));
     assert(textContent.includes("WebP"));

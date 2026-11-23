@@ -18,6 +18,8 @@ const auditRequestSchema = z.object({
   includeSubdomains: z.boolean().default(false),
   sizeThresholdKb: z.coerce.number().min(10).max(10000).default(100),
   saveToGoogleSheets: z.boolean().default(false),
+  enableSitemaps: z.boolean().default(true),
+  enableWordPressApi: z.boolean().default(true),
 });
 
 export async function POST(req: Request) {
@@ -43,6 +45,8 @@ export async function POST(req: Request) {
       includeSubdomains,
       sizeThresholdKb,
       saveToGoogleSheets,
+      enableSitemaps,
+      enableWordPressApi,
     } = parsed.data;
 
     // Validate URL syntax
@@ -67,6 +71,8 @@ export async function POST(req: Request) {
       timeoutMs,
       includeSubdomains,
       sizeThresholdKb,
+      enableSitemaps,
+      enableWordPressApi,
     });
 
     // Generate Excel workbook

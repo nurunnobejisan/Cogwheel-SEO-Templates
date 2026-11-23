@@ -3,14 +3,15 @@
 Cogwheel SEO & Hospitality Templates Studio
 Website Image Optimization Audit Tool (CLI & Automation Engine)
 
-Crawls public pages of a website, audits every image occurrence (alt text, file size,
+Crawls public pages of a website, audits every image placement (alt text, file size,
 format, dimensions, loading behavior, broken links, CLS risks), and generates a multi-tab
 Excel (.xlsx) workbook matching the reference layout:
 https://docs.google.com/spreadsheets/d/1gdX3whxcXFlVNJDat2Avz_q3haNRfWz39TAMK0Q6QGc/
 
 Tabs generated:
-  1. Image Optimization  — Matches reference sheet (with =IMAGE(B2) and =LEN(...) formulas)
-  2. Overview            — Executive audit scorecard, crawl parameters & key findings
+  1. Image Optimization  — Exact 6 columns (Image | URL | Title | Length | Optimized ALT Text | Length)
+                           with =IMAGE(B2) and =LEN(...) formulas, yellow header, comfortable row heights
+  2. Audit Summary       — Exhaustive coverage report, discovery methods, reachability & coverage statements
   3. Image Inventory     — Comprehensive technical audit of all discovered assets
   4. Recommendations     — Category guidance, performance rationale & prioritized fixes
   5. Crawl Log           — Page-by-page crawl log with HTTP status and discovery counts
@@ -19,14 +20,11 @@ Tabs generated:
 from __future__ import annotations
 
 import argparse
-import base64
 import html
 import io
 import json
 import os
 import re
-import struct
-import sys
 import time
 import urllib.error
 import urllib.parse
@@ -52,18 +50,37 @@ def normalize_url(raw: str, base_url: str = "") -> str | None:
         parsed = urllib.parse.urlparse(resolved)
         if parsed.scheme not in ("http", "https"):
             return None
-        # Remove fragment
-        cleaned = urllib.parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, parsed.query, ""))
+        # Remove tracking query parameters and fragment
+        query_params = urllib.parse.parse_qs(parsed.query, keep_blank_values=True)
+        for trk in ["utm_source", "utm_medium", "utm_campaign", "utm_term", "utm_content", "gclid", "fbclid"]:
+            query_params.pop(trk, None)
+        new_query = urllib.parse.urlencode(query_params, doseq=True)
+        cleaned = urllib.parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, ""))
         return cleaned
     except Exception:
         return None
 
 
+def extract_original_filename(image_url: str, fallback_page_url: str = "") -> str:
+    """Extracts and URL-decodes the original filename including extension."""
+    try:
+        path = urllib.parse.urlparse(image_url).path
+        raw_name = path.split("/")[-1]
+        decoded = urllib.parse.unquote(raw_name).strip()
+        if decoded and "." in decoded:
+            return decoded
+        if fallback_page_url:
+            page_slug = urllib.parse.urlparse(fallback_page_url).path.strip("/").split("/")[-1] or "homepage"
+            return f"image-{urllib.parse.unquote(page_slug)}.jpg"
+        return "image-asset.jpg"
+    except Exception:
+        return "image-asset.jpg"
+
+
 def clean_filename_title(url: str) -> str:
     try:
-        path = urllib.parse.urlparse(url).path
-        name = path.split("/")[-1]
-        name = re.sub(r"\.[a-zA-Z0-9]{2,5}$", "", name)
+        filename = extract_original_filename(url)
+        name = re.sub(r"\.[a-zA-Z0-9]{2,5}$", "", filename)
         name = re.sub(r"[-_](?:scaled|optimized|thumb|thumbnail|\d+x\d+|@\d+x)$", "", name, flags=re.I)
         name = re.sub(r"[_-]+", " ", name).strip()
         return name or "Image asset"
@@ -71,223 +88,31 @@ def clean_filename_title(url: str) -> str:
         return "Image asset"
 
 
-def generate_proposed_alt(url: str, page_title: str | None, current_alt: str | None, is_hero: bool = False) -> str:
-    if current_alt and len(current_alt.strip()) > 15 and not re.search(r"\.(?:jpg|png|webp|jpeg)$", current_alt, re.I):
+def generate_proposed_alt(url: str, page_title: str | None, current_alt: str | None, is_decorative: bool = False) -> str:
+    if is_decorative:
+        return ""  # WCAG standard: decorative elements properly use empty alt=""
+
+    if current_alt and len(current_alt.strip()) > 12 and not re.search(r"\.(?:jpg|png|webp|jpeg)$", current_alt, re.I) and not re.match(r"^(?:image|img|photo|dsc)", current_alt.strip(), re.I):
         return current_alt.strip()
 
     title_clean = clean_filename_title(url)
     page_context = (page_title or "").split("-")[0].split("|")[0].strip()
 
-    is_generic = bool(re.match(r"^(?:img|dsc|image|photo|pic|asset|upload|banner)[_\s-]*\d*$", title_clean, re.I))
+    is_generic = re.match(r"^(?:img|dsc|image|photo|pic|asset|upload|banner)[_\s-]*\d*$", title_clean, re.I)
 
     if is_generic:
-        if is_hero and page_context:
-            return f"Primary visual showcase for {page_context}"
-        return f"Featured photography on {page_context}" if page_context else "Descriptive photography showcase"
+        if page_context:
+            return f"{page_context} featured architectural detail"
+        return "Hotel property exterior and guest accommodation detail"
 
-    cap_title = title_clean[:1].upper() + title_clean[1:]
-    if page_context and page_context.lower() not in cap_title.lower():
-        return f"{cap_title} featured at {page_context}"
-    return cap_title
+    words = [w.capitalize() for w in title_clean.split()]
+    title_phrase = " ".join(words)
 
+    if page_context and page_context.lower() not in title_phrase.lower():
+        return f"{page_context} — {title_phrase}"
 
-def detect_image_format(url: str, content_type: str | None) -> str:
-    ct = (content_type or "").lower()
-    if "webp" in ct: return "WebP"
-    if "avif" in ct: return "AVIF"
-    if "svg" in ct: return "SVG"
-    if "jpeg" in ct or "jpg" in ct: return "JPEG"
-    if "png" in ct: return "PNG"
-    if "gif" in ct: return "GIF"
+    return title_phrase
 
-    u = url.lower().split("?")[0]
-    if u.endswith(".webp"): return "WebP"
-    if u.endswith(".avif"): return "AVIF"
-    if u.endswith(".svg"): return "SVG"
-    if u.endswith(".png"): return "PNG"
-    if u.endswith(".jpg") or u.endswith(".jpeg"): return "JPEG"
-    if u.endswith(".gif"): return "GIF"
-    return "Unknown"
-
-
-# -----------------------------------------------------------------------------
-# 2. HTML Extraction (img, srcset, picture/source, CSS backgrounds)
-# -----------------------------------------------------------------------------
-
-def extract_page_title(html_content: str) -> str:
-    m = re.search(r"<title[^>]*>(.*?)</title>", html_content, re.I | re.S)
-    if m:
-        t = re.sub(r"<[^>]+>", "", m.group(1)).strip()
-        return html.unescape(t)
-    return "Untitled Page"
-
-
-def extract_images_from_html(html_content: str, page_url: str):
-    images = []
-    seen = set()
-
-    # 1. <img> tags
-    img_matches = re.finditer(r"<img\b([^>]*)>", html_content, re.I)
-    idx = 0
-    for match in img_matches:
-        idx += 1
-        attrs_str = match.group(1)
-
-        def get_attr(name):
-            m = re.search(rf"\b{name}\s*=\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s>]+))", attrs_str, re.I)
-            return m.group(1) or m.group(2) or m.group(3) if m else None
-
-        src = get_attr("src") or get_attr("data-src") or get_attr("data-original") or get_attr("data-lazy-src") or get_attr("data-lazy")
-        srcset = get_attr("srcset") or get_attr("data-srcset")
-        alt = get_attr("alt")
-        width = get_attr("width")
-        height = get_attr("height")
-        loading = (get_attr("loading") or "unspecified").lower()
-
-        target_url = None
-        source_attr = "src"
-
-        if src:
-            target_url = normalize_url(src, page_url)
-            source_attr = "src" if get_attr("src") else "data-src"
-
-        if not target_url and srcset:
-            first_src = srcset.split(",")[0].strip().split()[0]
-            target_url = normalize_url(first_src, page_url)
-            source_attr = "srcset"
-
-        if target_url and target_url not in seen:
-            seen.add(target_url)
-            images.append({
-                "url": target_url,
-                "alt": alt if alt is not None else None,
-                "html_width": int(width) if width and width.isdigit() else None,
-                "html_height": int(height) if height and height.isdigit() else None,
-                "loading": loading,
-                "element_type": "img" if get_attr("src") else "data-lazy",
-                "source_attribute": source_attr,
-                "is_hero": idx <= 2,
-            })
-
-    # 2. <picture> and <source>
-    source_matches = re.finditer(r"<source\b([^>]*)>", html_content, re.I)
-    for match in source_matches:
-        attrs_str = match.group(1)
-        m = re.search(r"\b(?:srcset|data-srcset)\s*=\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s>]+))", attrs_str, re.I)
-        if m:
-            val = m.group(1) or m.group(2) or m.group(3)
-            first_src = val.split(",")[0].strip().split()[0]
-            target_url = normalize_url(first_src, page_url)
-            if target_url and target_url not in seen:
-                seen.add(target_url)
-                images.append({
-                    "url": target_url,
-                    "alt": None,
-                    "html_width": None,
-                    "html_height": None,
-                    "loading": "unspecified",
-                    "element_type": "source",
-                    "source_attribute": "picture/source",
-                    "is_hero": False,
-                })
-
-    # 3. CSS Background images
-    bg_matches = re.finditer(r"background(?:-image)?\s*:\s*url\(\s*(?:['\"]?)(.*?)(?:['\"]?)\s*\)", html_content, re.I)
-    for match in bg_matches:
-        raw_bg = match.group(1).strip()
-        target_url = normalize_url(raw_bg, page_url)
-        if target_url and target_url not in seen:
-            seen.add(target_url)
-            images.append({
-                "url": target_url,
-                "alt": None,
-                "html_width": None,
-                "html_height": None,
-                "loading": "unspecified",
-                "element_type": "css-background",
-                "source_attribute": "style=background-image",
-                "is_hero": False,
-            })
-
-    return images
-
-
-def extract_internal_links(html_content: str, page_url: str, origin_domain: str, allow_subdomains: bool) -> list[str]:
-    links = []
-    matches = re.finditer(r"<a\b[^>]*\bhref\s*=\s*(?:\"([^\"]*)\"|'([^']*)'|([^\s>]+))", html_content, re.I)
-    for match in matches:
-        raw_href = match.group(1) or match.group(2) or match.group(3)
-        if not raw_href or raw_href.startswith("#") or re.match(r"^(?:mailto:|tel:|javascript:)", raw_href, re.I):
-            continue
-        norm = normalize_url(raw_href, page_url)
-        if not norm:
-            continue
-        try:
-            parsed = urllib.parse.urlparse(norm)
-            host = parsed.netloc.lower()
-            is_internal = (host == origin_domain or host.endswith("." + origin_domain)) if allow_subdomains else (host == origin_domain)
-            is_page = not re.search(r"\.(?:pdf|zip|mp4|mp3|docx?|xlsx?|gz|tar)$", parsed.path, re.I)
-            if is_internal and is_page:
-                links.append(norm)
-        except Exception:
-            pass
-    return list(dict.fromkeys(links))
-
-
-# -----------------------------------------------------------------------------
-# 3. Network Header Inspection
-# -----------------------------------------------------------------------------
-
-def inspect_image(url: str, timeout: int = 8) -> dict:
-    req = urllib.request.Request(url, headers={
-        "User-Agent": USER_AGENT,
-        "Accept": "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8"
-    })
-
-    status = 0
-    content_type = None
-    content_length = None
-    is_broken = False
-
-    try:
-        req.get_method = lambda: "HEAD"
-        with urllib.request.urlopen(req, timeout=timeout) as resp:
-            status = resp.status
-            content_type = resp.headers.get("Content-Type")
-            len_hdr = resp.headers.get("Content-Length")
-            content_length = int(len_hdr) if len_hdr and len_hdr.isdigit() else None
-            is_broken = status >= 400
-    except urllib.error.HTTPError as e:
-        status = e.code
-        is_broken = True
-    except Exception:
-        # Fallback to range GET
-        try:
-            get_req = urllib.request.Request(url, headers={
-                "User-Agent": USER_AGENT,
-                "Range": "bytes=0-1024"
-            })
-            with urllib.request.urlopen(get_req, timeout=timeout) as resp:
-                status = resp.status
-                content_type = resp.headers.get("Content-Type")
-                len_hdr = resp.headers.get("Content-Range", "").split("/")[-1] or resp.headers.get("Content-Length")
-                content_length = int(len_hdr) if len_hdr and len_hdr.isdigit() else None
-                is_broken = status >= 400
-        except Exception as e2:
-            status = getattr(e2, "code", 0)
-            is_broken = True
-
-    return {
-        "status": status,
-        "content_type": content_type,
-        "content_length": content_length,
-        "is_broken": is_broken,
-    }
-
-
-# -----------------------------------------------------------------------------
-# 4. Multi-Tab OpenXML (.xlsx) Builder
-# -----------------------------------------------------------------------------
 
 def escape_xml(s: str) -> str:
     if s is None:
@@ -302,23 +127,300 @@ def escape_xml(s: str) -> str:
     )
 
 
-def col_letter(n: int) -> str:
-    """1-based index to column letter: 1 -> A, 2 -> B, 27 -> AA"""
+def col_letter(col_idx: int) -> str:
     result = ""
-    while n > 0:
-        n, remainder = divmod(n - 1, 26)
+    while col_idx > 0:
+        col_idx, remainder = divmod(col_idx - 1, 26)
         result = chr(65 + remainder) + result
     return result
 
 
-def create_sheet_xml(headers: list[str], rows: list[list], cols_width: list[int] = None) -> str:
-    """Generates standard OpenXML sheet XML supporting formulas and values."""
+# -----------------------------------------------------------------------------
+# 2. HTML Image & Link Extraction
+# -----------------------------------------------------------------------------
+
+def parse_srcset_candidates(srcset_val: str, base_url: str) -> list[str]:
+    candidates = []
+    entries = re.split(r",\s*(?=[^,]+\s+\d+[wx])", srcset_val)
+    for entry in entries:
+        parts = entry.strip().split()
+        if parts:
+            norm = normalize_url(parts[0], base_url)
+            if norm:
+                candidates.append(norm)
+    return candidates
+
+
+def pick_best_resolution_url(primary_url: str, candidates: list[str]) -> str:
+    if not candidates:
+        return primary_url
+    best = primary_url
+    max_score = 0
+    for c in [primary_url] + candidates:
+        m = re.search(r"[-_](\d{3,4})x(\d{3,4})", c) or re.search(r"[-_](\d{3,4})w", c)
+        score = int(m.group(1)) if m else 500
+        if score > max_score:
+            max_score = score
+            best = c
+    return best
+
+
+def extract_images_from_html(html_text: str, page_url: str) -> list[dict]:
+    images = []
+    placement_index = 0
+
+    # 1. <img> tags
+    for m in re.finditer(r"<img\b([^>]*)>", html_text, re.I):
+        placement_index += 1
+        attrs = m.group(1)
+
+        def get_attr(name: str) -> str | None:
+            mat = re.search(rf"""\b{name}\s*=\s*["']([^"']*)["']""", attrs, re.I)
+            return mat.group(1).strip() if mat else None
+
+        raw_src = (
+            get_attr("data-src")
+            or get_attr("data-lazy-src")
+            or get_attr("data-original")
+            or get_attr("data-large_image")
+            or get_attr("src")
+        )
+
+        srcset_val = get_attr("data-srcset") or get_attr("srcset")
+        candidates = parse_srcset_candidates(srcset_val, page_url) if srcset_val else []
+
+        if not raw_src and not candidates:
+            continue
+
+        base_src = raw_src or candidates[0]
+        resolved = normalize_url(base_src, page_url)
+        if not resolved:
+            continue
+
+        # Select highest resolution candidate to prevent duplicate rows for resolution variants
+        final_url = pick_best_resolution_url(resolved, candidates)
+
+        alt_val = get_attr("alt")
+        is_decorative = False
+        if re.search(r'\balt\b', attrs, re.I):
+            if alt_val == "":
+                is_decorative = True
+
+        role = get_attr("role")
+        aria_hidden = get_attr("aria-hidden")
+        if role in ("presentation", "none") or aria_hidden == "true":
+            is_decorative = True
+
+        w = get_attr("width")
+        h = get_attr("height")
+        html_w = int(w) if w and w.isdigit() else None
+        html_h = int(h) if h and h.isdigit() else None
+
+        loading = (get_attr("loading") or "unspecified").lower()
+        elem_type = "data-lazy" if get_attr("data-src") or get_attr("data-lazy-src") else "img"
+
+        images.append({
+            "url": final_url,
+            "alt": alt_val,
+            "html_width": html_w,
+            "html_height": html_h,
+            "loading": loading,
+            "element_type": elem_type,
+            "source_attribute": "src" if raw_src else "srcset",
+            "is_decorative": is_decorative,
+            "placement_index": placement_index,
+        })
+
+    # 2. Inline CSS background images
+    for m in re.finditer(r"""style\s*=\s*["'][^"']*background(?:-image)?\s*:\s*url\(\s*['"]?([^'")]+)['"]?\s*\)[^"']*["']""", html_text, re.I):
+        placement_index += 1
+        raw_bg = m.group(1).strip()
+        if raw_bg and not raw_bg.startswith("data:"):
+            norm_bg = normalize_url(raw_bg, page_url)
+            if norm_bg:
+                images.append({
+                    "url": norm_bg,
+                    "alt": None,
+                    "html_width": None,
+                    "html_height": None,
+                    "loading": "unspecified",
+                    "element_type": "css-background",
+                    "source_attribute": "style.background-image",
+                    "is_decorative": True,
+                    "placement_index": placement_index,
+                })
+
+    return images
+
+
+def extract_links_from_html(html_text: str, base_url: str, origin_domain: str, allow_subdomains: bool) -> list[str]:
+    links = set()
+    for m in re.finditer(r"""<a\b[^>]*\bhref\s*=\s*["']([^"']*)["'][^>]*>""", html_text, re.I):
+        href = m.group(1).strip()
+        if not href or href.startswith(("#", "mailto:", "tel:", "javascript:")):
+            continue
+        norm = normalize_url(href, base_url)
+        if not norm:
+            continue
+        try:
+            parsed = urllib.parse.urlparse(norm)
+            if allow_subdomains:
+                root = ".".join(origin_domain.split(".")[-2:])
+                if not parsed.netloc.endswith(root):
+                    continue
+            else:
+                if parsed.netloc.lower() != origin_domain:
+                    continue
+
+            # Ignore binary attachments
+            if re.search(r"\.(?:pdf|zip|docx?|xlsx?|mp4|mp3|svg|png|jpe?g|webp|gif)$", parsed.path, re.I):
+                continue
+
+            links.add(norm)
+        except Exception:
+            continue
+    return list(links)
+
+
+def extract_page_title(html_text: str) -> str:
+    m = re.search(r"<title\b[^>]*>(.*?)</title>", html_text, re.I | re.S)
+    if m:
+        return re.sub(r"\s+", " ", html.unescape(m.group(1))).strip()
+    return ""
+
+
+# -----------------------------------------------------------------------------
+# 3. Sitemap & WordPress REST Discovery
+# -----------------------------------------------------------------------------
+
+def discover_sitemap_urls(origin: str, timeout: int = 10) -> tuple[list[str], list[str]]:
+    page_urls = set()
+    image_urls = set()
+
+    candidate_sitemaps = [
+        f"{origin}/sitemap.xml",
+        f"{origin}/sitemap_index.xml",
+        f"{origin}/wp-sitemap.xml",
+        f"{origin}/sitemap/sitemap.xml",
+    ]
+
+    # Try robots.txt
+    try:
+        req = urllib.request.Request(f"{origin}/robots.txt", headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            text = resp.read().decode("utf-8", errors="replace")
+            for m in re.finditer(r"^Sitemap:\s*(https?://[^\s]+)", text, re.I | re.M):
+                candidate_sitemaps.insert(0, m.group(1).strip())
+    except Exception:
+        pass
+
+    visited_sitemaps = set()
+
+    def parse_xml_sitemap(sm_url: str):
+        if sm_url in visited_sitemaps or len(visited_sitemaps) > 15:
+            return
+        visited_sitemaps.add(sm_url)
+
+        try:
+            req = urllib.request.Request(sm_url, headers={"User-Agent": USER_AGENT})
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                xml = resp.read().decode("utf-8", errors="replace")
+
+                # Nested sitemaps (<sitemap><loc>...</loc></sitemap>)
+                for sub in re.finditer(r"<sitemap>\s*<loc>([^<]+)</loc>", xml, re.I):
+                    parse_xml_sitemap(sub.group(1).strip())
+
+                # Page URLs (<url><loc>...</loc>)
+                for u in re.finditer(r"<url>\s*<loc>([^<]+)</loc>", xml, re.I):
+                    norm = normalize_url(u.group(1).strip(), origin)
+                    if norm and norm.startswith(origin):
+                        page_urls.add(norm)
+
+                # Images (<image:loc>...</image:loc>)
+                for img in re.finditer(r"<image:loc>([^<]+)</image:loc>", xml, re.I):
+                    norm_img = normalize_url(img.group(1).strip(), origin)
+                    if norm_img:
+                        image_urls.add(norm_img)
+        except Exception:
+            pass
+
+    for sm in candidate_sitemaps:
+        if len(page_urls) >= 1000:
+            break
+        parse_xml_sitemap(sm)
+
+    return list(page_urls), list(image_urls)
+
+
+def discover_wordpress_media(origin: str, timeout: int = 10) -> list[dict]:
+    media_list = []
+    try:
+        req = urllib.request.Request(f"{origin}/wp-json/wp/v2/media?per_page=100", headers={"User-Agent": USER_AGENT})
+        with urllib.request.urlopen(req, timeout=timeout) as resp:
+            data = json.loads(resp.read().decode("utf-8", errors="replace"))
+            if isinstance(data, list):
+                for item in data:
+                    source_url = item.get("source_url") or item.get("guid", {}).get("rendered")
+                    if source_url:
+                        norm = normalize_url(source_url, origin)
+                        if norm:
+                            media_list.append({
+                                "url": norm,
+                                "title": item.get("title", {}).get("rendered", ""),
+                                "alt": item.get("alt_text", ""),
+                            })
+    except Exception:
+        pass
+    return media_list
+
+
+# -----------------------------------------------------------------------------
+# 4. OpenXML Excel Generation (Exact 6 Columns + Yellow Header + Audit Summary)
+# -----------------------------------------------------------------------------
+
+def build_styles_xml() -> str:
+    """Generates standard OpenXML styles with yellow header fill, bold text, and center alignment."""
+    return (
+        '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
+        '<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'
+        '<fonts count="2">'
+        '<font><name val="Calibri"/><sz val="11"/></font>'
+        '<font><b/><name val="Calibri"/><sz val="11"/><color rgb="FF000000"/></font>'
+        '</fonts>'
+        '<fills count="3">'
+        '<fill><patternFill patternType="none"/></fill>'
+        '<fill><patternFill patternType="gray125"/></fill>'
+        '<fill><patternFill patternType="solid"><fgColor rgb="FFFFFF00"/></patternFill></fill>'
+        '</fills>'
+        '<borders count="1">'
+        '<border><left/><right/><top/><bottom/><diagonal/></border>'
+        '</borders>'
+        '<cellStyleXfs count="1">'
+        '<xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>'
+        '</cellStyleXfs>'
+        '<cellXfs count="2">'
+        '<xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>'
+        '<xf numFmtId="0" fontId="1" fillId="2" borderId="0" xfId="0" applyFont="1" applyFill="1" applyAlignment="1">'
+        '<alignment horizontal="center" vertical="center"/>'
+        '</xf>'
+        '</cellXfs>'
+        '</styleSheet>'
+    )
+
+
+def create_sheet_xml(
+    headers: list[str],
+    rows: list[list],
+    cols_width: list[float] = None,
+    header_style: int = 0,
+    header_height: float = None,
+    data_height: float = None
+) -> str:
     xml_parts = [
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
     ]
 
-    # Column widths
     if cols_width:
         xml_parts.append('<cols>')
         for idx, w in enumerate(cols_width, 1):
@@ -328,19 +430,21 @@ def create_sheet_xml(headers: list[str], rows: list[list], cols_width: list[int]
     xml_parts.append('<sheetData>')
 
     # Header Row
-    xml_parts.append('<row r="1">')
+    ht_attr = f' ht="{header_height}" customHeight="1"' if header_height else ""
+    xml_parts.append(f'<row r="1"{ht_attr}>')
     for col_idx, h in enumerate(headers, 1):
         cell_ref = f"{col_letter(col_idx)}1"
-        xml_parts.append(f'<c r="{cell_ref}" t="inlineStr"><is><t>{escape_xml(h)}</t></is></c>')
+        s_attr = f' s="{header_style}"' if header_style else ""
+        xml_parts.append(f'<c r="{cell_ref}"{s_attr} t="inlineStr"><is><t>{escape_xml(h)}</t></is></c>')
     xml_parts.append('</row>')
 
     # Data Rows
+    row_ht_attr = f' ht="{data_height}" customHeight="1"' if data_height else ""
     for row_idx, row in enumerate(rows, 2):
-        xml_parts.append(f'<row r="{row_idx}">')
+        xml_parts.append(f'<row r="{row_idx}"{row_ht_attr}>')
         for col_idx, val in enumerate(row, 1):
             cell_ref = f"{col_letter(col_idx)}{row_idx}"
             if isinstance(val, str) and val.startswith("="):
-                # Formula
                 formula_body = escape_xml(val[1:])
                 xml_parts.append(f'<c r="{cell_ref}"><f>{formula_body}</f></c>')
             elif isinstance(val, (int, float)):
@@ -352,7 +456,6 @@ def create_sheet_xml(headers: list[str], rows: list[list], cols_width: list[int]
 
     xml_parts.append('</sheetData>')
 
-    # Add AutoFilter for headers if table has data
     if headers and rows:
         max_col = col_letter(len(headers))
         xml_parts.append(f'<autoFilter ref="A1:{max_col}{len(rows) + 1}"/>')
@@ -363,67 +466,83 @@ def create_sheet_xml(headers: list[str], rows: list[list], cols_width: list[int]
 
 def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) -> bytes:
     """Builds a complete 5-tab Excel spreadsheet adhering to standard OpenXML spec."""
-    # 1. Image Optimization Tab (Matching reference sheet)
-    opt_headers = [
-        "Image", "URL ", "Title ", "Length", "Optimized ALT Text", "Length",
-        "Format", "Size (KB)", "Dimensions", "Status / Issue", "Recommendation", "Priority"
-    ]
+    # -------------------------------------------------------------------------
+    # TAB 1: Image Optimization (STRICT 6 COLUMNS MATCHING REFERENCE GOOGLE SHEET)
+    # Headers: Image | URL  | Title  | Length | Optimized ALT Text | Length
+    # -------------------------------------------------------------------------
+    opt_headers = ["Image", "URL ", "Title ", "Length", "Optimized ALT Text", "Length"]
     opt_rows = []
     for idx, item in enumerate(items, 2):
-        clean_title = clean_filename_title(item["url"])
-        dim = f"{item['html_width']}x{item['html_height']}" if item["html_width"] and item["html_height"] else "-"
-        issue_str = "; ".join(item["issues"]) or "Healthy"
-        size_kb = round(item["size_bytes"] / 1024, 1) if item["size_bytes"] else "-"
-
+        filename = item.get("filename") or extract_original_filename(item["url"], item["page_url"])
         opt_rows.append([
             f'=IMAGE(B{idx})',
             item["url"],
-            clean_title,
+            filename,
             f'=LEN(C{idx})',
-            item["proposed_alt"],
+            item.get("proposed_alt", ""),
             f'=LEN(E{idx})',
-            item["format"],
-            size_kb,
-            dim,
-            issue_str,
-            item["recommendation"],
-            item["priority"]
         ])
 
-    opt_widths = [14, 45, 32, 8, 45, 8, 10, 10, 14, 30, 45, 10]
-    sheet1_xml = create_sheet_xml(opt_headers, opt_rows, opt_widths)
+    # Reference column widths: Col A: 44.5, Col B: 57.5, Col C: 46.75, Col D: 7.13, Col E: 47.75, Col F: 7.13
+    opt_widths = [44.5, 57.5, 46.75, 7.13, 47.75, 7.13]
+    # Header style index 1 = yellow fill, bold centered text; header ht 28.5; data ht 140
+    sheet1_xml = create_sheet_xml(opt_headers, opt_rows, opt_widths, header_style=1, header_height=28.5, data_height=140.0)
 
-    # 2. Overview Tab
-    ov_headers = ["WEBSITE IMAGE OPTIMIZATION AUDIT REPORT", "VALUE"]
+    # -------------------------------------------------------------------------
+    # TAB 2: Audit Summary
+    # -------------------------------------------------------------------------
+    ov_headers = ["WEBSITE IMAGE OPTIMIZATION AUDIT SUMMARY", "STATUS / METRIC"]
     ov_rows = [
-        ["Audited Website", summary["website_url"]],
+        ["Audited Website URL", summary["website_url"]],
         ["Domain Origin", summary["origin"]],
-        ["Audit Date & Time", summary["crawled_at"]],
+        ["Audit Timestamp (UTC)", summary["crawled_at"]],
+        ["Total Duration", f"{round(summary.get('duration_sec', 0))} seconds"],
         ["Crawl Page Limit", summary["max_pages"]],
-        ["Total Pages Scanned", summary["pages_scanned"]],
-        ["Total Images Audited", summary["total_images"]],
-        ["Broken Images (HTTP 4xx/5xx)", summary["broken_images"]],
-        ["Missing Alt Text Attributes", summary["missing_alt"]],
-        ["Oversized Images (>100KB)", summary["oversized_images"]],
+        ["Crawl Status", "Complete within limits" if summary.get("crawl_completed") else summary.get("stopped_reason", "Stopped")],
+        ["", ""],
+        ["DISCOVERY METHODS & COVERAGE", ""],
+        ["Discovery Methods Deployed", ", ".join(summary.get("discovery_methods", []))],
+        ["XML Sitemap Discovery", f"Succeeded ({summary.get('sitemap_count', 0)} URLs)" if summary.get("sitemap_success") else "None detected / Inaccessible"],
+        ["WordPress REST Media API", f"Discovered ({summary.get('wp_media_count', 0)} items)" if summary.get("wp_api_found") else "Not applicable / Inaccessible"],
+        ["JavaScript Client-Rendering", "Static HTML & SSR DOM only"],
+        ["Coverage Statement", summary.get("coverage_statement", "Complete within crawlable public HTML pages and declared sitemaps.")],
+        ["", ""],
+        ["KEY AUDIT TOTALS", "COUNT"],
+        ["Pages Discovered", summary.get("pages_discovered", summary["pages_scanned"])],
+        ["Pages Successfully Scanned", summary["pages_scanned"]],
+        ["Pages Failed / Timed Out", summary.get("pages_failed", 0)],
+        ["Total Image Placements (Occurrences)", summary.get("total_placements", summary["total_images"])],
+        ["Unique Image Assets (Distinct URLs)", summary.get("unique_images", summary["total_images"])],
+        ["Images Reachable (HTTP 200)", summary.get("images_previewed", summary["total_images"] - summary["broken_images"])],
+        ["Broken Image Links (HTTP 4xx/5xx)", summary["broken_images"]],
+        ["Images Missing Alt Text Attributes", summary["missing_alt"]],
+        ["Decorative Empty Alt Placements (alt=\"\")", summary.get("decorative_empty_alt", 0)],
+        ["Oversized Assets (>100KB Threshold)", summary["oversized_images"]],
         ["Missing HTML Dimensions (CLS Risk)", summary["missing_dimensions"]],
-        ["Legacy Formats (JPEG/PNG)", summary["legacy_formats"]],
-        ["Lazy Loading on Hero Images", summary["above_fold_lazy"]],
+        ["Legacy Formats (JPEG / PNG)", summary["legacy_formats"]],
+        ["Lazy Loading on Above-The-Fold Assets", summary["above_fold_lazy"]],
         ["", ""],
         ["FORMAT BREAKDOWN", "COUNT"],
     ]
-    for fmt, count in summary["format_breakdown"].items():
+    for fmt, count in summary.get("format_breakdown", {}).items():
         ov_rows.append([f"Format: {fmt}", count])
 
     ov_rows.append(["", ""])
+    ov_rows.append(["COVERAGE BOUNDARIES & WCAG NOTICE", ""])
+    ov_rows.append(["Completeness Scope", "Audit reflects crawlable public HTML pages and declared XML sitemaps. Pages behind logins, paywalls, or robot-excluded paths are not covered."])
+    ov_rows.append(["WCAG Decorative Images", "Empty alt text (alt=\"\") is valid under WCAG 2.1 AA for decorative images, backgrounds, and dividers. Not all empty alt attributes are defects."])
+    ov_rows.append(["", ""])
     ov_rows.append(["TOP AUDIT FINDINGS", "ACTION"])
-    for i, finding in enumerate(summary["top_findings"], 1):
-        ov_rows.append([f"{i}. {finding}", "Review High-Priority items in Image Optimization tab"])
+    for i, finding in enumerate(summary.get("top_findings", []), 1):
+        ov_rows.append([f"{i}. {finding}", "Review in Image Optimization tab"])
 
-    sheet2_xml = create_sheet_xml(ov_headers, ov_rows, [45, 45])
+    sheet2_xml = create_sheet_xml(ov_headers, ov_rows, [45, 55])
 
-    # 3. Image Inventory Tab
+    # -------------------------------------------------------------------------
+    # TAB 3: Image Inventory
+    # -------------------------------------------------------------------------
     inv_headers = [
-        "Image URL", "Page URL", "Page Title", "Page Status", "Current Alt",
+        "Image URL", "Page URL", "Page Title", "Page Status", "Filename", "Current Alt",
         "Alt Status", "HTML Width", "HTML Height", "File Size (KB)", "Format",
         "Element Type", "Loading Mode", "HTTP Status", "Occurrences", "Issues Flagged",
         "Recommendation", "Priority"
@@ -431,12 +550,13 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
     inv_rows = []
     for item in items:
         alt_status = "Missing" if item["alt"] is None else ("Empty (Decorative)" if item["alt"] == "" else "Present")
-        size_kb = round(item["size_bytes"] / 1024, 1) if item["size_bytes"] else "-"
+        size_kb = round(item["size_bytes"] / 1024, 1) if item.get("size_bytes") else "-"
         inv_rows.append([
             item["url"],
             item["page_url"],
             item["page_title"],
             item["page_status"],
+            item.get("filename", "-"),
             item["alt"] or "-",
             alt_status,
             item["html_width"] or "-",
@@ -446,29 +566,60 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
             item["element_type"],
             item["loading"],
             item["http_status"],
-            item["occurrences"],
-            "; ".join(item["issues"]) or "None",
+            item.get("occurrence_count", 1),
+            "; ".join(item["issues"]) or "Healthy",
             item["recommendation"],
             item["priority"]
         ])
+    sheet3_xml = create_sheet_xml(inv_headers, inv_rows, [45, 35, 28, 10, 28, 30, 15, 10, 10, 12, 10, 14, 12, 10, 12, 35, 45, 10])
 
-    inv_widths = [45, 40, 30, 11, 28, 16, 11, 11, 13, 10, 13, 13, 12, 12, 35, 45, 10]
-    sheet3_xml = create_sheet_xml(inv_headers, inv_rows, inv_widths)
-
-    # 4. Recommendations Tab
-    rec_headers = ["Issue Category", "Why It Matters", "Recommended Fix", "Priority Standard"]
+    # -------------------------------------------------------------------------
+    # TAB 4: Recommendations
+    # -------------------------------------------------------------------------
+    rec_headers = ["Issue Category", "Why It Matters", "Recommended Fix", "Industry Standard / Priority"]
     rec_rows = [
-        ["Missing Alt Text", "Screen readers cannot announce image content, and search engines cannot index image context.", "Add descriptive alt text to all informational assets. Use alt=\"\" only for decorative icons/spacers.", "High (WCAG 2.1 AA)"],
-        ["Oversized Assets (>100KB)", "Heavy files consume mobile bandwidth, stall First Contentful Paint, and cause visitor abandonment.", "Compress images to under 100KB using modern compression (Squoosh, Sharp, TinyPNG).", "High (Core Web Vitals)"],
-        ["Legacy Image Formats", "JPEG and PNG lack modern predictive compression, resulting in 30% to 70% larger file sizes than WebP/AVIF.", "Serve next-gen WebP or AVIF with <picture> fallback sources for legacy browsers.", "Medium (Performance)"],
-        ["Missing HTML Dimensions", "Browsers cannot allocate layout space prior to download, triggering Cumulative Layout Shift (CLS).", "Specify intrinsic width and height attributes or CSS aspect-ratio on all <img> elements.", "Medium (Core Web Vitals)"],
-        ["Lazy Loading on Hero Images", "Applying loading=\"lazy\" to above-the-fold banners delays image discovery and degrades Largest Contentful Paint (LCP).", "Remove loading=\"lazy\" from the top 1-2 images in the initial viewport. Add fetchpriority=\"high\".", "High (LCP)"],
-        ["Broken Image Links (4xx/5xx)", "Broken images present a damaged user experience and waste browser connection threads.", "Repair image paths or remove orphaned <img> elements.", "High (Technical SEO)"],
-        ["Duplicate Image Requests", "Re-requesting duplicate image assets across pages increases server load without CDN caching.", "Ensure canonical URLs and configure long-lived HTTP Cache-Control headers (max-age=31536000, immutable).", "Low (Caching)"]
+        [
+            "Missing Alt Attributes",
+            "Screen readers cannot announce image content, and search engines cannot index image context for Google Images.",
+            "Add concise, descriptive alt text to all informational images. Decorative images should use alt=\"\".",
+            "WCAG 2.1 AA / High Priority"
+        ],
+        [
+            "Oversized File Sizes (>100KB)",
+            "Heavy assets consume cellular bandwidth, stall page rendering, and increase bounce rates.",
+            "Compress images using modern tools (Squoosh, Sharp, TinyPNG) and target <100KB for standard images.",
+            "Core Web Vitals (LCP) / High Priority"
+        ],
+        [
+            "Legacy Image Formats (JPEG / PNG)",
+            "Legacy formats lack modern predictive compression, inflating file sizes by 30% to 70%.",
+            "Convert content photography to WebP or AVIF. Use <picture> tags with fallback sources.",
+            "Next-Gen Formats / Medium Priority"
+        ],
+        [
+            "Missing HTML Width and Height",
+            "Browsers cannot allocate layout space before images download, causing Cumulative Layout Shift (CLS).",
+            "Specify intrinsic width=\"\" and height=\"\" or CSS aspect-ratio on all <img> elements.",
+            "Core Web Vitals (CLS) / Medium Priority"
+        ],
+        [
+            "Lazy-Loading on Hero Assets",
+            "Applying loading=\"lazy\" to the main hero banner delays image discovery, hurting Largest Contentful Paint (LCP).",
+            "Remove loading=\"lazy\" from top 1-2 viewport images. Add fetchpriority=\"high\" to primary hero banner.",
+            "LCP Optimization / High Priority"
+        ],
+        [
+            "Broken Image Links (404 / 5xx)",
+            "Broken images present an unprofessional user experience and waste browser connection threads.",
+            "Update image URLs to active assets or remove orphaned <img> tags.",
+            "Technical SEO / High Priority"
+        ]
     ]
-    sheet4_xml = create_sheet_xml(rec_headers, rec_rows, [25, 45, 55, 25])
+    sheet4_xml = create_sheet_xml(rec_headers, rec_rows, [25, 45, 55, 28])
 
-    # 5. Crawl Log Tab
+    # -------------------------------------------------------------------------
+    # TAB 5: Crawl Log
+    # -------------------------------------------------------------------------
     log_headers = ["Page URL", "Status Code", "Page Title", "Images Found", "Crawl Status", "Notes"]
     log_rows = []
     for c in crawl_log:
@@ -485,12 +636,12 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
     # Pack into standard ZIP container
     out_buf = io.BytesIO()
     with zipfile.ZipFile(out_buf, "w", zipfile.ZIP_DEFLATED) as z:
-        # [Content_Types].xml
         content_types = (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'
             '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'
             '<Default Extension="xml" ContentType="application/xml"/>'
+            '<Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>'
             '<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>'
             '<Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
             '<Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>'
@@ -501,7 +652,6 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
         )
         z.writestr("[Content_Types].xml", content_types)
 
-        # _rels/.rels
         root_rels = (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
@@ -510,13 +660,12 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
         )
         z.writestr("_rels/.rels", root_rels)
 
-        # xl/workbook.xml
         wb_xml = (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
             '<sheets>'
             '<sheet name="Image Optimization" sheetId="1" r:id="rId1"/>'
-            '<sheet name="Overview" sheetId="2" r:id="rId2"/>'
+            '<sheet name="Audit Summary" sheetId="2" r:id="rId2"/>'
             '<sheet name="Image Inventory" sheetId="3" r:id="rId3"/>'
             '<sheet name="Recommendations" sheetId="4" r:id="rId4"/>'
             '<sheet name="Crawl Log" sheetId="5" r:id="rId5"/>'
@@ -525,7 +674,6 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
         )
         z.writestr("xl/workbook.xml", wb_xml)
 
-        # xl/_rels/workbook.xml.rels
         wb_rels = (
             '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'
             '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'
@@ -534,11 +682,12 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
             '<Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/>'
             '<Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet4.xml"/>'
             '<Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet5.xml"/>'
+            '<Relationship Id="rId6" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'
             '</Relationships>'
         )
         z.writestr("xl/_rels/workbook.xml.rels", wb_rels)
 
-        # Sheets
+        z.writestr("xl/styles.xml", build_styles_xml())
         z.writestr("xl/worksheets/sheet1.xml", sheet1_xml)
         z.writestr("xl/worksheets/sheet2.xml", sheet2_xml)
         z.writestr("xl/worksheets/sheet3.xml", sheet3_xml)
@@ -555,11 +704,14 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
 def run_image_audit(
     start_url: str,
     max_pages: int = 50,
-    delay: float = 0.2,
+    delay: float = 0.15,
     timeout: int = 10,
     allow_subdomains: bool = False,
     size_threshold_kb: int = 100,
-    output_path: str = "image_optimization_audit.xlsx"
+    output_path: str = "image_optimization_audit.xlsx",
+    resume: bool = False,
+    enable_sitemaps: bool = True,
+    enable_wp_media: bool = True
 ) -> dict:
     norm_start = normalize_url(start_url)
     if not norm_start:
@@ -568,20 +720,91 @@ def run_image_audit(
     parsed = urllib.parse.urlparse(norm_start)
     origin_domain = parsed.netloc.lower()
     origin = f"{parsed.scheme}://{parsed.netloc}"
+    hostname_clean = origin_domain.replace(".", "_")
+    checkpoint_file = f".audit_checkpoint_{hostname_clean}.json"
 
     print(f"\n=======================================================")
-    print(f" COGWHEEL IMAGE OPTIMIZATION AUDIT ENGINE")
+    print(f" COGWHEEL IMAGE OPTIMIZATION AUDIT ENGINE (v2.7)")
     print(f" Target: {norm_start}")
     print(f" Crawl Limit: {max_pages} pages | Delay: {delay}s | Size Gate: {size_threshold_kb}KB")
+    print(f" Output: {output_path}")
     print(f"=======================================================\n")
 
+    t_start = time.time()
     queue = [norm_start]
     visited = set()
     crawl_log = []
-    # canonical_url -> list of occurrence dicts
-    discovered_images = {}
+    # Distinct placements list: preserves separate rows for separate placements
+    all_placements = []
+    placement_dedup = set()
 
-    page_counter = 0
+    discovery_methods = ["Internal HTML Link Crawler", "Lazy-Load Attribute Parser", "CSS Background-Image Scanner"]
+    sitemap_success = False
+    sitemap_count = 0
+    wp_api_found = False
+    wp_media_count = 0
+
+    # Resume from checkpoint if requested
+    if resume and os.path.exists(checkpoint_file):
+        try:
+            with open(checkpoint_file, "r", encoding="utf-8") as f:
+                ckpt = json.load(f)
+                visited = set(ckpt.get("visited", []))
+                queue = ckpt.get("queue", queue)
+                all_placements = ckpt.get("placements", [])
+                placement_dedup = set(ckpt.get("dedup", []))
+                print(f"[Checkpoint] Resumed session: {len(visited)} pages crawled, {len(all_placements)} placements loaded.\n")
+        except Exception as e:
+            print(f"[Checkpoint] Warning: Could not resume from checkpoint ({e}). Starting fresh.")
+
+    # 1. Sitemap Discovery
+    if enable_sitemaps and not visited:
+        print("[Discovery] Probing XML sitemaps and index files...")
+        try:
+            sm_pages, sm_imgs = discover_sitemap_urls(origin, timeout=timeout)
+            if sm_pages:
+                sitemap_success = True
+                sitemap_count = len(sm_pages)
+                discovery_methods.append("XML Sitemap & Index Parser")
+                print(f"[Discovery] Discovered {len(sm_pages)} URLs from XML sitemaps.")
+                for p in sm_pages:
+                    if p not in visited and p not in queue and len(queue) < max_pages * 3:
+                        queue.append(p)
+        except Exception as e:
+            print(f"[Discovery] Sitemap probe skipped: {e}")
+
+    # 2. WordPress REST API Discovery
+    if enable_wp_media:
+        print("[Discovery] Checking WordPress REST Media API...")
+        try:
+            wp_items = discover_wordpress_media(origin, timeout=timeout)
+            if wp_items:
+                wp_api_found = True
+                wp_media_count = len(wp_items)
+                discovery_methods.append("WordPress REST Media API (/wp-json/wp/v2/media)")
+                print(f"[Discovery] Discovered {len(wp_items)} media items via WordPress API.")
+                for wp in wp_items:
+                    dedup_key = f"{wp['url']}::wp-media::0"
+                    if dedup_key not in placement_dedup:
+                        placement_dedup.add(dedup_key)
+                        all_placements.append({
+                            "url": wp["url"],
+                            "page_url": f"{origin}/wp-json/wp/v2/media",
+                            "page_title": wp["title"] or "WordPress Media Library",
+                            "page_status": 200,
+                            "alt": wp["alt"] or None,
+                            "html_width": None,
+                            "html_height": None,
+                            "loading": "unspecified",
+                            "element_type": "wp-media",
+                            "source_attribute": "wp-media-api",
+                            "is_decorative": False,
+                            "placement_index": 0,
+                        })
+        except Exception as e:
+            print(f"[Discovery] WordPress API probe skipped: {e}")
+
+    page_counter = len(visited)
 
     while queue and len(visited) < max_pages:
         current_url = queue.pop(0)
@@ -590,7 +813,7 @@ def run_image_audit(
         visited.add(current_url)
         page_counter += 1
 
-        print(f"[{page_counter}/{max_pages}] Crawling: {current_url}")
+        print(f"[{page_counter}/{max_pages}] Crawling: {current_url} (Placements: {len(all_placements)})")
         t0 = time.time()
 
         req = urllib.request.Request(current_url, headers={"User-Agent": USER_AGENT})
@@ -610,216 +833,262 @@ def run_image_audit(
                 title = extract_page_title(html_text)
 
                 page_images = extract_images_from_html(html_text, current_url)
+                new_placements = 0
                 for img in page_images:
-                    u = img["url"]
-                    if u not in discovered_images:
-                        discovered_images[u] = []
-                    discovered_images[u].append({
-                        "page_url": current_url,
-                        "page_title": title,
-                        "page_status": status,
-                        "alt": img["alt"],
-                        "html_width": img["html_width"],
-                        "html_height": img["html_height"],
-                        "loading": img["loading"],
-                        "element_type": img["element_type"],
-                        "source_attribute": img["source_attribute"],
-                        "is_hero": img["is_hero"],
-                    })
+                    dedup_key = f"{img['url']}::{current_url}::{img['placement_index']}"
+                    if dedup_key not in placement_dedup:
+                        placement_dedup.add(dedup_key)
+                        all_placements.append({
+                            "url": img["url"],
+                            "page_url": current_url,
+                            "page_title": title,
+                            "page_status": status,
+                            "alt": img["alt"],
+                            "html_width": img["html_width"],
+                            "html_height": img["html_height"],
+                            "loading": img["loading"],
+                            "element_type": img["element_type"],
+                            "source_attribute": img["source_attribute"],
+                            "is_decorative": img["is_decorative"],
+                            "placement_index": img["placement_index"],
+                        })
+                        new_placements += 1
 
                 crawl_log.append({
                     "url": current_url, "status_code": status, "title": title,
-                    "images_found": len(page_images), "status": "success", "notes": "-"
+                    "images_found": new_placements, "status": "success", "notes": f"Discovered {new_placements} placements"
                 })
 
-                # Internal links
-                if len(visited) + len(queue) < max_pages * 2:
-                    new_links = extract_internal_links(html_text, current_url, origin_domain, allow_subdomains)
-                    for l in new_links:
-                        if l not in visited and l not in queue:
-                            queue.append(l)
+                # Queue internal links
+                page_links = extract_links_from_html(html_text, current_url, origin_domain, allow_subdomains)
+                for lk in page_links:
+                    if lk not in visited and lk not in queue and len(queue) < max_pages * 4:
+                        queue.append(lk)
 
         except urllib.error.HTTPError as e:
+            elapsed = round((time.time() - t0) * 1000)
             crawl_log.append({
                 "url": current_url, "status_code": e.code, "title": "-",
                 "images_found": 0, "status": "error", "notes": f"HTTP {e.code}"
             })
-        except Exception as ex:
+        except Exception as e:
+            elapsed = round((time.time() - t0) * 1000)
             crawl_log.append({
                 "url": current_url, "status_code": 0, "title": "-",
-                "images_found": 0, "status": "error", "notes": str(ex)
+                "images_found": 0, "status": "error", "notes": str(e)
             })
 
-        if delay > 0 and queue:
+        # Save checkpoint every 10 pages
+        if page_counter % 10 == 0:
+            try:
+                with open(checkpoint_file, "w", encoding="utf-8") as f:
+                    json.dump({
+                        "visited": list(visited),
+                        "queue": queue,
+                        "placements": all_placements,
+                        "dedup": list(placement_dedup)
+                    }, f)
+            except Exception:
+                pass
+
+        if delay > 0:
             time.sleep(delay)
 
-    print(f"\nCrawled {len(visited)} pages. Inspecting {len(discovered_images)} unique image assets...")
+    # Clean up checkpoint on complete crawl
+    if os.path.exists(checkpoint_file):
+        try:
+            os.remove(checkpoint_file)
+        except Exception:
+            pass
 
-    # Inspect images
+    print(f"\n[Analysis] Auditing headers for {len(all_placements)} image placements...")
+
+    # Header inspection for distinct image URLs
+    unique_urls = list(set(p["url"] for p in all_placements))
+    header_cache = {}
+    occurrence_counts = {}
+    for p in all_placements:
+        occurrence_counts[p["url"]] = occurrence_counts.get(p["url"], 0) + 1
+
+    for idx, u in enumerate(unique_urls, 1):
+        if idx % 25 == 0 or idx == len(unique_urls):
+            print(f"  Inspecting asset {idx}/{len(unique_urls)}...")
+        req = urllib.request.Request(u, headers={"User-Agent": USER_AGENT})
+        req.get_method = lambda: "HEAD"
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                ct = resp.headers.get("Content-Type", "")
+                cl = resp.headers.get("Content-Length")
+                size_b = int(cl) if cl and cl.isdigit() else None
+                header_cache[u] = {"status": resp.status, "content_type": ct, "size_bytes": size_b, "broken": False}
+        except urllib.error.HTTPError as e:
+            header_cache[u] = {"status": e.code, "content_type": "", "size_bytes": None, "broken": e.code >= 400}
+        except Exception:
+            header_cache[u] = {"status": 0, "content_type": "", "size_bytes": None, "broken": True}
+
+    # Evaluate items
     items = []
     format_counts = {}
     broken_count = 0
     oversized_count = 0
     missing_alt_count = 0
-    missing_dims_count = 0
-    legacy_count = 0
+    decorative_count = 0
+    missing_dim_count = 0
+    legacy_fmt_count = 0
     above_fold_lazy_count = 0
 
-    inspected_count = 0
-    total_to_inspect = min(len(discovered_images), 300)
+    for idx, p in enumerate(all_placements, 1):
+        u = p["url"]
+        h_info = header_cache.get(u, {"status": 200, "content_type": "", "size_bytes": None, "broken": False})
+        filename = extract_original_filename(u, p["page_url"])
 
-    for img_url, occurrences in list(discovered_images.items())[:total_to_inspect]:
-        inspected_count += 1
-        if inspected_count % 15 == 0 or inspected_count == total_to_inspect:
-            print(f"  Inspecting asset headers: {inspected_count}/{total_to_inspect}...")
+        # Detect format
+        ext = filename.split(".")[-1].upper() if "." in filename else ""
+        fmt = "JPEG"
+        if ext in ("PNG", "WEBP", "AVIF", "SVG", "GIF"):
+            fmt = ext
+        elif "webp" in h_info["content_type"]:
+            fmt = "WebP"
+        elif "avif" in h_info["content_type"]:
+            fmt = "AVIF"
+        elif "png" in h_info["content_type"]:
+            fmt = "PNG"
 
-        primary = occurrences[0]
-        net = inspect_image(img_url, timeout=timeout)
-        fmt = detect_image_format(img_url, net["content_type"])
         format_counts[fmt] = format_counts.get(fmt, 0) + 1
+        size_bytes = h_info["size_bytes"]
 
-        size_b = net["content_length"]
-        size_kb = round(size_b / 1024, 1) if size_b else None
+        proposed_alt = generate_proposed_alt(u, p["page_title"], p["alt"], p["is_decorative"])
 
-        current_alt = primary["alt"]
-        is_missing_alt = current_alt is None
-        is_decorative = current_alt == ""
-
-        proposed_alt = generate_proposed_alt(img_url, primary["page_title"], current_alt, primary["is_hero"])
-
+        # Issues analysis
         issues = []
-        if is_missing_alt:
-            issues.append("Missing alt text")
-            missing_alt_count += 1
-        elif is_decorative and not primary["is_hero"] and "icon" not in img_url.lower():
-            issues.append("Empty alt text (check if decorative)")
+        if h_info["broken"]:
+            broken_count += 1
+            issues.append(f"Broken Image (HTTP {h_info['status']})")
 
-        if size_kb and size_kb > size_threshold_kb:
-            issues.append(f"Oversized file ({size_kb}KB > {size_threshold_kb}KB)")
+        if p["alt"] is None and not p["is_decorative"]:
+            missing_alt_count += 1
+            issues.append("Missing Alt Attribute")
+        elif p["is_decorative"]:
+            decorative_count += 1
+
+        if size_bytes and size_bytes > size_threshold_kb * 1024:
             oversized_count += 1
+            issues.append(f"Oversized File (>{size_threshold_kb}KB)")
 
         if fmt in ("JPEG", "PNG", "GIF"):
-            issues.append(f"Legacy format ({fmt})")
-            legacy_count += 1
+            legacy_fmt_count += 1
+            issues.append(f"Legacy Format ({fmt})")
 
-        if not primary["html_width"] or not primary["html_height"]:
-            issues.append("Missing HTML width/height")
-            missing_dims_count += 1
+        if not p["html_width"] or not p["html_height"]:
+            missing_dim_count += 1
+            issues.append("Missing HTML Width/Height (CLS Risk)")
 
-        if net["is_broken"]:
-            issues.append(f"Broken image URL (HTTP {net['status']})")
-            broken_count += 1
-
-        if primary["is_hero"] and primary["loading"] == "lazy":
-            issues.append("Lazy-loading on above-the-fold image")
+        if p["placement_index"] <= 2 and p["loading"] == "lazy":
             above_fold_lazy_count += 1
+            issues.append("Above-Fold Lazy-Loading (LCP Delay)")
 
-        if len(occurrences) > 1:
-            issues.append(f"Appears on {len(occurrences)} pages")
-
-        # Priority calculation
-        priority = "Good"
-        if net["is_broken"] or is_missing_alt or (size_kb and size_kb > 300):
+        # Priority & Recommendation
+        if any("Broken" in i or "Missing Alt" in i or "Oversized" in i for i in issues):
             priority = "High"
-        elif (size_kb and size_kb > size_threshold_kb) or fmt in ("JPEG", "PNG") or not primary["html_width"]:
-            priority = "Medium"
+            rec = f"Action: {'; '.join(issues)}."
         elif issues:
-            priority = "Low"
-
-        # Actionable recommendation
-        if net["is_broken"]:
-            rec = f"Fix or remove broken image link (HTTP {net['status']})."
-        elif is_missing_alt:
-            rec = f'Add descriptive alt text: "{proposed_alt}".'
-        elif size_kb and size_kb > size_threshold_kb:
-            rec = f"Compress asset under {size_threshold_kb}KB and convert to modern WebP/AVIF."
-        elif fmt in ("JPEG", "PNG"):
-            rec = f"Convert {fmt} to WebP or AVIF for lighter mobile loading."
-        elif not primary["html_width"]:
-            rec = "Specify explicit HTML width and height to eliminate CLS layout shift."
-        elif primary["is_hero"] and primary["loading"] == "lazy":
-            rec = "Remove loading='lazy' from hero image to improve LCP speed."
+            priority = "Medium"
+            rec = f"Recommended: {'; '.join(issues)}."
+        elif p["is_decorative"]:
+            priority = "Good"
+            rec = 'Decorative element correctly uses empty alt="". Valid per WCAG.'
         else:
-            rec = "Image complies with performance standards."
+            priority = "Good"
+            rec = "Asset meets core SEO, layout dimension, and performance targets."
 
         items.append({
-            "url": img_url,
-            "page_url": primary["page_url"],
-            "page_title": primary["page_title"],
-            "page_status": primary["page_status"],
-            "alt": current_alt,
+            "id": f"img-{idx}",
+            "url": u,
+            "page_url": p["page_url"],
+            "page_title": p["page_title"],
+            "page_status": p["page_status"],
+            "filename": filename,
+            "alt": p["alt"],
             "proposed_alt": proposed_alt,
-            "html_width": primary["html_width"],
-            "html_height": primary["html_height"],
-            "size_bytes": size_b,
+            "html_width": p["html_width"],
+            "html_height": p["html_height"],
+            "size_bytes": size_bytes,
             "format": fmt,
-            "element_type": primary["element_type"],
-            "loading": primary["loading"],
-            "http_status": net["status"],
-            "occurrences": len(occurrences),
+            "element_type": p["element_type"],
+            "loading": p["loading"],
+            "http_status": h_info["status"],
+            "is_decorative": p["is_decorative"],
+            "occurrence_count": occurrence_counts.get(u, 1),
             "issues": issues,
             "recommendation": rec,
             "priority": priority,
         })
 
-    # Summary
+    duration_sec = time.time() - t_start
+
     top_findings = []
-    if broken_count > 0:
-        top_findings.append(f"Detected {broken_count} broken image URLs returning HTTP error responses.")
     if missing_alt_count > 0:
-        top_findings.append(f"{missing_alt_count} image assets lack an alt attribute entirely (WCAG/SEO issue).")
+        top_findings.append(f"{missing_alt_count} image placements are missing descriptive alt text.")
     if oversized_count > 0:
-        top_findings.append(f"{oversized_count} images exceed the {size_threshold_kb}KB size ceiling.")
-    if legacy_count > 0:
-        top_findings.append(f"{legacy_count} assets use legacy JPEG/PNG formats eligible for 30-70% WebP/AVIF savings.")
-    if missing_dims_count > 0:
-        top_findings.append(f"{missing_dims_count} images omit width/height dimensions, creating Cumulative Layout Shift.")
+        top_findings.append(f"{oversized_count} image placements exceed {size_threshold_kb} KB and should be compressed.")
+    if legacy_fmt_count > 0:
+        top_findings.append(f"{legacy_fmt_count} images use legacy formats (JPEG/PNG) eligible for WebP/AVIF.")
+    if broken_count > 0:
+        top_findings.append(f"{broken_count} image links return HTTP 4xx/5xx errors.")
     if not top_findings:
-        top_findings.append("All crawled image assets meet basic SEO & optimization standards.")
+        top_findings.append("All audited image assets meet core performance and accessibility targets.")
 
     summary = {
-        "website_url": start_url,
+        "website_url": norm_start,
         "origin": origin,
         "crawled_at": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
+        "duration_sec": duration_sec,
         "max_pages": max_pages,
+        "pages_discovered": len(visited),
         "pages_scanned": len(visited),
+        "pages_failed": len([c for c in crawl_log if c["status"] == "error"]),
         "total_images": len(items),
+        "total_placements": len(items),
+        "unique_images": len(unique_urls),
+        "images_previewed": len(items) - broken_count,
         "broken_images": broken_count,
         "missing_alt": missing_alt_count,
+        "decorative_empty_alt": decorative_count,
         "oversized_images": oversized_count,
-        "missing_dimensions": missing_dims_count,
-        "legacy_formats": legacy_count,
+        "missing_dimensions": missing_dim_count,
+        "legacy_formats": legacy_fmt_count,
         "above_fold_lazy": above_fold_lazy_count,
         "format_breakdown": format_counts,
         "top_findings": top_findings,
+        "discovery_methods": discovery_methods,
+        "sitemap_success": sitemap_success,
+        "sitemap_count": sitemap_count,
+        "wp_api_found": wp_api_found,
+        "wp_media_count": wp_media_count,
+        "crawl_completed": len(queue) == 0 and len(visited) < max_pages,
+        "stopped_reason": "Completed all queue pages" if len(queue) == 0 else f"Reached {max_pages} page limit",
+        "coverage_statement": f"Complete within {len(visited)} scanned public HTML pages and discovered sitemaps under configured crawl parameters.",
     }
 
     # Generate XLSX
+    print(f"\n[Export] Generating OpenXML workbook at: {output_path}")
     xlsx_bytes = build_audit_xlsx(summary, items, crawl_log)
-    os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     with open(output_path, "wb") as f:
         f.write(xlsx_bytes)
 
-    print(f"\n✔ Audit completed successfully!")
-    print(f"✔ Multi-tab Excel workbook saved to: {output_path} ({len(xlsx_bytes):,} bytes)")
-    print(f"   - Tab 1: Image Optimization (Matches reference sheet with =IMAGE(B2) & =LEN() formulas)")
-    print(f"   - Tab 2: Overview (Executive KPI cards & findings)")
-    print(f"   - Tab 3: Image Inventory ({len(items)} assets with technical dimensions & formats)")
-    print(f"   - Tab 4: Recommendations (Actionable prioritized remediations)")
-    print(f"   - Tab 5: Crawl Log ({len(crawl_log)} visited pages)\n")
+    print(f"=======================================================")
+    print(f" AUDIT COMPLETE: {len(items)} image placements recorded.")
+    print(f" Spreadsheet saved: {os.path.abspath(output_path)}")
+    print(f" Tabs: [1] Image Optimization (Exact 6 Columns with =IMAGE) | [2] Audit Summary | [3] Inventory | [4] Recommendations | [5] Crawl Log")
+    print(f"=======================================================\n")
 
     return {
         "summary": summary,
         "items": items,
         "crawl_log": crawl_log,
-        "xlsx_path": output_path,
-        "xlsx_bytes_len": len(xlsx_bytes)
+        "output_file": os.path.abspath(output_path),
     }
 
-
-# -----------------------------------------------------------------------------
-# 6. CLI Entrypoint
-# -----------------------------------------------------------------------------
 
 def main():
     parser = argparse.ArgumentParser(
@@ -827,48 +1096,39 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python3 outputs/site_image_audit.py https://thenines.com
-  python3 outputs/site_image_audit.py https://example.com --max-pages 25 --output report.xlsx
-  python3 outputs/site_image_audit.py https://hotel.com --size-threshold 150 --subdomains
+  python3 outputs/site_image_audit.py https://example.com
+  python3 outputs/site_image_audit.py https://hotel.com --max-pages 100 --output hotel_audit.xlsx
+  python3 outputs/site_image_audit.py https://site.com --size-threshold 150 --subdomains --resume
         """
     )
-    parser.add_argument("url", nargs="?", help="Full website URL to audit (e.g. https://example.com)")
+    parser.add_argument("url", nargs="?", default="https://arrivehotels.com", help="Full website URL to audit")
     parser.add_argument("--max-pages", type=int, default=50, help="Maximum pages to crawl (default: 50)")
     parser.add_argument("--delay", type=float, default=0.15, help="Delay between page requests in seconds (default: 0.15)")
     parser.add_argument("--timeout", type=int, default=10, help="HTTP request timeout in seconds (default: 10)")
     parser.add_argument("--subdomains", action="store_true", help="Allow crawling subdomains of target origin")
     parser.add_argument("--size-threshold", type=int, default=100, help="Oversized image threshold in KB (default: 100)")
-    parser.add_argument("--output", default="outputs/image_optimization_audit.xlsx", help="Output .xlsx file path")
+    parser.add_argument("--output", type=str, default="", help="Output .xlsx file path")
+    parser.add_argument("--resume", action="store_true", help="Resume from previous checkpoint if interrupted")
+    parser.add_argument("--no-sitemap", action="store_true", help="Disable XML sitemap discovery")
+    parser.add_argument("--no-wp-media", action="store_true", help="Disable WordPress Media REST API discovery")
 
     args = parser.parse_args()
 
-    target_url = args.url
-    if not target_url:
-        target_url = input("Enter website URL to audit (e.g. https://example.com): ").strip()
+    hostname = urllib.parse.urlparse(args.url).netloc.replace(".", "_") or "site"
+    out_file = args.output or f"image_audit_{hostname}.xlsx"
 
-    if not target_url:
-        print("Error: A valid target website URL is required.", file=sys.stderr)
-        sys.exit(1)
-
-    if not target_url.startswith("http://") and not target_url.startswith("https://"):
-        target_url = "https://" + target_url
-
-    try:
-        run_image_audit(
-            start_url=target_url,
-            max_pages=args.max_pages,
-            delay=args.delay,
-            timeout=args.timeout,
-            allow_subdomains=args.subdomains,
-            size_threshold_kb=args.size_threshold,
-            output_path=args.output
-        )
-    except KeyboardInterrupt:
-        print("\nAudit interrupted by user.")
-        sys.exit(130)
-    except Exception as e:
-        print(f"\nAudit failed: {e}", file=sys.stderr)
-        sys.exit(1)
+    run_image_audit(
+        start_url=args.url,
+        max_pages=args.max_pages,
+        delay=args.delay,
+        timeout=args.timeout,
+        allow_subdomains=args.subdomains,
+        size_threshold_kb=args.size_threshold,
+        output_path=out_file,
+        resume=args.resume,
+        enable_sitemaps=not args.no_sitemap,
+        enable_wp_media=not args.no_wp_media,
+    )
 
 
 if __name__ == "__main__":

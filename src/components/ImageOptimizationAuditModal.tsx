@@ -29,6 +29,8 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
   const [delayMs, setDelayMs] = useState(100);
   const [includeSubdomains, setIncludeSubdomains] = useState(false);
   const [saveToGoogleSheets, setSaveToGoogleSheets] = useState(false);
+  const [enableSitemaps, setEnableSitemaps] = useState(true);
+  const [enableWpMedia, setEnableWpMedia] = useState(true);
 
   const [loading, setLoading] = useState(false);
   const [progressMsg, setProgressMsg] = useState<string>("");
@@ -36,6 +38,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
   const [result, setResult] = useState<AuditApiResponse | null>(null);
   const [filterType, setFilterType] = useState<"all" | "missing-alt" | "oversized" | "broken" | "high-priority">("all");
   const [searchFilter, setSearchFilter] = useState("");
+  const [expandedId, setExpandedId] = useState<string | null>(null);
 
   const handleRunAudit = async () => {
     let target = urlInput.trim();
@@ -50,7 +53,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
 
     setLoading(true);
     setError(null);
-    setProgressMsg("Connecting to site & crawling pages for images...");
+    setProgressMsg("Checking XML sitemaps, crawling pages & discovering all image placements...");
 
     try {
       const res = await fetch("/api/image-audit", {
@@ -63,6 +66,8 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
           delayMs,
           includeSubdomains,
           saveToGoogleSheets,
+          enableSitemaps,
+          enableWordPressApi: enableWpMedia,
         }),
       });
 
@@ -107,6 +112,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
       const q = searchFilter.toLowerCase();
       const match =
         item.imageUrl.toLowerCase().includes(q) ||
+        (item.filename && item.filename.toLowerCase().includes(q)) ||
         (item.currentAlt && item.currentAlt.toLowerCase().includes(q)) ||
         item.proposedAlt.toLowerCase().includes(q) ||
         item.pageUrl.toLowerCase().includes(q);
@@ -129,7 +135,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
   });
 
   return (
-    <div className="flex max-h-[90vh] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
+    <div className="flex max-h-[92vh] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-slate-800 dark:bg-slate-900">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-slate-100 bg-slate-50/70 px-6 py-4 dark:border-slate-800 dark:bg-slate-900/70">
         <div className="flex items-center gap-3">
@@ -145,10 +151,10 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
           </div>
           <div>
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-              Website Image Optimization Audit
+              Website Image Optimization Audit &amp; Google Sheet Exporter
             </h2>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Audit alt text, WebP/AVIF formats, dimensions, and generate formula-powered spreadsheets.
+              Discovers every image placement, audits alt text &amp; layout shifts, and creates spreadsheets matching the 6-column reference layout.
             </p>
           </div>
         </div>
@@ -164,7 +170,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
       </div>
 
       <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* Input & Config Panel */}
+        {/* Input & Discovery Config Panel */}
         <div className="rounded-2xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/40 space-y-4">
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
             <div className="relative flex-1">
@@ -197,14 +203,14 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
             </Button>
           </div>
 
-          {/* Advanced options row */}
+          {/* Config options row */}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 pt-1 border-t border-slate-200/60 dark:border-slate-700/60 text-xs">
             <div>
               <label className="font-semibold text-slate-600 dark:text-slate-300">Max Pages</label>
               <input
                 type="number"
                 min="1"
-                max="150"
+                max="300"
                 value={maxPages}
                 onChange={(e) => setMaxPages(Number(e.target.value))}
                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
@@ -233,15 +239,15 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                 className="mt-1 w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
               />
             </div>
-            <div className="flex flex-col justify-end space-y-1.5 pb-0.5">
+            <div className="flex flex-col justify-end space-y-1 pb-0.5">
               <label className="inline-flex items-center gap-1.5 cursor-pointer">
                 <input
                   type="checkbox"
-                  checked={includeSubdomains}
-                  onChange={(e) => setIncludeSubdomains(e.target.checked)}
+                  checked={enableSitemaps}
+                  onChange={(e) => setEnableSitemaps(e.target.checked)}
                   className="rounded border-slate-300 text-amber-600 focus:ring-amber-500"
                 />
-                <span className="text-slate-700 dark:text-slate-300">Subdomains</span>
+                <span className="text-slate-700 dark:text-slate-300">XML Sitemaps</span>
               </label>
               <label className="inline-flex items-center gap-1.5 cursor-pointer">
                 <input
@@ -250,7 +256,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                   onChange={(e) => setSaveToGoogleSheets(e.target.checked)}
                   className="rounded border-slate-300 text-amber-600 focus:ring-amber-500"
                 />
-                <span className="text-slate-700 dark:text-slate-300">Google Sheets</span>
+                <span className="text-slate-700 dark:text-slate-300">Google Sheet</span>
               </label>
             </div>
           </div>
@@ -264,7 +270,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
               {progressMsg || "Crawling website pages and extracting media attributes..."}
             </div>
             <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
-              Inspecting &lt;img&gt;, &lt;picture&gt;, CSS background images, srcset variants, and image headers.
+              Inspecting internal links, sitemaps, &lt;img&gt;, &lt;picture&gt;, CSS background images, and header responses.
             </p>
           </div>
         )}
@@ -286,13 +292,13 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                 <div className="mt-1 text-2xl font-black text-slate-800 dark:text-white">
                   {result.summary.pagesScanned}
                 </div>
-                <div className="text-[10px] text-slate-500">{result.summary.pagesFailed} failed / {result.summary.durationMs}ms</div>
+                <div className="text-[10px] text-slate-500">{result.summary.pagesDiscovered} discovered / {result.summary.pagesFailed} failed</div>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Images</div>
+                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Placements</div>
                 <div className="mt-1 text-2xl font-black text-blue-600 dark:text-blue-400">
-                  {result.summary.totalImagesFound}
+                  {result.summary.totalPlacementsCount}
                 </div>
                 <div className="text-[10px] text-slate-500">{result.summary.uniqueImagesCount} unique assets</div>
               </div>
@@ -326,18 +332,23 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                 <div className="mt-1 text-2xl font-black text-red-600 dark:text-red-400">
                   {result.summary.brokenImagesCount}
                 </div>
-                <div className="text-[10px] text-slate-500">4xx / 5xx responses</div>
+                <div className="text-[10px] text-slate-500">HTTP 4xx / 5xx</div>
               </div>
             </div>
 
-            {/* Actions Bar: Download XLSX and Google Sheets */}
-            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50/40 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
+            {/* Actions Bar: Exact 6 Columns XLSX and Google Sheets */}
+            <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
               <div className="space-y-0.5">
-                <h3 className="text-sm font-bold text-slate-900 dark:text-white">
-                  Audit Spreadsheet Ready (5 Tabs)
-                </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Includes <strong>Image Optimization</strong> (with =IMAGE and =LEN formulas), <strong>Overview</strong>, <strong>Image Inventory</strong>, <strong>Recommendations</strong>, and <strong>Crawl Log</strong>.
+                <div className="flex items-center gap-2">
+                  <span className="rounded-md bg-amber-200/80 px-2 py-0.5 text-[11px] font-bold text-amber-900 dark:bg-amber-900 dark:text-amber-200">
+                    Exact Reference Layout
+                  </span>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                    6 Columns with Yellow Header &amp; Image Previews
+                  </h3>
+                </div>
+                <p className="text-xs text-slate-600 dark:text-slate-400">
+                  Includes <strong>Image</strong>, <strong>URL</strong>, <strong>Title</strong>, <strong>Length</strong>, <strong>Optimized ALT Text</strong>, <strong>Length</strong> with <code>=IMAGE(B2)</code> &amp; <code>=LEN(...)</code>. Diagnostic details in separate <strong>Audit Summary</strong> tab.
                 </p>
               </div>
 
@@ -372,18 +383,23 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                   </a>
                 ) : result.googleSheetError ? (
                   <span className="text-[11px] text-amber-700 dark:text-amber-400" title={result.googleSheetError}>
-                    Google Sheet setup required (XLSX downloaded above)
+                    Google Sheet credentials required (XLSX downloaded above)
                   </span>
                 ) : null}
               </div>
             </div>
 
-            {/* Note on WCAG Decorative Images */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400">
-              <span className="font-semibold text-slate-800 dark:text-slate-200">Accessibility Note:</span> Empty alt text (<code>alt=&quot;&quot;</code>) is completely valid and recommended by WCAG for purely decorative images, backgrounds, and icons that don&apos;t convey content. Not every empty alt attribute is a defect.
+            {/* Coverage Boundary & WCAG Note */}
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400 space-y-1">
+              <div>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">Coverage Statement:</span> {result.summary.coverageStatement}
+              </div>
+              <div>
+                <span className="font-semibold text-slate-800 dark:text-slate-200">WCAG Accessibility Note:</span> Empty alt text (<code>alt=&quot;&quot;</code>) is completely valid and recommended by WCAG 2.1 AA for purely decorative images, backgrounds, and layout dividers. Not all empty alt attributes are defects.
+              </div>
             </div>
 
-            {/* Filter and Table of Audited Images */}
+            {/* Filter and Table of Audited Images (Exact 6 Columns) */}
             <div className="space-y-3">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div className="flex flex-wrap items-center gap-1.5">
@@ -438,117 +454,109 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                     type="text"
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
-                    placeholder="Search by URL or alt text..."
+                    placeholder="Search by URL, title or alt..."
                     className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                   />
                 </div>
               </div>
 
-              {/* Table */}
+              {/* Exact 6-Column Table */}
               <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
                 <table className="w-full text-left text-xs">
-                  <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-400">
+                  {/* Yellow Header Row matching reference */}
+                  <thead className="border-b border-amber-300 bg-amber-200 text-[11px] font-bold text-amber-950 uppercase tracking-wider dark:bg-amber-300 dark:text-slate-900">
                     <tr>
-                      <th className="p-3">Preview</th>
-                      <th className="p-3">Image &amp; Page</th>
-                      <th className="p-3">Current Alt</th>
-                      <th className="p-3">Proposed Alt</th>
-                      <th className="p-3">Format / Size</th>
-                      <th className="p-3">Priority</th>
-                      <th className="p-3">Action / Recommendation</th>
+                      <th className="p-3 w-28 text-center">Image</th>
+                      <th className="p-3 min-w-[200px]">URL</th>
+                      <th className="p-3 min-w-[180px]">Title</th>
+                      <th className="p-3 w-16 text-center">Length</th>
+                      <th className="p-3 min-w-[220px]">Optimized ALT Text</th>
+                      <th className="p-3 w-16 text-center">Length</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                     {filteredItems.slice(0, 50).map((item) => (
-                      <tr key={item.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40">
+                      <tr
+                        key={item.id}
+                        onClick={() => setExpandedId(expandedId === item.id ? null : item.id)}
+                        className="hover:bg-amber-50/40 dark:hover:bg-slate-800/40 cursor-pointer transition"
+                      >
+                        {/* 1. Image Preview */}
                         <td className="p-3">
-                          <div className="h-12 w-12 flex-shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800">
+                          <div className="h-16 w-24 flex-shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-slate-100 dark:border-slate-700 dark:bg-slate-800 flex items-center justify-center">
                             {/* eslint-disable-next-line @next/next/no-img-element */}
                             <img
                               src={item.imageUrl}
-                              alt={item.currentAlt || "thumbnail"}
+                              alt={item.proposedAlt || "preview"}
                               loading="lazy"
-                              className="h-full w-full object-cover"
+                              className="h-full w-full object-contain"
                               onError={(e) => {
                                 (e.currentTarget as HTMLImageElement).style.display = "none";
                               }}
                             />
                           </div>
                         </td>
-                        <td className="p-3 max-w-xs truncate">
+
+                        {/* 2. Full URL as Clickable Link */}
+                        <td className="p-3 max-w-xs">
                           <a
                             href={item.imageUrl}
                             target="_blank"
                             rel="noreferrer"
-                            className="font-medium text-blue-600 hover:underline dark:text-blue-400 truncate block"
+                            onClick={(e) => e.stopPropagation()}
+                            className="font-mono text-blue-600 hover:underline dark:text-blue-400 break-all text-[11px]"
                             title={item.imageUrl}
                           >
-                            {item.imageUrl.split("/").pop() || item.imageUrl}
+                            {item.imageUrl}
                           </a>
-                          <a
-                            href={item.pageUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="text-[10px] text-slate-400 hover:underline truncate block"
-                            title={item.pageUrl}
-                          >
+                          <span className="block text-[10px] text-slate-400 truncate mt-0.5">
                             Page: {item.pageTitle || new URL(item.pageUrl).pathname}
-                          </a>
+                          </span>
                         </td>
+
+                        {/* 3. Title (Original Decoded Filename) */}
                         <td className="p-3 max-w-[180px]">
-                          {item.currentAlt ? (
-                            <span className="font-mono text-[11px] text-slate-700 dark:text-slate-300">
-                              &quot;{item.currentAlt}&quot;
-                            </span>
-                          ) : item.isDecorative ? (
+                          <span className="font-mono text-slate-800 dark:text-slate-200 break-all font-medium text-[11px]">
+                            {item.filename}
+                          </span>
+                        </td>
+
+                        {/* 4. Title Length */}
+                        <td className="p-3 text-center font-mono font-bold text-slate-600 dark:text-slate-400">
+                          {item.titleLength}
+                        </td>
+
+                        {/* 5. Optimized ALT Text */}
+                        <td className="p-3 max-w-[240px]">
+                          {item.isDecorative ? (
                             <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                               alt=&quot;&quot; (Decorative)
                             </span>
                           ) : (
-                            <span className="rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700 dark:bg-red-950/60 dark:text-red-400">
-                              Missing Alt
+                            <span className="text-emerald-800 dark:text-emerald-300 font-medium text-[11px]">
+                              {item.proposedAlt}
+                            </span>
+                          )}
+                          {item.currentAlt && item.currentAlt !== item.proposedAlt && (
+                            <span className="block text-[10px] text-slate-400 line-through mt-0.5 truncate">
+                              Was: &quot;{item.currentAlt}&quot;
                             </span>
                           )}
                         </td>
-                        <td className="p-3 max-w-[200px]">
-                          <span className="font-mono text-[11px] text-emerald-700 dark:text-emerald-400">
-                            &quot;{item.proposedAlt}&quot;
-                          </span>
-                        </td>
-                        <td className="p-3 whitespace-nowrap">
-                          <span className="font-semibold text-slate-700 dark:text-slate-300">
-                            {item.format}
-                          </span>
-                          <span className="ml-1 text-[10px] text-slate-400">
-                            {item.fileSizeKb ? `${item.fileSizeKb} KB` : "-"}
-                          </span>
-                        </td>
-                        <td className="p-3 whitespace-nowrap">
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                              item.priority === "High"
-                                ? "bg-red-100 text-red-700 dark:bg-red-950/60 dark:text-red-400"
-                                : item.priority === "Medium"
-                                ? "bg-amber-100 text-amber-700 dark:bg-amber-950/60 dark:text-amber-400"
-                                : item.priority === "Low"
-                                ? "bg-blue-100 text-blue-700 dark:bg-blue-950/60 dark:text-blue-400"
-                                : "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400"
-                            }`}
-                          >
-                            {item.priority}
-                          </span>
-                        </td>
-                        <td className="p-3 max-w-xs text-[11px] text-slate-600 dark:text-slate-400">
-                          {item.recommendation}
+
+                        {/* 6. ALT Length */}
+                        <td className="p-3 text-center font-mono font-bold text-emerald-700 dark:text-emerald-400">
+                          {item.altLength}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
+
               {filteredItems.length > 50 && (
                 <p className="text-center text-xs text-slate-400">
-                  Showing first 50 of {filteredItems.length} items. All records are included in the downloadable spreadsheet.
+                  Showing first 50 of {filteredItems.length} placements. All records are exported into the downloadable spreadsheet.
                 </p>
               )}
             </div>
@@ -558,8 +566,8 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-6 py-3 dark:border-slate-800 dark:bg-slate-900/50">
-        <span className="text-xs text-slate-400">
-          Excel format matches reference workbook with =IMAGE and =LEN formulas.
+        <span className="text-xs text-slate-500">
+          Main tab matches reference spreadsheet with yellow header, 6 exact columns, and <code>=IMAGE(B2)</code> / <code>=LEN()</code> formulas.
         </span>
         <Button variant="secondary" onClick={onClose}>
           Close
