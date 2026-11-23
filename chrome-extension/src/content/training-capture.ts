@@ -267,7 +267,7 @@ export function sanitizeUrlString(rawUrl: string): {
 /**
  * Traverses open shadow roots to discover all matching elements.
  */
-function querySelectorAllDeep(root: ParentNode, selector: string): Element[] {
+export function querySelectorAllDeep(root: ParentNode, selector: string): Element[] {
   const elements: Element[] = [];
   const parts = selector.split(",").map((s) => s.trim()).filter(Boolean);
 
@@ -521,7 +521,7 @@ function detectTechStack(doc: Document): DetectedTech {
   const frameworks: string[] = [];
   const tagManagers: string[] = [];
 
-  const html = doc.documentElement.innerHTML.toLowerCase();
+  const html = (doc.documentElement?.innerHTML || (doc as any).body?.innerHTML || doc.documentElement?.textContent || "").toLowerCase();
 
   // CMS
   if (html.includes("wp-content") || html.includes("wordpress")) cms.push("WordPress");
@@ -646,6 +646,12 @@ export function extractCapturedWebSample(doc?: Document, frameId = 0): CapturedW
 
   if (!targetDoc) {
     throw new Error("extractCapturedWebSample requires a valid Document context.");
+  }
+
+  // Security Gate: Never capture sensitive pages containing password inputs
+  const pwdInput = targetDoc.querySelector('input[type="password"], [type="password"]');
+  if (pwdInput) {
+    throw new Error("SECURITY_ABORT: Sensitive page contains password field. Capture is blocked.");
   }
 
   const extractionErrors: string[] = [];
