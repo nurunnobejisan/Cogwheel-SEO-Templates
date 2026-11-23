@@ -3,12 +3,13 @@ import { ExternalLink, ArrowRight, Info, RotateCw } from "lucide-react";
 import { PageAuditData } from "../types/extension";
 import { calculateSeoScores } from "../data/cogwheelTemplates";
 import { ScoreGauge } from "../components/ScoreGauge";
-import { isRestrictedUrl } from "../utils/urlSecurity";
+import { checkPageRestriction, isRestrictedUrl } from "../utils/urlSecurity";
 
 export function PopupApp() {
   const [pageData, setPageData] = useState<PageAuditData | null>(null);
   const [tabId, setTabId] = useState<number | undefined>();
   const [isRestricted, setIsRestricted] = useState(false);
+  const [restrictionReason, setRestrictionReason] = useState<string | undefined>();
   const [needsReload, setNeedsReload] = useState(false);
 
   useEffect(() => {
@@ -17,8 +18,10 @@ export function PopupApp() {
         if (!tab || !tab.id) return;
         setTabId(tab.id);
 
-        if (isRestrictedUrl(tab.url)) {
+        const check = checkPageRestriction(tab.url);
+        if (check.isRestricted) {
           setIsRestricted(true);
+          setRestrictionReason(check.reason);
           return;
         }
 
@@ -92,7 +95,9 @@ export function PopupApp() {
         <div className="mt-3 flex items-start gap-2 rounded-xl border border-sky-800/40 bg-sky-950/40 p-2.5 text-[11px] text-sky-200">
           <Info className="h-4 w-4 shrink-0 text-sky-400 mt-0.5" />
           <span>
-            Live page scan unavailable on browser system pages — open any https:// site to auto-fill from DOM
+            {restrictionReason
+              ? `RESTRICTED_PAGE: ${restrictionReason}. Open any https:// site to auto-fill from DOM.`
+              : "RESTRICTED_PAGE: Live page scan unavailable on browser system pages — open any https:// site to auto-fill from DOM."}
           </span>
         </div>
       )}

@@ -5,6 +5,11 @@ import { extractCapturedWebSample } from "./training-capture";
 
 // Listen for messages from Side Panel, Popup, or Background Worker
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  if (request.type === "PING") {
+    sendResponse({ status: "PONG" });
+    return true;
+  }
+
   if (request.type === "CAPTURE_TRAINING_SAMPLE") {
     const sample = extractCapturedWebSample();
     sendResponse({ success: true, sample });
@@ -758,3 +763,105 @@ function handleClearAllOverlays() {
   const types: OverlayType[] = ["headings", "missingAlts", "schemas", "bookingLinks", "geoBlocks"];
   types.forEach((t) => handleToggleOverlay(t, false));
 }
+
+// ============================================================================
+// SPA ROUTE CHANGE DETECTION & MUTATION OBSERVER
+// ============================================================================
+
+function computeQuickContentFingerprint(): string {
+  const url = window.location.href;
+  const title = document.title || "";
+  const h1 = document.querySelector("h1")?.textContent?.trim() || "";
+  const mainEl = document.querySelector("main, article, [role='main']") || document.body;
+  const sampleLength = mainEl ? mainEl.textContent?.length || 0 : 0;
+  return `${url}:::${title}:::${h1}:::${sampleLength}`;
+}
+
+let lastFingerprint = computeQuickContentFingerprint();
+let spaDebounceTimer: ReturnType<typeof setTimeout> | null = null;
+
+function checkAndDispatchSpaChange(): void {
+  if (spaDebounceTimer) {
+    clearTimeout(spaDebounceTimer);
+  }
+  spaDebounceTimer = setTimeout(() => {
+    const currentFingerprint = computeQuickContentFingerprint();
+    if (currentFingerprint !== lastFingerprint) {
+      lastFingerprint = currentFingerprint;
+      try {
+        const data = extractComprehensivePageData();
+        chrome.runtime.sendMessage(
+          {
+            type: "AUTO_PAGE_CONTEXT_UPDATED",
+            data,
+          },
+          () => {
+            if (chrome.runtime.lastError) {
+              // Ignore disconnected runtime
+            }
+          }
+        );
+      } catch {
+        // Handled silently
+      }
+    }
+  }, 800);
+}
+
+// 1. Patch history API
+(function patchHistoryApi() {
+  const originalPush = history.pushState;
+  const originalReplace = history.replaceState;
+
+  history.pushState = function (...args) {
+    const res = originalPush.apply(this, args);
+    window.dispatchEvent(new Event("cogwheel-spa-navigate"));
+    return res;
+  };
+
+  history.replaceState = function (...args) {
+    const res = originalReplace.apply(this, args);
+    window.dispatchEvent(new Event("cogwheel-spa-navigate"));
+    return res;
+  };
+
+  window.addEventListener("cogwheel-spa-navigate", checkAndDispatchSpaChange);
+  window.addEventListener("popstate", checkAndDispatchSpaChange);
+  window.addEventListener("hashchange", checkAndDispatchSpaChange);
+})();
+
+// 2. MutationObserver on document.title & main/article/body
+(function observeDomMutations() {
+  const target = document.body || document.documentElement;
+  if (!target) return;
+
+  const observer = new MutationObserver((mutations) => {
+    let shouldCheck = false;
+    for (const m of mutations) {
+      if (m.type === "childList" && m.addedNodes.length > 0) {
+        shouldCheck = true;
+        break;
+      }
+      if (m.type === "characterData") {
+        shouldCheck = true;
+        break;
+      }
+    }
+    if (shouldCheck) {
+      checkAndDispatchSpaChange();
+    }
+  });
+
+  observer.observe(target, {
+    childList: true,
+    subtree: true,
+    characterData: true,
+  });
+
+  const titleEl = document.querySelector("title");
+  if (titleEl) {
+    const titleObserver = new MutationObserver(() => checkAndDispatchSpaChange());
+    titleObserver.observe(titleEl, { childList: true, characterData: true, subtree: true });
+  }
+})();
+

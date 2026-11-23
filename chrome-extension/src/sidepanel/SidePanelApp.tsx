@@ -179,13 +179,28 @@ export function SidePanelApp() {
     fetchActivePage();
 
     if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
+      // Announce SIDE_PANEL_READY handshake to flush any queued messages from background
+      chrome.runtime.sendMessage({ type: "SIDE_PANEL_READY" }, () => {
+        if (chrome.runtime.lastError) {}
+      });
+
       const listener = (msg: any) => {
         if (msg.type === "AUTO_PAGE_CONTEXT_UPDATED" && msg.data) {
           setPageData(msg.data);
+          setIsRestrictedTab(false);
+          setNeedsReload(false);
           if (msg.tabId) setActiveTabId(msg.tabId);
+        } else if (msg.type === "PAGE_RESTRICTION_STATUS") {
+          setIsRestrictedTab(msg.status === "RESTRICTED_PAGE");
+          setNeedsReload(false);
+          setLoading(false);
         } else if (msg.type === "NAVIGATE_TAB") {
           if (msg.tab) setActiveTab(msg.tab);
           if (msg.templateId) setTargetTemplateId(msg.templateId);
+        } else if (msg.type === "SELECTION_RECEIVED") {
+          if (msg.text) {
+            setActiveTab("studio");
+          }
         }
       };
       chrome.runtime.onMessage.addListener(listener);
@@ -473,7 +488,7 @@ export function SidePanelApp() {
             <div className="mt-2.5 flex items-start gap-2 rounded-xl border border-sky-500/20 bg-sky-500/5 p-2.5 text-[11px] text-sky-300">
               <Info className="h-4 w-4 shrink-0 text-sky-400 mt-0.5" />
               <span>
-                Live page scan unavailable on browser system pages — open any https:// site to auto-fill from DOM. Template Studio and Brand Profiles below are active.
+                RESTRICTED_PAGE: Live page scan unavailable on browser system pages or internal origins. Open any https:// site to auto-fill from live DOM. Template Studio and Brand Profiles below are active in offline mode.
               </span>
             </div>
           )}

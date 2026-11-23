@@ -1,9 +1,114 @@
 // Background Service Worker for Cogwheel Chrome Extension
-import { isRestrictedUrl } from "../utils/urlSecurity";
+import { checkPageRestriction, isRestrictedUrl } from "../utils/urlSecurity";
 import { initAutoUpdater } from "./auto-updater";
 
 // Initialize GitHub Auto-Update & Silent OTA Live Sync Engine
 initAutoUpdater();
+
+// Side Panel Ready Handshake & Queue System
+const sidePanelReadyTabs = new Set<number>();
+const sidePanelMessageQueue = new Map<number, unknown[]>();
+
+function sendOrQueueSidePanelMessage(tabId: number, message: unknown): void {
+  if (sidePanelReadyTabs.has(tabId)) {
+    chrome.runtime.sendMessage(message, () => {
+      if (chrome.runtime.lastError) {
+        // Side panel may have closed or navigated; remove ready state and re-queue if desired
+        sidePanelReadyTabs.delete(tabId);
+      }
+    });
+  } else {
+    const queue = sidePanelMessageQueue.get(tabId) || [];
+    queue.push(message);
+    sidePanelMessageQueue.set(tabId, queue);
+  }
+}
+
+function flushSidePanelQueue(tabId: number): void {
+  sidePanelReadyTabs.add(tabId);
+  const queue = sidePanelMessageQueue.get(tabId);
+  if (queue && queue.length > 0) {
+    while (queue.length > 0) {
+      const msg = queue.shift();
+      chrome.runtime.sendMessage(msg, () => {
+        if (chrome.runtime.lastError) {
+          // Handled silently
+        }
+      });
+    }
+  }
+  sidePanelMessageQueue.delete(tabId);
+}
+
+/**
+ * Universal content script pinger & auto-injector.
+ * Pings the tab; if unresponsive, injects via chrome.scripting.executeScript and retries once.
+ */
+async function ensureContentScriptInjected(tabId: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    try {
+      chrome.tabs.sendMessage(tabId, { type: "PING" }, (res) => {
+        if (!chrome.runtime.lastError && res && res.status === "PONG") {
+          resolve(true);
+          return;
+        }
+
+        // Script not active or not injected; inject dynamically
+        if (chrome.scripting && chrome.scripting.executeScript) {
+          chrome.scripting
+            .executeScript({
+              target: { tabId, allFrames: true },
+              files: ["content.js"],
+            })
+            .then(() => {
+              // Retry ping once after injection
+              chrome.tabs.sendMessage(tabId, { type: "PING" }, (retryRes) => {
+                if (!chrome.runtime.lastError && retryRes && retryRes.status === "PONG") {
+                  resolve(true);
+                } else {
+                  resolve(false);
+                }
+              });
+            })
+            .catch(() => resolve(false));
+        } else {
+          resolve(false);
+        }
+      });
+    } catch {
+      resolve(false);
+    }
+  });
+}
+
+/**
+ * Common extraction dispatcher for a tab.
+ */
+async function triggerPageDataExtraction(tabId: number, url?: string): Promise<void> {
+  const restriction = checkPageRestriction(url);
+  if (restriction.isRestricted) {
+    sendOrQueueSidePanelMessage(tabId, {
+      type: "PAGE_RESTRICTION_STATUS",
+      tabId,
+      status: restriction.status,
+      reason: restriction.reason,
+    });
+    return;
+  }
+
+  const ok = await ensureContentScriptInjected(tabId);
+  if (!ok) return;
+
+  chrome.tabs.sendMessage(tabId, { type: "EXTRACT_PAGE_DATA" }, (res) => {
+    if (!chrome.runtime.lastError && res && res.data) {
+      sendOrQueueSidePanelMessage(tabId, {
+        type: "AUTO_PAGE_CONTEXT_UPDATED",
+        tabId,
+        data: res.data,
+      });
+    }
+  });
+}
 
 chrome.runtime.onInstalled.addListener(() => {
   // Allow Side Panel to open upon clicking the action if supported
@@ -35,39 +140,32 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-// Handle Context Menu Clicks
+// Handle Context Menu Clicks with Handshake-Backed Queue
 chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (!tab || !tab.id) return;
+  const tabId = tab.id;
 
   if (info.menuItemId === "cogwheel-audit-page") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
-      chrome.sidePanel.open({ tabId: tab.id }).catch(() => {});
+      chrome.sidePanel.open({ tabId }).catch(() => {});
     }
   } else if (info.menuItemId === "cogwheel-generate-schema") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
-      chrome.sidePanel.open({ tabId: tab.id }).then(() => {
-        setTimeout(() => {
-          chrome.runtime.sendMessage({
-            type: "NAVIGATE_TAB",
-            tab: "studio",
-            templateId: "schema-hotel-graph",
-          }, () => {
-            if (chrome.runtime.lastError) {}
-          });
-        }, 500);
+      chrome.sidePanel.open({ tabId }).then(() => {
+        sendOrQueueSidePanelMessage(tabId, {
+          type: "NAVIGATE_TAB",
+          tab: "studio",
+          templateId: "schema-hotel-graph",
+        });
       }).catch(() => {});
     }
   } else if (info.menuItemId === "cogwheel-template-selection") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
-      chrome.sidePanel.open({ tabId: tab.id }).then(() => {
-        setTimeout(() => {
-          chrome.runtime.sendMessage({
-            type: "SELECTION_RECEIVED",
-            text: info.selectionText || "",
-          }, () => {
-            if (chrome.runtime.lastError) {}
-          });
-        }, 500);
+      chrome.sidePanel.open({ tabId }).then(() => {
+        sendOrQueueSidePanelMessage(tabId, {
+          type: "SELECTION_RECEIVED",
+          text: info.selectionText || "",
+        });
       }).catch(() => {});
     }
   }
@@ -76,44 +174,57 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
 // Auto-Update Badge & Auto-Inform Side Panel on Tab Switch
 chrome.tabs.onActivated.addListener((activeInfo) => {
   chrome.tabs.get(activeInfo.tabId, (tab) => {
-    if (chrome.runtime.lastError || !tab || !tab.url || isRestrictedUrl(tab.url)) {
-      return;
-    }
-    chrome.tabs.sendMessage(activeInfo.tabId, { type: "EXTRACT_PAGE_DATA" }, (res) => {
-      if (chrome.runtime.lastError) return;
-      if (res && res.data) {
-        chrome.runtime.sendMessage({
-          type: "AUTO_PAGE_CONTEXT_UPDATED",
-          tabId: activeInfo.tabId,
-          data: res.data,
-        }, () => {
-          if (chrome.runtime.lastError) {}
-        });
-      }
-    });
+    if (chrome.runtime.lastError || !tab) return;
+    triggerPageDataExtraction(activeInfo.tabId, tab.url);
   });
 });
 
 // Auto-Extract when page finishes loading
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-  if (changeInfo.status === "complete" && tab && tab.url && !isRestrictedUrl(tab.url)) {
-    chrome.tabs.sendMessage(tabId, { type: "EXTRACT_PAGE_DATA" }, (res) => {
-      if (chrome.runtime.lastError) return;
-      if (res && res.data) {
-        chrome.runtime.sendMessage({
-          type: "AUTO_PAGE_CONTEXT_UPDATED",
-          tabId,
-          data: res.data,
-        }, () => {
-          if (chrome.runtime.lastError) {}
-        });
-      }
-    });
+  if (changeInfo.status === "complete" && tab && tab.url) {
+    triggerPageDataExtraction(tabId, tab.url);
   }
 });
 
+// Listen to SPA History Changes and Committed Navigations via webNavigation
+if (chrome.webNavigation) {
+  const onNavEvent = (details: chrome.webNavigation.WebNavigationTransitionCallbackDetails) => {
+    // Only handle top-level frame transitions
+    if (details.frameId === 0 && details.url) {
+      triggerPageDataExtraction(details.tabId, details.url);
+    }
+  };
+
+  chrome.webNavigation.onHistoryStateUpdated.addListener(onNavEvent);
+  chrome.webNavigation.onCommitted.addListener(onNavEvent);
+}
+
 // Message Hub
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+  // Handshake from Side Panel
+  if (request.type === "SIDE_PANEL_READY") {
+    const tabId = request.tabId || (sender.tab && sender.tab.id);
+    if (tabId) {
+      flushSidePanelQueue(tabId);
+    }
+    sendResponse({ status: "ACK" });
+    return true;
+  }
+
+  // Ping handler
+  if (request.type === "PING_BACKGROUND") {
+    sendResponse({ status: "PONG" });
+    return true;
+  }
+
+  // Check Restriction status
+  if (request.type === "CHECK_RESTRICTION") {
+    const check = checkPageRestriction(request.url);
+    sendResponse(check);
+    return true;
+  }
+
+  // Update Badge
   if (request.type === "UPDATE_BADGE") {
     const { score, tabId } = request;
     if (tabId !== undefined && score !== undefined) {
@@ -132,9 +243,25 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     return true;
   }
 
+  // Auto-capture Recording Badge Indicator
+  if (request.type === "SET_RECORDING_BADGE") {
+    const { isRecording, tabId } = request;
+    if (tabId !== undefined) {
+      if (isRecording) {
+        chrome.action.setBadgeText({ tabId, text: "REC" });
+        chrome.action.setBadgeBackgroundColor({ tabId, color: "#EF4444" });
+      } else {
+        chrome.action.setBadgeText({ tabId, text: "" });
+      }
+    }
+    sendResponse({ success: true });
+    return true;
+  }
+
   if (request.type === "OPEN_SIDEPANEL") {
     if (chrome.sidePanel && chrome.sidePanel.open && request.tabId) {
-      chrome.sidePanel.open({ tabId: request.tabId })
+      chrome.sidePanel
+        .open({ tabId: request.tabId })
         .then(() => sendResponse({ success: true }))
         .catch((e) => sendResponse({ success: false, error: String(e) }));
       return true;
