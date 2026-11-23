@@ -128,9 +128,9 @@ export interface CapturedWebSample {
 // ============================================================================
 
 // Tightened phone regex: requires separators or leading '+' prefix.
-// Prevents false-matching years (2024, 2026), prices ($100.00), or US ZIP codes (32413).
+// Supports international 2-4 digit area codes while preventing false matches on years (2024), prices ($100.00), or ZIP codes (32413).
 const PHONE_REGEX =
-  /(?:\+\d{1,3}[-.\s]?)?(?:\(\d{3}\)|\b\d{3})[-.\s]\d{3}[-.\s]\d{4}\b|\+\d{1,3}[-.\s]?\d{3}[-.\s]?\d{4,8}\b/g;
+  /(?:\+\d{1,3}[-.\s]?)?(?:\(\d{2,4}\)|\b\d{2,4})[-.\s]\d{3,4}[-.\s]\d{3,4}\b|\+\d{1,3}[-.\s]?\d{2,4}[-.\s]?\d{4,8}\b/g;
 
 // JWT Regex: 3 base64url segments separated by dots starting with eyJ
 const JWT_REGEX = /\beyJ[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\.[a-zA-Z0-9_-]{10,}\b/g;
