@@ -6,13 +6,17 @@ This document outlines the software architecture, design patterns, data contract
 
 ## 1. Architectural Overview & Design Principles
 
-Cogwheel SEO & GEO Studio is engineered as a hybrid web application and client-side browser side panel suite specifically tailored for multi-property hospitality portfolios (Marriott International, Hilton Worldwide, IHG Hotels & Resorts, Hyatt Hotels Corporation, and Independent Luxury Hotels).
+Cogwheel SEO & GEO Studio is engineered as an enterprise hybrid web application, client-side browser side panel suite, and offline machine learning pipeline tailored specifically for multi-property hospitality portfolios (**Marriott International, Hilton Worldwide, IHG Hotels & Resorts, Hyatt Hotels Corporation, and Independent Luxury Hotels**).
 
 ### Core Architectural Tenets
 - **Local-First & Offline Resilience**: Page inspection, pixel calculation, brand guardrail validation, and structured data generation run client-side without dependency on external third-party crawlers.
-- **Single Source of Truth (SSOT)**: A single canonical schema definition authored in TypeScript Zod (`src/schemas/`) compiles into standard JSON Schema Draft-7 files (`schemas/`) and Python 3.11+ Pydantic models (`scripts/python/models.py`), ensuring bidirectional contract consistency.
-- **Strict Deterministic Pixel Budgeting**: Character-width lookup tables based on Google SERP Arial typography replace rough character count heuristics with exact physical pixel measurements.
-- **Two-Layer Free Over-the-Air (OTA) Updates**: Decouples lightweight rule and keyword matrix updates (synced silently in the background) from binary extension updates (notified via badge and 1-click package download).
+- **Single Source of Truth (SSOT)**: A single canonical schema definition authored in TypeScript Zod (`src/schemas/`) compiles into standard JSON Schema Draft-7 files (`schemas/`) and Python 3.11+ Pydantic models (`scripts/python/models.py`), ensuring bidirectional contract consistency across web, extension, and automation layers.
+- **Strict Deterministic Pixel Budgeting**: Character-width lookup tables based on Google SERP Arial typography replace rough character count heuristics with exact physical pixel measurements (580px Title ceiling, 920px Meta Description ceiling).
+- **Two-Layer Free Over-the-Air (OTA) Updates**: Decouples lightweight rule and keyword matrix updates (synced silently in the background via GitHub raw endpoints) from binary extension updates (notified via badge alerts and 1-click package downloads).
+- **Universal Privacy-Preserving AI Training Harvest**: Non-destructive, read-only DOM capture coupled with an automated PII redaction engine (scrubbing emails, telephone numbers, IP addresses, credit cards, and URL auth query tokens) allows continuous collection of high-quality hospitality training data directly in the browser.
+- **Client-Side IndexedDB Training Vault**: Local, persistent storage (`CogwheelTrainingVaultDB`) with deterministic canonical URL hashing, quality score algorithms (0-100), and multi-format Supervised Fine-Tuning (SFT) dataset builders (Gemini JSONL, ChatML OpenAI/Unsloth, and Alpaca).
+- **Hybrid Inference & Automatic Fallback Routing**: Multi-provider inference router allowing properties to connect custom fine-tuned models (Google Cloud Vertex AI, fine-tuned Gemini, Ollama, vLLM, HuggingFace TGI) with seamless zero-latency fallback to Cogwheel's local deterministic rules engine.
+- **End-to-End Supervised Fine-Tuning (SFT) Pipeline**: Standalone Python pipeline (`scripts/python/fine_tune_pipeline.py`) providing dataset validation, deterministic 90/10 train-test splits, auto-generation of Unsloth/LoRA training scripts, and automated SERP/Schema accuracy benchmarking.
 
 ---
 
@@ -21,38 +25,54 @@ Cogwheel SEO & GEO Studio is engineered as a hybrid web application and client-s
 ```mermaid
 flowchart TD
     subgraph BrowserRuntime ["Browser Runtime (Chrome Manifest V3)"]
-        DOM["Active Hotel DOM"] --> ContentScript["Content Script (Inspector & Overlays)"]
-        ContentScript -->|"DOM Data Message"| SidePanel["Side Panel UI (React 18 + Vite)"]
+        DOM["Active Hotel Webpage DOM"] --> ContentInspector["Content Script: Inspector & Overlays"]
+        DOM --> TrainingCapture["Content Script: Training Capture & PII Sanitizer"]
         
-        subgraph SidePanelEngines ["Client-Side Audit Engines"]
+        ContentInspector -->|"Page Audit Message"| SidePanelUI["Side Panel React 18 Application"]
+        TrainingCapture -->|"Sanitized Raw Input"| TrainingVault["IndexedDB Training Vault (v2)"]
+        
+        subgraph SidePanelEngines ["Client-Side Audit & ML Engines"]
             PixelEngine["SERP Pixel Calculator (Arial 20px / 14px)"]
             BrandEngine["Brand Standards & Suffix Validator"]
             SchemaEngine["JSON-LD Graph Generator"]
-            ExportEngine["Client Deliverable Generator (HTML / JSON-LD / CSV)"]
+            ExportEngine["Deliverable Exporter (HTML / JSON-LD / CSV)"]
+            DatasetBuilder["SFT Dataset Builder (Gemini / ChatML / Alpaca)"]
+            ModelClient["Custom Model Client & Fallback Router"]
         end
 
-        SidePanel --> SidePanelEngines
-        ServiceWorker["Background Service Worker"] -->|"chrome.storage.local"| SidePanel
+        SidePanelUI --> SidePanelEngines
+        SidePanelEngines <--> TrainingVault
+        ServiceWorker["Background Service Worker"] -->|"chrome.storage.local"| SidePanelUI
     end
 
-    subgraph GitHubEcosystem ["GitHub Main Distribution"]
-        RemoteMatrix["78-Keyword Strategy Matrix (JSON)"]
-        RemoteOta["OTA Live Config & Scoring Weights (JSON)"]
-        RemoteManifest["manifest.json (SemVer)"]
-        ReleaseAssets["Release ZIP & updates.xml"]
+    subgraph RemoteCloudTier ["Remote Cloud & API Infrastructure"]
+        GitHubOTA["GitHub Main Distribution (OTA Rules & 78-KW Matrix)"]
+        GitHubReleases["GitHub Releases (Binary ZIP & updates.xml)"]
+        CogwheelAPI["Cogwheel Web App API (Direct Dataset Sync)"]
+        
+        subgraph InferenceProviders ["External & Local Model Inference"]
+            VertexAI["Google Vertex AI / Tuned Gemini"]
+            CustomREST["Custom REST Endpoints (vLLM / HuggingFace TGI)"]
+            OpenWeight["Local Open-Weight Server (Ollama / LoRA)"]
+        end
     end
 
-    subgraph PythonLayer ["Python 3.11+ Portfolio Automation"]
+    subgraph PythonLayer ["Python 3.11+ Automation & ML Pipeline"]
         BatchAuditor["Batch Portfolio Auditor CLI"]
-        SchemaValidator["Schema Validation CLI"]
-        PyModels["Pydantic Data Models"]
+        SchemaValidator["SSOT Schema Validation CLI"]
+        PyModels["Pydantic Data Models (models.py)"]
+        SftPipeline["Supervised Fine-Tuning Pipeline (fine_tune_pipeline.py)"]
+        LoRaConfigs["Unsloth & LoRA SFT Configurations"]
     end
 
-    ServiceWorker -->|"Layer A: 6h Alarm Sync"| RemoteMatrix
-    ServiceWorker -->|"Layer A: Scoring Weights"| RemoteOta
-    ServiceWorker -->|"Layer B: SemVer Check"| RemoteManifest
-    SidePanel -->|"1-Click Download"| ReleaseAssets
+    ServiceWorker -->|"Layer A: 6h Silent Sync"| GitHubOTA
+    ServiceWorker -->|"Layer B: SemVer Check"| GitHubReleases
+    DatasetBuilder -->|"HTTP POST (Bearer Auth)"| CogwheelAPI
+    ModelClient -->|"Tuned Inference"| InferenceProviders
+    ModelClient -.->|"Automatic Failover"| PixelEngine
 
+    TrainingVault -.->|"Export JSONL"| SftPipeline
+    SftPipeline --> LoRaConfigs
     BatchAuditor --> PyModels
     SchemaValidator --> PyModels
     PyModels -.->|"Mirrors"| SidePanelEngines
@@ -62,25 +82,41 @@ flowchart TD
 
 ## 3. Chrome Extension Architecture (Manifest V3)
 
-The extension is structured under modern Chrome Manifest V3 specifications:
+The browser extension is structured under Chrome Manifest V3 specifications to provide maximum performance, battery efficiency, and zero persistent background footprint:
 
-### 3.1 Content Script (`chrome-extension/src/content/index.ts`)
-- **Inspection Engine**: Extracts page title, meta description, canonical URL, heading hierarchy (`h1`, `h2`, `h3`), image dimensions and alt attributes, word counts, and existing JSON-LD `<script>` elements.
-- **Visual Overlays**: Highlights heading structures and image accessibility directly over the inspected page DOM without altering host styles.
-- **Execution Boundary**: Injected on-demand via `chrome.scripting.executeScript` when the user opens the side panel or clicks Refresh, avoiding persistent CPU overhead on background tabs.
+### 3.1 Content Script Layer (`chrome-extension/src/content/`)
+- **Inspection Engine (`index.ts`)**: Extracts page title, meta description, canonical URL, heading hierarchy (`h1`, `h2`, `h3`), image dimensions and alt attributes, word counts, and existing JSON-LD `<script>` elements.
+- **Visual Overlays**: Renders non-destructive DOM overlays highlighting heading structures and image accessibility directly over the inspected page without modifying host CSS stylesheets.
+- **Universal Training Extractor & PII Sanitizer (`training-capture.ts`)**:
+  - Runs in read-only mode to extract full DOM snapshots, structural headings, OpenGraph attributes, and body text.
+  - Automatically identifies and redacts sensitive PII:
+    - Email addresses (`[REDACTED_EMAIL]`)
+    - Telephone numbers across international and US formats (`[REDACTED_PHONE]`)
+    - Query parameters containing credentials, session tokens, or tracking IDs (`[REDACTED_QUERY]`)
+  - Packages cleaned data into typed `CapturedWebSample` payloads for training ingestion.
 
-### 3.2 Side Panel Application (`chrome-extension/src/sidepanel/SidePanelApp.tsx`)
-- **Framework**: React 18, TypeScript 5.5, Tailwind CSS, Lucide icons.
-- **State Management**: Reactive state tracking `pageData`, `scores`, `activeProfile`, and live editable overrides.
-- **Design Aesthetic**: Linear- and Vercel-inspired dark theme (`#09090B` canvas, `#111113` surface, `#27272A` borders, `tabular-nums` typography).
+### 3.2 Side Panel Application (`chrome-extension/src/sidepanel/`)
+- **Framework & Styling**: React 18, TypeScript 5.5, Tailwind CSS, Lucide icons, and Vite.
+- **Four Primary Tab Views**:
+  1. **Audit & Remediation**: Live SERP and Social Open Graph card previews, real-time pixel meters, and 1-click inline code diff patch fixers.
+  2. **Template Studio**: 78-keyword strategy matrix exploration, brand-specific rule applications, and direct "Capture for AI Training" action.
+  3. **Dataset Vault Manager (`DatasetVaultManager.tsx`)**: Full management interface for captured training pairs, quality score inspector, status approval filters, JSONL export modal, and direct Web App API synchronization.
+  4. **Settings & Brand Profiles (`SettingsBrandProfiles.tsx`)**: Property brand switching, API key configuration, custom fine-tuned model endpoint routing, temperature controls, and live latency connection testing.
 
 ### 3.3 Background Service Worker (`chrome-extension/src/background/auto-updater.ts`)
-- **Lifecycle Events**: Listens to `chrome.runtime.onInstalled`, `chrome.runtime.onStartup`, and `chrome.alarms` triggers.
-- **Alarm Cadence**: Executes `cogwheel_auto_update_check` every 360 minutes (6 hours).
+- **Lifecycle Triggers**: Reacts to `chrome.runtime.onInstalled`, `chrome.runtime.onStartup`, and `chrome.alarms`.
+- **Scheduled Cadence**: Executes `cogwheel_auto_update_check` every 360 minutes (6 hours).
+- **Non-Persistent**: Suspends from browser memory immediately upon completing background synchronization tasks.
+
+### 3.4 Persistent Storage Tier
+- **`chrome.storage.local`**: Stores active brand profiles, UI settings, OTA rule overrides, and cached keyword matrices.
+- **IndexedDB (`CogwheelTrainingVaultDB`)**: High-capacity local database housing curated training pairs, canonical URL hashes, multi-factor quality scores, and review statuses across browser sessions.
 
 ---
 
 ## 4. Two-Layer Free Auto-Update System
+
+The extension incorporates a zero-cost update mechanism operating over raw GitHub endpoints, eliminating manual deployment friction:
 
 ```mermaid
 sequenceDiagram
@@ -122,15 +158,15 @@ Standard character counting fails to reflect actual Google SERP truncation becau
 - Medium characters (`a`, `e`, `o`, digits): `9px - 10px`
 - Wide characters (`W`, `M`, `m`, em-dash `—`): `13px - 17px`
 
-The engine evaluates titles against the `580px` desktop limit and descriptions against the `920px` snippet limit.
+The engine evaluates titles against the `580px` desktop limit and descriptions against the `920px` snippet limit, calculating exact physical widths and remaining pixel buffers in real time.
 
 ### 5.2 Brand Guardrails Engine (`brandGuardrails.ts`)
 Enforces franchise standards across 5 major hospitality classifications:
-- **Marriott**: Enforces max 60-character titles, prohibited terms (`free breakfast`, `marriott rewards`, `bonvoy rewards`, `best hotel`, `cheapest rate`), and the mandatory suffix `Marriott Bonvoy`.
-- **Hilton**: Enforces max 60-character titles, prohibited terms (`free wifi`, `hilton hhonors`, `best rates in town`, `free cancellation`), and the mandatory suffix `Hilton Honors`.
-- **IHG**: Enforces max 60-character titles, prohibited terms (`ihg rewards club`, `best hotel`, `free breakfast`), and the mandatory suffix `IHG One Rewards`.
-- **Hyatt**: Enforces max 60-character titles, prohibited terms (`gold passport`, `cheapest rooms`, `free cancellation`), and the mandatory suffix `World of Hyatt`.
-- **Independent**: Enforces max 65-character titles, prohibited terms (`cheapest hotel in`, `100% satisfaction guaranteed`), and the mandatory suffix `Official Site`.
+- **Marriott Bonvoy**: Max 60-character titles, prohibited terms (`free breakfast`, `marriott rewards`, `bonvoy rewards`, `best hotel`, `cheapest rate`), and the mandatory suffix `Marriott Bonvoy`.
+- **Hilton Honors**: Max 60-character titles, prohibited terms (`free wifi`, `hilton hhonors`, `best rates in town`, `free cancellation`), and the mandatory suffix `Hilton Honors`.
+- **IHG One Rewards**: Max 60-character titles, prohibited terms (`ihg rewards club`, `best hotel`, `free breakfast`), and the mandatory suffix `IHG One Rewards`.
+- **World of Hyatt**: Max 60-character titles, prohibited terms (`gold passport`, `cheapest rooms`, `free cancellation`), and the mandatory suffix `World of Hyatt`.
+- **Independent Luxury**: Max 65-character titles, prohibited terms (`cheapest hotel in`, `100% satisfaction guaranteed`), and the mandatory suffix `Official Site`.
 
 ### 5.3 Multi-Format Deliverable Exporter (`auditExporters.ts`)
 - **Executive HTML Audit Report**: Self-contained HTML with print CSS, KPI scorecards, SERP previews, and remediation tables.
@@ -139,7 +175,128 @@ Enforces franchise standards across 5 major hospitality classifications:
 
 ---
 
-## 6. Single Source of Truth (SSOT) Data Architecture
+## 6. AI Training Data Vault & SFT Dataset Architecture
+
+The AI Training Data subsystem (`training-vault.ts` and `dataset-builder.ts`) bridges the gap between active browser auditing and enterprise model fine-tuning.
+
+```mermaid
+flowchart LR
+    subgraph Capture ["Data Harvesting"]
+        DOMScan["Active Webpage"] --> PiiSanitizer["PII Redaction Engine"]
+        PiiSanitizer --> HashCalc["SHA-256 Canonical Hash"]
+    end
+
+    subgraph VaultDB ["IndexedDB: CogwheelTrainingVaultDB (v2)"]
+        HashCalc --> Deduplication{"Exists in DB?"}
+        Deduplication -->|"No"| QualityScorer["Quality Scorer (0-100)"]
+        Deduplication -->|"Yes"| UpdateRecord["Update Existing Pair"]
+        QualityScorer --> StoreRecord["Store TrainingPairRecord"]
+    end
+
+    subgraph ExportSync ["Export & Integration Engine"]
+        StoreRecord --> Formatter["Dataset Builder"]
+        Formatter --> GeminiSFT["Google Gemini SFT (.jsonl)"]
+        Formatter --> ChatMLSFT["ChatML / Unsloth (.jsonl)"]
+        Formatter --> AlpacaSFT["Alpaca Format (.jsonl)"]
+        Formatter --> DirectSync["Cogwheel Web App API Sync"]
+    end
+```
+
+### 6.1 Deterministic Deduplication via Canonical URL Hash
+To prevent dataset contamination, canonical URLs are normalized and hashed using Web Crypto SHA-256:
+```typescript
+const normalized = canonicalUrl.trim().toLowerCase().replace(/^https?:\/\//, '').replace(/\/+$/, '');
+const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(normalized));
+```
+
+### 6.2 Multi-Factor Quality Scoring Algorithm (0-100)
+Every captured training pair is scored across four dimensions before approval:
+1. **Completeness (0-30 pts)**: Presence of title, meta description, H1, H2, and body content (>200 words).
+2. **Optimization Delta (0-30 pts)**: Quantified improvement in pixel budget fit and removal of brand-prohibited superlatives.
+3. **GEO Entity Depth (0-20 pts)**: Density of extracted hospitality entities (neighborhoods, transit, amenities, dining).
+4. **Schema.org Validity (0-20 pts)**: Clean, syntax-verified JSON-LD structured data graph without placeholder tokens.
+
+### 6.3 Supported Supervised Fine-Tuning Export Formats
+- **Google Gemini SFT**: Formatted with `systemInstruction` and multi-turn `contents` (`user` / `model`).
+- **ChatML / OpenAI / Unsloth**: Formatted with `messages` (`system`, `user`, `assistant`).
+- **Alpaca Format**: Formatted with `instruction`, `input`, and `output` keys.
+
+---
+
+## 7. Custom Model Inference & Automatic Fallback Engine
+
+The Custom Model Client (`src/engine/custom-model-client.ts`) provides a unified inference abstraction layer that allows agencies and enterprise portfolios to utilize proprietary fine-tuned weights for AI Auto-Fix and GEO Summarization while guaranteeing 100% operational uptime through deterministic fallback routing.
+
+```mermaid
+flowchart TD
+    UserAction["User Triggers Auto-Fix or GEO Suggestion"] --> ConfigCheck{"Custom Model Enabled?"}
+    
+    ConfigCheck -->|"No"| DeterministicRules["Deterministic Rule Engine (Local)"]
+    ConfigCheck -->|"Yes"| ModelRouter["Custom Model Client Router"]
+    
+    subgraph ProviderLadder ["Provider Execution Ladder"]
+        ModelRouter --> ProviderChoice{"Selected Provider"}
+        ProviderChoice -->|"tuned_gemini"| VertexCall["Google AI Studio / Vertex AI API"]
+        ProviderChoice -->|"custom_rest"| RestCall["Custom REST Endpoint (vLLM / TGI)"]
+        ProviderChoice -->|"open_weight"| LocalServer["Local Inference Server (Ollama)"]
+    end
+
+    VertexCall --> ResponseCheck{"Valid JSON Response?"}
+    RestCall --> ResponseCheck
+    LocalServer --> ResponseCheck
+
+    ResponseCheck -->|"Success"| ParseOutput["Parse and Validate TargetSeoGeoOutput"]
+    ResponseCheck -->|"Network / Syntax Failure"| FallbackLadder{"Fallback Enabled?"}
+    
+    FallbackLadder -->|"Yes"| DeterministicRules
+    FallbackLadder -->|"No"| ReturnError["Return Detailed Error"]
+    
+    ParseOutput --> UpdateUI["Render Optimized Suggestion in Side Panel"]
+    DeterministicRules --> UpdateUI
+```
+
+### 7.1 Multi-Provider Inference Architecture
+- **`tuned_gemini`**: Calls Google Generative AI endpoints (`tunedModels/*` or `gemini-1.5-*`) via Gemini REST API with Bearer token authentication and structured JSON output constraints.
+- **`custom_rest`**: Integrates with custom internal microservices or proxy servers passing standard JSON payloads.
+- **`open_weight`**: OpenAI-compatible format compatible with local Ollama instances (`http://localhost:11434/v1`), vLLM inference engines, or Hugging Face Text Generation Inference (TGI).
+
+### 7.2 Zero-Latency Fallback Routing
+When network errors, authentication failures, rate limits (HTTP 429), or malformed JSON responses occur, the client automatically catches the exception, records the failure metric, and seamlessly invokes `deterministicRuleFallback()` to generate brand-compliant recommendations instantly.
+
+---
+
+## 8. Python Supervised Fine-Tuning Pipeline (`fine_tune_pipeline.py`)
+
+For portfolio-scale model customization, the Python layer provides a complete fine-tuning pipeline for training specialized hospitality SEO models.
+
+```mermaid
+flowchart LR
+    JSONL["Exported JSONL Dataset"] --> Validation["Pydantic Ingestion & Token Validation"]
+    Validation --> Split["Deterministic 90/10 Train/Validation Split"]
+    
+    Split --> TrainSet["train.jsonl (90%)"]
+    Split --> ValSet["validation.jsonl (10%)"]
+    
+    TrainSet --> ScriptGen["Configuration Generator"]
+    
+    ScriptGen --> UnslothScript["Unsloth / LoRA Script (train_unsloth_lora.py)"]
+    ScriptGen --> VertexConfig["Google Vertex AI Tuning Job (vertex_tuning_job.py)"]
+    
+    ValSet --> Benchmarking["Evaluation Benchmark Module"]
+    UnslothScript -.->|"Tuned Weights"| Benchmarking
+    Benchmarking --> EvalReport["Accuracy Benchmark Report (SERP Pixels & Brand Caps)"]
+```
+
+### 8.1 Key Capabilities
+1. **Strict Pydantic Validation**: Validates JSON syntax, token lengths (up to 4096 tokens), and schema compliance against `TargetSeoGeoOutput`.
+2. **Deterministic 90/10 Split**: Partitions curated datasets into training and evaluation sets with reproducible random seeding.
+3. **Automated LoRA & Unsloth Script Generation**: Creates ready-to-run PyTorch scripts utilizing 4-bit QLoRA optimizations for open models (Llama 3, Mistral 7B) with PEFT configurations.
+4. **Vertex AI Job Provisioning**: Generates Google Cloud Python SDK scripts for launching remote Gemini tuning jobs.
+5. **Accuracy Benchmarking**: Compares base model predictions against tuned outputs on SERP pixel bounds, brand forbidden word evasion, and Schema.org syntax validity.
+
+---
+
+## 9. Single Source of Truth (SSOT) Data Architecture
 
 Data models and schemas are synchronized across TypeScript and Python:
 
@@ -148,17 +305,24 @@ src/schemas/validation.ts (TypeScript Zod Canonical Source)
   │
   ├──> scripts/export-json-schemas.ts
   │      └──> schemas/*.schema.json (JSON Schema Draft-7)
+  │             ├── keyword-matrix.schema.json
+  │             ├── brand-guardrails.schema.json
+  │             ├── audit-payload.schema.json
+  │             ├── page-audit-data.schema.json
+  │             └── ota-config.schema.json
   │
   └──> scripts/python/models.py (Python 3.11+ Pydantic Models)
          ├──> scripts/python/validate_schemas.py
-         └──> scripts/python/batch_portfolio_audit.py
+         ├──> scripts/python/batch_portfolio_audit.py
+         └──> scripts/python/fine_tune_pipeline.py (SFT Pydantic Schemas)
 ```
 
 ---
 
-## 7. Security, Sandboxing & CSP Governance
+## 10. Security, Sandboxing, Privacy & CSP Governance
 
-- **Content Security Policy (CSP)**: Extension operates under Manifest V3 restrictions; script execution is strictly local (`'self'`), disallowing remote `eval` or unsanctioned script injections.
-- **XSS Sanitization**: Attribute and HTML escaping utilities protect exported deliverables and DOM overlay viewers against script injection.
-- **Network Permissions**: Restricted to `https://raw.githubusercontent.com/*` and `https://api.github.com/*` exclusively for OTA rule synchronization and SemVer checking.
-- **Zero Host Mutation**: The DOM inspector performs read-only audits; non-destructive overlays are scoped with isolated inline styles and easily dismissed.
+- **Content Security Policy (CSP)**: Extension operates under strict Manifest V3 restrictions; script execution is strictly local (`'self'`), disallowing remote `eval` or unsanctioned script injections.
+- **PII Zero-Leak Policy**: All DOM scraping and dataset harvesting operations pass through `sanitizeTextAndRedactPii()` prior to persisting into IndexedDB or sending over network pipes.
+- **Credential & API Key Isolation**: Inference API keys and bearer tokens are stored strictly within the user's local `chrome.storage.local` environment and are never transmitted to analytics or telemetry endpoints.
+- **Read-Only DOM Boundaries**: The DOM inspector performs non-mutating page queries; visual overlays use isolated elements that cannot manipulate host page form inputs or capture keystrokes.
+- **Network Permissions**: Restricted to explicit endpoints (`raw.githubusercontent.com`, `api.github.com`, configured custom inference hosts, and user-specified API sync endpoints).

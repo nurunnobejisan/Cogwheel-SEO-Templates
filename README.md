@@ -26,38 +26,54 @@ The suite combines real-time physical pixel budgeting (Arial 20px / 14px), autom
 ```mermaid
 flowchart TD
     subgraph BrowserRuntime ["Browser Runtime (Chrome Manifest V3)"]
-        DOM["Active Hotel DOM"] --> ContentScript["Content Script (Inspector & Overlays)"]
-        ContentScript -->|"DOM Data Message"| SidePanel["Side Panel UI (React 18 + Vite)"]
+        DOM["Active Hotel Webpage DOM"] --> ContentInspector["Content Script: Inspector & Overlays"]
+        DOM --> TrainingCapture["Content Script: Training Capture & PII Sanitizer"]
         
-        subgraph SidePanelEngines ["Client-Side Audit Engines"]
+        ContentInspector -->|"Page Audit Message"| SidePanelUI["Side Panel React 18 Application"]
+        TrainingCapture -->|"Sanitized Raw Input"| TrainingVault["IndexedDB Training Vault (v2)"]
+        
+        subgraph SidePanelEngines ["Client-Side Audit & ML Engines"]
             PixelEngine["SERP Pixel Calculator (Arial 20px / 14px)"]
             BrandEngine["Brand Standards & Suffix Validator"]
             SchemaEngine["JSON-LD Graph Generator"]
-            ExportEngine["Client Deliverable Generator (HTML / JSON-LD / CSV)"]
+            ExportEngine["Deliverable Exporter (HTML / JSON-LD / CSV)"]
+            DatasetBuilder["SFT Dataset Builder (Gemini / ChatML / Alpaca)"]
+            ModelClient["Custom Model Client & Fallback Router"]
         end
 
-        SidePanel --> SidePanelEngines
-        ServiceWorker["Background Service Worker"] -->|"chrome.storage.local"| SidePanel
+        SidePanelUI --> SidePanelEngines
+        SidePanelEngines <--> TrainingVault
+        ServiceWorker["Background Service Worker"] -->|"chrome.storage.local"| SidePanelUI
     end
 
-    subgraph GitHubEcosystem ["GitHub Main Distribution"]
-        RemoteMatrix["78-Keyword Strategy Matrix (JSON)"]
-        RemoteOta["OTA Live Config & Scoring Weights (JSON)"]
-        RemoteManifest["manifest.json (SemVer)"]
-        ReleaseAssets["Release ZIP & updates.xml"]
+    subgraph RemoteCloudTier ["Remote Cloud & API Infrastructure"]
+        GitHubOTA["GitHub Main Distribution (OTA Rules & 78-KW Matrix)"]
+        GitHubReleases["GitHub Releases (Binary ZIP & updates.xml)"]
+        CogwheelAPI["Cogwheel Web App API (Direct Dataset Sync)"]
+        
+        subgraph InferenceProviders ["External & Local Model Inference"]
+            VertexAI["Google Vertex AI / Tuned Gemini"]
+            CustomREST["Custom REST Endpoints (vLLM / HuggingFace TGI)"]
+            OpenWeight["Local Open-Weight Server (Ollama / LoRA)"]
+        end
     end
 
-    subgraph PythonLayer ["Python 3.11+ Portfolio Automation"]
+    subgraph PythonLayer ["Python 3.11+ Automation & ML Pipeline"]
         BatchAuditor["Batch Portfolio Auditor CLI"]
-        SchemaValidator["Schema Validation CLI"]
-        PyModels["Pydantic Data Models"]
+        SchemaValidator["SSOT Schema Validation CLI"]
+        PyModels["Pydantic Data Models (models.py)"]
+        SftPipeline["Supervised Fine-Tuning Pipeline (fine_tune_pipeline.py)"]
+        LoRaConfigs["Unsloth & LoRA SFT Configurations"]
     end
 
-    ServiceWorker -->|"Layer A: 6h Alarm Sync"| RemoteMatrix
-    ServiceWorker -->|"Layer A: Scoring Weights"| RemoteOta
-    ServiceWorker -->|"Layer B: SemVer Check"| RemoteManifest
-    SidePanel -->|"1-Click Download"| ReleaseAssets
+    ServiceWorker -->|"Layer A: 6h Silent Sync"| GitHubOTA
+    ServiceWorker -->|"Layer B: SemVer Check"| GitHubReleases
+    DatasetBuilder -->|"HTTP POST (Bearer Auth)"| CogwheelAPI
+    ModelClient -->|"Tuned Inference"| InferenceProviders
+    ModelClient -.->|"Automatic Failover"| PixelEngine
 
+    TrainingVault -.->|"Export JSONL"| SftPipeline
+    SftPipeline --> LoRaConfigs
     BatchAuditor --> PyModels
     SchemaValidator --> PyModels
     PyModels -.->|"Mirrors"| SidePanelEngines
@@ -76,6 +92,11 @@ For complete technical specifications, review the [Architecture Guide](docs/ARCH
 | **GEO AI Citation Scorer** | `cogwheelTemplates.ts` | Evaluates entity density, content depth (450+ words), structured Q&A, and `FAQPage` schema presence. | Positions hotel web pages as authoritative sources in Google Gemini Overviews and ChatGPT Search. |
 | **JSON-LD Entity Graph Builder** | `auditExporters.ts` | Synthesizes Schema.org `@graph` with `Hotel`, `PostalAddress`, `GeoCoordinates`, `amenityFeature`, and `FAQPage`. | Eliminates rich snippet validation errors in Google Search Console. |
 | **Client-Ready Deliverable Exports** | `ExportAuditDropdown.tsx` | Generates 3 deliverables: Executive HTML Audit Report (print-ready), Copy-Ready JSON-LD Package, and Portfolio CSV Export. | Saves 3+ hours per property in client reporting and developer handoffs. |
+| **Universal DOM Capture & PII Sanitizer** | `training-capture.ts` | Read-only DOM harvester with automated regex redaction of emails, phones, and URL auth query tokens into `CapturedWebSample` payloads. | Zero data-leakage harvesting of real-world hotel pages for AI fine-tuning. |
+| **IndexedDB AI Training Vault** | `training-vault.ts` | Client-side database (`CogwheelTrainingVaultDB`) with canonical URL hashing, quality scoring (0-100), and review workflow. | Build proprietary hospitality SEO training sets without external infrastructure. |
+| **SFT Dataset Builder & API Sync** | `dataset-builder.ts` | Formats training pairs into Google Gemini SFT (.jsonl), ChatML OpenAI/Unsloth (.jsonl), and Alpaca formats, with direct Web App API sync. | Eliminates manual data preparation for model fine-tuning runs. |
+| **Custom Model Inference & Fallback Router** | `custom-model-client.ts` | Multi-provider client (Tuned Gemini, Custom REST, Ollama/vLLM) with zero-latency failover to deterministic local rules. | Deploy custom-trained hospitality models with 100% guaranteed uptime and reliability. |
+| **Python SFT & LoRA Pipeline** | `fine_tune_pipeline.py` | Pydantic validation, deterministic 90/10 train-val split, auto-generation of Unsloth/LoRA scripts and Vertex AI configs, and SERP benchmarking. | Enables repeatable, enterprise-grade LLM fine-tuning across hotel portfolios. |
 | **Two-Layer Free Auto-Updater** | `auto-updater.ts` | Background Manifest V3 service worker executing Layer A silent OTA data sync and Layer B SemVer binary update alerts. | Zero-maintenance client extension without requiring Chrome Web Store republishing. |
 | **Python Batch Portfolio CLI** | `scripts/python/` | CLI taking URLs or CSV input, evaluating On-Page, Schema, and GEO readiness, and outputting executive CSV reports. | Enables agency-wide batch auditing across 50+ hotel properties in minutes. |
 
@@ -141,6 +162,9 @@ The repository includes a comprehensive 78-keyword hospitality strategy matrix a
 ### In-App Workflows
 - **Live SERP & Social Preview**: Toggle between Desktop SERP (580px limit), Mobile SERP (narrower thresholds with favicon), and Social Open Graph card previews.
 - **Instant Code Remediation**: Click **Fix ->** on any flagged audit issue to view an inline code diff preview with a 1-click **Copy Patch** button.
+- **AI Training Data Harvesting & Vault**: Click **Capture for AI Training** in Template Studio to capture PII-sanitized DOM pairs, evaluate quality scores (0-100), and curate fine-tuning datasets in the **Dataset** tab.
+- **Multi-Format Dataset Export & API Sync**: Export curated pairs to Google Gemini SFT (.jsonl), ChatML/Unsloth (.jsonl), or Alpaca formats, or sync directly to the Cogwheel Web App API via Bearer token authentication.
+- **Custom Model Inference & Fallback**: Configure custom fine-tuned model endpoints (Tuned Gemini, Custom REST, Ollama/vLLM) in **Settings** with automated fallback to Cogwheel's deterministic rules engine.
 - **Export Audit Deliverables**: Click **Export** in the top header to generate client-ready Executive HTML reports, copy-ready JSON-LD snippets, or portfolio CSV rows.
 
 ---
@@ -153,7 +177,7 @@ The repository includes a comprehensive 78-keyword hospitality strategy matrix a
 npm run typecheck
 cd chrome-extension && npx tsc --noEmit && cd ..
 
-# 2. Run Vitest test suite (108 tests passing across 26 suites)
+# 2. Run Vitest test suite (122 tests passing across 28 suites)
 npm test
 
 # 3. Build Next.js production web application
@@ -170,6 +194,17 @@ python3 scripts/python/validate_schemas.py
 python3 scripts/python/batch_portfolio_audit.py \
   --urls "https://www.marriott.com/hotel-a" "https://www.hilton.com/hotel-b" \
   --output-csv portfolio_audit_results.csv
+```
+
+### Python Supervised Fine-Tuning (SFT) & LoRA Pipeline
+```bash
+# Validate SFT dataset, generate 90/10 split, and create Unsloth / LoRA training scripts
+python3 scripts/python/fine_tune_pipeline.py \
+  --dataset dataset.jsonl \
+  --format chatml \
+  --output-dir ./fine_tune_output \
+  --generate-scripts \
+  --benchmark
 ```
 
 ---
