@@ -28,6 +28,7 @@ import { CopyFixedCodeDrawer } from "../components/CopyFixedCodeDrawer";
 import { ExportAuditDropdown } from "../components/ExportAuditDropdown";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
+import { generateSeoAutoFix } from "../engine/custom-model-client";
 
 export function SidePanelApp() {
   const [activeTab, setActiveTab] = useState<
@@ -200,9 +201,22 @@ export function SidePanelApp() {
   };
 
   // Interactive Auto-Fix Handler
-  const handleFixIssue = (win: QuickWinItem) => {
+  const handleFixIssue = async (win: QuickWinItem) => {
+    const hotelName = pageData.h1Elements[0] || activeProfile.name || "SpringHill Suites Panama City Beachfront";
+    const brand = activeProfile.brand || "Marriott";
+    const canonicalUrl = pageData.canonical || pageData.url || "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/";
+
+    const fixResult = await generateSeoAutoFix({
+      issueId: win.id,
+      hotelName,
+      brand,
+      canonicalUrl,
+      pageTitle: pageData.title,
+      pageMeta: pageData.metaDesc,
+    });
+
     if (win.id === "title-len") {
-      const optimalTitle = "Beachfront Hotel Panama City Beach | SpringHill Suites";
+      const optimalTitle = fixResult.optimalTitle || "Beachfront Hotel Panama City Beach | SpringHill Suites";
       const px = calculatePixelWidth(optimalTitle);
       setPageData((prev) => ({
         ...prev,
@@ -211,14 +225,14 @@ export function SidePanelApp() {
       }));
       setFixedDrawer({
         isOpen: true,
-        issueTitle: "Title Length Optimization Applied",
-        issueCategory: "Title length",
-        description: `Consolidated title to 54 characters (${px}px within 580px Google SERP ceiling).`,
-        codeSnippet: `<title>${optimalTitle}</title>`,
-        language: "html",
+        issueTitle: fixResult.issueTitle,
+        issueCategory: fixResult.issueCategory,
+        description: fixResult.description,
+        codeSnippet: fixResult.codeSnippet,
+        language: fixResult.language,
       });
     } else if (win.id === "meta-len") {
-      const optimalMeta = "Book direct at SpringHill Suites Panama City Beach for oceanfront suites, lazy river pool, free hot breakfast, and lowest rates guaranteed on Gulf Coast.";
+      const optimalMeta = fixResult.optimalMeta || "Book direct at SpringHill Suites Panama City Beach for oceanfront suites, lazy river pool, free hot breakfast, and lowest rates guaranteed on Gulf Coast.";
       const px = calculatePixelWidth(optimalMeta);
       setPageData((prev) => ({
         ...prev,
@@ -227,15 +241,14 @@ export function SidePanelApp() {
       }));
       setFixedDrawer({
         isOpen: true,
-        issueTitle: "Meta Description Optimization Applied",
-        issueCategory: "Meta description",
-        description: `Drafted compliant meta description at 152 characters (${px}px within 920px ceiling).`,
-        codeSnippet: `<meta name="description" content="${optimalMeta}" />`,
-        language: "html",
+        issueTitle: fixResult.issueTitle,
+        issueCategory: fixResult.issueCategory,
+        description: fixResult.description,
+        codeSnippet: fixResult.codeSnippet,
+        language: fixResult.language,
       });
     } else if (win.id === "canonical-h1") {
-      const canonicalUrl = "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/";
-      const singleH1 = "SpringHill Suites Panama City Beachfront";
+      const singleH1 = fixResult.optimalH1 || "SpringHill Suites Panama City Beachfront";
       setPageData((prev) => ({
         ...prev,
         canonical: canonicalUrl,
@@ -243,11 +256,11 @@ export function SidePanelApp() {
       }));
       setFixedDrawer({
         isOpen: true,
-        issueTitle: "Canonical URL & H1 Hierarchy Applied",
-        issueCategory: "Canonical/H1",
-        description: "Enforced self-referencing canonical URL and consolidated page heading to single H1.",
-        codeSnippet: `<!-- Self-Referencing Canonical Tag -->\n<link rel="canonical" href="${canonicalUrl}" />\n\n<!-- Single Primary H1 Heading Tag -->\n<h1 class="hotel-primary-headline">${singleH1}</h1>`,
-        language: "html",
+        issueTitle: fixResult.issueTitle,
+        issueCategory: fixResult.issueCategory,
+        description: fixResult.description,
+        codeSnippet: fixResult.codeSnippet,
+        language: fixResult.language,
       });
     } else if (win.id === "schema-hotel-missing") {
       const hotelSchema = {
@@ -301,10 +314,10 @@ export function SidePanelApp() {
 
       setFixedDrawer({
         isOpen: true,
-        issueTitle: "Hotel Schema Markup Injected",
-        issueCategory: "Missing JSON-LD Schema",
-        description: "Injected valid Schema.org/Hotel structured data with coordinates, amenities, and contact points.",
-        codeSnippet: jsonSnippet,
+        issueTitle: fixResult.source === "custom_tuned_model" ? fixResult.issueTitle : "Hotel Schema Markup Injected",
+        issueCategory: fixResult.issueCategory,
+        description: fixResult.source === "custom_tuned_model" ? fixResult.description : "Injected valid Schema.org/Hotel structured data with coordinates, amenities, and contact points.",
+        codeSnippet: fixResult.source === "custom_tuned_model" ? fixResult.codeSnippet : jsonSnippet,
         language: "json",
       });
     } else if (win.id === "og-missing") {
@@ -326,10 +339,10 @@ export function SidePanelApp() {
 
       setFixedDrawer({
         isOpen: true,
-        issueTitle: "Social Open Graph Tags Injected",
-        issueCategory: "Open Graph tags",
-        description: "Generated complete Open Graph and Twitter Card tags for high-CTR social previews.",
-        codeSnippet: snippet,
+        issueTitle: fixResult.source === "custom_tuned_model" ? fixResult.issueTitle : "Social Open Graph Tags Injected",
+        issueCategory: fixResult.issueCategory,
+        description: fixResult.source === "custom_tuned_model" ? fixResult.description : "Generated complete Open Graph and Twitter Card tags for high-CTR social previews.",
+        codeSnippet: fixResult.source === "custom_tuned_model" ? fixResult.codeSnippet : snippet,
         language: "html",
       });
     } else if (win.id === "geo-ai-readiness") {
@@ -383,10 +396,10 @@ export function SidePanelApp() {
 
       setFixedDrawer({
         isOpen: true,
-        issueTitle: "GEO AI Knowledge & FAQ Injected",
-        issueCategory: "GEO AI Readiness",
-        description: "Injected structured FAQPage schema and expanded content depth to 680 words for AI Overviews.",
-        codeSnippet: jsonSnippet,
+        issueTitle: fixResult.source === "custom_tuned_model" ? fixResult.issueTitle : "GEO AI Knowledge & FAQ Injected",
+        issueCategory: fixResult.issueCategory,
+        description: fixResult.source === "custom_tuned_model" ? fixResult.description : "Injected structured FAQPage schema and expanded content depth to 680 words for AI Overviews.",
+        codeSnippet: fixResult.source === "custom_tuned_model" ? fixResult.codeSnippet : jsonSnippet,
         language: "json",
       });
     } else {

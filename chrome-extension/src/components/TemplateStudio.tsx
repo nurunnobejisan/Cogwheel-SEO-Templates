@@ -20,6 +20,7 @@ import { CogwheelTemplate, PageAuditData, ClientProfile } from "../types/extensi
 import { calculatePixelWidth, TITLE_PIXEL_LIMIT, META_DESC_PIXEL_LIMIT } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
 import { saveTrainingPair } from "../storage/training-vault";
+import { generateGeoSummary } from "../engine/custom-model-client";
 import {
   BrandGuardrail,
   BrandRules,
@@ -79,6 +80,33 @@ export function TemplateStudio({
   const [showFullCode, setShowFullCode] = useState(false);
   const [copiedExport, setCopiedExport] = useState(false);
   const [capturedStatus, setCapturedStatus] = useState<string | null>(null);
+  const [generatingGeo, setGeneratingGeo] = useState(false);
+  const [geoFeedback, setGeoFeedback] = useState<string | null>(null);
+
+  const handleGenerateGeoSummary = async () => {
+    setGeneratingGeo(true);
+    setGeoFeedback(null);
+    try {
+      const res = await generateGeoSummary({
+        hotelName: liveH1 || "SpringHill Suites Panama City Beachfront",
+        brand: activeGuardrail.name,
+        amenities: pageData?.extractedAmenities,
+        pageContent: pageData?.metaDesc,
+      });
+      setLiveGeoAnswer(res.geoSummary);
+      setGeoFeedback(
+        res.source === "custom_tuned_model"
+          ? `Tuned Model Generated (${res.modelIdentifier || "Custom Model"})`
+          : "Default Template Generated"
+      );
+      setTimeout(() => setGeoFeedback(null), 3000);
+    } catch {
+      setGeoFeedback("Generation Failed");
+      setTimeout(() => setGeoFeedback(null), 3000);
+    } finally {
+      setGeneratingGeo(false);
+    }
+  };
 
   const handleCaptureForAiTraining = async () => {
     try {
@@ -671,9 +699,25 @@ export function TemplateStudio({
             <label className="font-bold text-slate-700 dark:text-slate-300">
               GEO Entity Answer Block (Gemini &amp; ChatGPT Knowledge Target)
             </label>
-            <span className="text-[10px] text-slate-400">
-              {liveGeoAnswer.split(/\s+/).filter(Boolean).length} words
-            </span>
+            <div className="flex items-center gap-2">
+              {geoFeedback && (
+                <span className="text-[10px] font-semibold text-emerald-400">
+                  {geoFeedback}
+                </span>
+              )}
+              <button
+                type="button"
+                onClick={handleGenerateGeoSummary}
+                disabled={generatingGeo}
+                className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-bold text-emerald-600 shadow-xs hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:bg-slate-800 dark:text-emerald-400 dark:hover:bg-slate-700 transition"
+              >
+                <Sparkles className={`h-3 w-3 ${generatingGeo ? "animate-spin" : ""}`} />
+                <span>{generatingGeo ? "Generating..." : "Generate GEO Summary"}</span>
+              </button>
+              <span className="text-[10px] text-slate-400">
+                {liveGeoAnswer.split(/\s+/).filter(Boolean).length} words
+              </span>
+            </div>
           </div>
           <textarea
             rows={3}

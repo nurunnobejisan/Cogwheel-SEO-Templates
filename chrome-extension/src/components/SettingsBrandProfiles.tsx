@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Moon,
   Sun,
@@ -11,9 +11,25 @@ import {
   ShieldCheck,
   Building2,
   Sparkles,
+  Cpu,
+  Lock,
+  Eye,
+  EyeOff,
+  RefreshCw,
+  CheckCircle2,
+  AlertCircle,
+  Globe,
 } from "lucide-react";
 import { PRESET_CLIENT_PROFILES } from "../data/cogwheelTemplates";
 import { ClientProfile } from "../types/extension";
+import {
+  CustomModelConfig,
+  DEFAULT_CUSTOM_MODEL_CONFIG,
+  getCustomModelConfig,
+  saveCustomModelConfig,
+  testCustomModelConnection,
+  ModelConnectionTestResult,
+} from "../engine/custom-model-client";
 
 interface Props {
   activeProfile: ClientProfile;
@@ -109,6 +125,34 @@ export function SettingsBrandProfiles({
     onSelectProfile(profileForm);
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  // Custom Fine-Tuned Model Configuration State
+  const [modelConfig, setModelConfig] = useState<CustomModelConfig>(DEFAULT_CUSTOM_MODEL_CONFIG);
+  const [showApiKey, setShowApiKey] = useState(false);
+  const [testingModel, setTestingModel] = useState(false);
+  const [testResult, setTestResult] = useState<ModelConnectionTestResult | null>(null);
+  const [modelSavedToast, setModelSavedToast] = useState(false);
+
+  useEffect(() => {
+    getCustomModelConfig().then((cfg) => setModelConfig(cfg));
+  }, []);
+
+  const handleSaveModelConfig = async () => {
+    await saveCustomModelConfig(modelConfig);
+    setModelSavedToast(true);
+    setTimeout(() => setModelSavedToast(false), 2500);
+  };
+
+  const handleTestModelConnection = async () => {
+    setTestingModel(true);
+    setTestResult(null);
+    try {
+      const res = await testCustomModelConnection(modelConfig);
+      setTestResult(res);
+    } finally {
+      setTestingModel(false);
+    }
   };
 
   // Generate Hotel-Optimized llms.txt
@@ -510,7 +554,178 @@ export function SettingsBrandProfiles({
         </div>
       </div>
 
-      {/* 6. THEME TOGGLE */}
+      {/* 6. FINE-TUNED MODEL INFERENCE & ROUTING */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70 space-y-3">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
+          <div className="flex items-center gap-2">
+            <Cpu className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              CUSTOM FINE-TUNED MODEL INFERENCE
+            </span>
+          </div>
+          <span
+            className={`rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider ${
+              modelConfig.enabled
+                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"
+            }`}
+          >
+            {modelConfig.enabled ? "Active" : "Disabled"}
+          </span>
+        </div>
+
+        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+          Route all Auto-Fix, Headline, and GEO Knowledge generation actions through your fine-tuned model (e.g., Vertex AI / tuned Gemini or custom REST API). Includes zero-latency fallback to default rules.
+        </p>
+
+        {/* Enabled Toggle */}
+        <label className="flex items-center gap-2 cursor-pointer pt-1">
+          <input
+            type="checkbox"
+            checked={modelConfig.enabled}
+            onChange={(e) => setModelConfig({ ...modelConfig, enabled: e.target.checked })}
+            className="rounded border-slate-300 dark:border-slate-700 text-emerald-500 focus:ring-0"
+          />
+          <span className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+            Enable Fine-Tuned Model for Auto-Fix &amp; GEO Actions
+          </span>
+        </label>
+
+        {/* Configuration Fields */}
+        <div className="space-y-3 pt-1">
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+              MODEL PROVIDER / INFERENCE TARGET
+            </label>
+            <select
+              value={modelConfig.provider}
+              onChange={(e) =>
+                setModelConfig({
+                  ...modelConfig,
+                  provider: e.target.value as "tuned_gemini" | "custom_rest" | "open_weight",
+                })
+              }
+              className="mt-1 h-8 w-full rounded-xl border border-slate-200 bg-white px-2.5 text-xs text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+            >
+              <option value="tuned_gemini">Google Vertex AI / Gemini Tuned Model</option>
+              <option value="custom_rest">Custom REST / Webhook API Endpoint</option>
+              <option value="open_weight">Open-Weight LoRA Server (vLLM / TGI)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+              MODEL ENDPOINT ID OR URL
+            </label>
+            <input
+              type="text"
+              placeholder={
+                modelConfig.provider === "tuned_gemini"
+                  ? "tunedModels/hospitality-seo-v1"
+                  : "https://api.myhotelapp.com/v1/generate"
+              }
+              value={modelConfig.endpointId}
+              onChange={(e) => setModelConfig({ ...modelConfig, endpointId: e.target.value })}
+              className="mt-1 h-8 w-full rounded-xl border border-slate-200 bg-white px-2.5 font-mono text-xs text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+            />
+          </div>
+
+          <div>
+            <label className="text-[10px] font-bold text-slate-500 dark:text-slate-400">
+              API KEY OR BEARER TOKEN
+            </label>
+            <div className="relative mt-1">
+              <input
+                type={showApiKey ? "text" : "password"}
+                placeholder="AIzaSy... or Bearer Token"
+                value={modelConfig.apiKey}
+                onChange={(e) => setModelConfig({ ...modelConfig, apiKey: e.target.value })}
+                className="h-8 w-full rounded-xl border border-slate-200 bg-white pl-8 pr-9 font-mono text-xs text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
+              />
+              <Lock className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
+              <button
+                type="button"
+                onClick={() => setShowApiKey(!showApiKey)}
+                className="absolute right-2.5 top-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+              >
+                {showApiKey ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+              </button>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between pt-1">
+            <label className="flex items-center gap-1.5 cursor-pointer text-xs text-slate-600 dark:text-slate-400">
+              <input
+                type="checkbox"
+                checked={modelConfig.fallbackToDefault}
+                onChange={(e) =>
+                  setModelConfig({ ...modelConfig, fallbackToDefault: e.target.checked })
+                }
+                className="rounded border-slate-300 dark:border-slate-700 text-emerald-500 focus:ring-0"
+              />
+              <span className="text-[11px]">Automatic fallback to default rules on error</span>
+            </label>
+          </div>
+
+          {/* Test & Save Action Buttons */}
+          <div className="flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800 gap-2">
+            <button
+              type="button"
+              onClick={handleTestModelConnection}
+              disabled={testingModel || !modelConfig.endpointId.trim()}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200"
+            >
+              <RefreshCw className={`h-3 w-3 ${testingModel ? "animate-spin" : ""}`} />
+              <span>{testingModel ? "Testing Endpoint..." : "Test Connection"}</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={handleSaveModelConfig}
+              className="inline-flex items-center gap-1.5 rounded-xl bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white hover:bg-slate-800 dark:bg-emerald-500 dark:text-slate-950 dark:hover:bg-emerald-400"
+            >
+              {modelSavedToast ? (
+                <>
+                  <Check className="h-3.5 w-3.5 text-emerald-400 dark:text-slate-950" />
+                  <span>Config Saved</span>
+                </>
+              ) : (
+                <>
+                  <Save className="h-3.5 w-3.5" />
+                  <span>Save Model Config</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Connection Test Feedback Result */}
+          {testResult && (
+            <div
+              className={`rounded-xl border p-3 text-xs ${
+                testResult.success
+                  ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-300"
+                  : "border-rose-500/20 bg-rose-500/10 text-rose-300"
+              }`}
+            >
+              <div className="flex items-center gap-2 font-semibold">
+                {testResult.success ? (
+                  <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+                ) : (
+                  <AlertCircle className="h-4 w-4 text-rose-400" />
+                )}
+                <span>{testResult.message}</span>
+              </div>
+              {testResult.sampleOutput && (
+                <div className="mt-1.5 font-mono text-[10px] text-slate-400 truncate">
+                  Output: {testResult.sampleOutput}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 7. THEME TOGGLE */}
       <div className="flex items-center justify-between rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70">
         <div>
           <h4 className="text-xs font-bold text-slate-900 dark:text-white">Appearance &amp; Theme</h4>
