@@ -166,7 +166,7 @@ def validate_and_parse_line(raw_line: str, line_number: int) -> LineValidationRe
         )
 
     token_count = estimate_tokens(raw_line)
-    format_type: Literal["gemini", "chatml", "unknown"] = "unknown"
+    format_type: Literal["gemini", "chatml", "raw_sample", "unknown"] = "unknown"
     brand = "Independent"
 
     # 1. Check if Gemini format
@@ -336,7 +336,7 @@ def validate_dataset_file(
     invalid_count = total_lines - valid_count
 
     formats = {r.format_type for r in line_results if r.format_type != "unknown"}
-    detected_format: Literal["gemini", "chatml", "mixed", "unknown"]
+    detected_format: Literal["gemini", "chatml", "raw_sample", "mixed", "unknown"]
     if len(formats) == 1:
         detected_format = next(iter(formats))
     elif len(formats) > 1:
