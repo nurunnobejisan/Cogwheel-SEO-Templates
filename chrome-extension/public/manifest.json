@@ -16,6 +16,8 @@
     "tabs",
     "scripting",
     "storage",
+    "unlimitedStorage",
+    "webNavigation",
     "alarms",
     "contextMenus"
   ],
@@ -34,6 +36,10 @@
     },
     "default_title": "Cogwheel SEO Studio"
   },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "side_panel": {
     "default_path": "sidepanel.html"
   },
@@ -44,7 +50,10 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js"]
+      "js": ["content.js"],
+      "all_frames": true,
+      "match_about_blank": true,
+      "run_at": "document_idle"
     }
   ]
 }

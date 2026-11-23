@@ -40,11 +40,7 @@ jobs:
       - name: Read Extension Version from manifest.json
         id: meta
         run: |
-          if [ -f "./manifest.json" ]; then
-            VERSION=$(node -p "require('./manifest.json').version")
-          else
-            VERSION=$(node -p "require('./chrome-extension/public/manifest.json').version")
-          fi
+          VERSION=$(node -p "require('./chrome-extension/public/manifest.json').version")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Generate Chrome updates.xml

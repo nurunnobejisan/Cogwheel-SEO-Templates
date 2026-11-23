@@ -90,7 +90,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=ROOT_DIR / "extension" / "icons",
+        default=ROOT_DIR / "chrome-extension" / "public" / "icons",
         help="Target icons directory",
     )
     args = parser.parse_args()

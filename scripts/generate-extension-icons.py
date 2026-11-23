@@ -35,8 +35,8 @@ def create_icon(size):
     
     return img
 
-os.makedirs("extension/icons", exist_ok=True)
+os.makedirs("chrome-extension/public/icons", exist_ok=True)
 for s in [16, 32, 48, 128]:
     icon = create_icon(s)
-    icon.save(f"extension/icons/icon{s}.png")
-    print(f"Generated extension/icons/icon{s}.png")
+    icon.save(f"chrome-extension/public/icons/icon{s}.png")
+    print(f"Generated chrome-extension/public/icons/icon{s}.png")

@@ -49,9 +49,12 @@ export async function runAutoUpdateCheck(): Promise<ExtensionUpdateState> {
 
   try {
     // 1. Check remote manifest.json for UI / Extension code updates
-    const manifestRes = await fetch(`${RAW_BASE}/manifest.json?t=${Date.now()}`, {
-      cache: "no-store",
-    });
+    const manifestRes = await fetch(
+      `${RAW_BASE}/chrome-extension/public/manifest.json?t=${Date.now()}`,
+      {
+        cache: "no-store",
+      }
+    );
     if (manifestRes.ok) {
       const remoteManifest = (await manifestRes.json()) as RemoteManifest;
       latestVersion = remoteManifest.version;
