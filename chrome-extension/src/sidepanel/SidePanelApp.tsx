@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   Layers,
+  Database,
   Eye,
   PlayCircle,
   Settings,
@@ -18,6 +19,7 @@ import { ScoreGauge } from "../components/ScoreGauge";
 import { SerpSocialPreview } from "../components/SerpSocialPreview";
 import { QuickWinsList } from "../components/QuickWinsList";
 import { TemplateStudio } from "../components/TemplateStudio";
+import { DatasetVaultManager } from "../components/DatasetVaultManager";
 import { DomOverlayInspector } from "../components/DomOverlayInspector";
 import { AutomationBulkRunner } from "../components/AutomationBulkRunner";
 import { SettingsBrandProfiles } from "../components/SettingsBrandProfiles";
@@ -29,7 +31,7 @@ import { isRestrictedUrl } from "../utils/urlSecurity";
 
 export function SidePanelApp() {
   const [activeTab, setActiveTab] = useState<
-    "dashboard" | "studio" | "overlay" | "automation" | "settings"
+    "dashboard" | "studio" | "dataset" | "overlay" | "automation" | "settings"
   >("dashboard");
 
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -519,6 +521,19 @@ export function SidePanelApp() {
 
           <button
             type="button"
+            onClick={() => setActiveTab("dataset")}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+              activeTab === "dataset"
+                ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
+                : "text-[#71717A] hover:text-[#FAFAFA]"
+            }`}
+          >
+            <Database className="h-3.5 w-3.5" />
+            <span>Dataset</span>
+          </button>
+
+          <button
+            type="button"
             onClick={() => setActiveTab("overlay")}
             className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
               activeTab === "overlay"
@@ -642,7 +657,16 @@ export function SidePanelApp() {
             />
           )}
 
-          {/* TAB 3: Visual On-Page Overlays */}
+          {/* TAB 3: Dataset Curator & Training Vault */}
+          {activeTab === "dataset" && (
+            <DatasetVaultManager
+              activeTabId={activeTabId}
+              pageData={pageData}
+              activeProfile={activeProfile}
+            />
+          )}
+
+          {/* TAB 4: Visual On-Page Overlays */}
           {activeTab === "overlay" && (
             <DomOverlayInspector data={pageData} activeTabId={activeTabId} />
           )}

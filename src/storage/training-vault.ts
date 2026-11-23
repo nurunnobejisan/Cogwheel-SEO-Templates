@@ -36,6 +36,8 @@ export interface TrainingScoreBreakdown {
   schemaValidity: number; // 0 - 20
 }
 
+export type TrainingRecordStatus = "pending" | "approved" | "rejected";
+
 export interface TrainingPairRecord {
   id: string; // Unique primary key derived from canonical URL hash
   canonicalUrlHash: string;
@@ -46,12 +48,21 @@ export interface TrainingPairRecord {
   targetOutput: TargetOptimizedOutput;
   qualityScore: number; // 0 - 100
   scoreBreakdown: TrainingScoreBreakdown;
+  status: TrainingRecordStatus;
   createdAt: string;
   updatedAt: string;
 }
 
+export interface TrainingVaultStats {
+  total: number;
+  approved: number;
+  pending: number;
+  rejected: number;
+  avgQualityScore: number;
+}
+
 export const DB_NAME = "CogwheelTrainingVaultDB";
-export const DB_VERSION = 1;
+export const DB_VERSION = 2;
 export const STORE_NAME = "training_samples";
 
 /**
@@ -171,11 +182,26 @@ export function openTrainingVaultDb(): Promise<IDBDatabase | null> {
 
     request.onupgradeneeded = (event) => {
       const db = (event.target as IDBOpenDBRequest).result;
+      let store: IDBObjectStore;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
-        const store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+        store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+      } else {
+        store = (event.target as IDBOpenDBRequest).transaction!.objectStore(STORE_NAME);
+      }
+
+      if (!store.indexNames.contains("canonicalUrlHash")) {
         store.createIndex("canonicalUrlHash", "canonicalUrlHash", { unique: true });
+      }
+      if (!store.indexNames.contains("brand")) {
         store.createIndex("brand", "brand", { unique: false });
+      }
+      if (!store.indexNames.contains("qualityScore")) {
         store.createIndex("qualityScore", "qualityScore", { unique: false });
+      }
+      if (!store.indexNames.contains("status")) {
+        store.createIndex("status", "status", { unique: false });
+      }
+      if (!store.indexNames.contains("createdAt")) {
         store.createIndex("createdAt", "createdAt", { unique: false });
       }
     };
@@ -192,6 +218,7 @@ export async function saveTrainingPair(params: {
   rawInput: RawWebInput;
   targetOutput: TargetOptimizedOutput;
   brand?: string;
+  status?: TrainingRecordStatus;
 }): Promise<TrainingPairRecord> {
   const canonicalUrl = params.rawInput.canonicalUrl || params.rawInput.url;
   const hash = await computeCanonicalHash(canonicalUrl);
@@ -216,6 +243,7 @@ export async function saveTrainingPair(params: {
 
       getReq.onsuccess = () => {
         const existing = getReq.result as TrainingPairRecord | undefined;
+        const status = params.status || existing?.status || "pending";
 
         const record: TrainingPairRecord = {
           id: hash,
@@ -227,6 +255,7 @@ export async function saveTrainingPair(params: {
           targetOutput: params.targetOutput,
           qualityScore,
           scoreBreakdown: breakdown,
+          status,
           createdAt: existing ? existing.createdAt : now,
           updatedAt: now,
         };
@@ -242,6 +271,7 @@ export async function saveTrainingPair(params: {
 
   // In-memory fallback
   const existing = inMemoryVault.get(hash);
+  const status = params.status || existing?.status || "pending";
   const record: TrainingPairRecord = {
     id: hash,
     canonicalUrlHash: hash,
@@ -252,6 +282,7 @@ export async function saveTrainingPair(params: {
     targetOutput: params.targetOutput,
     qualityScore,
     scoreBreakdown: breakdown,
+    status,
     createdAt: existing ? existing.createdAt : now,
     updatedAt: now,
   };
@@ -261,24 +292,107 @@ export async function saveTrainingPair(params: {
 }
 
 /**
- * Retrieves a training sample by canonical URL.
+ * Updates the target output of a training pair, recalculating quality score.
  */
-export async function getTrainingPairByUrl(canonicalUrl: string): Promise<TrainingPairRecord | null> {
-  const hash = await computeCanonicalHash(canonicalUrl);
+export async function updateTrainingPairTarget(
+  id: string,
+  targetOutput: TargetOptimizedOutput,
+  status?: TrainingRecordStatus
+): Promise<TrainingPairRecord> {
+  const existing = await getTrainingPairById(id);
+  if (!existing) {
+    throw new Error(`Training pair with ID ${id} not found.`);
+  }
+
+  return saveTrainingPair({
+    rawInput: existing.rawInput,
+    targetOutput,
+    brand: targetOutput.brandGuardrail || existing.brand,
+    status: status || existing.status,
+  });
+}
+
+/**
+ * Updates the approval status of a training pair (pending, approved, rejected).
+ */
+export async function updateTrainingPairStatus(
+  id: string,
+  status: TrainingRecordStatus
+): Promise<TrainingPairRecord> {
+  const existing = await getTrainingPairById(id);
+  if (!existing) {
+    throw new Error(`Training pair with ID ${id} not found.`);
+  }
+
+  const now = new Date().toISOString();
+  const updatedRecord: TrainingPairRecord = {
+    ...existing,
+    status,
+    updatedAt: now,
+  };
+
+  const db = await openTrainingVaultDb();
+  if (db) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      const putReq = store.put(updatedRecord);
+      putReq.onsuccess = () => resolve(updatedRecord);
+      putReq.onerror = () => reject(putReq.error);
+    });
+  }
+
+  inMemoryVault.set(id, updatedRecord);
+  return updatedRecord;
+}
+
+/**
+ * Deletes a training pair by ID.
+ */
+export async function deleteTrainingPair(id: string): Promise<boolean> {
+  const db = await openTrainingVaultDb();
+
+  if (db) {
+    return new Promise((resolve, reject) => {
+      const tx = db.transaction(STORE_NAME, "readwrite");
+      const store = tx.objectStore(STORE_NAME);
+      const req = store.delete(id);
+      req.onsuccess = () => resolve(true);
+      req.onerror = () => reject(req.error);
+    });
+  }
+
+  const existed = inMemoryVault.has(id);
+  inMemoryVault.delete(id);
+  return existed;
+}
+
+/**
+ * Retrieves a training sample by primary ID (hash).
+ */
+export async function getTrainingPairById(id: string): Promise<TrainingPairRecord | null> {
   const db = await openTrainingVaultDb();
 
   if (db) {
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, "readonly");
       const store = tx.objectStore(STORE_NAME);
-      const req = store.get(hash);
+      const req = store.get(id);
 
       req.onsuccess = () => resolve((req.result as TrainingPairRecord) || null);
       req.onerror = () => reject(req.error);
     });
   }
 
-  return inMemoryVault.get(hash) || null;
+  return inMemoryVault.get(id) || null;
+}
+
+/**
+ * Retrieves a training sample by canonical URL.
+ */
+export async function getTrainingPairByUrl(canonicalUrl: string): Promise<TrainingPairRecord | null> {
+  const hash = await computeCanonicalHash(canonicalUrl);
+  return getTrainingPairById(hash);
 }
 
 /**
@@ -293,12 +407,51 @@ export async function getAllTrainingPairs(): Promise<TrainingPairRecord[]> {
       const store = tx.objectStore(STORE_NAME);
       const req = store.getAll();
 
-      req.onsuccess = () => resolve(req.result as TrainingPairRecord[]);
+      req.onsuccess = () => {
+        const records = (req.result as TrainingPairRecord[]) || [];
+        // Ensure every record has a status property
+        const normalized = records.map((r) => ({
+          ...r,
+          status: r.status || "pending",
+        }));
+        resolve(normalized);
+      };
       req.onerror = () => reject(req.error);
     });
   }
 
-  return Array.from(inMemoryVault.values());
+  return Array.from(inMemoryVault.values()).map((r) => ({
+    ...r,
+    status: r.status || "pending",
+  }));
+}
+
+/**
+ * Computes high-level statistics for the training vault.
+ */
+export async function getTrainingVaultStats(): Promise<TrainingVaultStats> {
+  const records = await getAllTrainingPairs();
+  const total = records.length;
+  let approved = 0;
+  let pending = 0;
+  let rejected = 0;
+  let totalScore = 0;
+
+  for (const record of records) {
+    if (record.status === "approved") approved++;
+    else if (record.status === "rejected") rejected++;
+    else pending++;
+
+    totalScore += record.qualityScore;
+  }
+
+  return {
+    total,
+    approved,
+    pending,
+    rejected,
+    avgQualityScore: total > 0 ? Math.round(totalScore / total) : 0,
+  };
 }
 
 /**
@@ -347,6 +500,7 @@ export async function exportVaultAsJsonl(): Promise<string> {
           canonicalUrl: record.canonicalUrl,
           qualityScore: record.qualityScore,
           brand: record.brand,
+          status: record.status,
         },
       })
     )
