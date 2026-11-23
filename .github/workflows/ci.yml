@@ -132,6 +132,14 @@ jobs:
         with:
           node-version: 22
 
+      - name: Setup Python 3.11 Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Setup uv for Python Serverless Functions
+        uses: astral-sh/setup-uv@v5
+
       - name: Install Vercel CLI
         run: npm install --global vercel@latest
 
