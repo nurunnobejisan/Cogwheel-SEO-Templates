@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
+import { TEMPLATES_DATA } from "@/data/templates";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://cogwheel-seo-templates.vercel.app";
   const lastModified = new Date();
 
-  return [
+  const coreRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified,
@@ -30,4 +31,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.7,
     },
   ];
+
+  const templateRoutes: MetadataRoute.Sitemap = TEMPLATES_DATA.map((tmpl) => ({
+    url: `${baseUrl}/templates/${tmpl.categorySlug}/${tmpl.slug}`,
+    lastModified,
+    changeFrequency: "weekly" as const,
+    priority: 0.8,
+  }));
+
+  return [...coreRoutes, ...templateRoutes];
 }

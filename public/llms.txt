@@ -1,0 +1,39 @@
+# Cogwheel SEO & GEO Studio
+> Hospitality Search Engine and Generative Engine Optimization Suite
+
+Cogwheel SEO & GEO Studio provides battle-tested SEO, GEO (Generative Engine Optimization), and structured data frameworks purpose-built for hospitality and hotel digital marketing.
+
+- Website: https://cogwheel-seo-templates.vercel.app
+- Documentation: https://cogwheel-seo-templates.vercel.app/architecture
+- GitHub: https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates
+
+## Core System Modules
+- Strategy Matrix: https://cogwheel-seo-templates.vercel.app/strategy-matrix (78-Keyword hospitality matrix across Brand, Local, Amenities, Meetings, Extended Stay, and GEO)
+- System Architecture: https://cogwheel-seo-templates.vercel.app/architecture (Manifest V3 extension, multi-tier routing, and local data vaults)
+- Templates Hub: https://cogwheel-seo-templates.vercel.app/templates (Catalog of 12 production-ready SEO & GEO templates)
+
+## Production SEO & GEO Templates Catalog
+
+### Technical SEO Audits
+- Core Web Vitals & PageSpeed Audit: https://cogwheel-seo-templates.vercel.app/templates/technical-seo/core-web-vitals-audit
+- JavaScript Rendering & DOM Hydration Diagnostics: https://cogwheel-seo-templates.vercel.app/templates/technical-seo/javascript-rendering-hydration
+
+### On-Page Content Briefs
+- Luxury Hotel Landing Page Content Brief: https://cogwheel-seo-templates.vercel.app/templates/on-page-seo/hotel-landing-page-brief
+- Keyword Cannibalization Mapping & Remediation Matrix: https://cogwheel-seo-templates.vercel.app/templates/on-page-seo/keyword-cannibalization-matrix
+
+### Local SEO & Google Business Profile Checklists
+- Google Business Profile Multi-Property Master Checklist: https://cogwheel-seo-templates.vercel.app/templates/local-seo/gbp-multi-property-optimization
+- UNAP Consistency & Local Citation Hygiene Audit: https://cogwheel-seo-templates.vercel.app/templates/local-seo/unap-local-citation-audit
+
+### Programmatic SEO Blueprints
+- Dynamic Location Landing Pages Scalable Architecture: https://cogwheel-seo-templates.vercel.app/templates/programmatic-seo/dynamic-location-landing-pages
+- Hotel Amenities & Experiences Matrix Programmatic Blueprint: https://cogwheel-seo-templates.vercel.app/templates/programmatic-seo/hotel-amenities-matrix-blueprint
+
+### Link Building & Digital PR Outreach
+- High-Tier Destination Media Digital PR Pitch Kit: https://cogwheel-seo-templates.vercel.app/templates/link-building/destination-pr-pitch-kit
+- Unlinked Brand Mention Reclamation & Partner Link Engine: https://cogwheel-seo-templates.vercel.app/templates/link-building/unlinked-brand-mention-reclamation
+
+### AI Search & Generative Engine Optimization (GEO)
+- Generative Engine Optimization (GEO) Knowledge Playbook: https://cogwheel-seo-templates.vercel.app/templates/ai-search-geo/generative-engine-optimization-playbook
+- Schema.org FAQPage Structured Entity Architecture: https://cogwheel-seo-templates.vercel.app/templates/ai-search-geo/faq-structured-entity-framework
