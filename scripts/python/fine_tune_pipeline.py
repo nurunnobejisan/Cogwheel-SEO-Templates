@@ -311,11 +311,17 @@ def validate_dataset_file(
 
             res = validate_and_parse_line(stripped, idx)
 
-            # Apply optional strict approved-only filter if requested
-            if only_approved and res.format_type == "raw_sample":
+            # Apply optional strict quality and approved-only filter if requested
+            if res.format_type == "raw_sample":
                 try:
                     raw_data = json.loads(stripped)
-                    if raw_data.get("record", {}).get("status") != "approved":
+                    record_data = raw_data.get("record", {})
+                    if record_data.get("qualityScore", 0) < min_quality:
+                        res.is_valid = False
+                        res.errors.append(
+                            f"Sample quality score ({record_data.get('qualityScore', 0)}) is below minimum threshold {min_quality}."
+                        )
+                    if only_approved and record_data.get("status") != "approved":
                         res.is_valid = False
                         res.errors.append("Sample status is not 'approved'.")
                 except Exception:
