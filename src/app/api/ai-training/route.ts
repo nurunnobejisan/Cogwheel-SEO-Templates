@@ -52,6 +52,53 @@ const toggleRuleSchema = z.object({
   active: z.boolean(),
 });
 
+const rawSampleSchema = z.object({
+  schemaVersion: z.string().default("3.0.0"),
+  idempotencyKey: z.string().min(1),
+  provenance: z.object({
+    canonicalUrlHash: z.string(),
+    contentHash: z.string(),
+    capturedAt: z.string(),
+    extensionVersion: z.string().default("2.7.0"),
+  }),
+  record: z.object({
+    id: z.string(),
+    canonicalUrl: z.string(),
+    domain: z.string(),
+    brand: z.string().default("Independent"),
+    qualityScore: z.number().min(0).max(100),
+    status: z.enum(["pending", "approved", "rejected"]).default("pending"),
+    rawInput: z.object({
+      url: z.string(),
+      canonicalUrl: z.string().optional(),
+      domain: z.string(),
+      rawTitle: z.string().default(""),
+      rawMetaDesc: z.string().default(""),
+      rawH1: z.array(z.string()).default([]),
+      rawH2: z.array(z.string()).default([]),
+      rawBodyText: z.string().default(""),
+      detectedSchemas: z.array(z.string()).default([]),
+      wordCount: z.number().default(0),
+    }),
+    targetOutput: z.object({
+      optimizedTitle: z.string().default(""),
+      optimizedMetaDesc: z.string().default(""),
+      optimizedH1: z.string().default(""),
+      jsonLdSchema: z.any().optional(),
+      geoEntityBlock: z.string().default(""),
+      brandGuardrail: z.string().default("Independent"),
+    }),
+  }),
+});
+
+const batchSyncSchema = z.object({
+  schemaVersion: z.string().default("3.0.0"),
+  event: z.literal("training_batch_sync"),
+  timestamp: z.string(),
+  count: z.number(),
+  samples: z.array(rawSampleSchema),
+});
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const taskId = searchParams.get("taskId") || undefined;
@@ -66,7 +113,30 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
+    const authHeader = req.headers.get("Authorization");
+    const expectedToken = process.env.COGWHEEL_API_BEARER_TOKEN;
+    if (expectedToken && expectedToken.trim().length > 0) {
+      if (authHeader !== `Bearer ${expectedToken.trim()}`) {
+        return NextResponse.json({ error: "Unauthorized: Invalid or missing Bearer token" }, { status: 401 });
+      }
+    }
+
     const body = (await req.json()) as Record<string, unknown>;
+
+    // Handle Extension Batch Sync
+    if (body && (body.event === "training_batch_sync" || Array.isArray(body.samples))) {
+      const parsedBatch = batchSyncSchema.parse(body);
+      return NextResponse.json(
+        {
+          success: true,
+          status: 200,
+          message: `Successfully received and validated ${parsedBatch.samples.length} training samples.`,
+          receivedCount: parsedBatch.samples.length,
+          timestamp: new Date().toISOString(),
+        },
+        { status: 200 }
+      );
+    }
 
     if (body && body.action === "revert") {
       const parsed = revertSchema.parse(body);

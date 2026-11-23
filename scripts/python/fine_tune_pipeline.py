@@ -122,7 +122,7 @@ class ChatMlDatasetLine(BaseModel):
 class LineValidationResult:
     line_number: int
     is_valid: bool
-    format_type: Literal["gemini", "chatml", "unknown"]
+    format_type: Literal["gemini", "chatml", "raw_sample", "unknown"]
     token_count: int
     brand: str
     errors: list[str] = field(default_factory=list)
@@ -133,7 +133,7 @@ class DatasetValidationSummary:
     total_lines: int
     valid_lines: int
     invalid_lines: int
-    format_detected: Literal["gemini", "chatml", "mixed", "unknown"]
+    format_detected: Literal["gemini", "chatml", "raw_sample", "mixed", "unknown"]
     total_tokens: int
     avg_tokens_per_line: float
     min_tokens: int
@@ -228,8 +228,34 @@ def validate_and_parse_line(raw_line: str, line_number: int) -> LineValidationRe
                     errors.append(f"Assistant output is not valid TargetSeoGeoOutput schema: {ex}")
         except Exception as err:
             errors.append(f"ChatML schema validation failed: {err}")
+
+    # 3. Check if Raw Sample format
+    elif "record" in data and ("schemaVersion" in data or "idempotencyKey" in data or "provenance" in data):
+        format_type = "raw_sample"
+        record = data.get("record")
+        if not isinstance(record, dict):
+            errors.append("Raw sample 'record' must be an object.")
+        else:
+            quality = record.get("qualityScore", 0)
+            status = record.get("status", "pending")
+            brand = record.get("brand") or "Independent"
+
+            if quality < 70:
+                errors.append(f"Sample quality score ({quality}) is below threshold of 70.")
+            if status == "rejected":
+                errors.append("Sample status is 'rejected'.")
+
+            target_json = record.get("targetOutput", {})
+            try:
+                if PYDANTIC_AVAILABLE:
+                    target_obj = TargetSeoGeoOutput.model_validate(target_json)
+                else:
+                    target_obj = TargetSeoGeoOutput(**target_json)
+                brand = target_obj.brandGuardrail or brand
+            except Exception as ex:
+                errors.append(f"Target output validation failed: {ex}")
     else:
-        errors.append("Unrecognized format. Must contain either systemInstruction/contents or messages.")
+        errors.append("Unrecognized format. Must contain systemInstruction/contents, messages, or raw sample record.")
 
     # Token sanity limits
     if token_count < 30:
@@ -247,20 +273,54 @@ def validate_and_parse_line(raw_line: str, line_number: int) -> LineValidationRe
     )
 
 
-def validate_dataset_file(file_path: Path) -> tuple[DatasetValidationSummary, list[str]]:
-    """Reads and validates all lines from a JSONL export file."""
+def validate_dataset_file(
+    file_path: Path,
+    dedupe: bool = False,
+    min_quality: int = 70,
+    only_approved: bool = False,
+) -> tuple[DatasetValidationSummary, list[str]]:
+    """Reads, validates, and optionally deduplicates lines from a JSONL export file."""
     if not file_path.exists():
         raise FileNotFoundError(f"Dataset file not found: {file_path}")
 
     valid_lines_content: list[str] = []
     line_results: list[LineValidationResult] = []
+    seen_dedupe_keys: set[str] = set()
 
     with file_path.open("r", encoding="utf-8") as f:
         for idx, line in enumerate(f, start=1):
             stripped = line.strip()
             if not stripped:
                 continue
+
+            if dedupe:
+                try:
+                    line_data = json.loads(stripped)
+                    dedupe_key = (
+                        line_data.get("provenance", {}).get("contentHash")
+                        or line_data.get("record", {}).get("contentHash")
+                        or line_data.get("record", {}).get("canonicalUrlHash")
+                        or line_data.get("metadata", {}).get("canonicalUrl")
+                        or stripped
+                    )
+                    if dedupe_key in seen_dedupe_keys:
+                        continue
+                    seen_dedupe_keys.add(dedupe_key)
+                except Exception:
+                    pass
+
             res = validate_and_parse_line(stripped, idx)
+
+            # Apply optional strict approved-only filter if requested
+            if only_approved and res.format_type == "raw_sample":
+                try:
+                    raw_data = json.loads(stripped)
+                    if raw_data.get("record", {}).get("status") != "approved":
+                        res.is_valid = False
+                        res.errors.append("Sample status is not 'approved'.")
+                except Exception:
+                    pass
+
             line_results.append(res)
             if res.is_valid:
                 valid_lines_content.append(stripped)

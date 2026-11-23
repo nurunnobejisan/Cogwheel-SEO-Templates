@@ -18,7 +18,13 @@ import { TrainingPairRecord } from "../src/storage/training-vault";
 describe("Dataset Builder & Supervised Fine-Tuning Exporter", () => {
   const sampleRecord: TrainingPairRecord = {
     id: "sample_hotel_hash_123",
+    schemaVersion: "3.0.0",
     canonicalUrlHash: "sample_hotel_hash_123",
+    contentHash: "ch_sample123",
+    version: 1,
+    source: "manual",
+    pageType: "hotel_homepage",
+    extractionConfidence: 95,
     canonicalUrl: "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/",
     domain: "www.marriott.com",
     brand: "Marriott",

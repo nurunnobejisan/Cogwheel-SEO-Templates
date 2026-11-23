@@ -9,17 +9,15 @@ import {
 
 describe("Training Data Capture & PII Sanitization Module", () => {
   describe("PII Redaction Engine", () => {
-    it("redacts standard and corporate email addresses", () => {
+    it("preserves legitimate business and contact emails for training context", () => {
       const input = "Contact general manager at gm@luxuryresort.com or reservations@marriott-bonvoy.co.uk.";
-      const { sanitized, emailsCount } = sanitizeTextAndRedactPii(input);
+      const { sanitized } = sanitizeTextAndRedactPii(input);
 
-      expect(emailsCount).toBe(2);
-      expect(sanitized).toBe("Contact general manager at [REDACTED_EMAIL] or [REDACTED_EMAIL].");
-      expect(sanitized).not.toContain("gm@luxuryresort.com");
-      expect(sanitized).not.toContain("reservations@marriott-bonvoy.co.uk");
+      expect(sanitized).toContain("gm@luxuryresort.com");
+      expect(sanitized).toContain("reservations@marriott-bonvoy.co.uk");
     });
 
-    it("redacts multiple telephone number formats", () => {
+    it("redacts multiple telephone number formats with separators or prefix", () => {
       const input = "Call front desk at +1-850-230-6004 or toll-free at 1-800-555-0199. Local: (850) 230-6004.";
       const { sanitized, phonesCount } = sanitizeTextAndRedactPii(input);
 
@@ -29,32 +27,43 @@ describe("Training Data Capture & PII Sanitization Module", () => {
       expect(sanitized).toContain("[REDACTED_PHONE]");
     });
 
-    it("preserves standard dates and zip codes without false positives", () => {
-      const input = "Check-in date is 2026-11-21 at postal code 32413 with room rate $299.";
+    it("preserves standard dates, prices, and zip codes without false positives", () => {
+      const input = "Check-in date is 2026-11-21 at postal code 32413 with room rate $299.00 and year 2024.";
       const { sanitized, phonesCount } = sanitizeTextAndRedactPii(input);
 
       expect(phonesCount).toBe(0);
       expect(sanitized).toBe(input);
+      expect(sanitized).toContain("2026-11-21");
+      expect(sanitized).toContain("32413");
+      expect(sanitized).toContain("$299.00");
     });
 
-    it("strips tracking tokens and query parameters from URLs", () => {
-      const urlWithTracking = "https://www.marriott.com/hotel/ecpsb?utm_source=google&gclid=CjwKCAiA&auth=token123#amenities";
-      const { sanitizedUrl, hasRedactedQuery } = sanitizeUrlString(urlWithTracking);
+    it("preserves normal URL queries while redacting sensitive tokens in URLs", () => {
+      const normalUrl = "https://www.marriott.com/hotel/ecpsb?room=suite&promo=summer#amenities";
+      const { sanitizedUrl: cleanNormal } = sanitizeUrlString(normalUrl);
+      expect(cleanNormal).toContain("room=suite");
+      expect(cleanNormal).toContain("promo=summer");
 
+      const authUrl = "https://www.marriott.com/hotel/ecpsb?room=suite&token=secret_jwt_token_123#amenities";
+      const { sanitizedUrl: cleanAuth, hasRedactedQuery } = sanitizeUrlString(authUrl);
       expect(hasRedactedQuery).toBe(true);
-      expect(sanitizedUrl).toContain("?redacted_query=true");
-      expect(sanitizedUrl).not.toContain("utm_source");
-      expect(sanitizedUrl).not.toContain("gclid");
-      expect(sanitizedUrl).not.toContain("auth=token123");
+      expect(cleanAuth).toContain("[REDACTED]");
+      expect(cleanAuth).not.toContain("secret_jwt_token_123");
     });
 
-    it("redacts URLs embedded inside body text", () => {
-      const text = "Visit our booking portal at https://booking.example.com/reserve?promo=SPRING2026&token=secret today.";
-      const { sanitized, queriesCount } = sanitizeTextAndRedactPii(text);
+    it("redacts JWTs, API tokens, Bearer credentials, credit cards, and IBANs", () => {
+      const input = "Token: AIzaSyFakeKeyForTestPurposesOnly1234567. Bearer ya29.a0AfH6SMByaBcDeFgHiJkLmNoPqRsTuVwXyZ. JWT: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.doNotLeakThisSignature12345. Card: 4111-2222-3333-4444. IBAN: GB82WEST12345698765432.";
+      const { sanitized, tokensCount, jwtsCount, cardsCount } = sanitizeTextAndRedactPii(input);
 
-      expect(queriesCount).toBe(1);
-      expect(sanitized).toContain("https://booking.example.com/reserve?redacted_query=true");
-      expect(sanitized).not.toContain("token=secret");
+      expect(tokensCount).toBeGreaterThan(0);
+      expect(jwtsCount).toBe(1);
+      expect(cardsCount).toBe(2);
+      expect(sanitized).toContain("[REDACTED_API_KEY]");
+      expect(sanitized).toContain("[REDACTED_JWT]");
+      expect(sanitized).toContain("[REDACTED_CARD]");
+      expect(sanitized).not.toContain("AIzaSy");
+      expect(sanitized).not.toContain("4111-2222");
+      expect(sanitized).not.toContain("GB82WEST");
     });
   });
 
@@ -386,7 +395,7 @@ describe("Training Data Capture & PII Sanitization Module", () => {
 
       expect(sample.title).toBe("SpringHill Suites Panama City Beachfront | Marriott");
       expect(sample.metaDescription).toContain("[REDACTED_PHONE]");
-      expect(sample.canonicalUrl).toContain("?redacted_query=true");
+      expect(sample.canonicalUrl).toContain("https://www.marriott.com/hotel/ecpsb");
 
       // Headings
       expect(sample.headings.h1).toEqual(["SpringHill Suites Panama City Beachfront"]);
@@ -405,9 +414,8 @@ describe("Training Data Capture & PII Sanitization Module", () => {
       expect(sample.openGraph.type).toBe("hotel");
 
       // PII Sanitization Metrics
-      expect(sample.mainContentText).toContain("[REDACTED_EMAIL]");
+      expect(sample.mainContentText).toContain("reservations@marriott.com");
       expect(sample.mainContentText).toContain("[REDACTED_PHONE]");
-      expect(sample.sanitizationMetrics.redactedEmailsCount).toBeGreaterThan(0);
       expect(sample.sanitizationMetrics.redactedPhonesCount).toBeGreaterThan(0);
       expect(sample.wordCount).toBeGreaterThan(0);
       expect(sample.extractedAt).toBeDefined();

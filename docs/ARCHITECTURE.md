@@ -91,32 +91,59 @@ flowchart TD
 The browser extension is structured under Chrome Manifest V3 specifications to provide maximum performance, battery efficiency, and zero persistent background footprint:
 
 ### 3.1 Content Script Layer (`chrome-extension/src/content/`)
-- **Inspection Engine (`index.ts`)**: Extracts page title, meta description, canonical URL, heading hierarchy (`h1`, `h2`, `h3`), image dimensions and alt attributes, word counts, and existing JSON-LD `<script>` elements.
+- **Single Source of Truth Manifest**: `chrome-extension/public/manifest.json` is the sole SSOT specifying `<all_urls>`, `all_frames: true`, `match_about_blank: true`, and `run_at: "document_idle"`.
+- **Universal Auto-Injection & SPA Route Detection (`index.ts`)**:
+  - Automatically pings the content script upon tab activation (`tabs.onActivated`), page load (`tabs.onUpdated`), and browser history transitions (`webNavigation.onHistoryStateUpdated` / `onCommitted`). If unresponsive, dynamically injects `content.js` across all frames via `chrome.scripting.executeScript`.
+  - Patches `history.pushState` and `history.replaceState`, listens to `popstate` / `hashchange`, and observes `document.title` and primary content container mutations with an 800ms debounce.
+  - Computes a fast content fingerprint and triggers re-extraction only when URL or DOM content changes.
+  - Connects to the side panel via `SIDE_PANEL_READY` handshake, preventing message drops without arbitrary timeouts.
+  - Implements non-throwing `checkPageRestriction` reporting `RESTRICTED_PAGE` or `ALLOWED` status.
 - **Visual Overlays**: Renders non-destructive DOM overlays highlighting heading structures and image accessibility directly over the inspected page without modifying host CSS stylesheets.
-- **Universal Training Extractor & PII Sanitizer (`training-capture.ts`)**:
-  - Runs in read-only mode to extract full DOM snapshots, structural headings, OpenGraph attributes, and body text.
-  - Automatically identifies and redacts sensitive PII:
-    - Email addresses (`[REDACTED_EMAIL]`)
-    - Telephone numbers across international and US formats (`[REDACTED_PHONE]`)
-    - Query parameters containing credentials, session tokens, or tracking IDs (`[REDACTED_QUERY]`)
-  - Packages cleaned data into typed `CapturedWebSample` payloads for training ingestion.
+- **Universal Training Extractor v3.0 & Hardened Sanitizer (`training-capture.ts`)**:
+  - Runs in read-only mode to extract full DOM snapshots: language, robots, viewport, hreflang alternates, canonical URL, full OpenGraph and Twitter card metadata.
+  - Complete H1-H6 hierarchy in physical DOM order (`HeadingNode[]`).
+  - Full parsed JSON-LD trees (`jsonLdFull[]`), schema types, and W3C Microdata (`microdata[]`).
+  - Discovers internal/external links (`rel`, anchor text) and images (`src`, `alt`, dimensions, lazy loading).
+  - Traverses open shadow roots and same-origin iframes (tagging frame samples with `frameId`).
+  - Extracts hotel-specific hospitality blocks: rates, amenities, review scores, and visible booking/phone/email CTAs.
+  - Samples Core Web Vitals via `PerformanceObserver` (LCP, CLS, INP) with graceful fallback.
+  - Detects tech stack signatures (WordPress, Webflow, Shopify, Squarespace, Drupal, React, Next.js, Vue, Angular, GTM, GA4, Meta Pixel).
+  - Main text extracted separately from CTA text without dropping headers or buttons wholesale; strictly never reads input/textarea values or password/payment fields.
+  - Each extractor wrapped in isolated `try/catch` error boundaries with `extractionErrors[]` logging.
+  - **Hardened Security Sanitizer**:
+    - Preserves legitimate business contact emails and standard URL queries for entity context.
+    - Tightened phone regex requiring separators or `+` prefix, preventing false positives on years, prices, or ZIP codes.
+    - Automated redaction for JWTs (`[REDACTED_JWT]`), API tokens & Bearer secrets (`[REDACTED_API_KEY]`), credit card numbers and IBANs (`[REDACTED_CARD]`).
+  - Packages data into typed `CapturedWebSample` (schemaVersion `"3.0.0"`).
 
-### 3.2 Side Panel Application (`chrome-extension/src/sidepanel/`)
+### 3.2 Options Page & Safe Collection Guardrails (`chrome-extension/src/options/`)
+- **Options Management (`options.html` & `OptionsApp.tsx`)**:
+  - User consent toggle (off by default) required before any training sample is recorded.
+  - Capture mode selector: "Manual Capture Only" vs. "Auto-Capture on Allowlisted Domains".
+  - Configurable domain allowlists and comprehensive security blocklists (banking, webmail, social feeds, checkout, login).
+  - Default blocklist path patterns (`/admin`, `/login`, `/checkout`, `/account`, `/cart`, `/billing`, `/auth`, `/password`).
+  - Automatic detection and blocking of any page containing `<input type="password">`.
+  - Extension action badge indicator ("REC" in red) during active auto-capture.
+  - User privacy controls: "Delete all data" and per-domain sample deletion.
+  - Web App API synchronization settings: configurable API endpoint and Bearer auth token.
+
+### 3.3 Side Panel Application (`chrome-extension/src/sidepanel/`)
 - **Framework & Styling**: React 18, TypeScript 5.5, Tailwind CSS, Lucide icons, and Vite.
-- **Four Primary Tab Views**:
+- **Ready Handshake**: Emits `SIDE_PANEL_READY` on mount to flush queued messages from background service worker.
+- **Primary Tab Views**:
   1. **Audit & Remediation**: Live SERP and Social Open Graph card previews, real-time pixel meters, and 1-click inline code diff patch fixers.
   2. **Template Studio**: 78-keyword strategy matrix exploration, brand-specific rule applications, and direct "Capture for AI Training" action.
   3. **Dataset Vault Manager (`DatasetVaultManager.tsx`)**: Full management interface for captured training pairs, quality score inspector, status approval filters, JSONL export modal, and direct Web App API synchronization.
   4. **Settings & Brand Profiles (`SettingsBrandProfiles.tsx`)**: Property brand switching, API key configuration, custom fine-tuned model endpoint routing, temperature controls, and live latency connection testing.
 
-### 3.3 Background Service Worker (`chrome-extension/src/background/auto-updater.ts`)
-- **Lifecycle Triggers**: Reacts to `chrome.runtime.onInstalled`, `chrome.runtime.onStartup`, and `chrome.alarms`.
-- **Scheduled Cadence**: Executes `cogwheel_auto_update_check` every 360 minutes (6 hours).
-- **Non-Persistent**: Suspends from browser memory immediately upon completing background synchronization tasks.
-
 ### 3.4 Persistent Storage Tier
-- **`chrome.storage.local`**: Stores active brand profiles, UI settings, OTA rule overrides, and cached keyword matrices.
-- **IndexedDB (`CogwheelTrainingVaultDB`)**: High-capacity local database housing curated training pairs, canonical URL hashes, multi-factor quality scores, and review statuses across browser sessions.
+- **`chrome.storage.local` & `chrome.storage.sync`**: Stores active brand profiles, extension options, allowlists/blocklists, OTA rule overrides, and cached keyword matrices.
+- **IndexedDB (`CogwheelTrainingVaultDB` v3)**: High-capacity local database housing curated training pairs with:
+  - `contentHash` versioning: tracks DOM content modifications over time while deduplicating identical samples.
+  - `source`: tags records as `"auto"` or `"manual"`.
+  - `pageType`: automatic heuristic classification (`hotel_homepage`, `room_details`, `amenities`, `booking`, `location`, `article`, `landing_page`).
+  - `extractionConfidence`: 0-100 extraction completeness score.
+  - Automated v3 schema migration for older records.
 
 ---
 

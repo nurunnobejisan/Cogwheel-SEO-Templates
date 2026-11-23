@@ -256,3 +256,84 @@ class OtaConfig(BaseModel):
     scoringWeights: ScoringWeights
     keywordMatrixUrl: str
     brandGuardrailsUrl: str
+
+
+# ==============================================================================
+# 5. EXTENSION TRAINING DATA & BATCH SYNC MODELS
+# ==============================================================================
+
+class RawWebInputModel(BaseModel):
+    """Raw webpage snapshot captured by the Chrome extension."""
+
+    url: str
+    canonicalUrl: str | None = None
+    domain: str
+    rawTitle: str = ""
+    rawMetaDesc: str = ""
+    rawH1: list[str] = Field(default_factory=list)
+    rawH2: list[str] = Field(default_factory=list)
+    rawBodyText: str = ""
+    detectedSchemas: list[str] = Field(default_factory=list)
+    wordCount: int = 0
+
+
+class TargetOptimizedOutputModel(BaseModel):
+    """Target optimization targets generated or approved in Template Studio."""
+
+    optimizedTitle: str
+    optimizedMetaDesc: str
+    optimizedH1: str
+    jsonLdSchema: dict[str, Any] | list[dict[str, Any]] = Field(default_factory=dict)
+    geoEntityBlock: str = ""
+    brandGuardrail: str = "Independent"
+
+
+class TrainingPairRecordModel(BaseModel):
+    """Paired raw DOM input and optimized output stored in local vault."""
+
+    id: str
+    schemaVersion: str = "3.0.0"
+    canonicalUrlHash: str
+    contentHash: str
+    version: int = 1
+    source: Literal["auto", "manual"] = "manual"
+    pageType: str = "hotel_homepage"
+    extractionConfidence: int = 85
+    canonicalUrl: str
+    domain: str
+    brand: str = "Independent"
+    rawInput: RawWebInputModel
+    targetOutput: TargetOptimizedOutputModel
+    qualityScore: int
+    status: Literal["pending", "approved", "rejected"] = "pending"
+    createdAt: str
+    updatedAt: str
+
+
+class RawJsonlProvenanceModel(BaseModel):
+    """Provenance tracking metadata for exported training samples."""
+
+    canonicalUrlHash: str
+    contentHash: str
+    capturedAt: str
+    extensionVersion: str = "2.7.0"
+
+
+class RawJsonlSampleModel(BaseModel):
+    """Raw training sample line format with provenance and idempotency."""
+
+    schemaVersion: str = "3.0.0"
+    idempotencyKey: str
+    provenance: RawJsonlProvenanceModel
+    record: TrainingPairRecordModel
+
+
+class BatchSyncPayloadModel(BaseModel):
+    """Payload sent by Chrome Extension to Web App API for batch synchronization."""
+
+    schemaVersion: str = "3.0.0"
+    event: Literal["training_batch_sync"] = "training_batch_sync"
+    timestamp: str
+    count: int
+    samples: list[RawJsonlSampleModel]
+

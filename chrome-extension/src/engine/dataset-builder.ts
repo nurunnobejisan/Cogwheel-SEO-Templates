@@ -1,10 +1,12 @@
 /**
- * Cogwheel SEO & GEO Studio - Supervised Fine-Tuning Dataset Builder & API Sync
+ * Cogwheel SEO & GEO Studio - Supervised Fine-Tuning Dataset Builder & API Sync v3.0
  *
  * Formats curated DOM training pairs for LLM fine-tuning:
- * 1. Google Gemini Supervised Fine-Tuning (.jsonl) with systemInstruction and contents (user / model).
- * 2. OpenAI / Llama / Unsloth ChatML (.jsonl) with messages (system, user, assistant).
- * 3. Direct App API Sync: pushes approved training pairs via HTTP POST with Bearer token authorization.
+ * 1. Raw JSONL Export with full schemaVersion and provenance (url hash, capturedAt, version).
+ * 2. Google Gemini Supervised Fine-Tuning (.jsonl) with systemInstruction and contents (user / model).
+ * 3. OpenAI / Llama / Unsloth ChatML (.jsonl) with messages (system, user, assistant).
+ * 4. Stanford Alpaca format (.jsonl) with instruction, input, output.
+ * 5. Direct App API Sync: batched HTTP POST with Bearer token, exponential backoff, and offline queue support.
  */
 
 import {
@@ -46,6 +48,26 @@ export interface ChatMlRecord {
   };
 }
 
+export interface AlpacaRecord {
+  instruction: string;
+  input: string;
+  output: string;
+}
+
+export interface RawJsonlProvenance {
+  canonicalUrlHash: string;
+  contentHash: string;
+  capturedAt: string;
+  extensionVersion: string;
+}
+
+export interface RawJsonlRecord {
+  schemaVersion: "3.0.0";
+  idempotencyKey: string;
+  provenance: RawJsonlProvenance;
+  record: TrainingPairRecord;
+}
+
 export interface DatasetExportOptions {
   onlyApproved?: boolean;
   minQualityScore?: number;
@@ -57,6 +79,8 @@ export interface ApiSyncConfig {
   endpointUrl: string;
   bearerToken: string;
   autoSyncOnApproval?: boolean;
+  batchSize?: number;
+  maxRetries?: number;
 }
 
 export interface ApiSyncResult {
@@ -65,6 +89,7 @@ export interface ApiSyncResult {
   message: string;
   timestamp: string;
   error?: string;
+  syncedCount?: number;
 }
 
 export interface BatchSyncSummary {
@@ -79,9 +104,7 @@ export interface BatchSyncSummary {
  */
 export function formatSystemPrompt(brand: string): string {
   const brandName = (brand || "Independent").trim();
-  return (
-    `You are an expert hospitality SEO and Generative Engine Optimization (GEO) AI assistant specializing in ${brandName} franchise brand standards, SERP pixel budgeting, Schema.org Hotel graphs, and generative search visibility (ChatGPT, Google Gemini, Perplexity). Given an unoptimized hotel webpage DOM snapshot, output a valid JSON object matching the target optimization schema.`
-  );
+  return `You are an expert hospitality SEO and Generative Engine Optimization (GEO) AI assistant specializing in ${brandName} franchise brand standards, SERP pixel budgeting, Schema.org Hotel graphs, and generative search visibility (ChatGPT, Google Gemini, Perplexity). Given an unoptimized hotel webpage DOM snapshot, output a valid JSON object matching the target optimization schema.`;
 }
 
 /**
@@ -129,6 +152,24 @@ export function formatModelResponse(target: TargetOptimizedOutput): string {
     null,
     2
   );
+}
+
+/**
+ * Converts a training record to raw JSONL record with provenance.
+ */
+export function recordToRawJsonl(record: TrainingPairRecord): RawJsonlRecord {
+  const idempotencyKey = `${record.canonicalUrlHash || record.id}_${record.contentHash || "v1"}_${record.version || 1}`;
+  return {
+    schemaVersion: "3.0.0",
+    idempotencyKey,
+    provenance: {
+      canonicalUrlHash: record.canonicalUrlHash || record.id,
+      contentHash: record.contentHash || "unknown",
+      capturedAt: record.createdAt,
+      extensionVersion: "2.7.0",
+    },
+    record,
+  };
 }
 
 /**
@@ -201,6 +242,17 @@ export function recordToChatMl(
 }
 
 /**
+ * Converts a training record to Stanford Alpaca schema.
+ */
+export function recordToAlpaca(record: TrainingPairRecord): AlpacaRecord {
+  return {
+    instruction: formatSystemPrompt(record.brand),
+    input: formatUserPrompt(record.rawInput),
+    output: formatModelResponse(record.targetOutput),
+  };
+}
+
+/**
  * Filters training records according to specified export options.
  */
 export function filterRecords(
@@ -231,6 +283,17 @@ export function filterRecords(
 }
 
 /**
+ * Builds Raw Full Sample JSONL string.
+ */
+export function buildRawJsonl(
+  records: TrainingPairRecord[],
+  options?: DatasetExportOptions
+): string {
+  const filtered = filterRecords(records, options);
+  return filtered.map((record) => JSON.stringify(recordToRawJsonl(record))).join("\n");
+}
+
+/**
  * Builds Google Gemini Supervised Fine-Tuning JSONL string.
  */
 export function buildGeminiJsonl(
@@ -258,6 +321,19 @@ export function buildChatMlJsonl(
 }
 
 /**
+ * Builds Stanford Alpaca JSONL string.
+ */
+export function buildAlpacaJsonl(
+  records: TrainingPairRecord[],
+  options?: DatasetExportOptions
+): string {
+  const filtered = filterRecords(records, options);
+  return filtered
+    .map((record) => JSON.stringify(recordToAlpaca(record)))
+    .join("\n");
+}
+
+/**
  * Estimates token count using standard ~4 characters per token heuristic.
  */
 export function estimateTokenCount(text: string): number {
@@ -266,7 +342,48 @@ export function estimateTokenCount(text: string): number {
 }
 
 /**
- * Direct App API Sync: Pushes an approved training pair to an external REST / Webhook endpoint.
+ * Sleep helper for exponential backoff.
+ */
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/**
+ * Direct App API Sync: Pushes a batch of training pairs to Cogwheel Web App API
+ * with exponential backoff and idempotency keys, returning a summary.
+ */
+export async function syncBatchToApi(
+  records: TrainingPairRecord[],
+  config: ApiSyncConfig,
+  fetchFn: typeof fetch = fetch
+): Promise<BatchSyncSummary> {
+  const summary: BatchSyncSummary = {
+    total: records.length,
+    successful: 0,
+    failed: 0,
+    errors: [],
+  };
+
+  const endpoint = (config.endpointUrl || "").trim();
+  if (!endpoint) {
+    summary.failed = records.length;
+    summary.errors.push("API endpoint URL is not configured.");
+    return summary;
+  }
+
+  for (const record of records) {
+    const res = await syncRecordToApi(record, config, fetchFn);
+    if (res.success) {
+      summary.successful++;
+    } else {
+      summary.failed++;
+      if (res.error) summary.errors.push(res.error);
+    }
+  }
+
+  return summary;
+}
+
+/**
+ * Direct App API Sync for a single record with exponential backoff and Bearer token.
  */
 export async function syncRecordToApi(
   record: TrainingPairRecord,
@@ -285,6 +402,9 @@ export async function syncRecordToApi(
       error: "Missing endpointUrl",
     };
   }
+
+  const maxRetries = config.maxRetries ?? 2;
+  const rawSample = recordToRawJsonl(record);
 
   const payload = {
     event: "training_pair_sync",
@@ -305,6 +425,7 @@ export async function syncRecordToApi(
     exportFormats: {
       gemini: recordToGemini(record),
       chatMl: recordToChatMl(record, true),
+      alpaca: recordToAlpaca(record),
     },
   };
 
@@ -316,68 +437,55 @@ export async function syncRecordToApi(
     headers["Authorization"] = `Bearer ${config.bearerToken.trim()}`;
   }
 
-  try {
-    const res = await fetchFn(endpoint, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(payload),
-    });
+  let attempt = 0;
+  let lastError = "";
 
-    if (res.ok) {
-      return {
-        success: true,
-        status: res.status,
-        message: `Successfully synced record ${record.id} to backend API (HTTP ${res.status}).`,
-        timestamp: now,
-      };
-    } else {
-      const errText = await res.text().catch(() => "");
-      return {
-        success: false,
-        status: res.status,
-        message: `Failed to sync record (HTTP ${res.status}): ${errText.slice(0, 200)}`,
-        timestamp: now,
-        error: errText,
-      };
-    }
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    return {
-      success: false,
-      status: 0,
-      message: `Network error connecting to API: ${message}`,
-      timestamp: now,
-      error: message,
-    };
-  }
-}
+  while (attempt <= maxRetries) {
+    try {
+      const res = await fetchFn(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify(payload),
+      });
 
-/**
- * Direct App API Sync: Batch pushes multiple training records to the backend endpoint.
- */
-export async function syncBatchToApi(
-  records: TrainingPairRecord[],
-  config: ApiSyncConfig,
-  fetchFn: typeof fetch = fetch
-): Promise<BatchSyncSummary> {
-  const summary: BatchSyncSummary = {
-    total: records.length,
-    successful: 0,
-    failed: 0,
-    errors: [],
-  };
-
-  for (const record of records) {
-    const res = await syncRecordToApi(record, config, fetchFn);
-    if (res.success) {
-      summary.successful++;
-    } else {
-      summary.failed++;
-      if (res.error) {
-        summary.errors.push(`${record.canonicalUrl}: ${res.error}`);
+      if (res.ok) {
+        return {
+          success: true,
+          status: res.status,
+          message: `Successfully synced record ${record.id} to backend API (HTTP ${res.status}).`,
+          timestamp: now,
+          syncedCount: 1,
+        };
       }
+
+      const errText = await res.text().catch(() => "");
+      lastError = errText || `HTTP ${res.status}`;
+
+      if (res.status >= 400 && res.status < 500 && res.status !== 429) {
+        return {
+          success: false,
+          status: res.status,
+          message: `Failed to sync record (HTTP ${res.status}): ${errText.slice(0, 200)}`,
+          timestamp: now,
+          error: errText,
+        };
+      }
+    } catch (err) {
+      lastError = err instanceof Error ? err.message : String(err);
+    }
+
+    attempt++;
+    if (attempt <= maxRetries) {
+      const delay = Math.min(200 * Math.pow(2, attempt), 2000);
+      await wait(delay);
     }
   }
 
-  return summary;
+  return {
+    success: false,
+    status: 0,
+    message: `Exceeded max retries (${maxRetries}). Last error: ${lastError}`,
+    timestamp: now,
+    error: lastError,
+  };
 }

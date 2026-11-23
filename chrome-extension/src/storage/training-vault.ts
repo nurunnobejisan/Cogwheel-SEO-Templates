@@ -1,10 +1,11 @@
 /**
- * Cogwheel SEO & GEO Studio - Training Data Vault (IndexedDB Store)
+ * Cogwheel SEO & GEO Studio - Training Data Vault (IndexedDB Store) v3.0
  *
  * Implements a persistent, client-side dataset repository for fine-tuning
  * and Generative Engine Optimization. Automatically pairs raw webpage DOM snapshots
  * with optimized targets (Title, Meta Description, JSON-LD, and GEO entity blocks),
- * computes dataset quality scores (0-100), and deduplicates by canonical URL hash.
+ * computes dataset quality scores (0-100), extraction confidence (0-100),
+ * classifies pageType, tracks contentHash versioning, and deduplicates by canonical URL.
  */
 
 export interface RawWebInput {
@@ -37,10 +38,26 @@ export interface TrainingScoreBreakdown {
 }
 
 export type TrainingRecordStatus = "pending" | "approved" | "rejected";
+export type TrainingSourceType = "auto" | "manual";
+export type PageTypeLabel =
+  | "hotel_homepage"
+  | "room_details"
+  | "amenities"
+  | "booking"
+  | "location"
+  | "article"
+  | "landing_page"
+  | "other";
 
 export interface TrainingPairRecord {
   id: string; // Unique primary key derived from canonical URL hash
+  schemaVersion: "3.0.0";
   canonicalUrlHash: string;
+  contentHash: string; // Content fingerprint hash for versioning & deduplication
+  version: number;
+  source: TrainingSourceType;
+  pageType: PageTypeLabel;
+  extractionConfidence: number; // 0 - 100
   canonicalUrl: string;
   domain: string;
   brand: string;
@@ -62,7 +79,7 @@ export interface TrainingVaultStats {
 }
 
 export const DB_NAME = "CogwheelTrainingVaultDB";
-export const DB_VERSION = 2;
+export const DB_VERSION = 3;
 export const STORE_NAME = "training_samples";
 
 /**
@@ -75,7 +92,6 @@ export async function computeCanonicalHash(canonicalUrl: string): Promise<string
     .replace(/^https?:\/\//, "")
     .replace(/\/+$/, "");
 
-  // Use Web Crypto API when available in browser / modern runtime
   if (typeof crypto !== "undefined" && crypto.subtle) {
     try {
       const msgUint8 = new TextEncoder().encode(normalized);
@@ -83,17 +99,94 @@ export async function computeCanonicalHash(canonicalUrl: string): Promise<string
       const hashArray = Array.from(new Uint8Array(hashBuffer));
       return hashArray.map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
     } catch {
-      // Fallback to deterministic string hashing if crypto.subtle fails
+      // Fallback
     }
   }
 
-  // Deterministic FNV-1a 32-bit hash fallback
   let hash = 2166136261;
   for (let i = 0; i < normalized.length; i++) {
     hash ^= normalized.charCodeAt(i);
     hash = Math.imul(hash, 16777619);
   }
   return "hash_" + (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+/**
+ * Computes a deterministic content hash of page content for version tracking.
+ */
+export async function computeContentHash(content: string): Promise<string> {
+  const normalized = (content || "").trim().replace(/\s+/g, " ");
+  if (typeof crypto !== "undefined" && crypto.subtle) {
+    try {
+      const msgUint8 = new TextEncoder().encode(normalized);
+      const hashBuffer = await crypto.subtle.digest("SHA-256", msgUint8);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return "ch_" + hashArray.map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 24);
+    } catch {
+      // Fallback
+    }
+  }
+
+  let hash = 2166136261;
+  for (let i = 0; i < normalized.length; i++) {
+    hash ^= normalized.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return "ch_" + (hash >>> 0).toString(16).padStart(8, "0");
+}
+
+/**
+ * Automatically classifies the hotel pageType.
+ */
+export function classifyPageType(url: string, raw: RawWebInput): PageTypeLabel {
+  const lowerUrl = (url || "").toLowerCase();
+  const lowerBody = (raw.rawBodyText || "").toLowerCase();
+
+  if (lowerUrl.includes("/rooms") || lowerUrl.includes("/suites") || lowerUrl.includes("guest-rooms")) {
+    return "room_details";
+  }
+  if (lowerUrl.includes("/amenities") || lowerUrl.includes("/dining") || lowerUrl.includes("/pool") || lowerUrl.includes("/spa")) {
+    return "amenities";
+  }
+  if (lowerUrl.includes("/reservation") || lowerUrl.includes("/book") || lowerUrl.includes("/checkout")) {
+    return "booking";
+  }
+  if (lowerUrl.includes("/location") || lowerUrl.includes("/map") || lowerUrl.includes("/directions") || lowerUrl.includes("/contact")) {
+    return "location";
+  }
+  if (lowerUrl.includes("/blog") || lowerUrl.includes("/article") || lowerUrl.includes("/guide")) {
+    return "article";
+  }
+  try {
+    const p = new URL(url).pathname;
+    if (p === "/" || p === "" || p.endsWith("/index.html")) {
+      return "hotel_homepage";
+    }
+  } catch {
+    if (!url.includes("/") || url.endsWith(".com") || url.endsWith(".org")) {
+      return "hotel_homepage";
+    }
+  }
+
+  if (lowerBody.includes("room") || lowerBody.includes("bed") || lowerBody.includes("rate")) {
+    return "landing_page";
+  }
+
+  return "hotel_homepage";
+}
+
+/**
+ * Computes extraction confidence score (0-100).
+ */
+export function computeExtractionConfidence(raw: RawWebInput): number {
+  let score = 0;
+  if (raw.rawTitle && raw.rawTitle.length >= 10) score += 20;
+  if (raw.rawMetaDesc && raw.rawMetaDesc.length >= 20) score += 20;
+  if (raw.rawH1 && raw.rawH1.length >= 1) score += 20;
+  if (raw.wordCount && raw.wordCount >= 100) score += 20;
+  if (raw.detectedSchemas && raw.detectedSchemas.length >= 1) score += 10;
+  if (raw.canonicalUrl) score += 10;
+  return Math.min(100, score);
 }
 
 /**
@@ -152,8 +245,7 @@ export function computeDatasetQualityScore(
     }
   }
 
-  const total = completeness + optimizationDelta + geoEntityDepth + schemaValidity;
-  const qualityScore = Math.min(100, Math.max(0, total));
+  const qualityScore = completeness + optimizationDelta + geoEntityDepth + schemaValidity;
 
   return {
     qualityScore,
@@ -166,40 +258,82 @@ export function computeDatasetQualityScore(
   };
 }
 
-// In-memory fallback repository when running in environments without IndexedDB (e.g., Node tests)
+// In-Memory Fallback Store for non-browser / test environments
 const inMemoryVault = new Map<string, TrainingPairRecord>();
 
 /**
- * Initializes and returns the IndexedDB database instance.
+ * Migration helper to ensure legacy records conform to v3.0 schema.
  */
-export function openTrainingVaultDb(): Promise<IDBDatabase | null> {
-  if (typeof indexedDB === "undefined") {
-    return Promise.resolve(null);
+function migrateRecordToV3(rawRecord: unknown): TrainingPairRecord {
+  const r = rawRecord as Record<string, unknown>;
+  const rawInput = (r.rawInput || {}) as RawWebInput;
+  const canonicalUrl = (r.canonicalUrl as string) || (rawInput.url as string) || "";
+  const canonicalUrlHash = (r.canonicalUrlHash as string) || (r.id as string) || "hash_legacy";
+
+  return {
+    id: (r.id as string) || canonicalUrlHash,
+    schemaVersion: "3.0.0",
+    canonicalUrlHash,
+    contentHash: (r.contentHash as string) || canonicalUrlHash,
+    version: typeof r.version === "number" ? r.version : 1,
+    source: (r.source as TrainingSourceType) || "manual",
+    pageType: (r.pageType as PageTypeLabel) || classifyPageType(canonicalUrl, rawInput),
+    extractionConfidence:
+      typeof r.extractionConfidence === "number"
+        ? r.extractionConfidence
+        : computeExtractionConfidence(rawInput),
+    canonicalUrl,
+    domain: (r.domain as string) || rawInput.domain || "unknown",
+    brand: (r.brand as string) || "Independent",
+    rawInput,
+    targetOutput: (r.targetOutput || {}) as TargetOptimizedOutput,
+    qualityScore: typeof r.qualityScore === "number" ? r.qualityScore : 75,
+    scoreBreakdown: (r.scoreBreakdown || {
+      completeness: 20,
+      optimizationDelta: 20,
+      geoEntityDepth: 15,
+      schemaValidity: 20,
+    }) as TrainingScoreBreakdown,
+    status: (r.status as TrainingRecordStatus) || "pending",
+    createdAt: (r.createdAt as string) || new Date().toISOString(),
+    updatedAt: (r.updatedAt as string) || new Date().toISOString(),
+  };
+}
+
+/**
+ * Opens or initializes the IndexedDB store for the training vault with v3 schema.
+ */
+export async function openTrainingVaultDb(): Promise<IDBDatabase | null> {
+  if (typeof window === "undefined" || !("indexedDB" in window)) {
+    return null;
   }
 
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    const request = window.indexedDB.open(DB_NAME, DB_VERSION);
 
     request.onupgradeneeded = (event) => {
-      const db = (event.target as IDBOpenDBRequest).result;
+      const db = request.result;
       let store: IDBObjectStore;
       if (!db.objectStoreNames.contains(STORE_NAME)) {
         store = db.createObjectStore(STORE_NAME, { keyPath: "id" });
       } else {
-        store = (event.target as IDBOpenDBRequest).transaction!.objectStore(STORE_NAME);
+        store = (event.currentTarget as IDBOpenDBRequest).transaction!.objectStore(STORE_NAME);
       }
 
       if (!store.indexNames.contains("canonicalUrlHash")) {
-        store.createIndex("canonicalUrlHash", "canonicalUrlHash", { unique: true });
+        store.createIndex("canonicalUrlHash", "canonicalUrlHash", { unique: false });
       }
-      if (!store.indexNames.contains("brand")) {
-        store.createIndex("brand", "brand", { unique: false });
+      if (!store.indexNames.contains("contentHash")) {
+        store.createIndex("contentHash", "contentHash", { unique: false });
       }
-      if (!store.indexNames.contains("qualityScore")) {
-        store.createIndex("qualityScore", "qualityScore", { unique: false });
+      if (!store.indexNames.contains("domain")) {
+        store.createIndex("domain", "domain", { unique: false });
       }
       if (!store.indexNames.contains("status")) {
         store.createIndex("status", "status", { unique: false });
+      }
+      if (!store.indexNames.contains("source")) {
+        store.createIndex("source", "source", { unique: false });
       }
       if (!store.indexNames.contains("createdAt")) {
         store.createIndex("createdAt", "createdAt", { unique: false });
@@ -212,16 +346,21 @@ export function openTrainingVaultDb(): Promise<IDBDatabase | null> {
 }
 
 /**
- * Saves or updates a paired training sample. Deduplicates by canonical URL hash.
+ * Saves or updates a paired training sample.
+ * Features contentHash versioning: dedupes identical content, increments version when content updates.
  */
 export async function saveTrainingPair(params: {
   rawInput: RawWebInput;
   targetOutput: TargetOptimizedOutput;
   brand?: string;
+  source?: TrainingSourceType;
+  pageType?: PageTypeLabel;
   status?: TrainingRecordStatus;
 }): Promise<TrainingPairRecord> {
   const canonicalUrl = params.rawInput.canonicalUrl || params.rawInput.url;
-  const hash = await computeCanonicalHash(canonicalUrl);
+  const canonicalHash = await computeCanonicalHash(canonicalUrl);
+  const contentString = `${params.rawInput.rawTitle}:::${params.rawInput.rawMetaDesc}:::${params.rawInput.rawH1.join("|")}:::${params.rawInput.rawBodyText}`;
+  const contentHash = await computeContentHash(contentString);
   const now = new Date().toISOString();
 
   const { qualityScore, breakdown } = computeDatasetQualityScore(
@@ -230,24 +369,38 @@ export async function saveTrainingPair(params: {
   );
 
   const brand = params.brand || params.targetOutput.brandGuardrail || "Independent";
+  const source = params.source || "manual";
+  const pageType = params.pageType || classifyPageType(canonicalUrl, params.rawInput);
+  const extractionConfidence = computeExtractionConfidence(params.rawInput);
 
   const db = await openTrainingVaultDb();
 
-  // If in IndexedDB environment
   if (db) {
     return new Promise((resolve, reject) => {
       const tx = db.transaction(STORE_NAME, "readwrite");
       const store = tx.objectStore(STORE_NAME);
-
-      const getReq = store.get(hash);
+      const getReq = store.get(canonicalHash);
 
       getReq.onsuccess = () => {
-        const existing = getReq.result as TrainingPairRecord | undefined;
+        const rawExisting = getReq.result;
+        const existing = rawExisting ? migrateRecordToV3(rawExisting) : undefined;
         const status = params.status || existing?.status || "pending";
 
+        // Versioning logic: if content hash changed, increment version
+        let version = 1;
+        if (existing) {
+          version = existing.contentHash === contentHash ? existing.version : existing.version + 1;
+        }
+
         const record: TrainingPairRecord = {
-          id: hash,
-          canonicalUrlHash: hash,
+          id: canonicalHash,
+          schemaVersion: "3.0.0",
+          canonicalUrlHash: canonicalHash,
+          contentHash,
+          version,
+          source,
+          pageType,
+          extractionConfidence,
           canonicalUrl,
           domain: params.rawInput.domain,
           brand,
@@ -270,11 +423,23 @@ export async function saveTrainingPair(params: {
   }
 
   // In-memory fallback
-  const existing = inMemoryVault.get(hash);
+  const rawExisting = inMemoryVault.get(canonicalHash);
+  const existing = rawExisting ? migrateRecordToV3(rawExisting) : undefined;
   const status = params.status || existing?.status || "pending";
+  let version = 1;
+  if (existing) {
+    version = existing.contentHash === contentHash ? existing.version : existing.version + 1;
+  }
+
   const record: TrainingPairRecord = {
-    id: hash,
-    canonicalUrlHash: hash,
+    id: canonicalHash,
+    schemaVersion: "3.0.0",
+    canonicalUrlHash: canonicalHash,
+    contentHash,
+    version,
+    source,
+    pageType,
+    extractionConfidence,
     canonicalUrl,
     domain: params.rawInput.domain,
     brand,
@@ -287,7 +452,7 @@ export async function saveTrainingPair(params: {
     updatedAt: now,
   };
 
-  inMemoryVault.set(hash, record);
+  inMemoryVault.set(canonicalHash, record);
   return record;
 }
 
@@ -308,6 +473,8 @@ export async function updateTrainingPairTarget(
     rawInput: existing.rawInput,
     targetOutput,
     brand: targetOutput.brandGuardrail || existing.brand,
+    source: existing.source,
+    pageType: existing.pageType,
     status: status || existing.status,
   });
 }
@@ -368,6 +535,23 @@ export async function deleteTrainingPair(id: string): Promise<boolean> {
 }
 
 /**
+ * Deletes all training records belonging to a specific domain.
+ */
+export async function deleteSamplesByDomain(domain: string): Promise<number> {
+  const targetDomain = domain.toLowerCase().trim();
+  const records = await getAllTrainingPairs();
+  const toDelete = records.filter(
+    (r) => r.domain.toLowerCase() === targetDomain || r.domain.toLowerCase().includes(targetDomain)
+  );
+
+  for (const item of toDelete) {
+    await deleteTrainingPair(item.id);
+  }
+
+  return toDelete.length;
+}
+
+/**
  * Retrieves a training sample by primary ID (hash).
  */
 export async function getTrainingPairById(id: string): Promise<TrainingPairRecord | null> {
@@ -379,12 +563,16 @@ export async function getTrainingPairById(id: string): Promise<TrainingPairRecor
       const store = tx.objectStore(STORE_NAME);
       const req = store.get(id);
 
-      req.onsuccess = () => resolve((req.result as TrainingPairRecord) || null);
+      req.onsuccess = () => {
+        if (!req.result) resolve(null);
+        else resolve(migrateRecordToV3(req.result));
+      };
       req.onerror = () => reject(req.error);
     });
   }
 
-  return inMemoryVault.get(id) || null;
+  const found = inMemoryVault.get(id);
+  return found ? migrateRecordToV3(found) : null;
 }
 
 /**
@@ -396,7 +584,7 @@ export async function getTrainingPairByUrl(canonicalUrl: string): Promise<Traini
 }
 
 /**
- * Retrieves all training samples currently saved in the local vault.
+ * Retrieves all training samples currently saved in the local vault with migration applied.
  */
 export async function getAllTrainingPairs(): Promise<TrainingPairRecord[]> {
   const db = await openTrainingVaultDb();
@@ -408,21 +596,15 @@ export async function getAllTrainingPairs(): Promise<TrainingPairRecord[]> {
       const req = store.getAll();
 
       req.onsuccess = () => {
-        const records = (req.result as TrainingPairRecord[]) || [];
-        const normalized = records.map((r) => ({
-          ...r,
-          status: r.status || "pending",
-        }));
-        resolve(normalized);
+        const records = (req.result || []) as unknown[];
+        const migrated = records.map(migrateRecordToV3);
+        resolve(migrated);
       };
       req.onerror = () => reject(req.error);
     });
   }
 
-  return Array.from(inMemoryVault.values()).map((r) => ({
-    ...r,
-    status: r.status || "pending",
-  }));
+  return Array.from(inMemoryVault.values()).map(migrateRecordToV3);
 }
 
 /**
@@ -500,6 +682,11 @@ export async function exportVaultAsJsonl(): Promise<string> {
           qualityScore: record.qualityScore,
           brand: record.brand,
           status: record.status,
+          source: record.source,
+          pageType: record.pageType,
+          extractionConfidence: record.extractionConfidence,
+          contentHash: record.contentHash,
+          version: record.version,
         },
       })
     )

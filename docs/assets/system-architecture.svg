@@ -76,8 +76,8 @@
   <!-- ========================================================================= -->
   <g transform="translate(30, 22)">
     <text x="0" y="24" fill="#ffffff" font-size="20" font-weight="800" letter-spacing="0.5">COGWHEEL SEO &amp; GEO STUDIO</text>
-    <text x="325" y="24" fill="#10b981" font-size="13" font-weight="700" letter-spacing="1">SYSTEM ARCHITECTURE v2.7.0</text>
-    <text x="0" y="44" fill="#a1a1aa" font-size="12">Multi-Tier Architecture, AI Training Vault, Supervised Fine-Tuning &amp; Hybrid Inference Routing</text>
+    <text x="325" y="24" fill="#10b981" font-size="13" font-weight="700" letter-spacing="1">SYSTEM ARCHITECTURE v3.0.0</text>
+    <text x="0" y="44" fill="#a1a1aa" font-size="12">Universal MV3 Extension, AI Training Vault v3, Hardened Sanitizer &amp; Hybrid Inference</text>
 
     <!-- Header Badges -->
     <g transform="translate(710, 8)">
@@ -149,24 +149,24 @@
     <g transform="translate(15, 340)">
       <rect width="200" height="110" rx="6" fill="#18181f" stroke="#10b981" stroke-width="1.2"/>
       <rect x="10" y="10" width="8" height="8" rx="2" fill="#10b981"/>
-      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">AI Training Capture</text>
+      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">AI Training Capture v3.0</text>
       <text x="10" y="34" fill="#34d399" font-size="9.5">content/training-capture.ts</text>
-      <text x="10" y="50" fill="#a1a1aa" font-size="10">• Read-only DOM snapshot</text>
-      <text x="10" y="64" fill="#a1a1aa" font-size="10">• OpenGraph &amp; Schema harvest</text>
-      <text x="10" y="78" fill="#a1a1aa" font-size="10">• Main content article text</text>
-      <text x="10" y="94" fill="#34d399" font-size="9.5">→ Returns CapturedWebSample</text>
+      <text x="10" y="50" fill="#a1a1aa" font-size="10">• H1-H6, JSON-LD, Microdata</text>
+      <text x="10" y="64" fill="#a1a1aa" font-size="10">• CTAs, Amenities, Rates, CWV</text>
+      <text x="10" y="78" fill="#a1a1aa" font-size="10">• Tech Stack &amp; Shadow DOM</text>
+      <text x="10" y="94" fill="#34d399" font-size="9.5">→ Universal CapturedWebSample</text>
     </g>
 
     <!-- Card 1.5: PII Sanitization Engine -->
     <g transform="translate(15, 464)">
       <rect width="200" height="106" rx="6" fill="#18181f" stroke="#ec4899" stroke-width="1.2"/>
       <rect x="10" y="10" width="8" height="8" rx="2" fill="#ec4899"/>
-      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">PII Sanitizer Engine</text>
+      <text x="24" y="18" fill="#ffffff" font-size="12" font-weight="700">Hardened Sanitizer</text>
       <text x="10" y="34" fill="#f472b6" font-size="9.5">sanitizeTextAndRedactPii()</text>
-      <text x="10" y="50" fill="#a1a1aa" font-size="10">• [REDACTED_EMAIL] (RFC 5322)</text>
-      <text x="10" y="64" fill="#a1a1aa" font-size="10">• [REDACTED_PHONE] (Intl/US)</text>
-      <text x="10" y="78" fill="#a1a1aa" font-size="10">• [REDACTED_QUERY] (Auth/Tokens)</text>
-      <text x="10" y="94" fill="#f472b6" font-size="9.5">Zero Data Leakage Guarantee</text>
+      <text x="10" y="50" fill="#a1a1aa" font-size="10">• Preserves emails &amp; queries</text>
+      <text x="10" y="64" fill="#a1a1aa" font-size="10">• [REDACTED_PHONE] (No years/zips)</text>
+      <text x="10" y="78" fill="#a1a1aa" font-size="10">• Redacts JWT, API Tokens, Cards</text>
+      <text x="10" y="94" fill="#f472b6" font-size="9.5">Strict Security Guardrails</text>
     </g>
 
     <!-- Intra-column connectors -->
