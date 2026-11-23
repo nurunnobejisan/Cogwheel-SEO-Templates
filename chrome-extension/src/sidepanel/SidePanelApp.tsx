@@ -217,9 +217,10 @@ export function SidePanelApp() {
 
   // Interactive Auto-Fix Handler
   const handleFixIssue = async (win: QuickWinItem) => {
-    const hotelName = pageData.h1Elements[0] || activeProfile.name || "SpringHill Suites Panama City Beachfront";
-    const brand = activeProfile.brand || "Marriott";
-    const canonicalUrl = pageData.canonical || pageData.url || "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/";
+    const siteName = pageData.h1Elements[0] || (pageData.hostname ? pageData.hostname.replace(/^www\./, "") : activeProfile.name) || "Official Website";
+    const hotelName = siteName;
+    const brand = activeProfile.brand || "Independent";
+    const canonicalUrl = pageData.canonical || pageData.url || "https://example.com";
 
     const fixResult = await generateSeoAutoFix({
       issueId: win.id,
@@ -278,50 +279,62 @@ export function SidePanelApp() {
         language: fixResult.language,
       });
     } else if (win.id === "schema-hotel-missing") {
-      const hotelSchema = {
-        "@type": "Hotel",
-        name: "SpringHill Suites Panama City Beachfront",
-        description: "Beachfront hotel with oceanfront suites, lazy river pool, and complimentary breakfast.",
-        url: "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/",
-        telephone: "+1-850-230-6004",
-        priceRange: "$$$",
-        address: {
-          "@type": "PostalAddress",
-          streetAddress: "14401 Front Beach Rd",
-          addressLocality: "Panama City Beach",
-          addressRegion: "FL",
-          postalCode: "32413",
-          addressCountry: "US",
-        },
-        geo: {
-          "@type": "GeoCoordinates",
-          latitude: 30.2037,
-          longitude: -85.8612,
-        },
-        checkinTime: "16:00",
-        checkoutTime: "11:00",
-        amenityFeature: [
-          { "@type": "LocationFeatureSpecification", name: "Oceanfront Pool & Lazy River", value: true },
-          { "@type": "LocationFeatureSpecification", name: "Free High-Speed Wi-Fi", value: true },
-          { "@type": "LocationFeatureSpecification", name: "Complimentary Hot Breakfast", value: true },
-        ],
-      };
+      const isHotel = Boolean(
+        pageData.url.toLowerCase().match(/hotel|resort|inn|suite|marriott|hilton|hyatt|ihg|motel|stay|lodge/) ||
+        pageData.title.toLowerCase().match(/hotel|resort|suites|inn|lodging/)
+      );
+
+      const generatedSchema = isHotel
+        ? {
+            "@type": "Hotel",
+            name: siteName,
+            description: pageData.metaDesc || "Premier hospitality destination with modern suites, pool, and guest amenities.",
+            url: canonicalUrl,
+            telephone: activeProfile.phone || "+1-850-230-6004",
+            priceRange: "$$$",
+            address: {
+              "@type": "PostalAddress",
+              streetAddress: activeProfile.address || "14401 Front Beach Rd",
+              addressLocality: activeProfile.city || "Panama City Beach",
+              addressRegion: activeProfile.state || "FL",
+              postalCode: activeProfile.postalCode || "32413",
+              addressCountry: "US",
+            },
+            geo: {
+              "@type": "GeoCoordinates",
+              latitude: 30.2037,
+              longitude: -85.8612,
+            },
+            checkinTime: "16:00",
+            checkoutTime: "11:00",
+            amenityFeature: [
+              { "@type": "LocationFeatureSpecification", name: "High-Speed Wi-Fi", value: true },
+              { "@type": "LocationFeatureSpecification", name: "Complimentary Hot Breakfast", value: true },
+            ],
+          }
+        : {
+            "@type": "Organization",
+            name: siteName,
+            url: canonicalUrl,
+            description: pageData.metaDesc || `${siteName} official website.`,
+            sameAs: pageData.socialLinks?.map((s) => s.url) || [],
+          };
 
       setPageData((prev) => ({
         ...prev,
         schemas: [
           ...prev.schemas.filter((s) => {
             const t = String(s["@type"] || "").toLowerCase();
-            return !t.includes("hotel") && !t.includes("lodging") && !t.includes("resort") && !t.includes("localbusiness");
+            return !t.includes("hotel") && !t.includes("organization") && !t.includes("website");
           }),
-          hotelSchema,
+          generatedSchema,
         ],
       }));
 
       const jsonSnippet = `<script type="application/ld+json">\n${JSON.stringify(
         {
           "@context": "https://schema.org",
-          ...hotelSchema,
+          ...generatedSchema,
         },
         null,
         2
@@ -329,17 +342,17 @@ export function SidePanelApp() {
 
       setFixedDrawer({
         isOpen: true,
-        issueTitle: fixResult.source === "custom_tuned_model" ? fixResult.issueTitle : "Hotel Schema Markup Injected",
+        issueTitle: fixResult.source === "custom_tuned_model" ? fixResult.issueTitle : (isHotel ? "Hotel Schema Markup Injected" : "Organization Schema Injected"),
         issueCategory: fixResult.issueCategory,
-        description: fixResult.source === "custom_tuned_model" ? fixResult.description : "Injected valid Schema.org/Hotel structured data with coordinates, amenities, and contact points.",
+        description: fixResult.source === "custom_tuned_model" ? fixResult.description : (isHotel ? "Injected valid Schema.org/Hotel structured data with coordinates, amenities, and contact points." : "Injected valid Schema.org/Organization structured data for universal search and entity graph recognition."),
         codeSnippet: fixResult.source === "custom_tuned_model" ? fixResult.codeSnippet : jsonSnippet,
         language: "json",
       });
     } else if (win.id === "og-missing") {
-      const ogTitle = "SpringHill Suites Panama City Beachfront | Official Site";
-      const ogDesc = "Stay directly on the beach with lazy river and gulf-front suites. Best rate guarantee when booking direct.";
-      const ogImg = "https://cache.marriott.com/content/dam/marriott-renditions/ECPSB/ecpsb-exterior-001.jpg";
-      const ogUrl = "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/";
+      const ogTitle = pageData.title || `${siteName} | Official Site`;
+      const ogDesc = pageData.metaDesc || `Discover official solutions, products, and direct benefits from ${siteName}.`;
+      const ogImg = pageData.ogImage || (pageData.imagesList && pageData.imagesList[0]?.src) || "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&h=630&q=80";
+      const ogUrl = canonicalUrl;
 
       setPageData((prev) => ({
         ...prev,
@@ -350,7 +363,7 @@ export function SidePanelApp() {
         ogImage: ogImg,
       }));
 
-      const snippet = `<!-- Open Graph & Twitter Social Metadata -->\n<meta property="og:type" content="hotel" />\n<meta property="og:site_name" content="Marriott International" />\n<meta property="og:title" content="${ogTitle}" />\n<meta property="og:description" content="${ogDesc}" />\n<meta property="og:image" content="${ogImg}" />\n<meta property="og:url" content="${ogUrl}" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:title" content="${ogTitle}" />\n<meta name="twitter:description" content="${ogDesc}" />\n<meta name="twitter:image" content="${ogImg}" />`;
+      const snippet = `<!-- Open Graph & Twitter Social Metadata -->\n<meta property="og:type" content="website" />\n<meta property="og:site_name" content="${siteName}" />\n<meta property="og:title" content="${ogTitle}" />\n<meta property="og:description" content="${ogDesc}" />\n<meta property="og:image" content="${ogImg}" />\n<meta property="og:url" content="${ogUrl}" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:title" content="${ogTitle}" />\n<meta name="twitter:description" content="${ogDesc}" />\n<meta name="twitter:image" content="${ogImg}" />`;
 
       setFixedDrawer({
         isOpen: true,

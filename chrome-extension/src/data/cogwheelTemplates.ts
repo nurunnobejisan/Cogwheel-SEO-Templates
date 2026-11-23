@@ -449,6 +449,20 @@ add_filter( 'wpseo_metadesc', function( $desc ) {
 
 export const PRESET_CLIENT_PROFILES: ClientProfile[] = [
   {
+    id: "universal-website",
+    name: "Universal Website (Any Site / E-Commerce / SaaS)",
+    brand: "Independent",
+    domain: "",
+    city: "Global",
+    state: "",
+    primaryKeywords: ["official website", "brand services", "online solutions"],
+    usps: ["Direct official access", "Verified security & performance", "Comprehensive solutions"],
+    phone: "",
+    address: "",
+    postalCode: "",
+    startingRate: "",
+  },
+  {
     id: "springhill-pcb",
     name: "SpringHill Suites Panama City Beachfront",
     brand: "SpringHill Suites by Marriott",
@@ -602,20 +616,33 @@ export function calculateSeoScores(data: PageAuditData): ScoreBreakdown {
   if (hasCanonical) schemaTechnical += 25;
   if (data.hasViewport) schemaTechnical += 20;
 
-  // Schema presence (Schema.org/Hotel)
-  const hasHotelSchema = (data.schemas || []).some((s) => {
+  // Schema presence (Supports Hotel, Organization, WebSite, LocalBusiness, Product, Article, SoftwareApplication, Service, etc.)
+  const hasStructuredSchema = (data.schemas || []).some((s) => {
     const t = String(s["@type"] || "").toLowerCase();
-    return t.includes("hotel") || t.includes("lodging") || t.includes("resort") || t.includes("localbusiness");
+    return (
+      t.includes("hotel") ||
+      t.includes("lodging") ||
+      t.includes("resort") ||
+      t.includes("localbusiness") ||
+      t.includes("organization") ||
+      t.includes("website") ||
+      t.includes("product") ||
+      t.includes("article") ||
+      t.includes("softwareapplication") ||
+      t.includes("service") ||
+      t.includes("corporation") ||
+      t.includes("store")
+    );
   });
 
-  if (hasHotelSchema) {
+  if (hasStructuredSchema) {
     schemaTechnical += 35;
   } else {
     quickWins.push({
       id: "schema-hotel-missing",
-      title: "Missing JSON-LD Hotel Schema (Missing JSON-LD Schema)",
+      title: "Missing Structured Data (JSON-LD Schema)",
       severity: "high",
-      impact: "Missing Schema.org/Hotel structured data blocks Google rich snippets, pricing badges, and map entities.",
+      impact: "Missing Schema.org structured data (Organization, LocalBusiness, Product, Hotel, or WebSite) blocks Google rich snippets and entity knowledge graphs.",
       templateIdToFix: "schema-hotel-graph",
       fixActionLabel: "Fix ->",
     });
