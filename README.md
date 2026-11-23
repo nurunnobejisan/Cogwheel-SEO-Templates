@@ -7,6 +7,7 @@
     <img src="https://img.shields.io/badge/Python-3.11%2B%20Typed-3776AB?style=flat-square&logo=python&logoColor=white" alt="Python" />
     <img src="https://img.shields.io/badge/Chrome-Manifest%20V3-10B981?style=flat-square&logo=googlechrome&logoColor=white" alt="Manifest V3" />
     <img src="https://img.shields.io/github/v/release/jisan-razibmarketing/Cogwheel-SEO-Templates?style=flat-square&color=6366F1" alt="Release" />
+    <img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License: MIT" />
   </p>
 </div>
 
@@ -14,143 +15,95 @@
 
 ## Overview
 
-**Cogwheel SEO & GEO Studio** is a production-grade Chrome Side Panel inspector, template engine, and batch auditing pipeline built for multi-property hospitality portfolios (**Marriott, Hilton, IHG, Hyatt, and Independent Luxury Hotels**).
+**Cogwheel SEO & GEO Studio** is a production-grade Chrome Side Panel inspector, template engine, and batch auditing pipeline built specifically for multi-property hospitality portfolios (**Marriott International, Hilton Worldwide, IHG Hotels & Resorts, Hyatt Hotels Corporation, and Independent Luxury Hotels**).
 
-### Core Capabilities
-- **Real-Time SERP Pixel Engine**: Exact Arial `20px` (`580px` title) and `14px` (`920px` meta description) pixel-width budgeting with Desktop, Mobile, and Social Open Graph previews.
-- **Brand-Compliant Guardrails**: Automated enforcement of franchised brand rules, prohibited superlatives, and mandatory suffix structures.
-- **JSON-LD & Entity Graph Generator**: One-click `Hotel`, `LodgingBusiness`, `FAQPage`, `EventVenue`, and `sameAs` structured data injection.
-- **GEO AI Readiness Scoring**: Evaluates property pages for citation readiness across ChatGPT, Google Gemini, and Perplexity.
-- **Zero-Maintenance OTA Rule Sync**: Background Manifest V3 service worker automatically syncs updated keyword matrices and brand rules from GitHub.
+The suite combines real-time physical pixel budgeting (Arial 20px / 14px), automated franchise brand guardrail enforcement, Generative Engine Optimization (GEO) scoring for AI citation readiness (Google Gemini, ChatGPT Search, Perplexity), composable Schema.org structured data generators, and client-ready deliverable exports.
 
 ---
 
 ## System Architecture
 
 ```mermaid
-flowchart LR
-    A["Active Hotel DOM"] --> B["Manifest V3 Content Inspector"]
-    B --> C["Audit & Pixel Engine"]
-    D[("GitHub OTA Rules & 78-Keyword Matrix")] --> C
-    C --> E["Side Panel Studio UI"]
-    C --> F["JSON-LD & Executive Report Export"]
-    G["Python Batch Portfolio CLI"] --> D
+flowchart TD
+    subgraph BrowserRuntime ["Browser Runtime (Chrome Manifest V3)"]
+        DOM["Active Hotel DOM"] --> ContentScript["Content Script (Inspector & Overlays)"]
+        ContentScript -->|"DOM Data Message"| SidePanel["Side Panel UI (React 18 + Vite)"]
+        
+        subgraph SidePanelEngines ["Client-Side Audit Engines"]
+            PixelEngine["SERP Pixel Calculator (Arial 20px / 14px)"]
+            BrandEngine["Brand Standards & Suffix Validator"]
+            SchemaEngine["JSON-LD Graph Generator"]
+            ExportEngine["Client Deliverable Generator (HTML / JSON-LD / CSV)"]
+        end
+
+        SidePanel --> SidePanelEngines
+        ServiceWorker["Background Service Worker"] -->|"chrome.storage.local"| SidePanel
+    end
+
+    subgraph GitHubEcosystem ["GitHub Main Distribution"]
+        RemoteMatrix["78-Keyword Strategy Matrix (JSON)"]
+        RemoteOta["OTA Live Config & Scoring Weights (JSON)"]
+        RemoteManifest["manifest.json (SemVer)"]
+        ReleaseAssets["Release ZIP & updates.xml"]
+    end
+
+    subgraph PythonLayer ["Python 3.11+ Portfolio Automation"]
+        BatchAuditor["Batch Portfolio Auditor CLI"]
+        SchemaValidator["Schema Validation CLI"]
+        PyModels["Pydantic Data Models"]
+    end
+
+    ServiceWorker -->|"Layer A: 6h Alarm Sync"| RemoteMatrix
+    ServiceWorker -->|"Layer A: Scoring Weights"| RemoteOta
+    ServiceWorker -->|"Layer B: SemVer Check"| RemoteManifest
+    SidePanel -->|"1-Click Download"| ReleaseAssets
+
+    BatchAuditor --> PyModels
+    SchemaValidator --> PyModels
+    PyModels -.->|"Mirrors"| SidePanelEngines
 ```
+
+For complete technical specifications, review the [Architecture Guide](docs/ARCHITECTURE.md).
 
 ---
 
-## Project Structure
+## Enterprise Feature Matrix
 
-```
-Cogwheel-SEO-Templates/
-├── chrome-extension/              # Production Manifest V3 Chrome Extension
-│   ├── public/                    # Extension static assets & manifest.json
-│   ├── src/
-│   │   ├── background/            # Service worker & GitHub 2-layer auto-updater
-│   │   ├── components/            # Studio, Overlays, Batch, Settings, Gauges
-│   │   ├── content/               # 1-click DOM context extractor & visual overlays
-│   │   ├── data/                  # Pre-compiled hospitality templates & audit rules
-│   │   ├── sidepanel/             # Chrome Side Panel inspector application
-│   │   ├── types/                 # Strict TypeScript contracts & update schemas
-│   │   └── utils/                 # Arial pixel width engine & URL security
-│   └── package.json
-├── data/                          # Shared data & live sync assets
-│   ├── 78-keyword-strategy-matrix.json  # 78 hospitality SEO/GEO keyword dataset
-│   └── ota-config.json            # Live OTA rules, pixel thresholds & scoring weights
-├── templates/                     # Production Markdown & HTML templates
-│   ├── brand-compliant-hotel-onpage.md
-│   ├── hotel-geo-ai-visibility.md
-│   ├── hotel-gbp-unap-audit.md
-│   ├── hotel-lodging-schema.md
-│   ├── direct-booking-ota-displacement.md
-│   ├── local-proximity-destination-guide.md
-│   ├── hotel-meetings-events-rfp.md
-│   ├── hotel-opening-flag-change-seo.md
-│   ├── multi-property-cannibalization-matrix.md
-│   ├── hotel-destination-guide.html
-│   ├── hotel-room-showcase.html
-│   └── hotel-faq-amenities.html
-├── schemas/                       # Composable JSON-LD @graph Builders
-│   ├── article.ts                 # Schema.org Article
-│   ├── product.ts                 # Schema.org Product (Offer + AggregateRating)
-│   ├── faqPage.ts                 # Schema.org FAQPage (Question + Answer)
-│   ├── localBusiness.ts           # Schema.org Hotel / LodgingBusiness
-│   ├── breadcrumbList.ts          # Schema.org BreadcrumbList
-│   └── graphBuilder.ts            # Unified @graph composer
-├── validators/                    # Core Quality & Security Gates
-│   ├── variableResolver.ts        # Strict template compiler, fallbacks & leak scanner
-│   ├── xssProtection.ts           # Context-aware HTML & attribute sanitization
-│   ├── canonicalNormalizer.ts     # Protocol enforcer, query cleaner & slash normalizer
-│   ├── robotsGuardrails.ts        # Env-aware robots & production noindex blocker
-│   ├── serpOptimizer.ts           # Typography character width lookup & title trimmer
-│   ├── uniquenessGate.ts          # N-gram & Jaccard similarity scorer (>70% duplicate block)
-│   └── internalLinker.ts          # Manifest-driven semantic contextual linker
-├── exporters/                     # Multi-CMS Export Adapters
-│   ├── htmlExporter.ts            # Clean HTML5 with metadata & minification
-│   ├── shopifyExporter.ts         # Shopify Liquid snippets (.liquid) & sections
-│   ├── wordPressExporter.ts       # WordPress PHP partials & Yoast/RankMath mapper
-│   └── webflowExporter.ts         # Webflow Collection CSV & rich-text exporter
-├── tests/                         # Automated Regression & Linter Suite
-│   ├── auto-updater.test.ts       # SemVer comparison & auto-update test suite
-│   ├── cogwheel-optimal-audit.test.ts # 100/100 4-gauge optimal score verification
-│   ├── variableResolver.test.ts
-│   ├── securityGuardrails.test.ts
-│   ├── schemas.test.ts
-│   ├── serpOptimizer.test.ts
-│   └── seoLinter.ts               # Master 10-Gate SEO Quality Checker
-├── .github/workflows/             # Continuous Integration Pipelines
-│   ├── auto-release.yml           # Automated extension build, zip, & release pipeline
-│   └── seo-integrity.yml          # GitHub Actions automated linter & secret scanner
-├── updates.xml                    # Enterprise / CRX auto-update manifest
-├── llms.txt                       # Machine-readable AI crawler documentation index
-└── package.json                   # Root scripts and workspace dependencies
-```
-
----
-
-## Chrome Extension Setup
-
-### Installation (Developer Mode)
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates.git
-   cd Cogwheel-SEO-Templates
-   ```
-2. Build the extension bundle:
-   ```bash
-   cd chrome-extension
-   npm ci
-   npm run build
-   ```
-3. Open Google Chrome and navigate to `chrome://extensions/`.
-4. Toggle **Developer mode** in the top-right corner.
-5. Click **Load unpacked** and select the `chrome-extension/dist` folder.
-6. Open any hotel website or property URL and click the Cogwheel extension icon to launch the Side Panel.
-
-### Two-Layer Free Auto-Update System
-- **Layer A (Silent OTA Live Sync)**: `chrome.alarms` triggers background synchronization every 6 hours, fetching the latest keyword matrices, scoring weights, and brand guardrails from GitHub `main` and caching them in `chrome.storage.local`.
-- **Layer B (Extension Binary Checker)**: Verifies the remote `manifest.json` version against the local installation and sets an action badge (`NEW`) with an in-app banner for 1-click update archive downloads.
-
----
-
-## Master Template Catalog & Index
-
-The studio includes 9 production Markdown templates and 3 HTML component templates engineered for hospitality SEO, Generative Engine Optimization (GEO), and multi-property portfolio management:
-
-| Template | Category | Primary SEO / GEO Use Case | Target Search Engines |
+| Capability | Module | Scope & Technical Implementation | Primary Business Benefit |
 |---|---|---|---|
-| [`brand-compliant-hotel-onpage.md`](templates/brand-compliant-hotel-onpage.md) | Content & On-Page Architecture | Brand.com on-page copy complying with strict character caps and restricted terminology across Marriott, Hilton, IHG, and Hyatt. | Google SERP, Bing, Google Gemini, ChatGPT Search, Perplexity Pro |
-| [`hotel-geo-ai-visibility.md`](templates/hotel-geo-ai-visibility.md) | AI Search & GEO Optimization | Generative Engine Optimization via high-density entity positioning, conversational traveler prompt testing, and structured Q&A. | Google Gemini, ChatGPT Search, Perplexity Pro, Google AI Overviews |
-| [`hotel-gbp-unap-audit.md`](templates/hotel-gbp-unap-audit.md) | Local SEO & Citation Audit | UNAP consistency auditing across Google, TripAdvisor, Apple Maps, and OTAs, plus 30-day GBP update and review response workflows. | Google Maps, Google Local Pack, Apple Maps, TripAdvisor, Bing Places |
-| [`hotel-lodging-schema.md`](templates/hotel-lodging-schema.md) | Structured Data & Technical Schema | Copy-pasteable JSON-LD `@graph` schema for `Hotel`, `HotelRoom`, `FAQPage`, `AggregateRating`, coordinates, and entity links. | Google Rich Results, Schema.org Validators, Bing, Gemini |
-| [`direct-booking-ota-displacement.md`](templates/direct-booking-ota-displacement.md) | Direct Booking & Commercial CRO | Shifting searchers from high-commission OTAs via pre-booking window strategy, transparent pricing, and direct-booking perks. | Google Search, Google Travel / Hotel Ads, Bing Search, AI Search Engines |
-| [`local-proximity-destination-guide.md`](templates/local-proximity-destination-guide.md) | Local SEO & Geographic Proximity | Capturing demand near airports, convention centers, stadiums, universities, and hospitals with verified transit matrices. | Google Search, Google Maps, Google Gemini, Perplexity Pro |
-| [`hotel-meetings-events-rfp.md`](templates/hotel-meetings-events-rfp.md) | B2B Group Sales & Event RFP | Capturing high-margin corporate meetings, conferences, and wedding room blocks with standardized capacity charts and `EventVenue` schema. | Google Search, Bing Search, Google Gemini, ChatGPT Search, Perplexity Pro |
-| [`hotel-opening-flag-change-seo.md`](templates/hotel-opening-flag-change-seo.md) | Technical SEO & Brand Migration | 90-day phased checklist (T-60, Launch, T+30) and 1:1 301 redirect mapping for openings, brand conversions, and flag changes. | Google Search, Google Maps, Bing Search, Google Gemini, ChatGPT Search |
-| [`multi-property-cannibalization-matrix.md`](templates/multi-property-cannibalization-matrix.md) | Portfolio Strategy & Governance | Partitioning keyword targeting by sub-market, brand tier, and traveler intent across sibling properties in the same MSA. | Google Search, Google Maps, Google Gemini, ChatGPT Search, Perplexity Pro |
-| [`hotel-destination-guide.html`](templates/hotel-destination-guide.html) | HTML Production Components | Semantic HTML destination and neighborhood exploration layout with landmark proximity markers. | Google Desktop & Mobile Crawlers |
-| [`hotel-room-showcase.html`](templates/hotel-room-showcase.html) | HTML Production Components | Accessible HTML room and suite showcase layout with structured amenity badges and direct booking CTAs. | Google Desktop & Mobile Crawlers |
-| [`hotel-faq-amenities.html`](templates/hotel-faq-amenities.html) | HTML Production Components | Accessible HTML FAQ accordion layout with direct integration for `FAQPage` schema markup. | Google Desktop & Mobile Crawlers |
+| **Real-Time SERP Pixel Engine** | `pixelCalculator.ts` | Arial 20px (580px Title ceiling) and Arial 14px (920px Meta Description ceiling) exact glyph width table. | Prevents Google search snippet truncation on desktop and mobile. |
+| **Brand Guardrails Engine** | `brandGuardrails.ts` | Case-insensitive lexical scanner checking franchise prohibited terms, superlative claims, and mandatory suffixes across Marriott, Hilton, IHG, Hyatt, and Independent portfolios. | Ensures 100% brand audit compliance with zero corporate franchise penalties. |
+| **GEO AI Citation Scorer** | `cogwheelTemplates.ts` | Evaluates entity density, content depth (450+ words), structured Q&A, and `FAQPage` schema presence. | Positions hotel web pages as authoritative sources in Google Gemini Overviews and ChatGPT Search. |
+| **JSON-LD Entity Graph Builder** | `auditExporters.ts` | Synthesizes Schema.org `@graph` with `Hotel`, `PostalAddress`, `GeoCoordinates`, `amenityFeature`, and `FAQPage`. | Eliminates rich snippet validation errors in Google Search Console. |
+| **Client-Ready Deliverable Exports** | `ExportAuditDropdown.tsx` | Generates 3 deliverables: Executive HTML Audit Report (print-ready), Copy-Ready JSON-LD Package, and Portfolio CSV Export. | Saves 3+ hours per property in client reporting and developer handoffs. |
+| **Two-Layer Free Auto-Updater** | `auto-updater.ts` | Background Manifest V3 service worker executing Layer A silent OTA data sync and Layer B SemVer binary update alerts. | Zero-maintenance client extension without requiring Chrome Web Store republishing. |
+| **Python Batch Portfolio CLI** | `scripts/python/` | CLI taking URLs or CSV input, evaluating On-Page, Schema, and GEO readiness, and outputting executive CSV reports. | Enables agency-wide batch auditing across 50+ hotel properties in minutes. |
+
+---
+
+## Master Hospitality SEO & GEO Templates
+
+The repository includes production-ready Markdown templates in [`templates/`](templates/) engineered with YAML frontmatter and consistent template variables:
+
+### 1. [`brand-compliant-hotel-onpage.md`](templates/brand-compliant-hotel-onpage.md)
+- **Scope**: On-page copy architecture complying with strict character caps and restricted terminology across Marriott Bonvoy, Hilton Honors, IHG One Rewards, World of Hyatt, and Independent brands.
+- **Key Features**: 580px title formulas, 920px meta descriptions, single primary H1 hierarchy, and brand-specific forbidden terminology tables.
+
+### 2. [`hotel-geo-ai-visibility.md`](templates/hotel-geo-ai-visibility.md)
+- **Scope**: Generative Engine Optimization (GEO) guide designed to maximize citation frequency in Google Gemini, ChatGPT Search, and Perplexity Pro.
+- **Key Features**: Conversational traveler prompt testing, high-density entity positioning, and machine-readable structured Q&A blocks.
+
+### 3. [`hotel-gbp-unap-audit.md`](templates/hotel-gbp-unap-audit.md)
+- **Scope**: Universal Name, Address, and Phone (UNAP) citation auditing across Google Business Profile, Apple Maps, TripAdvisor, Bing Places, and OTAs.
+- **Key Features**: 30-day GBP content cadence, review response frameworks for positive/negative guest reviews, and local citation audit checklists.
+
+### 4. [`hotel-lodging-schema.md`](templates/hotel-lodging-schema.md)
+- **Scope**: Complete, copy-pasteable JSON-LD `@graph` schema package for hotel property landing pages.
+- **Key Features**: Unified Schema.org structured data combining `Hotel`, `PostalAddress`, `GeoCoordinates`, `amenityFeature`, `FAQPage`, and `sameAs` entity links.
+
+### 5. [`direct-booking-ota-displacement.md`](templates/direct-booking-ota-displacement.md)
+- **Scope**: Commercial conversion strategy shifting travelers from high-commission OTAs (Expedia, Booking.com) to direct booking channels.
+- **Key Features**: Pre-booking window communication, transparent fee schedules, loyalty points value comparison tables, and direct booking guarantee CTAs.
 
 ---
 
@@ -166,25 +119,71 @@ The repository includes a comprehensive 78-keyword hospitality strategy matrix a
 
 ---
 
-## Testing & Quality Verification
+## Chrome Extension Setup
 
+### Installation (Developer Mode)
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates.git
+   cd Cogwheel-SEO-Templates
+   ```
+2. Build the production extension bundle:
+   ```bash
+   cd chrome-extension
+   npm ci
+   npm run build
+   ```
+3. Open Google Chrome and navigate to `chrome://extensions/`.
+4. Toggle **Developer mode** in the top-right corner.
+5. Click **Load unpacked** and select the `chrome-extension/dist` folder.
+6. Open any hotel website or property URL and click the Cogwheel extension icon to launch the Side Panel.
+
+### In-App Workflows
+- **Live SERP & Social Preview**: Toggle between Desktop SERP (580px limit), Mobile SERP (narrower thresholds with favicon), and Social Open Graph card previews.
+- **Instant Code Remediation**: Click **Fix ->** on any flagged audit issue to view an inline code diff preview with a 1-click **Copy Patch** button.
+- **Export Audit Deliverables**: Click **Export** in the top header to generate client-ready Executive HTML reports, copy-ready JSON-LD snippets, or portfolio CSV rows.
+
+---
+
+## Local Development & Python Automation
+
+### Full-Stack Build & Test Verification
 ```bash
-# 1. Type check all TypeScript source files
+# 1. Typecheck TypeScript across root and extension
 npm run typecheck
+cd chrome-extension && npx tsc --noEmit && cd ..
 
-# 2. Run the Vitest regression suite (73 passing tests across 24 test suites)
+# 2. Run Vitest test suite (108 tests passing across 26 suites)
 npm test
 
-# 3. Run the Master 10-Gate SEO Quality Linter
-npm run lint:seo
+# 3. Build Next.js production web application
+npm run build
 
-# 4. Build Chrome extension production dist bundle
-npm run extension:build
+# 4. Run Python master test suite & schema validation
+python3 tests/python/run_tests.py
+python3 scripts/python/validate_schemas.py
+```
+
+### Python Batch Portfolio Auditing CLI
+```bash
+# Run batch audit across hotel property URLs
+python3 scripts/python/batch_portfolio_audit.py \
+  --urls "https://www.marriott.com/hotel-a" "https://www.hilton.com/hotel-b" \
+  --output-csv portfolio_audit_results.csv
 ```
 
 ---
 
-## License & Attribution
+## Repository Governance
 
-Developed and maintained by **Razib Marketing** — Hospitality Digital Marketing & Generative Engine Optimization.
-Protected under private commercial license.
+- [Security Policy](SECURITY.md): Vulnerability reporting procedures and response timeline.
+- [Changelog](CHANGELOG.md): Detailed release notes adhering to Keep a Changelog standards.
+- [Architecture Specifications](docs/ARCHITECTURE.md): Multi-tier architecture, engines, and CSP governance.
+- [Issue Template](.github/ISSUE_TEMPLATE/bug_report.md): Structured bug report intake template.
+
+---
+
+## License
+
+Distributed under the [MIT License](LICENSE).
+Copyright (c) 2026 Cogwheel Marketing & SEO Contributors.
