@@ -8,6 +8,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 import test_pydantic_models
 import test_content_engine
 import test_schema_validation
+import test_fine_tune_pipeline
 
 def run_all():
     print("=" * 80)
@@ -34,8 +35,16 @@ def run_all():
     test_schema_validation.test_brand_guardrail_model()
     print("[PASS] All Schema Validation tests passed.")
 
+    print("\n> Running test_fine_tune_pipeline...")
+    test_fine_tune_pipeline.test_gemini_line_validation()
+    test_fine_tune_pipeline.test_chatml_line_validation()
+    test_fine_tune_pipeline.test_invalid_line_rejection()
+    test_fine_tune_pipeline.test_dataset_split_and_config_generation()
+    test_fine_tune_pipeline.test_evaluation_summary_table()
+    print("[PASS] All Fine-Tune Pipeline tests passed.")
+
     print("\n" + "-" * 80)
-    print("[PASS] ALL PYTHON LAYER TESTS PASSED (11/11)")
+    print("[PASS] ALL PYTHON LAYER TESTS PASSED (16/16)")
     print("=" * 80)
 
 if __name__ == "__main__":
