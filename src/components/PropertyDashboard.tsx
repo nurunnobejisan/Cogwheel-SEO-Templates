@@ -55,6 +55,9 @@ const CommandPalette = dynamic(() =>
 const SitemapAuditModal = dynamic(() =>
   import("./SitemapAuditModal").then((m) => m.SitemapAuditModal),
 );
+const ImageOptimizationAuditModal = dynamic(() =>
+  import("./ImageOptimizationAuditModal").then((m) => m.ImageOptimizationAuditModal),
+);
 const KeywordResearchView = dynamic(() =>
   import("./KeywordResearchView").then((m) => m.KeywordResearchView),
 );
@@ -138,6 +141,7 @@ export default function PropertyDashboard() {
   const [showVisibilitySuite, setShowVisibilitySuite] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showSitemapAudit, setShowSitemapAudit] = useState(false);
+  const [showImageAudit, setShowImageAudit] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
   const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
   const [comingSoonTask, setComingSoonTask] = useState<TaskConfig | null>(null);
@@ -315,6 +319,10 @@ export default function PropertyDashboard() {
     }
     if (task.id === "site-crawl") {
       setMainTab("crawl");
+      return;
+    }
+    if (task.id === "image-optimization") {
+      setShowImageAudit(true);
       return;
     }
     if (CRAWL_TASK_IDS.has(task.id)) {
@@ -966,6 +974,7 @@ export default function PropertyDashboard() {
               onSubTabChange={(tab) => setLabsSubTab(tab)}
               onRunDeckGeneration={() => setDeliverablesTab("pptx")}
               onExportMemo={() => setDeliverablesTab("memo")}
+              onOpenImageAudit={() => setShowImageAudit(true)}
             />
           )}
 
@@ -979,6 +988,9 @@ export default function PropertyDashboard() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Button variant="secondary" onClick={() => setShowImageAudit(true)}>
+                    Audit Images
+                  </Button>
                   <Button variant="secondary" onClick={() => setShowSitemapAudit(true)}>
                     Audit XML Sitemap
                   </Button>
@@ -1004,6 +1016,16 @@ export default function PropertyDashboard() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowImageAudit(true)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-amber-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
+                  >
+                    <svg className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Audit Images
+                  </button>
                   <button
                     type="button"
                     onClick={() => setShowSitemapAudit(true)}
@@ -1457,6 +1479,22 @@ export default function PropertyDashboard() {
             <SitemapAuditModal
               defaultUrl={activeProperty.url}
               onClose={() => setShowSitemapAudit(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showImageAudit && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowImageAudit(false);
+          }}
+        >
+          <div className="w-full max-w-5xl">
+            <ImageOptimizationAuditModal
+              defaultUrl={activeProperty.url}
+              onClose={() => setShowImageAudit(false)}
             />
           </div>
         </div>

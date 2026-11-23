@@ -50,6 +50,15 @@ The standardized production architecture organizes modular components under:
 | `templates/hotel-faq-amenities.html` | Template | Created | Production sample template for hotel amenities & FAQ |
 | `src/components/PropertyDashboard.tsx` | UI | Updated | Labs experimental hub, luxury visual polish, pipeline telemetry |
 | `src/components/LabsView.tsx` | UI | Updated | 8-Tool Suite: Multi-CMS Exporters, Duplicate Scanner, Canonical Normalizer, GEO AI & SERP |
+| `src/core/image-audit/types.ts` | Core | Created | Type definitions for image audit items, crawler options, and summary metrics |
+| `src/core/image-audit/crawler.ts` | Core | Created | Web crawler extracting <img>, <picture>, <source>, CSS backgrounds & inspecting headers |
+| `src/core/image-audit/excel.ts` | Core | Created | 5-tab XLSX generator matching reference Google Sheet layout with =IMAGE and =LEN formulas |
+| `src/core/image-audit/google-sheets.ts` | Core | Created | Direct export to native Google Sheets via Google Drive/Sheets API |
+| `src/core/image-audit/index.ts` | Core | Created | Barrel export for image audit module |
+| `src/app/api/image-audit/route.ts` | API | Created | Next.js API route handling POST audit runs and GET direct XLSX downloads |
+| `src/components/ImageOptimizationAuditModal.tsx` | UI | Created | Interactive audit interface with live progress, KPI cards, table filters & export |
+| `outputs/site_image_audit.py` | CLI | Created | Standalone zero-dependency Python CLI image auditor with pure-Python OpenXML builder |
+| `tests/image-optimization-audit.test.ts` | Test | Created | Unit test suite for 5-tab workbook generation, formulas, and decorative alt logic |
 | `tests/ts/edge-cases-and-defenses.test.ts` | Test | Created | Defensive unit tests covering regex leaks, quote sanitization & fallbacks |
 | `docs/ARCHITECTURE.md` | Docs | Created | System architecture and directory guide |
 | `docs/reports/TYPESCRIPT_CI_FIX_REPORT.md` | Docs | Created | CI failure investigation and repair report |

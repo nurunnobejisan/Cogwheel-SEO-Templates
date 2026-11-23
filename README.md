@@ -219,6 +219,27 @@ python3 scripts/python/fine_tune_pipeline.py \
   --benchmark
 ```
 
+### Website Image Optimization Audit Tool (CLI & Web UI)
+Audits any website for image performance, SEO alt tags, Core Web Vitals, WebP/AVIF adoption, and layout shifts. Generates a multi-tab Excel spreadsheet matching the [reference Google Sheet layout](https://docs.google.com/spreadsheets/d/1gdX3whxcXFlVNJDat2Avz_q3haNRfWz39TAMK0Q6QGc/edit?gid=1623068993#gid=1623068993).
+
+```bash
+# Run standalone zero-dependency Python CLI auditor
+python3 outputs/site_image_audit.py https://example.com --max-pages 50 --size-threshold 100 --output image-audit.xlsx
+
+# Audits include:
+# 1. Image Optimization  — Matches reference sheet layout with =IMAGE(B2) and =LEN(...) formulas
+# 2. Overview            — Executive scorecard with crawled pages, failure counts & format breakdown
+# 3. Image Inventory     — Comprehensive technical audit (HTML dimensions, loading behavior, status)
+# 4. Recommendations     — Prioritized guidance for WebP/AVIF, Core Web Vitals (LCP/CLS), and WCAG
+# 5. Crawl Log           — Page-by-page crawl status, response time, and discovered asset count
+```
+
+**Web Interface & API:**
+- In the dashboard, click **Audit Images** in the **Site Crawl** tab or launch from **Enterprise SEO Labs**.
+- Live crawl telemetry displays pages scanned, images found, oversized assets, and missing alt counts.
+- 1-click download as `.xlsx` or export directly to native Google Sheets when service account credentials (`GOOGLE_SERVICE_ACCOUNT_B64` or `GOOGLE_SERVICE_ACCOUNT_JSON`) are configured.
+- *Accessibility note:* Correctly distinguishes informative images from decorative images (`alt=""`), which are valid under WCAG and not treated as defects.
+
 ---
 
 ## Repository Governance
