@@ -21,9 +21,6 @@ sys.path.insert(0, str(ROOT_DIR))
 from scripts.python.models import (
     KeywordStrategyMatrix,
     OtaConfig,
-    PageAuditData,
-    AuditPayload,
-    BrandRule,
 )
 
 
@@ -42,7 +39,7 @@ def load_json_file(file_path: Path) -> dict[str, Any]:
     """
     if not file_path.exists():
         raise FileNotFoundError(f"File not found: {file_path}")
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         return json.load(f)  # type: ignore[no-any-return]
 
 
@@ -115,7 +112,7 @@ def validate_exported_json_schemas(schemas_dir: Path) -> bool:
             all_valid = False
             continue
         try:
-            with open(schema_path, "r", encoding="utf-8") as f:
+            with open(schema_path, encoding="utf-8") as f:
                 parsed = json.load(f)
                 title = parsed.get("title", "Unknown")
                 print(f"  [OK] {schema_file} ({title})")

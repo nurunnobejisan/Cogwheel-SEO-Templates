@@ -7,10 +7,9 @@ located in schemas/*.schema.json.
 from __future__ import annotations
 
 from typing import Any, Literal
-from dataclasses import dataclass, field
 
 try:
-    from pydantic import BaseModel, Field, HttpUrl
+    from pydantic import BaseModel, Field
     PYDANTIC_AVAILABLE = True
 except ImportError:
     PYDANTIC_AVAILABLE = False
@@ -51,7 +50,7 @@ except ImportError:
                     res[k] = v
             return res
 
-    def Field(default: Any = ..., **kwargs: Any) -> Any:  # type: ignore[no-redef]
+    def Field(default: Any = ..., **_kwargs: Any) -> Any:  # type: ignore[no-redef]
         """Fallback Field wrapper."""
         return default
 
@@ -69,7 +68,13 @@ KeywordCategory = Literal[
     "Conversational AI Prompts",
 ]
 
-SearchIntent = Literal["Navigational", "Informational", "Commercial", "Transactional"]
+SearchIntent = Literal[
+    "Navigational",
+    "Informational",
+    "Commercial",
+    "Transactional",
+    "Conversational/Generative",
+]
 SearchVolumeTier = Literal["High", "Medium", "Low", "Long-Tail / Conversational"]
 
 
@@ -227,8 +232,19 @@ class ScoringWeights(BaseModel):
     """Composite percentage weighting for the 4 KPI radial gauges."""
 
     onPage: float
-    schema: float
+    schema_weight: float = Field(default=0.35, alias="schema")
     geoAi: float
+
+    if PYDANTIC_AVAILABLE:
+        model_config = {"populate_by_name": True}
+
+    @property  # type: ignore[override]
+    def schema(self) -> float:
+        return self.schema_weight
+
+    @schema.setter
+    def schema(self, val: float) -> None:
+        self.schema_weight = val
 
 
 class OtaConfig(BaseModel):

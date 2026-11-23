@@ -89,7 +89,8 @@
                   "Navigational",
                   "Informational",
                   "Commercial",
-                  "Transactional"
+                  "Transactional",
+                  "Conversational/Generative"
                 ]
               },
               "searchVolumeTier": {

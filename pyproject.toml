@@ -35,6 +35,7 @@ select = [
 ignore = [
     "E501", # Line length handled by formatter
     "B008", # Do not perform function call in argument defaults
+    "E402", # Module level import not at top of file
 ]
 
 [tool.ruff.format]
@@ -45,6 +46,7 @@ line-ending = "auto"
 
 [tool.mypy]
 python_version = "3.11"
+explicit_package_bases = true
 strict = true
 warn_return_any = true
 warn_unused_configs = true

@@ -9,11 +9,8 @@ from __future__ import annotations
 
 import argparse
 import csv
-import json
 import sys
-from dataclasses import asdict
 from pathlib import Path
-from typing import Any
 
 # Ensure parent directory is in sys.path
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -21,11 +18,11 @@ ROOT_DIR = SCRIPT_DIR.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
 from scripts.python.models import (
-    PageAuditData,
-    ScoreBreakdown,
-    AuditPayload,
-    QuickWinItem,
     AuditGrade,
+    AuditPayload,
+    PageAuditData,
+    QuickWinItem,
+    ScoreBreakdown,
 )
 
 

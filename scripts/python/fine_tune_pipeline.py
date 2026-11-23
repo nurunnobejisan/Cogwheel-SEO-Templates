@@ -56,7 +56,7 @@ except ImportError:
                     res[k] = v
             return res
 
-    def Field(default: Any = ..., **kwargs: Any) -> Any:  # type: ignore[no-redef]
+    def Field(default: Any = ..., **_kwargs: Any) -> Any:  # type: ignore[no-redef]
         return default
 
     class ValidationError(Exception):  # type: ignore[no-redef]
@@ -272,7 +272,7 @@ def validate_dataset_file(file_path: Path) -> tuple[DatasetValidationSummary, li
     formats = {r.format_type for r in line_results if r.format_type != "unknown"}
     detected_format: Literal["gemini", "chatml", "mixed", "unknown"]
     if len(formats) == 1:
-        detected_format = next(iter(formats))  # type: ignore[assignment]
+        detected_format = next(iter(formats))
     elif len(formats) > 1:
         detected_format = "mixed"
     else:
@@ -335,12 +335,12 @@ def split_dataset(
     val_path = output_dir / "validation.jsonl"
 
     with train_path.open("w", encoding="utf-8") as f:
-        for l in train_lines:
-            f.write(l + "\n")
+        for line in train_lines:
+            f.write(line + "\n")
 
     with val_path.open("w", encoding="utf-8") as f:
-        for l in val_lines:
-            f.write(l + "\n")
+        for line in val_lines:
+            f.write(line + "\n")
 
     return train_path, val_path, len(train_lines), len(val_lines)
 
@@ -456,7 +456,7 @@ def launch_vertex_ai_job(
             "validation_dataset": str(val_path.resolve()),
         },
         "status": "DRY_RUN_READY" if dry_run else "SUBMITTED",
-        "job_id": f"tuning-job-gemini-{actual_project[:8]}-001",
+        "job_id": f"tuning-job-gemini-{(actual_project or 'default')[:8]}-001",
     }
 
     if not dry_run:
