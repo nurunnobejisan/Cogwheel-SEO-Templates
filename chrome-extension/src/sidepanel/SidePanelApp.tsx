@@ -523,17 +523,40 @@ export function SidePanelApp() {
             <UpdateBanner />
           </div>
 
-          {/* Active URL bar */}
-          <div className="mt-2 flex items-center gap-2 rounded-lg border border-[#27272A] bg-[#111113] px-2.5 py-1.5">
-            <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400 uppercase">
-              {isRestrictedTab ? "SYSTEM" : pageData.protocol.replace(":", "").toUpperCase()}
-            </span>
-            <span className="truncate text-xs font-medium text-[#FAFAFA]">
-              {isRestrictedTab ? "System / New Tab Page" : pageData.hostname}
-            </span>
-            <span className="truncate text-[10px] text-[#71717A] tabular-nums">
-              {isRestrictedTab ? "(Offline Studio Mode)" : pageData.pathname}
-            </span>
+          {/* Active URL & Intelligence bar */}
+          <div className="mt-2 flex flex-col gap-1.5 rounded-lg border border-[#27272A] bg-[#111113] p-2.5">
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 truncate">
+                <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400 uppercase">
+                  {isRestrictedTab ? "SYSTEM" : pageData.protocol.replace(":", "").toUpperCase()}
+                </span>
+                <span className="truncate text-xs font-medium text-[#FAFAFA]">
+                  {isRestrictedTab ? "System / New Tab Page" : pageData.hostname}
+                </span>
+                <span className="truncate text-[10px] text-[#71717A] tabular-nums">
+                  {isRestrictedTab ? "(Offline Studio Mode)" : pageData.pathname}
+                </span>
+              </div>
+              <span className="shrink-0 rounded bg-slate-800 px-1.5 py-0.5 text-[9px] font-medium text-slate-300 border border-slate-700/60">
+                {pageData.detectedCmsLabel || "Web App"}
+              </span>
+            </div>
+
+            {!isRestrictedTab && (
+              <div className="flex items-center justify-between gap-1.5 border-t border-[#27272A]/60 pt-1.5 text-[10px]">
+                <div className="flex items-center gap-1.5 truncate">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="font-semibold text-emerald-300 truncate">
+                    {pageData.siteCategoryLabel || "Universal Site"}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px] text-[#A1A1AA]">
+                  <span>H1: <strong className="text-white font-mono">{pageData.h1Elements.length}</strong></span>
+                  <span>Schemas: <strong className="text-emerald-400 font-mono">{pageData.schemas.length}</strong></span>
+                  <span>Words: <strong className="text-white font-mono">{pageData.words}</strong></span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* System Page Notice Banner */}
