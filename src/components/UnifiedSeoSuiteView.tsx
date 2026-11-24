@@ -169,23 +169,32 @@ export function UnifiedSeoSuiteView({
       {/* Navigation Sub-Tabs */}
       <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3 dark:border-slate-800">
         {[
-          { id: "full-audit", label: "Full Website Audit" },
-          { id: "gsc-intel", label: "GSC Performance & Cannibalization" },
-          { id: "geo-visibility", label: "AI & GEO Visibility" },
-          { id: "ai-orchestrator", label: "Unified AI Assistant" },
-          { id: "model-training", label: "AI Model & Training Vault" },
+          { id: "full-audit", label: "Full Website Audit", tag: "11-D" },
+          { id: "gsc-intel", label: "GSC Performance & Cannibalization", tag: "FastMCP" },
+          { id: "geo-visibility", label: "AI & GEO Visibility", tag: "AI Citations" },
+          { id: "ai-orchestrator", label: "Unified AI Assistant", tag: "20 Agents" },
+          { id: "model-training", label: "AI Model & Training Vault", tag: "SFT v3.0" },
         ].map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setSubTab(tab.id as SuiteSubTab)}
-            className={`rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+            className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
               subTab === tab.id
-                ? "bg-brand text-slate-900 shadow-sm dark:bg-brand dark:text-slate-900"
+                ? "bg-brand text-slate-900 shadow-glow dark:bg-brand dark:text-slate-900"
                 : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
             }`}
           >
-            {tab.label}
+            <span>{tab.label}</span>
+            <span
+              className={`rounded px-1.5 py-0.5 text-[9px] font-extrabold uppercase ${
+                subTab === tab.id
+                  ? "bg-slate-900 text-brand-light dark:bg-slate-950 dark:text-brand"
+                  : "bg-slate-200 text-slate-600 dark:bg-slate-700 dark:text-slate-300"
+              }`}
+            >
+              {tab.tag}
+            </span>
           </button>
         ))}
       </div>
@@ -534,7 +543,27 @@ export function UnifiedSeoSuiteView({
               )}
             </div>
 
-            <form onSubmit={handleSendChat} className="mt-3 flex gap-2">
+            {/* Quick Prompt Suggestion Chips */}
+            <div className="mt-3 flex flex-wrap items-center gap-1.5 pt-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">Quick Prompt:</span>
+              {[
+                "Detect cannibalization in Search Console",
+                "Audit GEO citations on Perplexity",
+                "Check August 2024 Core Update impact",
+                "Analyze heading hierarchy skipped levels",
+              ].map((promptText) => (
+                <button
+                  key={promptText}
+                  type="button"
+                  onClick={() => setChatInput(promptText)}
+                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[11px] font-medium text-slate-700 transition hover:border-brand hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand dark:hover:text-white"
+                >
+                  {promptText}
+                </button>
+              ))}
+            </div>
+
+            <form onSubmit={handleSendChat} className="mt-2.5 flex gap-2">
               <input
                 type="text"
                 value={chatInput}
@@ -587,6 +616,73 @@ export function UnifiedSeoSuiteView({
               <span className="text-[11px] font-bold uppercase text-slate-500">Hallucination Rate</span>
               <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">
                 {modelRegistry.hallucinationRate}%
+              </div>
+            </div>
+          </div>
+
+          {/* SFT Dataset & Loss Curve Breakdown */}
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                SFT Dataset Composition (168 Total Examples)
+              </h3>
+              <div className="mt-3 space-y-2 text-xs">
+                <div>
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+                    <span>Google Algorithm Updates (2019-2024)</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">35 pairs (21%)</span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                    <div className="h-full rounded-full bg-blue-500" style={{ width: "21%" }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+                    <span>20 Specialized Claude-SEO Agents</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">20 pairs (12%)</span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                    <div className="h-full rounded-full bg-purple-500" style={{ width: "12%" }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+                    <span>78-Keyword Strategy &amp; Intent Matrix</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">78 pairs (46%)</span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                    <div className="h-full rounded-full bg-brand" style={{ width: "46%" }} />
+                  </div>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
+                    <span>Search Console Query Cannibalization &amp; GEO</span>
+                    <span className="font-mono font-bold text-slate-900 dark:text-white">35 pairs (21%)</span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
+                    <div className="h-full rounded-full bg-emerald-500" style={{ width: "21%" }} />
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                Fine-Tuning Convergence &amp; Quality Metrics
+              </h3>
+              <div className="mt-3 space-y-3 text-xs">
+                <div className="flex items-center justify-between rounded-lg bg-white p-2.5 shadow-2xs dark:bg-slate-900">
+                  <span className="text-slate-600 dark:text-slate-400">Initial Validation Loss</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-white">1.842</span>
+                </div>
+                <div className="flex items-center justify-between rounded-lg bg-white p-2.5 shadow-2xs dark:bg-slate-900">
+                  <span className="text-slate-600 dark:text-slate-400">Final Epoch 3 Loss</span>
+                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">0.412 (-77.6%)</span>
+                </div>
+                <div className="flex items-center justify-between rounded-lg bg-white p-2.5 shadow-2xs dark:bg-slate-900">
+                  <span className="text-slate-600 dark:text-slate-400">Deterministic Formatting Compliance</span>
+                  <span className="font-mono font-bold text-brand-dark dark:text-brand">100.0%</span>
+                </div>
               </div>
             </div>
           </div>

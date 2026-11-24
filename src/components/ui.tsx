@@ -11,12 +11,12 @@ export function Card({ title, subtitle, actions, children, className = "" }: {
   className?: string;
 }) {
   return (
-    <section className={`rounded-3xl border border-slate-200/80 bg-white shadow-card ${className}`}>
+    <section className={`rounded-3xl border border-slate-200/80 bg-white shadow-card dark:border-slate-800 dark:bg-slate-900 ${className}`}>
       {(title || actions) && (
-        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-6 py-5">
+        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-6 py-5 dark:border-slate-800">
           <div>
-            {title && <h2 className="font-display text-lg font-bold text-slate-900">{title}</h2>}
-            {subtitle && <p className="mt-1 text-sm text-slate-500">{subtitle}</p>}
+            {title && <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">{title}</h2>}
+            {subtitle && <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{subtitle}</p>}
           </div>
           {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
         </header>
@@ -31,9 +31,9 @@ type Variant = "primary" | "secondary" | "ghost" | "danger";
 export function Button({ variant = "primary", className = "", ...props }: ButtonHTMLAttributes<HTMLButtonElement> & { variant?: Variant }) {
   const styles: Record<Variant, string> = {
     primary: "bg-brand text-slate-900 font-display font-bold hover:bg-brand-light shadow-glow hover:-translate-y-0.5 active:translate-y-0 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:translate-y-0",
-    secondary: "border border-slate-200 bg-white text-slate-700 font-semibold hover:border-slate-300 hover:bg-slate-50 disabled:text-slate-400",
-    ghost: "text-slate-600 font-medium hover:bg-slate-100 disabled:text-slate-300",
-    danger: "text-rose-600 font-medium hover:bg-rose-50",
+    secondary: "border border-slate-200 bg-white text-slate-700 font-semibold hover:border-slate-300 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 disabled:text-slate-400",
+    ghost: "text-slate-600 font-medium hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800 disabled:text-slate-300",
+    danger: "text-rose-600 font-medium hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/40",
   };
   return (
     <button
@@ -45,10 +45,10 @@ export function Button({ variant = "primary", className = "", ...props }: Button
 }
 
 export function Stat({ label, value, tone = "default" }: { label: string; value: ReactNode; tone?: "default" | "good" | "warn" }) {
-  const color = tone === "good" ? "text-brand-dark" : tone === "warn" ? "text-amber-600" : "text-slate-900";
+  const color = tone === "good" ? "text-brand-dark dark:text-brand-light" : tone === "warn" ? "text-amber-600 dark:text-amber-400" : "text-slate-900 dark:text-white";
   return (
-    <div className="rounded-2xl border border-slate-200/80 bg-white px-4 py-3.5 shadow-sm">
-      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">{label}</div>
+    <div className="rounded-2xl border border-slate-200/80 bg-white px-4 py-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">{label}</div>
       <div className={`mt-1 font-display text-xl font-extrabold tabular-nums ${color}`}>{value}</div>
     </div>
   );
