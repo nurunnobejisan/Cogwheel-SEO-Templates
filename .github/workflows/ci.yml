@@ -31,6 +31,9 @@ jobs:
       - name: Type Check Root TypeScript (tsc --noEmit)
         run: npm run typecheck
 
+      - name: Run ESLint (Zero Any Enforcement)
+        run: npx eslint src/ tests/
+
       - name: Run Vitest Test Suite
         run: npm test
 
@@ -66,14 +69,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install ruff mypy pydantic pytest
 
-      - name: Run Ruff Linter on Python Scripts
-        run: ruff check scripts/python/
+      - name: Run Ruff Linter
+        run: ruff check scripts/python/ python/ outputs/ tests/python/
 
       - name: Run Mypy Strict Type Check
-        run: mypy scripts/python/
+        run: mypy scripts/python/ python/
 
       - name: Run Master Python Test Suite
         run: python tests/python/run_tests.py
+
+      - name: Run Pytest Test Suite
+        run: pytest tests/python/
 
   json-and-schema-validation:
     name: JSON Datasets & Schema Integrity

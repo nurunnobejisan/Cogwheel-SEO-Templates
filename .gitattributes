@@ -1,0 +1,86 @@
+# ==============================================================================
+# COGWHEEL SEO STUDIO — GIT ATTRIBUTES CONFIGURATION
+# Enforces cross-platform LF line endings, binary safety, and diff drivers.
+# ==============================================================================
+
+# Default auto normalization to LF
+* text=auto eol=lf
+
+# ------------------------------------------------------------------------------
+# TypeScript & JavaScript
+# ------------------------------------------------------------------------------
+*.ts text eol=lf diff=typescript
+*.tsx text eol=lf diff=typescript
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.d.ts text eol=lf diff=typescript
+
+# ------------------------------------------------------------------------------
+# Python & Serverless Functions
+# ------------------------------------------------------------------------------
+*.py text eol=lf diff=python
+*.pyi text eol=lf diff=python
+Pipfile text eol=lf
+requirements.txt text eol=lf
+pyproject.toml text eol=lf
+
+# ------------------------------------------------------------------------------
+# Data, Schemas & Configuration
+# ------------------------------------------------------------------------------
+*.json text eol=lf
+*.json5 text eol=lf
+*.schema.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.toml text eol=lf
+*.xml text eol=lf
+*.csv text eol=lf
+*.sql text eol=lf
+*.html text eol=lf diff=html
+*.css text eol=lf diff=css
+*.md text eol=lf diff=markdown
+*.txt text eol=lf
+.env.example text eol=lf
+.eslintrc.json text eol=lf
+tsconfig.json text eol=lf
+
+# ------------------------------------------------------------------------------
+# Shell & Automation Scripts
+# ------------------------------------------------------------------------------
+*.sh text eol=lf
+pre-commit text eol=lf
+commit-msg text eol=lf
+
+# ------------------------------------------------------------------------------
+# Binary Assets (Prevent Corruption During Normalization)
+# ------------------------------------------------------------------------------
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.svg text eol=lf
+*.zip binary
+*.tar.gz binary
+*.pdf binary
+*.xlsx binary
+*.xls binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
+
+# ------------------------------------------------------------------------------
+# Git Export Ignore (Excluded from git archive / production tarballs)
+# ------------------------------------------------------------------------------
+.github export-ignore
+.husky export-ignore
+tests export-ignore
+.eslintrc.json export-ignore
+.gitattributes export-ignore
+.gitignore export-ignore
+vitest.config.ts export-ignore
+tsconfig.tsbuildinfo export-ignore
