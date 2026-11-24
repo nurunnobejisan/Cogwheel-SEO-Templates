@@ -64,6 +64,15 @@ const HeadingStructureAuditModal = dynamic(() =>
 const KeywordResearchView = dynamic(() =>
   import("./KeywordResearchView").then((m) => m.KeywordResearchView),
 );
+const TemplatesHubClient = dynamic(() =>
+  import("../app/templates/TemplatesHubClient").then((m) => m.TemplatesHubClient),
+);
+const StrategyMatrixContent = dynamic(() =>
+  import("./StrategyMatrixContent").then((m) => m.StrategyMatrixContent),
+);
+const ArchitectureContent = dynamic(() =>
+  import("./ArchitectureContent").then((m) => m.ArchitectureContent),
+);
 const UnifiedSeoSuiteView = dynamic(() =>
   import("./UnifiedSeoSuiteView").then((m) => m.UnifiedSeoSuiteView),
 );
@@ -146,7 +155,7 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
 };
 
 export default function PropertyDashboard() {
-  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo">("home");
+  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo" | "templates" | "matrix" | "architecture">("home");
   const [labsSubTab, setLabsSubTab] = useState<"geo" | "compset" | "sandbox">("geo");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
@@ -474,6 +483,9 @@ export default function PropertyDashboard() {
                 { id: "keywords", label: "Keywords" },
                 { id: "tasks", label: `Tasks (${readyCount})` },
                 { id: "labs", label: "Labs" },
+                { id: "templates", label: "Templates" },
+                { id: "matrix", label: "Matrix" },
+                { id: "architecture", label: "Architecture" },
               ] as const
             ).map((tab) => (
               <button
@@ -488,24 +500,6 @@ export default function PropertyDashboard() {
                 {tab.label}
               </button>
             ))}
-            <Link
-              href="/templates"
-              className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            >
-              Templates
-            </Link>
-            <Link
-              href="/strategy-matrix"
-              className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            >
-              Matrix
-            </Link>
-            <Link
-              href="/architecture"
-              className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            >
-              Architecture
-            </Link>
             <button
               type="button"
               onClick={() => setShowAiTraining((v) => !v)}
@@ -1101,6 +1095,63 @@ export default function PropertyDashboard() {
                 </button>
               </section>
             </>
+          )}
+
+          {mainTab === "templates" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">SEO Templates</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Browse and apply structured SEO templates for any task.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMainTab("home")}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                >
+                  ← Back
+                </button>
+              </div>
+              <TemplatesHubClient />
+            </div>
+          )}
+
+          {mainTab === "matrix" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">78-Keyword Strategy Matrix</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">6-funnel keyword matrix for hospitality SEO & GEO dominance.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMainTab("home")}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                >
+                  ← Back
+                </button>
+              </div>
+              <StrategyMatrixContent />
+            </div>
+          )}
+
+          {mainTab === "architecture" && (
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="font-display text-lg font-bold text-slate-900 dark:text-white">System Architecture</h2>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">Manifest V3, AI training data vault, hybrid inference routing & Python pipelines.</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setMainTab("home")}
+                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white"
+                >
+                  ← Back
+                </button>
+              </div>
+              <ArchitectureContent />
+            </div>
           )}
 
           {mainTab === "unified-seo" && (
