@@ -14,6 +14,7 @@ import {
   AlertCircle,
   Globe,
   Users,
+  Sparkles,
 } from "lucide-react";
 import { PageAuditData, ClientProfile, QuickWinItem } from "../types/extension";
 import { PRESET_CLIENT_PROFILES, calculateSeoScores, COGWHEEL_OPTIMAL_AUDIT_DATA } from "../data/cogwheelTemplates";
@@ -32,6 +33,8 @@ import { UniversalImageAuditCard } from "../components/UniversalImageAuditCard";
 import { UniversalHeadingAuditCard } from "../components/UniversalHeadingAuditCard";
 import { LivePageAuditCard } from "../components/LivePageAuditCard";
 import { CompetitorCompareTab } from "../components/CompetitorCompareTab";
+import { SiteBundleModal } from "../components/SiteBundleModal";
+import { ExtensionSiteBundle } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
 import { generateSeoAutoFix } from "../engine/custom-model-client";
@@ -48,6 +51,8 @@ export function SidePanelApp() {
   const [loading, setLoading] = useState(false);
   const [isRestrictedTab, setIsRestrictedTab] = useState(false);
   const [needsReload, setNeedsReload] = useState(false);
+  const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
+  const [siteBundle, setSiteBundle] = useState<ExtensionSiteBundle | null>(null);
 
   // Default fallback mock data containing the 6 baseline unoptimized audit issues
   const [pageData, setPageData] = useState<PageAuditData>({
@@ -218,6 +223,22 @@ export function SidePanelApp() {
   useEffect(() => {
     fetchActivePage();
 
+    const handleTabActivated = (activeInfo: chrome.tabs.TabActiveInfo) => {
+      setActiveTabId(activeInfo.tabId);
+      fetchActivePage();
+    };
+
+    const handleTabUpdated = (_updatedTabId: number, changeInfo: chrome.tabs.TabChangeInfo) => {
+      if (changeInfo.status === "complete") {
+        fetchActivePage();
+      }
+    };
+
+    if (typeof chrome !== "undefined" && chrome.tabs) {
+      chrome.tabs.onActivated?.addListener(handleTabActivated);
+      chrome.tabs.onUpdated?.addListener(handleTabUpdated);
+    }
+
     if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.onMessage) {
       // Announce SIDE_PANEL_READY handshake to flush any queued messages from background
       chrome.runtime.sendMessage({ type: "SIDE_PANEL_READY" }, () => {
@@ -244,7 +265,13 @@ export function SidePanelApp() {
         }
       };
       chrome.runtime.onMessage.addListener(listener);
-      return () => chrome.runtime.onMessage.removeListener(listener);
+      return () => {
+        chrome.runtime.onMessage.removeListener(listener);
+        if (typeof chrome !== "undefined" && chrome.tabs) {
+          chrome.tabs.onActivated?.removeListener(handleTabActivated);
+          chrome.tabs.onUpdated?.removeListener(handleTabUpdated);
+        }
+      };
     }
   }, []);
 
@@ -497,6 +524,16 @@ export function SidePanelApp() {
                 scores={scores}
                 activeProfile={activeProfile}
               />
+
+              <button
+                type="button"
+                onClick={() => setIsBundleModalOpen(true)}
+                title="Import Full Site Bundle JSON"
+                className="flex items-center gap-1 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 text-[10px] font-semibold text-emerald-300 shadow-xs transition hover:bg-emerald-500/20"
+              >
+                <Sparkles className="h-3 w-3 text-emerald-400" />
+                <span>Import Site Bundle</span>
+              </button>
 
               <button
                 type="button"
@@ -885,6 +922,16 @@ export function SidePanelApp() {
             description={fixedDrawer.description}
             codeSnippet={fixedDrawer.codeSnippet}
             language={fixedDrawer.language}
+          />
+
+          {/* Full Site Bundle Importer Modal */}
+          <SiteBundleModal
+            isOpen={isBundleModalOpen}
+            onClose={() => setIsBundleModalOpen(false)}
+            activeTabUrl={pageData.url}
+            activeTabId={activeTabId}
+            initialBundle={siteBundle}
+            onBundleLoaded={(b) => setSiteBundle(b)}
           />
         </main>
       </div>

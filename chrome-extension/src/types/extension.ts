@@ -215,3 +215,53 @@ export interface CompetitorTabData {
   schemaTypes?: string[];
   isLoading?: boolean;
 }
+
+export interface SiteBundlePage {
+  page_id: string;
+  url: string;
+  path: string;
+  archetype: string;
+  primary_keyword: string;
+  old_title: string;
+  new_title: string;
+  title_length: number;
+  old_meta_description: string;
+  new_meta_description: string;
+  meta_length: number;
+  cta_used?: string;
+  heading_health_score?: number;
+  headings: Array<{
+    old_headline: string;
+    old_level: string;
+    new_headline: string;
+    new_level: string;
+    change_type: string;
+    issue?: string;
+  }>;
+  images: Array<{
+    image_url: string;
+    title: string;
+    old_alt: string;
+    optimized_alt: string;
+    length: number;
+    section_heading?: string;
+  }>;
+}
+
+export interface ExtensionSiteBundle {
+  bundle_version: string;
+  generated_at: string;
+  domain: string;
+  target_url: string;
+  brand_name: string;
+  primary_location: string;
+  summary: {
+    total_pages: number;
+    total_headings: number;
+    total_images: number;
+    high_opportunity_keywords: number;
+  };
+  deliverables: Record<string, string>;
+  pages: SiteBundlePage[];
+}
+

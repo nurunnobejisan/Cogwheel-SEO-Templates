@@ -115,12 +115,16 @@ export function PopupApp() {
 
   const openSidePanel = () => {
     if (typeof chrome !== "undefined" && tabId) {
-      chrome.runtime.sendMessage({ type: "OPEN_SIDEPANEL", tabId }, () => {
-        if (chrome.runtime.lastError) {
-          // Handled
-        }
-      });
-      window.close(); // Close popup so sidepanel takes focus
+      if (chrome.sidePanel && chrome.sidePanel.open) {
+        chrome.sidePanel.open({ tabId }).catch(() => {
+          chrome.runtime.sendMessage({ type: "OPEN_SIDEPANEL", tabId });
+        });
+      } else {
+        chrome.runtime.sendMessage({ type: "OPEN_SIDEPANEL", tabId }, () => {
+          if (chrome.runtime.lastError) {}
+        });
+      }
+      setTimeout(() => window.close(), 100);
     }
   };
 

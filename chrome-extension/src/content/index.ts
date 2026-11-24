@@ -28,8 +28,13 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   }
 
   if (request.type === "EXTRACT_PAGE_DATA") {
-    const data = extractComprehensivePageData();
-    sendResponse({ success: true, data });
+    try {
+      const data = extractComprehensivePageData();
+      sendResponse({ success: true, data });
+    } catch (err) {
+      console.warn("[Cogwheel Content] Extraction error:", err);
+      sendResponse({ success: false, error: String(err) });
+    }
     return true;
   }
 
@@ -798,7 +803,13 @@ let injectedSchemaElement: HTMLScriptElement | null = null;
 let originalInjectedSchemaText: string | null = null;
 
 // Auto-Detect & Auto-Fill Common CMS / SEO Plugin Fields
-function handleAutoFillCms(payload: { title?: string; metaDesc?: string; slug?: string }): CmsAutoFillResult {
+function handleAutoFillCms(payload: {
+  title?: string;
+  metaDesc?: string;
+  slug?: string;
+  headings?: Array<{ old_level?: string; new_level?: string; new_headline?: string }>;
+  images?: Array<{ image_url?: string; optimized_alt?: string }>;
+}): CmsAutoFillResult {
   const filledFields: string[] = [];
   let detectedCms: CmsAutoFillResult["detectedCms"] = "Generic/DOM";
   lastCmsFillHistory = [];
@@ -829,7 +840,6 @@ function handleAutoFillCms(payload: { title?: string; metaDesc?: string; slug?: 
       triggerInput(yoastDesc, payload.metaDesc, "Yoast Meta Description");
       filledFields.push("Yoast Meta Description");
     }
-    return { detectedCms, filledFields, success: filledFields.length > 0, undoAvailable: lastCmsFillHistory.length > 0 };
   }
 
   // 2. WordPress Rank Math
@@ -845,7 +855,6 @@ function handleAutoFillCms(payload: { title?: string; metaDesc?: string; slug?: 
       triggerInput(rmDesc, payload.metaDesc, "Rank Math Description");
       filledFields.push("Rank Math Description");
     }
-    return { detectedCms, filledFields, success: filledFields.length > 0, undoAvailable: lastCmsFillHistory.length > 0 };
   }
 
   // 3. WordPress Gutenberg / Classic Title
@@ -869,7 +878,6 @@ function handleAutoFillCms(payload: { title?: string; metaDesc?: string; slug?: 
       triggerInput(wfDesc, payload.metaDesc, "Webflow Meta Description");
       filledFields.push("Webflow Meta Description");
     }
-    return { detectedCms, filledFields, success: filledFields.length > 0, undoAvailable: lastCmsFillHistory.length > 0 };
   }
 
   // 5. Shopify Admin
@@ -885,15 +893,14 @@ function handleAutoFillCms(payload: { title?: string; metaDesc?: string; slug?: 
       triggerInput(shDesc, payload.metaDesc, "Shopify Meta Description");
       filledFields.push("Shopify Meta Description");
     }
-    return { detectedCms, filledFields, success: filledFields.length > 0, undoAvailable: lastCmsFillHistory.length > 0 };
   }
 
-  // 6. Generic Fallback (Inject into active DOM)
-  if (payload.title) {
+  // 6. Generic Fallback (Inject into active DOM if CMS inputs not present)
+  if (payload.title && !filledFields.some((f) => f.includes("Title"))) {
     document.title = payload.title;
     filledFields.push("DOM Document Title");
   }
-  if (payload.metaDesc) {
+  if (payload.metaDesc && !filledFields.some((f) => f.includes("Description"))) {
     let m = document.querySelector('meta[name="description"]');
     if (!m) {
       m = document.createElement("meta");
@@ -902,6 +909,40 @@ function handleAutoFillCms(payload: { title?: string; metaDesc?: string; slug?: 
     }
     m.setAttribute("content", payload.metaDesc);
     filledFields.push("DOM Meta Description");
+  }
+
+  // 7. Auto-Fill Live Image ALT Attributes
+  if (payload.images && payload.images.length > 0) {
+    let imgCount = 0;
+    const domImgs = Array.from(document.querySelectorAll("img"));
+    payload.images.forEach((imgObj) => {
+      if (!imgObj.optimized_alt) return;
+      const targetSrc = imgObj.image_url ? imgObj.image_url.split("?")[0].toLowerCase() : "";
+      const targetFilename = targetSrc.split("/").pop() || "";
+      const matchedImg = domImgs.find((el) => {
+        const elSrc = (el.src || el.getAttribute("data-src") || "").split("?")[0].toLowerCase();
+        return elSrc === targetSrc || (targetFilename.length > 4 && elSrc.endsWith(targetFilename));
+      });
+      if (matchedImg) {
+        matchedImg.setAttribute("alt", imgObj.optimized_alt);
+        imgCount++;
+      }
+    });
+    if (imgCount > 0) {
+      filledFields.push(`Updated ${imgCount} Image ALTs`);
+    }
+  }
+
+  // 8. Auto-Fill Live H1 Heading
+  if (payload.headings && payload.headings.length > 0) {
+    const h1Target = payload.headings.find((h) => h.new_level === "H1");
+    if (h1Target && h1Target.new_headline) {
+      const h1El = document.querySelector("h1");
+      if (h1El) {
+        h1El.textContent = h1Target.new_headline;
+        filledFields.push("H1 Element");
+      }
+    }
   }
 
   return { detectedCms, filledFields, success: filledFields.length > 0, undoAvailable: lastCmsFillHistory.length > 0 };
