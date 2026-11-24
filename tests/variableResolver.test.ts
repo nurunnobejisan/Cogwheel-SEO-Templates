@@ -45,7 +45,7 @@ describe("Day 2: Strict Variable Resolver & Fallback Engine", () => {
 
     assert.throws(
       () => resolveTemplate(template, sampleSchema, context, { strict: true }),
-      (err: any) => {
+      (err: unknown) => {
         assert(err instanceof TemplateResolutionError);
         assert(err.missingVariables.includes("city"));
         return true;
@@ -62,7 +62,7 @@ describe("Day 2: Strict Variable Resolver & Fallback Engine", () => {
 
     assert.throws(
       () => resolveTemplate(badTemplate, sampleSchema, context, { strict: true }),
-      (err: any) => {
+      (err: unknown) => {
         assert(err instanceof TemplateResolutionError);
         assert(err.unresolvedPlaceholders.length > 0);
         return true;

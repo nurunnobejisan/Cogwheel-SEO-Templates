@@ -3,17 +3,38 @@
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-import test_pydantic_models
 import test_content_engine
-import test_schema_validation
 import test_fine_tune_pipeline
+import test_hotel_engine
+import test_hotel_seo
+import test_pydantic_models
+import test_schema_validation
+
 
 def run_all():
     print("=" * 80)
     print(" COGWHEEL SEO STUDIO - PYTHON TEST RUNNER")
     print("=" * 80)
+
+    print("\n> Running test_hotel_engine...")
+    test_hotel_engine.test_hotel_extractor_json_ld_and_facts()
+    test_hotel_engine.test_geo_scorer_evaluates_citation_readiness()
+    test_hotel_engine.test_template_processor_renders_all_templates()
+    test_hotel_engine.test_process_property_pipeline()
+    print("[PASS] All Hotel Extractor, GEO Scorer & Template Processor tests passed.")
+
+    print("\n> Running test_hotel_seo...")
+    test_hotel_seo.test_property_audit_valid()
+    test_hotel_seo.test_property_audit_forbids_extra_fields()
+    test_hotel_seo.test_property_audit_rejects_negative_word_count()
+    test_hotel_seo.test_geo_signals_valid()
+    test_hotel_seo.test_geo_signals_score_boundaries()
+    test_hotel_seo.test_template_payload_valid()
+    test_hotel_seo.test_hotel_seo_audit_aggregate()
+    print("[PASS] All Hotel SEO Single Source of Truth model tests passed.")
 
     print("\n> Running test_pydantic_models...")
     test_pydantic_models.test_destination_guide_model_defaults()
@@ -44,7 +65,7 @@ def run_all():
     print("[PASS] All Fine-Tune Pipeline tests passed.")
 
     print("\n" + "-" * 80)
-    print("[PASS] ALL PYTHON LAYER TESTS PASSED (16/16)")
+    print("[PASS] ALL PYTHON LAYER TESTS PASSED (27/27)")
     print("=" * 80)
 
 if __name__ == "__main__":

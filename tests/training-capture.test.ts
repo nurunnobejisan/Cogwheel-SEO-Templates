@@ -164,7 +164,7 @@ describe("Training Data Capture & PII Sanitization Module", () => {
               this._rawText = v;
             },
           });
-          (cloned as any)._rawText = this.textContent;
+          (cloned as MockNode & { _rawText?: string })._rawText = this.textContent;
           return cloned;
         },
       };

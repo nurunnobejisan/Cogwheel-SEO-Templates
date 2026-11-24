@@ -84,7 +84,7 @@ export async function POST(req: NextRequest) {
               : "Draft created in riboynjsr@gmail.com inbox!",
           output: stdout,
         };
-      } catch (cliErr: any) {
+      } catch {
         // CLI fallback is graceful
         cliResult = {
           success: false,
@@ -103,9 +103,10 @@ export async function POST(req: NextRequest) {
       account: "riboynjsr@gmail.com",
       timestamp: new Date().toISOString(),
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Failed to process email request.";
     return NextResponse.json(
-      { error: error?.message || "Failed to process email request." },
+      { error: message },
       { status: 500 }
     );
   }

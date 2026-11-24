@@ -12,6 +12,8 @@ import {
   ExternalLink,
   Info,
   AlertCircle,
+  Globe,
+  Users,
 } from "lucide-react";
 import { PageAuditData, ClientProfile, QuickWinItem } from "../types/extension";
 import { PRESET_CLIENT_PROFILES, calculateSeoScores, COGWHEEL_OPTIMAL_AUDIT_DATA } from "../data/cogwheelTemplates";
@@ -26,13 +28,17 @@ import { SettingsBrandProfiles } from "../components/SettingsBrandProfiles";
 import { UpdateBanner } from "../components/UpdateBanner";
 import { CopyFixedCodeDrawer } from "../components/CopyFixedCodeDrawer";
 import { ExportAuditDropdown } from "../components/ExportAuditDropdown";
+import { UniversalImageAuditCard } from "../components/UniversalImageAuditCard";
+import { UniversalHeadingAuditCard } from "../components/UniversalHeadingAuditCard";
+import { LivePageAuditCard } from "../components/LivePageAuditCard";
+import { CompetitorCompareTab } from "../components/CompetitorCompareTab";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
 import { generateSeoAutoFix } from "../engine/custom-model-client";
 
 export function SidePanelApp() {
   const [activeTab, setActiveTab] = useState<
-    "dashboard" | "studio" | "dataset" | "overlay" | "automation" | "settings"
+    "dashboard" | "audit" | "compare" | "studio" | "dataset" | "overlay" | "automation" | "settings"
   >("dashboard");
 
   const [isDarkMode, setIsDarkMode] = useState(true);
@@ -446,8 +452,8 @@ export function SidePanelApp() {
               <span className="text-xs font-semibold tracking-wider text-[#FAFAFA] uppercase">
                 COGWHEEL SEO STUDIO
               </span>
-              <span className="rounded-md border border-[#27272A] bg-[#18181B] px-1.5 py-0.5 text-[9px] font-semibold text-[#A1A1AA] tabular-nums">
-                v2.7
+              <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400 tabular-nums">
+                v3.0.0
               </span>
             </div>
 
@@ -532,25 +538,51 @@ export function SidePanelApp() {
           )}
         </header>
 
-        {/* 5 Tab Navigation Bar */}
-        <nav className="sticky top-[73px] z-40 flex items-center justify-between border-b border-[#27272A] bg-[#09090B]/90 p-1 backdrop-blur-md text-xs font-medium">
+        {/* Navigation Bar */}
+        <nav className="sticky top-[73px] z-40 flex items-center justify-between border-b border-[#27272A] bg-[#09090B]/90 p-1 backdrop-blur-md text-xs font-medium overflow-x-auto">
           <button
             type="button"
             onClick={() => setActiveTab("dashboard")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 px-2 transition whitespace-nowrap ${
               activeTab === "dashboard"
                 ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
                 : "text-[#71717A] hover:text-[#FAFAFA]"
             }`}
           >
             <LayoutDashboard className="h-3.5 w-3.5" />
-            <span>Audit</span>
+            <span>Overview</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("audit")}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 px-2 transition whitespace-nowrap ${
+              activeTab === "audit"
+                ? "bg-[#18181B] text-emerald-400 border border-emerald-500/30 shadow-xs"
+                : "text-[#71717A] hover:text-[#FAFAFA]"
+            }`}
+          >
+            <Globe className="h-3.5 w-3.5 text-emerald-400" />
+            <span>Live Audit</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveTab("compare")}
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 px-2 transition whitespace-nowrap ${
+              activeTab === "compare"
+                ? "bg-[#18181B] text-sky-400 border border-sky-500/30 shadow-xs"
+                : "text-[#71717A] hover:text-[#FAFAFA]"
+            }`}
+          >
+            <Users className="h-3.5 w-3.5 text-sky-400" />
+            <span>Compare</span>
           </button>
 
           <button
             type="button"
             onClick={() => setActiveTab("studio")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 px-2 transition whitespace-nowrap ${
               activeTab === "studio"
                 ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
                 : "text-[#71717A] hover:text-[#FAFAFA]"
@@ -563,7 +595,7 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("dataset")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 px-2 transition whitespace-nowrap ${
               activeTab === "dataset"
                 ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
                 : "text-[#71717A] hover:text-[#FAFAFA]"
@@ -576,7 +608,7 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("overlay")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 px-2 transition whitespace-nowrap ${
               activeTab === "overlay"
                 ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
                 : "text-[#71717A] hover:text-[#FAFAFA]"
@@ -589,7 +621,7 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("automation")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 px-2 transition whitespace-nowrap ${
               activeTab === "automation"
                 ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
                 : "text-[#71717A] hover:text-[#FAFAFA]"
@@ -602,7 +634,7 @@ export function SidePanelApp() {
           <button
             type="button"
             onClick={() => setActiveTab("settings")}
-            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 transition ${
+            className={`flex flex-1 items-center justify-center gap-1.5 rounded-lg py-2 px-2 transition whitespace-nowrap ${
               activeTab === "settings"
                 ? "bg-[#18181B] text-[#FAFAFA] border border-[#27272A] shadow-xs"
                 : "text-[#71717A] hover:text-[#FAFAFA]"
@@ -676,8 +708,46 @@ export function SidePanelApp() {
                 </div>
               </div>
 
+              {/* Universal Site Category & Platform Banner */}
+              {!isRestrictedTab && (
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-[#27272A] bg-emerald-950/20 px-3 py-2 text-xs">
+                  <div className="flex items-center gap-2 truncate">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="font-semibold text-emerald-300 truncate">
+                      {pageData.siteCategoryLabel || "Universal Website"}
+                    </span>
+                    {pageData.ecommerce?.isEcommerce && (
+                      <span className="rounded bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.2 text-[9px] font-bold text-emerald-200">
+                        {pageData.ecommerce.price ? `${pageData.ecommerce.price} ${pageData.ecommerce.currency || ""}` : "Product Store"}
+                      </span>
+                    )}
+                  </div>
+                  <span className="shrink-0 rounded bg-[#18181B] border border-[#27272A] px-2 py-0.5 text-[10px] font-medium text-slate-300">
+                    {pageData.detectedCmsLabel || "Web Application"}
+                  </span>
+                </div>
+              )}
+
               {/* SERP & Social Card Preview */}
               <SerpSocialPreview data={pageData} />
+
+              {/* Universal Image Optimization & WCAG 2.2 AA Audit Card */}
+              <UniversalImageAuditCard
+                images={pageData.detailedImages}
+                vitals={pageData.vitals}
+                totalImages={pageData.totalImages}
+                imagesWithoutAlt={pageData.imagesWithoutAlt}
+                hostname={pageData.hostname}
+              />
+
+              {/* Universal Heading Structure & Hierarchy Audit Card */}
+              <UniversalHeadingAuditCard
+                hierarchy={pageData.headingHierarchy}
+                issues={pageData.headingIssues}
+                h1Count={pageData.h1Elements.length}
+                h2Count={pageData.h2Elements.length}
+                h3Count={pageData.h3Elements.length}
+              />
 
               {/* Quick Wins / Detected Issues */}
               <QuickWinsList
@@ -686,6 +756,28 @@ export function SidePanelApp() {
                 onFixIssue={handleFixIssue}
               />
             </div>
+          )}
+
+          {/* TAB: Live Page Audit */}
+          {activeTab === "audit" && (
+            <LivePageAuditCard
+              pageData={pageData}
+              activeTabId={activeTabId}
+              onRefresh={fetchActivePage}
+              isLoading={loading}
+            />
+          )}
+
+          {/* TAB: Competitor Compare */}
+          {activeTab === "compare" && (
+            <CompetitorCompareTab
+              currentPageData={pageData}
+              activeTabId={activeTabId}
+              onNavigateToStudio={(tmplId) => {
+                setTargetTemplateId(tmplId);
+                setActiveTab("studio");
+              }}
+            />
           )}
 
           {/* TAB 2: Cogwheel Template Studio */}

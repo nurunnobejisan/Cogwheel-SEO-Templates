@@ -1,0 +1,25 @@
+{
+  "status": "success",
+  "datasetName": "Cogwheel-Unified-SEO-SFT-v1",
+  "totalExamples": 168,
+  "trainCount": 134,
+  "evalCount": 34,
+  "trainRatio": 0.8,
+  "evalRatio": 0.2,
+  "estimatedTokens": 54907,
+  "sources": {
+    "googleAlgorithmUpdates": 66,
+    "claudeSeoSpecializedAgents": 20,
+    "keywordStrategyMatrix": 78,
+    "gscDiagnostics": 2,
+    "geoAiVisibility": 2
+  },
+  "sanitization": {
+    "secretPatternsEnforced": 4,
+    "deduplicationAlgorithm": "SHA256 Content Key"
+  },
+  "files": {
+    "train": "data/training/unified_seo_train.jsonl",
+    "eval": "data/training/unified_seo_eval.jsonl"
+  }
+}

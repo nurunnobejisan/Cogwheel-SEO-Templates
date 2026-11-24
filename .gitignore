@@ -1,18 +1,31 @@
+# ==============================================================================
+# COGWHEEL SEO STUDIO — GITIGNORE CONFIGURATION
+# Comprehensive ignore rules for Next.js, TypeScript, Python, and Chrome Extension
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
 # Dependencies
+# ------------------------------------------------------------------------------
 node_modules/
 chrome-extension/node_modules/
 source-repo/
 .pnp
 .pnp.js
 
+# ------------------------------------------------------------------------------
 # Build and Production Artifacts
+# ------------------------------------------------------------------------------
 .next/
 out/
 build/
 dist/
+chrome-extension/dist/
 coverage/
+.turbo/
 
-# Environment and Secrets (Never Commit)
+# ------------------------------------------------------------------------------
+# Environment Variables & Secrets (CRITICAL: NEVER COMMIT)
+# ------------------------------------------------------------------------------
 .env
 .env.local
 .env.development.local
@@ -24,32 +37,65 @@ coverage/
 *.cert
 credentials.json
 service-account*.json
+*.keystore
 
-# TypeScript and Caches
+# ------------------------------------------------------------------------------
+# TypeScript, Linters & Cache Files
+# ------------------------------------------------------------------------------
 *.tsbuildinfo
 next-env.d.ts
+.eslintcache
 
-# Vercel and Deployment
+# ------------------------------------------------------------------------------
+# Vercel & Deployment
+# ------------------------------------------------------------------------------
 .vercel/
 
-# OS and IDE Metadata
+# ------------------------------------------------------------------------------
+# OS and Editor Metadata
+# ------------------------------------------------------------------------------
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 *.swp
 *.swo
-.vscode/
+*~
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
 .idea/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+*.log
 
+# ------------------------------------------------------------------------------
 # Python & Virtual Environments
+# ------------------------------------------------------------------------------
 .venv/
 venv/
 ENV/
+env/
 __pycache__/
 *.py[cod]
 *$py.class
+*.egg-info/
+dist/
+build/
 .pytest_cache/
 .mypy_cache/
 .ruff_cache/
+.coverage
+htmlcov/
 
+# ------------------------------------------------------------------------------
+# Local Scratches & Test Artifacts
+# ------------------------------------------------------------------------------
+/tmp/
+scratch/
+temp/

@@ -50,8 +50,8 @@ export function runFullSeoLint(): { passed: boolean; reports: LinterGateReport[]
     try {
       const res = resolveTemplate("Welcome to {{hotel}} in {city}", schema, { hotel: "Grand Hotel" });
       if (!res.success) errors.push("Failed valid resolution");
-    } catch (e: any) {
-      errors.push(e.message);
+    } catch (e: unknown) {
+      errors.push(e instanceof Error ? e.message : String(e));
     }
     reports.push({ gate: "1. Variable Resolver & Fallback Engine", passed: errors.length === 0, errors, warnings: [] });
   }
@@ -113,8 +113,8 @@ export function runFullSeoLint(): { passed: boolean; reports: LinterGateReport[]
       if (!graph.includes("@graph") || !graph.includes("https://schema.org")) {
         errors.push("Generated JSON-LD missing @graph or @context");
       }
-    } catch (e: any) {
-      errors.push(e.message);
+    } catch (e: unknown) {
+      errors.push(e instanceof Error ? e.message : String(e));
     }
     reports.push({ gate: "6. JSON-LD @graph Schema Generation", passed: errors.length === 0, errors, warnings: [] });
   }
@@ -165,8 +165,8 @@ export function runFullSeoLint(): { passed: boolean; reports: LinterGateReport[]
       const php = exportToWordPressPhp({ postTitle: "P", postName: "p", postContent: "C", seoTitle: "ST", metaDescription: "MD" });
       const csv = exportToWebflowCsv([{ name: "N", slug: "s", metaTitle: "MT", metaDescription: "MD", postBodyHtml: "H" }]);
       if (!html || !liquid || !php || !csv) errors.push("One or more exporters failed");
-    } catch (e: any) {
-      errors.push(e.message);
+    } catch (e: unknown) {
+      errors.push(e instanceof Error ? e.message : String(e));
     }
     reports.push({ gate: "10. Multi-CMS Exporter Adapters", passed: errors.length === 0, errors, warnings: [] });
   }

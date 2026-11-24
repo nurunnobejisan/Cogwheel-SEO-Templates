@@ -2,15 +2,10 @@
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
-from api.models import (
-    DestinationGuideModel,
-    RoomShowcaseModel,
-    HotelFaqModel,
-    PageMetadataModel,
-    SiteManifestItemModel
-)
+from api.models import DestinationGuideModel, HotelFaqModel, PageMetadataModel, RoomShowcaseModel
 
 
 def test_destination_guide_model_defaults():

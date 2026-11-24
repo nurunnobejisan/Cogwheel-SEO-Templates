@@ -17,7 +17,7 @@ interface VisibilitySuiteModalProps {
   onImportBatch?: (batchData: {
     property: { name: string; brand: string; city: string; state: string; url: string };
     competitors?: Array<{ name: string; domain: string }>;
-    prompts?: any[];
+    prompts?: Array<{ prompt?: string; text?: string; category?: string }>;
   }) => void;
 }
 
@@ -177,10 +177,11 @@ export function VisibilitySuiteModal({
       } else {
         throw new Error("Missing organization or score keys in JSON.");
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
       setSyncStatus({
         type: "error",
-        msg: `Failed to parse batch JSON: ${err.message}`,
+        msg: `Failed to parse batch JSON: ${msg}`,
       });
       return false;
     }
@@ -254,10 +255,11 @@ export function VisibilitySuiteModal({
         type: "success",
         msg: "Data successfully synced to VisibilitySuite.ai. Check your dashboard.",
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Could not connect to VisibilitySuite API.";
       setSyncStatus({
         type: "error",
-        msg: err.message || "Could not connect to VisibilitySuite API.",
+        msg,
       });
     } finally {
       setSyncBusy(false);

@@ -22,9 +22,14 @@ export default function ArchitecturePage() {
               CW
             </Link>
             <div>
-              <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                Cogwheel SEO &amp; GEO Studio
-              </h1>
+              <div className="flex items-center gap-2">
+                <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
+                  Cogwheel SEO &amp; GEO Studio
+                </h1>
+                <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  v3.0.0
+                </span>
+              </div>
               <p className="text-[11px] text-slate-500 dark:text-slate-400">System Architecture Specifications</p>
             </div>
           </div>

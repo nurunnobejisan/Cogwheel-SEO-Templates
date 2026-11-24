@@ -1,6 +1,6 @@
 [project]
 name = "cogwheel-seo-studio"
-version = "2.7.0"
+version = "3.0.0"
 description = "Enterprise Hospitality Search & Generative Engine Optimization (GEO) Suite"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -36,6 +36,9 @@ ignore = [
     "E501", # Line length handled by formatter
     "B008", # Do not perform function call in argument defaults
     "E402", # Module level import not at top of file
+    "UP007", # Allow Union[X, Y] for backward runtime compatibility
+    "UP045", # Allow Optional[X] for backward runtime compatibility
+    "UP017", # Allow datetime.timezone.utc for backward runtime compatibility
 ]
 
 [tool.ruff.format]
@@ -46,6 +49,7 @@ line-ending = "auto"
 
 [tool.mypy]
 python_version = "3.11"
+mypy_path = "."
 explicit_package_bases = true
 strict = true
 warn_return_any = true

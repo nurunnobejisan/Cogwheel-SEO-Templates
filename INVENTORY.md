@@ -51,3 +51,60 @@ The standardized production architecture organizes modular components under:
 | `src/components/ui.tsx` | UI System | Updated | Enterprise UI component library (Cards, Buttons, KPIs, Badges, Modals, Forms) |
 | `src/tasks/registry.ts` | Task Registry | Updated | All 22 tasks registered with active runners |
 | `src/tasks/tasks.config.ts` | Task Config | Updated | All 22 tasks marked as Done and fully operational |
+| `.env.example` | Config | Updated | Documented environment variable specifications |
+| `.gitignore` | Config | Updated | Strict rules preventing leaks of secrets and build artifacts |
+| `INVENTORY.md` | Docs | Created | Complete repository file inventory |
+| `validators/variableResolver.ts` | Validator | Created | Strict placeholder resolver, fallback engine & pre/post scans |
+| `validators/xssProtection.ts` | Validator | Created | Context-aware HTML body and attribute escaper |
+| `validators/canonicalNormalizer.ts` | Validator | Created | Protocol enforcer, tracking stripper, slash normalizer |
+| `validators/robotsGuardrails.ts` | Validator | Created | Environment-aware robots directives & prod noindex blocker |
+| `schemas/article.ts` | Schema | Created | Schema.org Article structured data builder |
+| `schemas/product.ts` | Schema | Created | Schema.org Product with Offer and AggregateRating |
+| `schemas/faqPage.ts` | Schema | Created | Schema.org FAQPage structured data builder |
+| `schemas/localBusiness.ts` | Schema | Created | Schema.org LocalBusiness/LodgingBusiness builder |
+| `schemas/breadcrumbList.ts` | Schema | Created | Schema.org BreadcrumbList navigation builder |
+| `schemas/graphBuilder.ts` | Schema | Created | Unified @graph composable schema builder |
+| `validators/serpOptimizer.ts` | Validator | Created | Pixel-width character analyzer, title trimmer & SERP warnings |
+| `validators/uniquenessGate.ts` | Validator | Created | N-gram & Jaccard similarity analyzer & thin-content gate |
+| `validators/internalLinker.ts` | Validator | Created | Semantic topic clustering & automated internal linking engine |
+| `exporters/htmlExporter.ts` | Exporter | Created | Clean HTML5 generator with metadata and minification |
+| `exporters/shopifyExporter.ts` | Exporter | Created | Shopify Liquid snippet and section generator |
+| `exporters/wordPressExporter.ts` | Exporter | Created | WordPress PHP template partials and Yoast/RankMath mapper |
+| `exporters/webflowExporter.ts` | Exporter | Created | Webflow CMS collection CSV and rich-text exporter |
+| `tests/variableResolver.test.ts` | Test | Created | Tests for missing vars, unresolved tokens, and fallbacks |
+| `tests/securityGuardrails.test.ts` | Test | Created | Tests for XSS escaping, canonical URLs, and robots tags |
+| `tests/schemas.test.ts` | Test | Created | Tests for all 5 JSON-LD schemas and @graph composition |
+| `tests/serpOptimizer.test.ts` | Test | Created | Tests for pixel calculations, title trimmers, and warnings |
+| `tests/uniquenessGate.test.ts` | Test | Created | Tests for Jaccard similarity and thin content thresholds |
+| `tests/internalLinker.test.ts` | Test | Created | Tests for topic relevance and internal linking rules |
+| `tests/exporters.test.ts` | Test | Created | Tests for all 4 CMS export adapters |
+| `tests/seoLinter.ts` | Tool/Test | Created | Master SEO integrity validator (runs on `npm run lint:seo`) |
+| `.github/workflows/seo-integrity.yml` | CI/CD | Created | GitHub Actions pipeline running secret scan & SEO linter |
+| `templates/hotel-destination-guide.html`| Template | Created | Production sample template for hotel destinations |
+| `templates/hotel-room-showcase.html` | Template | Created | Production sample template for room showcase pages |
+| `templates/hotel-faq-amenities.html` | Template | Created | Production sample template for hotel amenities & FAQ |
+| `src/components/PropertyDashboard.tsx` | UI | Updated | Labs experimental hub, luxury visual polish, pipeline telemetry |
+| `src/components/LabsView.tsx` | UI | Updated | 8-Tool Suite: Multi-CMS Exporters, Duplicate Scanner, Canonical Normalizer, GEO AI & SERP |
+| `src/core/image-audit/types.ts` | Core | Created | Type definitions for image audit items, crawler options, and summary metrics |
+| `src/core/image-audit/crawler.ts` | Core | Created | Web crawler extracting <img>, <picture>, <source>, CSS backgrounds & inspecting headers |
+| `src/core/image-audit/excel.ts` | Core | Created | 5-tab XLSX generator matching reference Google Sheet layout with =IMAGE and =LEN formulas |
+| `src/core/image-audit/google-sheets.ts` | Core | Created | Direct export to native Google Sheets via Google Drive/Sheets API |
+| `src/core/image-audit/index.ts` | Core | Created | Barrel export for image audit module |
+| `src/app/api/image-audit/route.ts` | API | Created | Next.js API route handling POST audit runs and GET direct XLSX downloads |
+| `src/components/ImageOptimizationAuditModal.tsx` | UI | Created | Interactive audit interface with live progress, KPI cards, table filters & export |
+| `outputs/site_image_audit.py` | CLI | Created | Standalone zero-dependency Python CLI image auditor with pure-Python OpenXML builder |
+| `tests/image-optimization-audit.test.ts` | Test | Created | Unit test suite for 5-tab workbook generation, formulas, and decorative alt logic |
+| `tests/ts/edge-cases-and-defenses.test.ts` | Test | Created | Defensive unit tests covering regex leaks, quote sanitization & fallbacks |
+| `src/core/heading-audit/types.ts` | Core | Created | Type definitions for heading items, issues, summary, and crawler options |
+| `src/core/heading-audit/analyzer.ts` | Core | Created | Heading hierarchy analyzer, category classifier, and recommendation engine |
+| `src/core/heading-audit/crawler.ts` | Core | Created | Sitemaps and internal link crawler extracting rendered H1–H6 elements in document order |
+| `src/core/heading-audit/excel.ts` | Core | Created | 3-tab XLSX generator matching The Nines 6-column reference layout, colors, and widths |
+| `src/core/heading-audit/google-sheets.ts` | Core | Created | Direct export to native Google Sheets matching The Nines yellow/green/blue styling |
+| `src/core/heading-audit/index.ts` | Core | Created | Barrel export for heading structure audit engine |
+| `src/app/api/heading-audit/route.ts` | API | Created | Next.js API route handling POST audit runs and GET direct XLSX downloads |
+| `src/components/HeadingStructureAuditModal.tsx` | UI | Created | Interactive audit interface with live progress, KPI cards, table filters & export |
+| `outputs/site_heading_audit.py` | CLI | Created | Standalone zero-dependency Python CLI heading auditor with checkpointing and resume |
+| `tests/heading-structure-audit.test.ts` | Test | Created | Unit test suite for heading extraction, hierarchy detection, and workbook layout |
+| `docs/ARCHITECTURE.md` | Docs | Created | System architecture and directory guide |
+| `docs/reports/TYPESCRIPT_CI_FIX_REPORT.md` | Docs | Created | CI failure investigation and repair report |
+| `README.md` | Docs | Updated | Comprehensive system documentation (v2.6.0) |

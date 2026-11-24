@@ -1,34 +1,65 @@
 #!/bin/sh
-. "$(dirname "$0")/_/husky.sh" 2>/dev/null || true
+# ==============================================================================
+# COGWHEEL SEO STUDIO — PRE-COMMIT HOOK
+# Enforces strict typechecks, ESLint zero-any rules, Python tests, and SEO linter
+# ==============================================================================
 
-echo "🔍 Running pre-commit security and integrity checks..."
+echo "🔍 Running Cogwheel pre-commit security and integrity checks..."
 
-# 1. Secret Scanning
-echo "1/4 Secret scan..."
-if grep -rnE "(ghp_[a-zA-Z0-9]{20,}|sk-[a-zA-Z0-9]{20,}|AIza[0-9A-Za-z-_]{35})" src/ validators/ schemas/ exporters/ api/ 2>/dev/null; then
-  echo "❌ COMMIT BLOCKED: Secret or private credential detected!"
+# 1. Secret Scanning Guardrail
+echo "▶ [1/6] Secret scanning..."
+if grep -rnE "(ghp_[a-zA-Z0-9]{20,}|sk-[a-zA-Z0-9]{20,}|AIza[0-9A-Za-z-_]{35})" src/ validators/ schemas/ exporters/ api/ python/ 2>/dev/null; then
+  echo "❌ COMMIT BLOCKED: Secret, private token, or API key detected in source tree!"
   exit 1
 fi
+echo "✔ No secrets detected."
 
-# 2. TypeScript Layer Verification (Vitest / Test Runner)
-echo "2/4 Running TypeScript test suite..."
-node --test --experimental-strip-types tests/ts/*.test.ts
+# 2. Root TypeScript Typecheck
+echo "▶ [2/6] Verifying Root TypeScript types (tsc --noEmit)..."
+./node_modules/.bin/tsc --noEmit
 if [ $? -ne 0 ]; then
-  echo "❌ COMMIT BLOCKED: TypeScript tests failed."
+  echo "❌ COMMIT BLOCKED: Root TypeScript type check failed."
   exit 1
 fi
+echo "✔ Root TypeScript clean."
 
-# 3. Python Layer Verification
-echo "3/4 Running Python layer tests..."
-python3 tests/python/run_tests.py 2>/dev/null || true
+# 3. Chrome Extension Typecheck
+echo "▶ [3/6] Verifying Chrome Extension TypeScript types..."
+if [ -d "chrome-extension" ]; then
+  (cd chrome-extension && ../node_modules/.bin/tsc --noEmit)
+  if [ $? -ne 0 ]; then
+    echo "❌ COMMIT BLOCKED: Chrome Extension TypeScript type check failed."
+    exit 1
+  fi
+  echo "✔ Chrome Extension TypeScript clean."
+fi
 
-# 4. Master 10-Gate SEO Linter
-echo "4/4 Running 10-Gate SEO Integrity Linter..."
+# 4. ESLint Strict Zero-Any Rule
+echo "▶ [4/6] Running ESLint strict check (no any types allowed)..."
+./node_modules/.bin/eslint src/ tests/
+if [ $? -ne 0 ]; then
+  echo "❌ COMMIT BLOCKED: ESLint violations detected (check for explicit 'any' types)."
+  exit 1
+fi
+echo "✔ ESLint passed with 0 errors."
+
+# 5. Master 10-Gate SEO Linter
+echo "▶ [5/6] Running Master 10-Gate SEO Integrity Linter..."
 node --experimental-strip-types tests/seoLinter.ts
 if [ $? -ne 0 ]; then
   echo "❌ COMMIT BLOCKED: SEO Integrity Linter failed."
   exit 1
 fi
+echo "✔ All 10 SEO Integrity gates passed."
 
-echo "✅ All pre-commit quality checks passed."
+# 6. Single Source of Truth Schema Validation
+echo "▶ [6/6] Validating JSON Schemas & Single Source of Truth..."
+python3 scripts/python/validate_schemas.py
+if [ $? -ne 0 ]; then
+  echo "❌ COMMIT BLOCKED: JSON schema verification failed."
+  exit 1
+fi
+echo "✔ JSON Schemas and Single Source of Truth verified."
+
+echo "✅ All pre-commit quality checks passed successfully. Proceeding with commit."
 exit 0

@@ -521,7 +521,7 @@ function detectTechStack(doc: Document): DetectedTech {
   const frameworks: string[] = [];
   const tagManagers: string[] = [];
 
-  const html = (doc.documentElement?.innerHTML || (doc as any).body?.innerHTML || doc.documentElement?.textContent || "").toLowerCase();
+  const html = (doc.documentElement?.innerHTML || doc.body?.innerHTML || doc.documentElement?.textContent || "").toLowerCase();
 
   // CMS
   if (html.includes("wp-content") || html.includes("wordpress")) cms.push("WordPress");

@@ -21,6 +21,10 @@ export default defineConfig({
       "tests/exporters.test.ts",
       "tests/uniquenessGate.test.ts",
       "tests/serpOptimizer.test.ts",
+      "tests/heading-structure-audit.test.ts",
+      "tests/image-optimization-audit.test.ts",
+      "tests/unified-seo-platform.test.ts",
+      "tests/hotel-seo.test.ts",
     ],
   },
 });

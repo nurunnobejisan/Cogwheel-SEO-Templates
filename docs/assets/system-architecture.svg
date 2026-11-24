@@ -322,7 +322,7 @@
       <text x="12" y="34" fill="#c084fc" font-size="9.5">Layer A: Free Silent OTA Sync</text>
       <text x="12" y="52" fill="#a1a1aa" font-size="10">• 78-KW Strategy Matrix (JSON)</text>
       <text x="12" y="66" fill="#a1a1aa" font-size="10">• OTA Scoring Weights (JSON)</text>
-      <text x="12" y="80" fill="#a1a1aa" font-size="10">• manifest.json (SemVer v2.7.0)</text>
+      <text x="12" y="80" fill="#a1a1aa" font-size="10">• manifest.json (SemVer v3.0.0)</text>
       <text x="12" y="96" fill="#a1a1aa" font-size="10">• releases/ &amp; updates.xml</text>
     </g>
 

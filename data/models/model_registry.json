@@ -1,0 +1,72 @@
+{
+  "activeModelId": "cogwheel-seo-unified-tuned_gemini-v1795487332",
+  "models": [
+    {
+      "modelId": "cogwheel-seo-unified-tuned_gemini-v1795487332",
+      "modelVersion": "v1795487332",
+      "baseModel": "gemini-1.5-flash-002",
+      "provider": "tuned_gemini",
+      "status": "ready",
+      "createdAt": "2026-11-24T02:28:52.813100Z",
+      "trainingStats": {
+        "trainingRecords": 134,
+        "evalRecords": 34,
+        "epochs": 3,
+        "learningRate": 0.0002
+      },
+      "evaluationBenchmark": {
+        "totalEvaluated": 34,
+        "overallScore": 100.0,
+        "metrics": {
+          "actionableFormatScore": 100.0,
+          "domainGroundingScore": 100.0,
+          "serpBudgetAdherenceScore": 100.0,
+          "structuredSchemaScore": 100.0,
+          "hallucinationRate": 0.0
+        }
+      },
+      "capabilities": [
+        "full_website_audit",
+        "gsc_cannibalization_detection",
+        "google_update_impact_analysis",
+        "geo_llm_citation_optimization",
+        "keyword_intent_matrix",
+        "serp_pixel_budgeting"
+      ]
+    },
+    {
+      "modelId": "cogwheel-seo-unified-tuned_gemini-v1795486557",
+      "modelVersion": "v1795486557",
+      "baseModel": "gemini-1.5-flash-002",
+      "provider": "tuned_gemini",
+      "status": "ready",
+      "createdAt": "2026-11-24T02:15:57.752523Z",
+      "trainingStats": {
+        "trainingRecords": 134,
+        "evalRecords": 34,
+        "epochs": 3,
+        "learningRate": 0.0002
+      },
+      "evaluationBenchmark": {
+        "totalEvaluated": 34,
+        "overallScore": 100.0,
+        "metrics": {
+          "actionableFormatScore": 100.0,
+          "domainGroundingScore": 100.0,
+          "serpBudgetAdherenceScore": 100.0,
+          "structuredSchemaScore": 100.0,
+          "hallucinationRate": 0.0
+        }
+      },
+      "capabilities": [
+        "full_website_audit",
+        "gsc_cannibalization_detection",
+        "google_update_impact_analysis",
+        "geo_llm_citation_optimization",
+        "keyword_intent_matrix",
+        "serp_pixel_budgeting"
+      ]
+    }
+  ],
+  "lastUpdated": "2026-11-24T02:28:52.813488Z"
+}

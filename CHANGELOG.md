@@ -28,6 +28,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Comprehensive System Architecture Guide Overhaul** (`docs/ARCHITECTURE.md`):
   - Detailed architectural specifications for Manifest V3 extension, ML harvesting vault, multi-provider inference ladder, SFT pipeline, and CSP/privacy governance.
 
+## [3.0.0] - 2026-11-24
+
+### Added
+- Complete source code integration of `claude-seo`, `open-seo`, and `mcp-gsc` into Cogwheel's unified architecture.
+- FastMCP Google Search Console Server and Unified TypeScript Client with query cannibalization detection and URL inspection.
+- 20 specialized autonomous SEO agents and 66-entry Google algorithm updates dataset with volatility risk checker.
+- Open-SEO audit issues catalog, Generative Engine Optimization (GEO) AI visibility tracker, backlinks, and keyword research.
+- Unified AI Tool Orchestrator dispatching 9 registered tools with strict schema validation.
+- Full Website SEO Audit Engine with 11-dimension reporting and Next.js `/api/full-audit` route handler.
+- SFT training data preparation pipeline (`unified_seo_train.jsonl` & `unified_seo_eval.jsonl`) and unified model evaluation benchmark engine with checkpoint registry.
+- Unified SEO Suite dashboard view with multi-tool interactive assistant and model training monitor.
+- Reusable Heading Structure Optimization CLI (`outputs/site_heading_audit.py`) and Image Optimization CLI (`outputs/site_image_audit.py`).
+- 13-test integration suite in `tests/unified-seo-platform.test.ts` passing 100%.
+
 ## [2.7.0] - 2026-11-21
 
 ### Added

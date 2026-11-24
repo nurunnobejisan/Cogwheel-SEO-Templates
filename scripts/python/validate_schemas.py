@@ -102,6 +102,7 @@ def validate_exported_json_schemas(schemas_dir: Path) -> bool:
         "audit-payload.schema.json",
         "page-audit-data.schema.json",
         "ota-config.schema.json",
+        "hotel-seo.schema.json",
     ]
 
     all_valid = True

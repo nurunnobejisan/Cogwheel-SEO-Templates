@@ -67,13 +67,13 @@ export async function POST(req: NextRequest) {
           state: property.state,
           source: "Cogwheel SEO Templates v2.4",
         },
-        promptsBatch: activePrompts.map((p: any) => ({
-          text: p.prompt || p.text,
+        promptsBatch: activePrompts.map((p: { prompt?: string; text?: string; category?: string; targetEngines?: string[] }) => ({
+          text: p.prompt || p.text || "",
           category: p.category || "General Discovery",
           tags: ["hospitality", "local-seo", "geo-optimization"],
           engines: p.targetEngines || ["ChatGPT", "Perplexity", "Google AI Overviews"],
         })),
-        competitors: activeCompetitors.map((c: any) => ({
+        competitors: activeCompetitors.map((c: { name: string; domain?: string }) => ({
           name: c.name,
           domain: c.domain || "",
         })),
@@ -113,8 +113,8 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify({
             brandName: property.name,
             domain: property.url,
-            prompts: activePrompts.map((p: any) => p.prompt || p.text),
-            competitors: activeCompetitors.map((c: any) => c.name),
+            prompts: activePrompts.map((p: { prompt?: string; text?: string }) => p.prompt || p.text || ""),
+            competitors: activeCompetitors.map((c: { name: string }) => c.name),
           }),
         });
 
@@ -130,11 +130,12 @@ export async function POST(req: NextRequest) {
           message: "Data successfully synced with VisibilitySuite.ai!",
           data,
         });
-      } catch (apiErr: any) {
+      } catch (apiErr: unknown) {
+        const msg = apiErr instanceof Error ? apiErr.message : "Could not reach VisibilitySuite API directly.";
         return NextResponse.json(
           {
             ok: false,
-            error: apiErr.message || "Could not reach VisibilitySuite API directly.",
+            error: msg,
             note: "Please verify your API key or use the 1-Click Batch Upload file.",
           },
           { status: 502 }
@@ -173,9 +174,10 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ error: "Invalid action." }, { status: 400 });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const msg = err instanceof Error ? err.message : "Failed to process VisibilitySuite connection.";
     return NextResponse.json(
-      { error: err.message || "Failed to process VisibilitySuite connection." },
+      { error: msg },
       { status: 500 }
     );
   }

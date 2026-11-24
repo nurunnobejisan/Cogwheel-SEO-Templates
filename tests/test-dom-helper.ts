@@ -61,13 +61,13 @@ export function createMockElement(tag: string, attrs: Record<string, string> = {
           this._rawText = v;
         },
       });
-      (cloned as any)._rawText = this.textContent;
+      (cloned as unknown as Record<string, unknown>)._rawText = this.textContent;
       return cloned;
     },
     attachShadow(init: { mode: "open" | "closed" }): MockNode {
       const shadow = createMockElement("#shadow-root");
       shadow.parent = this;
-      (shadow as any).mode = init.mode;
+      (shadow as unknown as Record<string, unknown>).mode = init.mode;
       this.shadowRoot = shadow;
       return shadow;
     },

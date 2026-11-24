@@ -21,6 +21,8 @@ interface LabsViewProps {
   onSubTabChange?: (tab: "geo" | "compset" | "sandbox") => void;
   onRunDeckGeneration?: () => void;
   onExportMemo?: () => void;
+  onOpenImageAudit?: () => void;
+  onOpenHeadingAudit?: () => void;
 }
 
 export function LabsView({
@@ -29,6 +31,8 @@ export function LabsView({
   onSubTabChange,
   onRunDeckGeneration,
   onExportMemo,
+  onOpenImageAudit,
+  onOpenHeadingAudit,
 }: LabsViewProps) {
   const [internalSubTab, setInternalSubTab] = useState<"geo" | "compset" | "sandbox">(
     activeSubTab || "geo"
@@ -1055,6 +1059,90 @@ export function LabsView({
             <span>RFC 3986 &amp; Google Canonical Guidelines</span>
             <span className="font-semibold text-teal-600 dark:text-teal-400">100% Free &amp; Offline</span>
           </div>
+        </div>
+
+        {/* 9. Website Image Optimization Auditor */}
+        <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-100 dark:bg-amber-950/60">
+                  <svg className="h-4 w-4 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Image Optimization Audit Tool</span>
+              </div>
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
+                Multi-Tab XLSX
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              Crawl public pages to inspect &lt;img&gt;, &lt;picture&gt;, and CSS background assets. Generates a 5-tab workbook with <code>=IMAGE()</code> &amp; <code>=LEN()</code> formulas, Core Web Vitals checks, and Google Sheets export.
+            </p>
+
+            <div className="rounded-xl border border-amber-200/60 bg-amber-50/40 p-3 text-xs text-slate-700 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-slate-300 space-y-1.5">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-semibold text-amber-900 dark:text-amber-300">Audited Target:</span>
+                <span className="font-mono text-slate-600 dark:text-slate-400">{property?.url || "Custom Domain"}</span>
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                • Matches reference Google Sheet layout<br/>
+                • Detects missing alt, oversized files &gt;100KB, WebP/AVIF candidates, CLS shifts
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenImageAudit}
+            className="mt-4 w-full rounded-xl bg-amber-600 py-2 text-xs font-semibold text-white transition hover:bg-amber-700 shadow-sm"
+          >
+            Launch Website Image Auditor &rarr;
+          </button>
+        </div>
+
+        {/* Heading Structure Optimization Tool (The Nines Reference Parity) */}
+        <div className="flex flex-col justify-between rounded-2xl border border-emerald-200/80 bg-white p-5 shadow-card transition-all hover:border-emerald-400 dark:border-emerald-900/50 dark:bg-slate-900">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                  </svg>
+                </span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Heading Structure Optimization</span>
+              </div>
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                The Nines Format
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              Crawl public pages and sitemaps to inspect rendered H1–H6 tags. Detects missing H1, multiple H1s, skipped levels, and unrendered JS templates with 6-column optimized spreadsheet export.
+            </p>
+
+            <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3 text-xs text-slate-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-slate-300 space-y-1.5">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-semibold text-emerald-900 dark:text-emerald-300">Audited Target:</span>
+                <span className="font-mono text-slate-600 dark:text-slate-400">{property?.url || "https://thenines.com/"}</span>
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                • Matches &ldquo;Heading Structure Optimization- thenines&rdquo; template<br/>
+                • Category banners, yellow table headers, green recommendations
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenHeadingAudit}
+            className="mt-4 w-full rounded-xl bg-emerald-600 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700 shadow-sm"
+          >
+            Launch Heading Structure Auditor &rarr;
+          </button>
         </div>
 
       </div>

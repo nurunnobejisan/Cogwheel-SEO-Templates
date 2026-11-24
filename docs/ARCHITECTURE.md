@@ -1,5 +1,9 @@
 # System Architecture & Technical Specifications
 
+> **Version**: 3.0.0  
+> **Last Updated & Verified**: November 24, 2026  
+> **Status**: Production — Unified Multi-Source Architecture (Claude-SEO + Open-SEO + FastMCP GSC)
+
 This document outlines the software architecture, design patterns, data contracts, and execution pipelines of **Cogwheel SEO & GEO Studio**.
 
 ---
@@ -169,7 +173,7 @@ sequenceDiagram
 
     Note over Extension,Releases: Layer B: Binary Extension Version Checker
     Extension->>GitHub: GET /chrome-extension/public/manifest.json
-    GitHub-->>Extension: 200 OK (version: "2.7.0")
+    GitHub-->>Extension: 200 OK (version: "3.0.0")
     Extension->>Extension: Compare SemVer against chrome.runtime.getManifest()
     alt Remote is strictly newer
         Extension->>Storage: Set updateAvailable: true

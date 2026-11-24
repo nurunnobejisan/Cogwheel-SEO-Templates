@@ -73,6 +73,19 @@ export function TemplateStudio({
     return pageData?.h1Elements?.[0] || activeProfile?.name || "SpringHill Suites Panama City Beachfront";
   });
 
+  // Auto-sync live fields when active page changes
+  useEffect(() => {
+    if (pageData?.title) {
+      setLiveTitle(pageData.title);
+    }
+    if (pageData?.metaDesc) {
+      setLiveMeta(pageData.metaDesc);
+    }
+    if (pageData?.h1Elements?.[0]) {
+      setLiveH1(pageData.h1Elements[0]);
+    }
+  }, [pageData?.url, pageData?.title, pageData?.metaDesc]);
+
   const [liveGeoAnswer, setLiveGeoAnswer] = useState(() => {
     return `SpringHill Suites Panama City Beachfront is located at 12513 Front Beach Rd, Panama City Beach, FL 32407. The property features 200 all-suite oceanfront guestrooms with private balconies, an on-site beachfront pool bar, lazy river, 24/7 fitness center, and complimentary hot breakfast. Self-parking and EV charging stations are available on-site. Direct beach access is steps from the sun deck.`;
   });
@@ -219,6 +232,39 @@ export function TemplateStudio({
         initial[v] = activeProfile.postalCode;
       } else if (v === "primaryH1") {
         initial[v] = liveH1;
+      } else if (v === "parkingPolicy" || v === "parkingRate") {
+        if (pageData?.extractedFacts?.parkingFee) {
+          initial[v] = v === "parkingRate" ? pageData.extractedFacts.parkingFee : `Valet and self-parking at ${pageData.extractedFacts.parkingFee}.`;
+        }
+      } else if (v === "petPolicy") {
+        if (pageData?.extractedFacts?.petPolicy) initial[v] = pageData.extractedFacts.petPolicy;
+      } else if (v === "checkInOutPolicy" || v === "checkInTime" || v === "checkOutTime") {
+        const ci = pageData?.extractedFacts?.checkInTime || "4:00 PM";
+        const co = pageData?.extractedFacts?.checkOutTime || "11:00 AM";
+        if (v === "checkInTime") initial[v] = ci;
+        else if (v === "checkOutTime") initial[v] = co;
+        else initial[v] = `Check-in starts at ${ci}; check-out is at ${co}.`;
+      } else if (v === "totalMeetingSqFt") {
+        if (pageData?.extractedFacts?.meetingSqFt) initial[v] = pageData.extractedFacts.meetingSqFt.replace(/[^0-9]/g, "");
+      } else if (v === "grandBallroomSqFt") {
+        if (pageData?.extractedFacts?.ballroomSqFt) initial[v] = pageData.extractedFacts.ballroomSqFt.replace(/[^0-9]/g, "");
+      } else if (v === "roomTitle") {
+        if (pageData?.extractedFacts?.roomTypes?.[0]) initial[v] = pageData.extractedFacts.roomTypes[0];
+      } else if (v === "kingSuiteSqFt") {
+        initial[v] = "650";
+      } else if (v === "airportCode" || v === "airportName" || v === "airportMiles" || v === "distanceToAirport") {
+        const code = pageData?.extractedFacts?.airportCode || "AIR";
+        const dist = pageData?.extractedFacts?.airportDistance || "8.5 miles";
+        if (v === "airportCode") initial[v] = code;
+        else if (v === "airportName") initial[v] = `${code} International Airport`;
+        else if (v === "airportMiles") initial[v] = dist.replace(/[^0-9.]/g, "");
+        else initial[v] = dist;
+      } else if (v === "distanceToLandmark" && pageData?.extractedFacts?.landmarkDistance) {
+        initial[v] = pageData.extractedFacts.landmarkDistance;
+      } else if (v === "amenitiesList" && pageData?.extractedAmenities?.length) {
+        initial[v] = pageData.extractedAmenities.join(", ");
+      } else if (v === "destinationOverview" && pageData?.metaDesc) {
+        initial[v] = pageData.metaDesc;
       }
     });
 
@@ -291,49 +337,113 @@ export function TemplateStudio({
 
   // Production-Ready Bundled Export Code (HTML + JSON-LD)
   const readyToPasteSnippet = useMemo(() => {
+    const cat = pageData?.siteCategory || "general";
     const canonical =
       pageData?.canonical ||
       pageData?.url ||
-      "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/";
-    const hotelName = liveH1 || "SpringHill Suites Panama City Beachfront";
+      "https://example.com/page";
+    const entityTitle = liveH1 || pageData?.title || activeProfile?.name || "Official Site";
     const ogImage =
       pageData?.ogImage ||
-      "https://cache.marriott.com/content/dam/marriott-renditions/ECPSB/ecpsb-exterior-001.jpg";
+      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=630&fit=crop";
 
-    return `<!-- Cogwheel SEO Studio v2.6 - Brand Guardrail Compliant Export -->
-<!-- Brand Framework: ${activeGuardrail.name} (${activeGuardrail.loyaltyProgram}) -->
+    let ogType = "website";
+    let entityBlockTag = "WebSite";
+    let schemaEntityJson = "";
 
-<!-- 1. Primary Metadata & Search Snippets -->
-<title>${liveTitle}</title>
-<meta name="description" content="${liveMeta}" />
-<link rel="canonical" href="${canonical}" />
-
-<!-- 2. Open Graph & Social Sharing Card -->
-<meta property="og:type" content="hotel" />
-<meta property="og:site_name" content="${activeGuardrail.loyaltyProgram}" />
-<meta property="og:title" content="${liveTitle}" />
-<meta property="og:description" content="${liveMeta}" />
-<meta property="og:url" content="${canonical}" />
-<meta property="og:image" content="${ogImage}" />
-
-<!-- 3. Above-the-Fold Primary H1 -->
-<h1>${hotelName}</h1>
-
-<!-- 4. Generative AI Knowledge Entity Block -->
-<section class="hotel-geo-entity-block" data-geo-entity="Hotel" aria-label="About the Property">
-  <p>${liveGeoAnswer}</p>
-</section>
-
-<!-- 5. Validated JSON-LD Schema (@graph Hotel + BreadcrumbList) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-    {
+    if (cat === "ecommerce") {
+      ogType = "product";
+      entityBlockTag = "Product";
+      const ecom = pageData?.ecommerce;
+      const cleanPrice = ecom?.price ? ecom.price.replace(/[^0-9.]/g, "") : "99.00";
+      const currency = ecom?.currency || "USD";
+      schemaEntityJson = `    {
+      "@type": "Product",
+      "@id": "${canonical}#product",
+      "name": "${entityTitle.replace(/"/g, '\\"')}",
+      "description": "${liveMeta.replace(/"/g, '\\"')}",
+      "url": "${canonical}",
+      "image": "${ogImage}",
+      "brand": {
+        "@type": "Brand",
+        "name": "${(activeProfile?.name || pageData?.hostname || "Brand").replace(/"/g, '\\"')}"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "${canonical}",
+        "priceCurrency": "${currency}",
+        "price": "${cleanPrice}",
+        "availability": "https://schema.org/${ecom?.availability || "InStock"}",
+        "itemCondition": "https://schema.org/NewCondition"
+      }
+    }`;
+    } else if (cat === "saas") {
+      ogType = "website";
+      entityBlockTag = "SoftwareApplication";
+      schemaEntityJson = `    {
+      "@type": "SoftwareApplication",
+      "@id": "${canonical}#software",
+      "name": "${entityTitle.replace(/"/g, '\\"')}",
+      "description": "${liveMeta.replace(/"/g, '\\"')}",
+      "url": "${canonical}",
+      "image": "${ogImage}",
+      "applicationCategory": "BusinessApplication",
+      "operatingSystem": "All",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      }
+    }`;
+    } else if (cat === "editorial") {
+      ogType = "article";
+      entityBlockTag = "Article";
+      schemaEntityJson = `    {
+      "@type": "Article",
+      "@id": "${canonical}#article",
+      "headline": "${liveTitle.replace(/"/g, '\\"')}",
+      "description": "${liveMeta.replace(/"/g, '\\"')}",
+      "url": "${canonical}",
+      "image": "${ogImage}",
+      "mainEntityOfPage": "${canonical}",
+      "author": {
+        "@type": "Person",
+        "name": "${(activeProfile?.name || pageData?.hostname || "Editorial Staff").replace(/"/g, '\\"')}"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "${(activeProfile?.name || pageData?.hostname || "Publisher").replace(/"/g, '\\"')}",
+        "url": "${pageData?.origin || canonical}"
+      }
+    }`;
+    } else if (cat === "local_business") {
+      ogType = "business.business";
+      entityBlockTag = "LocalBusiness";
+      schemaEntityJson = `    {
+      "@type": "LocalBusiness",
+      "@id": "${canonical}#localbusiness",
+      "name": "${entityTitle.replace(/"/g, '\\"')}",
+      "description": "${liveMeta.replace(/"/g, '\\"')}",
+      "url": "${canonical}",
+      "image": "${ogImage}",
+      "telephone": "${activeProfile?.phone || "+1-555-019-2834"}",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "${activeProfile?.address || "100 Main Street"}",
+        "addressLocality": "${activeProfile?.city || "Austin"}",
+        "addressRegion": "${activeProfile?.state || "TX"}",
+        "postalCode": "${activeProfile?.postalCode || "78701"}",
+        "addressCountry": "US"
+      }
+    }`;
+    } else if (cat === "hospitality") {
+      ogType = "hotel";
+      entityBlockTag = "Hotel";
+      schemaEntityJson = `    {
       "@type": "Hotel",
       "@id": "${canonical}#hotel",
-      "name": "${hotelName}",
-      "description": "${liveMeta}",
+      "name": "${entityTitle.replace(/"/g, '\\"')}",
+      "description": "${liveMeta.replace(/"/g, '\\"')}",
       "url": "${canonical}",
       "image": "${ogImage}",
       "address": {
@@ -350,7 +460,57 @@ export function TemplateStudio({
         "@type": "Rating",
         "ratingValue": "4.5"
       }
+    }`;
+    } else {
+      ogType = "website";
+      entityBlockTag = "Organization";
+      schemaEntityJson = `    {
+      "@type": "Organization",
+      "@id": "${pageData?.origin || canonical}#organization",
+      "name": "${(activeProfile?.name || pageData?.hostname || "Organization").replace(/"/g, '\\"')}",
+      "url": "${pageData?.origin || canonical}",
+      "description": "${liveMeta.replace(/"/g, '\\"')}",
+      "logo": "${ogImage}"
     },
+    {
+      "@type": "WebSite",
+      "@id": "${pageData?.origin || canonical}#website",
+      "url": "${pageData?.origin || canonical}",
+      "name": "${entityTitle.replace(/"/g, '\\"')}"
+    }`;
+    }
+
+    return `<!-- Cogwheel SEO Studio v3.0 - Universal Brand Guardrail Compliant Export -->
+<!-- Platform Framework: ${pageData?.detectedCmsLabel || "Universal"} | Category: ${pageData?.siteCategoryLabel || cat.toUpperCase()} -->
+<!-- Policy Profile: ${activeGuardrail.name} (${activeGuardrail.loyaltyProgram}) -->
+
+<!-- 1. Primary Metadata & Search Snippets -->
+<title>${liveTitle}</title>
+<meta name="description" content="${liveMeta}" />
+<link rel="canonical" href="${canonical}" />
+
+<!-- 2. Open Graph & Social Sharing Card -->
+<meta property="og:type" content="${ogType}" />
+<meta property="og:site_name" content="${activeProfile?.name || activeGuardrail.loyaltyProgram}" />
+<meta property="og:title" content="${liveTitle}" />
+<meta property="og:description" content="${liveMeta}" />
+<meta property="og:url" content="${canonical}" />
+<meta property="og:image" content="${ogImage}" />
+
+<!-- 3. Above-the-Fold Primary H1 -->
+<h1>${entityTitle}</h1>
+
+<!-- 4. Generative AI Knowledge Entity Block -->
+<section class="geo-entity-block" data-geo-entity="${entityBlockTag}" aria-label="Entity Overview">
+  <p>${liveGeoAnswer}</p>
+</section>
+
+<!-- 5. Validated JSON-LD Schema (@graph ${entityBlockTag} + BreadcrumbList) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+${schemaEntityJson},
     {
       "@type": "BreadcrumbList",
       "@id": "${canonical}#breadcrumb",
@@ -364,7 +524,7 @@ export function TemplateStudio({
         {
           "@type": "ListItem",
           "position": 2,
-          "name": "${activeProfile?.city || "Panama City Beach"}",
+          "name": "${activeProfile?.city || "Overview"}",
           "item": "${canonical}"
         }
       ]
@@ -440,6 +600,69 @@ export function TemplateStudio({
         setActionFeedback(`Injected ${res.injected.join(", ")} on active page!`);
       } else {
         setActionFeedback("Preview injected into live page DOM.");
+      }
+      setTimeout(() => setActionFeedback(null), 3000);
+    });
+  };
+
+  const [cmsUndoAvailable, setCmsUndoAvailable] = useState(false);
+
+  const handleFillActiveCmsField = (fieldType: "active" | "title" | "meta" | "schema" | "all" = "active") => {
+    if (!activeTabId || typeof chrome === "undefined" || !chrome.tabs) {
+      setActionFeedback("Target tab not connected.");
+      setTimeout(() => setActionFeedback(null), 2500);
+      return;
+    }
+
+    if (isRestrictedUrl(pageData?.url)) {
+      setActionFeedback("CMS injection is disabled on browser system pages.");
+      setTimeout(() => setActionFeedback(null), 3000);
+      return;
+    }
+
+    if (fieldType === "all") {
+      handleAutoFillCms();
+      return;
+    }
+
+    const payload: { text?: string; fieldType: "active" | "title" | "meta" | "schema" } = {
+      fieldType,
+    };
+
+    if (fieldType === "schema") {
+      payload.text = selectedTemplate.format === "json" ? resolvedOutput : readyToPasteSnippet;
+    } else if (fieldType === "title") {
+      payload.text = liveTitle;
+    } else if (fieldType === "meta") {
+      payload.text = liveMeta;
+    } else {
+      payload.text = liveTitle;
+    }
+
+    chrome.tabs.sendMessage(activeTabId, { type: "FILL_ACTIVE_CMS_FIELD", payload }, (res) => {
+      if (chrome.runtime.lastError) {
+        setActionFeedback("Please refresh target webpage to enable CMS field injection.");
+        setTimeout(() => setActionFeedback(null), 3000);
+        return;
+      }
+      if (res && res.result && res.result.success) {
+        setActionFeedback(res.result.message || `Filled: ${res.result.filledFields.join(", ")}`);
+        setCmsUndoAvailable(true);
+      } else {
+        setActionFeedback(res?.result?.message || "Could not find active input to fill.");
+      }
+      setTimeout(() => setActionFeedback(null), 3500);
+    });
+  };
+
+  const handleUndoCmsFill = () => {
+    if (!activeTabId || typeof chrome === "undefined" || !chrome.tabs) return;
+    chrome.tabs.sendMessage(activeTabId, { type: "UNDO_CMS_FILL" }, (res) => {
+      if (res && res.result && res.result.success) {
+        setActionFeedback(res.result.message);
+        setCmsUndoAvailable(false);
+      } else {
+        setActionFeedback(res?.result?.message || "Nothing to revert.");
       }
       setTimeout(() => setActionFeedback(null), 3000);
     });
@@ -780,12 +1003,44 @@ export function TemplateStudio({
 
             <button
               type="button"
+              onClick={() => handleFillActiveCmsField("active")}
+              title="Safely inject into the active/focused CMS input or textarea in browser tab"
+              className="inline-flex items-center gap-1 rounded-xl border border-sky-400 bg-sky-500/10 px-2.5 py-1.5 text-xs font-bold text-sky-400 shadow-xs transition hover:bg-sky-500/20"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-sky-400" />
+              <span>Fill Active CMS Field</span>
+            </button>
+
+            <button
+              type="button"
               onClick={handleAutoFillCms}
               title="Auto-fill WordPress, Webflow, or Shopify SEO fields"
               className="inline-flex items-center gap-1 rounded-xl border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-xs font-bold text-sky-800 shadow-xs transition hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
             >
-              <span>Auto-Fill CMS</span>
+              <span>Auto-Fill All</span>
             </button>
+
+            {selectedTemplate.format === "json" && (
+              <button
+                type="button"
+                onClick={() => handleFillActiveCmsField("schema")}
+                title="Inject this JSON-LD schema into active page head"
+                className="inline-flex items-center gap-1 rounded-xl border border-purple-400 bg-purple-500/10 px-2.5 py-1.5 text-xs font-bold text-purple-400 shadow-xs transition hover:bg-purple-500/20"
+              >
+                <span>Inject Schema</span>
+              </button>
+            )}
+
+            {cmsUndoAvailable && (
+              <button
+                type="button"
+                onClick={handleUndoCmsFill}
+                title="Revert recent CMS field modifications"
+                className="inline-flex items-center gap-1 rounded-xl border border-amber-400 bg-amber-500/10 px-2.5 py-1.5 text-xs font-bold text-amber-400 shadow-xs transition hover:bg-amber-500/20 animate-pulse"
+              >
+                <span>Undo Fill</span>
+              </button>
+            )}
 
             <button
               type="button"

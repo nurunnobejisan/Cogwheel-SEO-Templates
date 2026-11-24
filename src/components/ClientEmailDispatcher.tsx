@@ -89,9 +89,10 @@ Connected via: riboynjsr@gmail.com`;
           window.open(data.webComposeUrl, "_blank", "noopener,noreferrer");
         }, 1200);
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       setStatusType("error");
-      setStatusMessage(err.message || "Could not dispatch via Gmail CLI.");
+      const msg = err instanceof Error ? err.message : "Could not dispatch via Gmail CLI.";
+      setStatusMessage(msg);
     } finally {
       setBusy(false);
     }
