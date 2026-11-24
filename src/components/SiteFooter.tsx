@@ -14,7 +14,7 @@ export function SiteFooter() {
                 Cogwheel SEO &amp; GEO Studio
               </span>
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                v2.7.0
+                v3.0.0
               </span>
             </div>
             <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
