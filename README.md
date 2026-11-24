@@ -240,6 +240,27 @@ python3 outputs/site_image_audit.py https://example.com --max-pages 50 --size-th
 - 1-click download as `.xlsx` or export directly to native Google Sheets when service account credentials (`GOOGLE_SERVICE_ACCOUNT_B64` or `GOOGLE_SERVICE_ACCOUNT_JSON`) are configured.
 - *Accessibility note:* Correctly distinguishes informative images from decorative images (`alt=""`), which are valid under WCAG and not treated as defects.
 
+### Heading Structure Optimization Audit Tool (The Nines Reference Parity)
+Audits hotel and enterprise websites for rendered heading hierarchy (H1–H6), detects inverted ordering (e.g. booking widget `<h3>` preceding main `<h1>`), unrendered JavaScript template literals (`<h2>'+page.title+'</h2>`), missing/multiple H1s, and skipped levels. Generates a multi-tab workbook with the exact 6-column layout from the reference template [Heading Structure Optimization- thenines](https://docs.google.com/spreadsheets/d/1W_kydZFwQPl3qQ4Aybrh9JvQ1dXPG2-M/edit?pli=1&gid=400022639#gid=400022639).
+
+```bash
+# Run standalone zero-dependency Python CLI auditor for The Nines (or any site)
+python3 outputs/site_heading_audit.py https://thenines.com/ --max-pages 60
+
+# Features:
+# 1. Heading Optimization — Matches reference sheet with Category Banners (#4A86E8), Yellow Headers (#FFE599), and Green Recommendations (#B6D7A8)
+#    Exact 6 Columns: Page URL | Keyword | Old Headline | Old Heading Level | New Headline (optimized) | New Heading Level
+# 2. Audit Summary       — Coverage boundary statement, total headings, H1–H6 counts, and hierarchy issues flagged
+# 3. Hierarchy Analysis  — Full technical tabular breakdown of every heading element and flagged SEO defects
+# 4. Built-in Resilience — Auto-checkpointing (.heading_checkpoint_<host>.json) with --resume capability
+```
+
+**Web Interface & API:**
+- Access via **Audit Headings** in the **Site Crawl** tab, task runner matrix (`heading-structure`), or **Enterprise SEO Labs**.
+- Live telemetry displays pages audited, H1–H6 breakdown, missing H1s, multi-H1s, skipped levels, and unrendered template variables.
+- Direct export to Excel `.xlsx` or native Google Sheets via Google Drive/Sheets API.
+
+
 ---
 
 ## Repository Governance

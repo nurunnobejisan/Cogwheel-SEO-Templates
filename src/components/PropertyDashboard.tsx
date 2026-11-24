@@ -58,6 +58,9 @@ const SitemapAuditModal = dynamic(() =>
 const ImageOptimizationAuditModal = dynamic(() =>
   import("./ImageOptimizationAuditModal").then((m) => m.ImageOptimizationAuditModal),
 );
+const HeadingStructureAuditModal = dynamic(() =>
+  import("./HeadingStructureAuditModal").then((m) => m.HeadingStructureAuditModal),
+);
 const KeywordResearchView = dynamic(() =>
   import("./KeywordResearchView").then((m) => m.KeywordResearchView),
 );
@@ -142,6 +145,7 @@ export default function PropertyDashboard() {
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showSitemapAudit, setShowSitemapAudit] = useState(false);
   const [showImageAudit, setShowImageAudit] = useState(false);
+  const [showHeadingAudit, setShowHeadingAudit] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
   const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
   const [comingSoonTask, setComingSoonTask] = useState<TaskConfig | null>(null);
@@ -323,6 +327,10 @@ export default function PropertyDashboard() {
     }
     if (task.id === "image-optimization") {
       setShowImageAudit(true);
+      return;
+    }
+    if (task.id === "heading-structure") {
+      setShowHeadingAudit(true);
       return;
     }
     if (CRAWL_TASK_IDS.has(task.id)) {
@@ -975,6 +983,7 @@ export default function PropertyDashboard() {
               onRunDeckGeneration={() => setDeliverablesTab("pptx")}
               onExportMemo={() => setDeliverablesTab("memo")}
               onOpenImageAudit={() => setShowImageAudit(true)}
+              onOpenHeadingAudit={() => setShowHeadingAudit(true)}
             />
           )}
 
@@ -988,6 +997,9 @@ export default function PropertyDashboard() {
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
+                  <Button variant="secondary" onClick={() => setShowHeadingAudit(true)}>
+                    Audit Headings
+                  </Button>
                   <Button variant="secondary" onClick={() => setShowImageAudit(true)}>
                     Audit Images
                   </Button>
@@ -1016,6 +1028,16 @@ export default function PropertyDashboard() {
                   </span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowHeadingAudit(true)}
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-emerald-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
+                  >
+                    <svg className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                    </svg>
+                    Audit Headings
+                  </button>
                   <button
                     type="button"
                     onClick={() => setShowImageAudit(true)}
@@ -1495,6 +1517,22 @@ export default function PropertyDashboard() {
             <ImageOptimizationAuditModal
               defaultUrl={activeProperty.url}
               onClose={() => setShowImageAudit(false)}
+            />
+          </div>
+        </div>
+      )}
+
+      {showHeadingAudit && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setShowHeadingAudit(false);
+          }}
+        >
+          <div className="w-full max-w-6xl">
+            <HeadingStructureAuditModal
+              defaultUrl={activeProperty.url || "https://thenines.com/"}
+              onClose={() => setShowHeadingAudit(false)}
             />
           </div>
         </div>

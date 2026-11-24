@@ -60,6 +60,16 @@ The standardized production architecture organizes modular components under:
 | `outputs/site_image_audit.py` | CLI | Created | Standalone zero-dependency Python CLI image auditor with pure-Python OpenXML builder |
 | `tests/image-optimization-audit.test.ts` | Test | Created | Unit test suite for 5-tab workbook generation, formulas, and decorative alt logic |
 | `tests/ts/edge-cases-and-defenses.test.ts` | Test | Created | Defensive unit tests covering regex leaks, quote sanitization & fallbacks |
+| `src/core/heading-audit/types.ts` | Core | Created | Type definitions for heading items, issues, summary, and crawler options |
+| `src/core/heading-audit/analyzer.ts` | Core | Created | Heading hierarchy analyzer, category classifier, and recommendation engine |
+| `src/core/heading-audit/crawler.ts` | Core | Created | Sitemaps and internal link crawler extracting rendered H1–H6 elements in document order |
+| `src/core/heading-audit/excel.ts` | Core | Created | 3-tab XLSX generator matching The Nines 6-column reference layout, colors, and widths |
+| `src/core/heading-audit/google-sheets.ts` | Core | Created | Direct export to native Google Sheets matching The Nines yellow/green/blue styling |
+| `src/core/heading-audit/index.ts` | Core | Created | Barrel export for heading structure audit engine |
+| `src/app/api/heading-audit/route.ts` | API | Created | Next.js API route handling POST audit runs and GET direct XLSX downloads |
+| `src/components/HeadingStructureAuditModal.tsx` | UI | Created | Interactive audit interface with live progress, KPI cards, table filters & export |
+| `outputs/site_heading_audit.py` | CLI | Created | Standalone zero-dependency Python CLI heading auditor with checkpointing and resume |
+| `tests/heading-structure-audit.test.ts` | Test | Created | Unit test suite for heading extraction, hierarchy detection, and workbook layout |
 | `docs/ARCHITECTURE.md` | Docs | Created | System architecture and directory guide |
 | `docs/reports/TYPESCRIPT_CI_FIX_REPORT.md` | Docs | Created | CI failure investigation and repair report |
 | `README.md` | Docs | Updated | Comprehensive system documentation (v2.6.0) |

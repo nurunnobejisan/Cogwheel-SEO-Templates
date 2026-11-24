@@ -22,6 +22,7 @@ interface LabsViewProps {
   onRunDeckGeneration?: () => void;
   onExportMemo?: () => void;
   onOpenImageAudit?: () => void;
+  onOpenHeadingAudit?: () => void;
 }
 
 export function LabsView({
@@ -31,6 +32,7 @@ export function LabsView({
   onRunDeckGeneration,
   onExportMemo,
   onOpenImageAudit,
+  onOpenHeadingAudit,
 }: LabsViewProps) {
   const [internalSubTab, setInternalSubTab] = useState<"geo" | "compset" | "sandbox">(
     activeSubTab || "geo"
@@ -1098,6 +1100,48 @@ export function LabsView({
             className="mt-4 w-full rounded-xl bg-amber-600 py-2 text-xs font-semibold text-white transition hover:bg-amber-700 shadow-sm"
           >
             Launch Website Image Auditor &rarr;
+          </button>
+        </div>
+
+        {/* Heading Structure Optimization Tool (The Nines Reference Parity) */}
+        <div className="flex flex-col justify-between rounded-2xl border border-emerald-200/80 bg-white p-5 shadow-card transition-all hover:border-emerald-400 dark:border-emerald-900/50 dark:bg-slate-900">
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:bg-emerald-400/10 dark:text-emerald-400">
+                  <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
+                  </svg>
+                </span>
+                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Heading Structure Optimization</span>
+              </div>
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                The Nines Format
+              </span>
+            </div>
+
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+              Crawl public pages and sitemaps to inspect rendered H1–H6 tags. Detects missing H1, multiple H1s, skipped levels, and unrendered JS templates with 6-column optimized spreadsheet export.
+            </p>
+
+            <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3 text-xs text-slate-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-slate-300 space-y-1.5">
+              <div className="flex items-center justify-between text-[11px]">
+                <span className="font-semibold text-emerald-900 dark:text-emerald-300">Audited Target:</span>
+                <span className="font-mono text-slate-600 dark:text-slate-400">{property?.url || "https://thenines.com/"}</span>
+              </div>
+              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+                • Matches &ldquo;Heading Structure Optimization- thenines&rdquo; template<br/>
+                • Category banners, yellow table headers, green recommendations
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onOpenHeadingAudit}
+            className="mt-4 w-full rounded-xl bg-emerald-600 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700 shadow-sm"
+          >
+            Launch Heading Structure Auditor &rarr;
           </button>
         </div>
 
