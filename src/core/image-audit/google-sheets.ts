@@ -33,7 +33,7 @@ export async function exportAuditToGoogleSheets(
   const spreadsheetUrl =
     createRes.data.webViewLink || `https://docs.google.com/spreadsheets/d/${spreadsheetId}/edit`;
 
-  // 2. Setup tabs: "Image Optimization", "Audit Summary", "Image Inventory", "Recommendations", "Crawl Log"
+  // 2. Setup tabs: "Image Optimization", "Overview", "Image Inventory", "Recommendations", "Crawl Log"
   const batchUpdateRequest = {
     requests: [
       {
@@ -45,7 +45,7 @@ export async function exportAuditToGoogleSheets(
           fields: "title",
         },
       },
-      { addSheet: { properties: { sheetId: 1, title: "Audit Summary" } } },
+      { addSheet: { properties: { sheetId: 1, title: "Overview" } } },
       { addSheet: { properties: { sheetId: 2, title: "Image Inventory" } } },
       { addSheet: { properties: { sheetId: 3, title: "Recommendations" } } },
       { addSheet: { properties: { sheetId: 4, title: "Crawl Log" } } },
@@ -241,7 +241,7 @@ export async function exportAuditToGoogleSheets(
       valueInputOption: "USER_ENTERED",
       data: [
         { range: "'Image Optimization'!A1", values: optValues },
-        { range: "'Audit Summary'!A1", values: summaryValues },
+        { range: "'Overview'!A1", values: summaryValues },
         { range: "'Image Inventory'!A1", values: invValues },
         { range: "'Recommendations'!A1", values: recValues },
         { range: "'Crawl Log'!A1", values: logValues },

@@ -57,22 +57,23 @@ export function generateImageAuditWorkbook(
     { wch: 7.13 },  // Col F: Length
   ];
 
-  // Configure row heights: Header 28.5pt, data rows 140pt (allowing clean previews)
+  // Configure row heights: Header 28.5pt, data rows 190.5pt (matching reference sheet exactly)
   const optRowProps: { hpt?: number; customHeight?: boolean }[] = [
     { hpt: 28.5, customHeight: true }, // Row 1 header
   ];
   for (let i = 0; i < items.length; i++) {
-    optRowProps.push({ hpt: 140, customHeight: true });
+    optRowProps.push({ hpt: 190.5, customHeight: true });
   }
   wsOpt["!rows"] = optRowProps;
 
-  // Autofilter for row 1 columns A through F
+  // Autofilter and frozen header row for row 1
   wsOpt["!autofilter"] = { ref: `A1:F${Math.max(1, items.length + 1)}` };
+  (wsOpt as Record<string, unknown>)["!views"] = [{ state: "frozen", ySplit: 1 }];
 
   XLSX.utils.book_append_sheet(wb, wsOpt, "Image Optimization");
 
   // -------------------------------------------------------------------------
-  // TAB 2: Audit Summary (Exhaustive Coverage & Diagnostic Report)
+  // TAB 2: Overview (Exhaustive Coverage & Diagnostic Report)
   // -------------------------------------------------------------------------
   const summaryRows: (string | number)[][] = [
     ["WEBSITE IMAGE OPTIMIZATION AUDIT SUMMARY", ""],
@@ -132,7 +133,8 @@ export function generateImageAuditWorkbook(
 
   const wsSummary = XLSX.utils.aoa_to_sheet(summaryRows);
   wsSummary["!cols"] = [{ wch: 48 }, { wch: 65 }];
-  XLSX.utils.book_append_sheet(wb, wsSummary, "Audit Summary");
+  (wsSummary as Record<string, unknown>)["!views"] = [{ state: "frozen", ySplit: 1 }];
+  XLSX.utils.book_append_sheet(wb, wsSummary, "Overview");
 
   // -------------------------------------------------------------------------
   // TAB 3: Image Inventory (Comprehensive Technical Field-by-Field Audit)
@@ -216,6 +218,7 @@ export function generateImageAuditWorkbook(
     { wch: 10 }, // Priority
   ];
   wsInv["!autofilter"] = { ref: `A1:V${Math.max(1, items.length + 1)}` };
+  (wsInv as Record<string, unknown>)["!views"] = [{ state: "frozen", ySplit: 1 }];
   XLSX.utils.book_append_sheet(wb, wsInv, "Image Inventory");
 
   // -------------------------------------------------------------------------
@@ -269,6 +272,7 @@ export function generateImageAuditWorkbook(
 
   const wsRec = XLSX.utils.aoa_to_sheet([recHeaders, ...recRows]);
   wsRec["!cols"] = [{ wch: 25 }, { wch: 45 }, { wch: 55 }, { wch: 28 }];
+  (wsRec as Record<string, unknown>)["!views"] = [{ state: "frozen", ySplit: 1 }];
   XLSX.utils.book_append_sheet(wb, wsRec, "Recommendations");
 
   // -------------------------------------------------------------------------
@@ -296,6 +300,7 @@ export function generateImageAuditWorkbook(
     { wch: 35 },
   ];
   wsLog["!autofilter"] = { ref: `A1:G${Math.max(1, crawlLog.length + 1)}` };
+  (wsLog as Record<string, unknown>)["!views"] = [{ state: "frozen", ySplit: 1 }];
   XLSX.utils.book_append_sheet(wb, wsLog, "Crawl Log");
 
   const buffer = XLSX.write(wb, { type: "buffer", bookType: "xlsx" });

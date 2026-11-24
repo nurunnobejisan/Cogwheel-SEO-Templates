@@ -261,7 +261,7 @@ describe("Website Image Optimization Audit Engine", () => {
     // Verify all 5 sheet names
     const expectedSheetNames = [
       "Image Optimization",
-      "Audit Summary",
+      "Overview",
       "Image Inventory",
       "Recommendations",
       "Crawl Log",
@@ -319,15 +319,15 @@ describe("Website Image Optimization Audit Engine", () => {
     assert.strictEqual(missingAltItem.priority, "High");
   });
 
-  it("Audit Summary sheet renders coverage metrics, discovery methods, and format breakdown", () => {
+  it("Overview sheet renders coverage metrics, discovery methods, and format breakdown", () => {
     const { workbook } = generateImageAuditWorkbook(
       mockSummary,
       mockItems,
       mockCrawlLog
     );
 
-    const sheet = workbook.Sheets["Audit Summary"];
-    assert(sheet, "Audit Summary sheet must exist");
+    const sheet = workbook.Sheets["Overview"];
+    assert(sheet, "Overview sheet must exist");
 
     const json = XLSX.utils.sheet_to_json(sheet, { header: 1 }) as string[][];
     const textContent = json.flat().join(" ");

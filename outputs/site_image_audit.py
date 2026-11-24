@@ -414,12 +414,20 @@ def create_sheet_xml(
     cols_width: list[float] = None,
     header_style: int = 0,
     header_height: float = None,
-    data_height: float = None
+    data_height: float = None,
+    frozen_pane: bool = True
 ) -> str:
     xml_parts = [
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
     ]
+
+    if frozen_pane:
+        xml_parts.append('<sheetViews>')
+        xml_parts.append('  <sheetView workbookViewId="0">')
+        xml_parts.append('    <pane ySplit="1" topLeftCell="A2" activePane="bottomLeft" state="frozen"/>')
+        xml_parts.append('  </sheetView>')
+        xml_parts.append('</sheetViews>')
 
     if cols_width:
         xml_parts.append('<cols>')
@@ -485,11 +493,11 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
 
     # Reference column widths: Col A: 44.5, Col B: 57.5, Col C: 46.75, Col D: 7.13, Col E: 47.75, Col F: 7.13
     opt_widths = [44.5, 57.5, 46.75, 7.13, 47.75, 7.13]
-    # Header style index 1 = yellow fill, bold centered text; header ht 28.5; data ht 140
-    sheet1_xml = create_sheet_xml(opt_headers, opt_rows, opt_widths, header_style=1, header_height=28.5, data_height=140.0)
+    # Header style index 1 = yellow fill, bold centered text; header ht 28.5; data ht 190.5 (exact reference height)
+    sheet1_xml = create_sheet_xml(opt_headers, opt_rows, opt_widths, header_style=1, header_height=28.5, data_height=190.5)
 
     # -------------------------------------------------------------------------
-    # TAB 2: Audit Summary
+    # TAB 2: Overview
     # -------------------------------------------------------------------------
     ov_headers = ["WEBSITE IMAGE OPTIMIZATION AUDIT SUMMARY", "STATUS / METRIC"]
     ov_rows = [
@@ -665,7 +673,7 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
             '<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">'
             '<sheets>'
             '<sheet name="Image Optimization" sheetId="1" r:id="rId1"/>'
-            '<sheet name="Audit Summary" sheetId="2" r:id="rId2"/>'
+            '<sheet name="Overview" sheetId="2" r:id="rId2"/>'
             '<sheet name="Image Inventory" sheetId="3" r:id="rId3"/>'
             '<sheet name="Recommendations" sheetId="4" r:id="rId4"/>'
             '<sheet name="Crawl Log" sheetId="5" r:id="rId5"/>'
@@ -1079,7 +1087,7 @@ def run_image_audit(
     print(f"=======================================================")
     print(f" AUDIT COMPLETE: {len(items)} image placements recorded.")
     print(f" Spreadsheet saved: {os.path.abspath(output_path)}")
-    print(f" Tabs: [1] Image Optimization (Exact 6 Columns with =IMAGE) | [2] Audit Summary | [3] Inventory | [4] Recommendations | [5] Crawl Log")
+    print(f" Tabs: [1] Image Optimization (Exact 6 Columns with =IMAGE) | [2] Overview | [3] Inventory | [4] Recommendations | [5] Crawl Log")
     print(f"=======================================================\n")
 
     return {

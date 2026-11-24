@@ -240,6 +240,26 @@ python3 outputs/site_image_audit.py https://example.com --max-pages 50 --size-th
 - 1-click download as `.xlsx` or export directly to native Google Sheets when service account credentials (`GOOGLE_SERVICE_ACCOUNT_B64` or `GOOGLE_SERVICE_ACCOUNT_JSON`) are configured.
 - *Accessibility note:* Correctly distinguishes informative images from decorative images (`alt=""`), which are valid under WCAG and not treated as defects.
 
+**Google Sheets Configuration & Setup:**
+- To enable direct export to native Google Sheets, provide a Google Service Account in your environment:
+  ```bash
+  export GOOGLE_SERVICE_ACCOUNT_JSON='{"type": "service_account", ...}'
+  # OR Base64 encoded:
+  export GOOGLE_SERVICE_ACCOUNT_B64="<base64_json_string>"
+  # Optional Google Drive Parent Folder ID:
+  export GOOGLE_DRIVE_ROOT_FOLDER_ID="<folder_id>"
+  ```
+- If credentials are not present, the tool automatically provides the downloadable `.xlsx` workbook with all 5 tabs and formulas.
+- Reports are created privately in the configured service account's drive and are never made public.
+
+**Crawl Coverage & Known Limitations:**
+- **Page Limits:** Default 50 pages, configurable from 1 to 200 via `--max-pages` (or UI slider). Polite 100ms–150ms delays prevent rate-limiting.
+- **Discovery Sources:** Scans standard `<img src>` & `<img srcset>`, lazy attributes (`data-src`, `data-lazy-src`, `data-original`), `<picture>/<source>`, CSS background images, XML sitemaps, and WordPress REST Media APIs.
+- **Known Limitations:**
+  - Pages hidden behind logins, paywalls, or CAPTCHA challenges are not bypassed and are recorded as skipped in the Crawl Log.
+  - Pure client-rendered SPA frameworks (without SSR/prerendering) may yield partial DOM assets unless static markup is available.
+  - Image preview formulas (`=IMAGE(B2)`) require image URLs to be publicly reachable by Google Sheets servers. Cloudflare or hotlink-protected assets will display their clickable URLs in Column B even if Google Sheets cannot proxy the thumbnail into Column A.
+
 ### Heading Structure Optimization Audit Tool (The Nines Reference Parity)
 Audits hotel and enterprise websites for rendered heading hierarchy (H1–H6), detects inverted ordering (e.g. booking widget `<h3>` preceding main `<h1>`), unrendered JavaScript template literals (`<h2>'+page.title+'</h2>`), missing/multiple H1s, and skipped levels. Generates a multi-tab workbook with the exact 6-column layout from the reference template [Heading Structure Optimization- thenines](https://docs.google.com/spreadsheets/d/1W_kydZFwQPl3qQ4Aybrh9JvQ1dXPG2-M/edit?pli=1&gid=400022639#gid=400022639).
 
