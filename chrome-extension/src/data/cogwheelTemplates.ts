@@ -445,12 +445,526 @@ add_filter( 'wpseo_metadesc', function( $desc ) {
       metaDescription: "Book luxury hotel suites at The Coachman Hotel in South Lake Tahoe. Minutes from Heavenly gondola and lake shores.",
     },
   },
+
+  // ── 7. Universal E-Commerce & Retail Templates ──
+  {
+    id: "ecommerce-product-showcase",
+    title: "Universal E-Commerce High-Converting Product Hub",
+    category: "Landing Pages",
+    format: "html",
+    description: "Production-ready e-commerce product landing page with trust badges, live price hooks, stock availability, specifications, and FAQ.",
+    tags: ["E-Commerce", "Product Page", "Conversion", "High Intent", "Universal"],
+    content: `<article class="ecommerce-product-page" itemscope itemtype="https://schema.org/Product">
+  <header class="product-hero-section">
+    <div class="product-gallery">
+      <img src="{{productHeroImage}}" alt="{{productName}} featured image" itemprop="image" class="product-main-img" />
+    </div>
+    <div class="product-summary">
+      <span class="product-brand" itemprop="brand">{{brandName}}</span>
+      <h1 class="product-title" itemprop="name">{{productName}}</h1>
+      <div class="product-price-block" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
+        <span class="price-currency">{{currencySymbol}}</span>
+        <span class="price-amount" itemprop="price">{{productPrice}}</span>
+        <link itemprop="availability" href="https://schema.org/InStock" />
+        <span class="stock-badge in-stock">{{stockStatus}}</span>
+      </div>
+      <p class="product-short-desc" itemprop="description">{{productShortDesc}}</p>
+      <div class="product-cta-group">
+        <button class="btn-primary-cart">Add to Cart - {{currencySymbol}}{{productPrice}}</button>
+        <div class="trust-guarantees">
+          <span>{{shippingPerk}}</span>
+          <span>30-Day Money-Back Guarantee</span>
+          <span>Verified Secure Checkout</span>
+        </div>
+      </div>
+    </div>
+  </header>
+  <section class="product-specifications">
+    <h2>Product Specifications & Features</h2>
+    <ul>
+      {{featuresList}}
+    </ul>
+  </section>
+</article>`,
+    defaultVariables: {
+      productHeroImage: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&q=80",
+      brandName: "Aura Acoustics",
+      productName: "Wireless Studio Noise-Cancelling Headphones Pro",
+      currencySymbol: "$",
+      productPrice: "249.00",
+      stockStatus: "In Stock & Ready to Ship",
+      productShortDesc: "Engineered for pure acoustics with active noise cancellation, 40-hour battery life, and spatial audio precision.",
+      shippingPerk: "Free 2-Day Express Shipping",
+      featuresList: "<li>Custom 40mm titanium drivers with ultra-low distortion</li><li>Hybrid Active Noise Cancellation with transparency mode</li><li>40 hours battery playback with rapid USB-C charge</li><li>Ergonomic memory foam protein leather earcups</li>",
+    },
+  },
+  {
+    id: "schema-product-offer",
+    title: "Universal Schema.org Product & Offer Rich Snippet",
+    category: "Schemas",
+    format: "json",
+    description: "Valid Schema.org/Product JSON-LD with Offer, AggregateRating, Review, and Brand to trigger rich Google Shopping snippets.",
+    tags: ["JSON-LD", "Product Schema", "AggregateRating", "Offer", "Universal"],
+    content: `{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "@id": "{{canonicalUrl}}#product",
+  "name": "{{productName}}",
+  "image": "{{productHeroImage}}",
+  "description": "{{productDescription}}",
+  "sku": "{{productSku}}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{brandName}}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{canonicalUrl}}",
+    "priceCurrency": "{{currencyCode}}",
+    "price": "{{productPrice}}",
+    "priceValidUntil": "{{priceValidUntil}}",
+    "itemCondition": "https://schema.org/NewCondition",
+    "availability": "https://schema.org/InStock",
+    "hasMerchantReturnPolicy": {
+      "@type": "MerchantReturnPolicy",
+      "applicableCountry": "US",
+      "returnPolicyCategory": "https://schema.org/MerchantReturnFiniteReturnWindow",
+      "merchantReturnDays": 30,
+      "returnMethod": "https://schema.org/ReturnByMail",
+      "returnFees": "https://schema.org/FreeReturn"
+    }
+  },
+  "aggregateRating": {
+    "@type": "AggregateRating",
+    "ratingValue": "{{ratingValue}}",
+    "reviewCount": "{{reviewCount}}"
+  }
+}`,
+    defaultVariables: {
+      canonicalUrl: "https://example.com/products/noise-cancelling-headphones-pro",
+      productName: "Wireless Studio Noise-Cancelling Headphones Pro",
+      productHeroImage: "https://example.com/images/headphones-pro.jpg",
+      productDescription: "Engineered for pure acoustics with active noise cancellation, 40-hour battery life, and spatial audio precision.",
+      productSku: "AUR-HP-PRO-01",
+      brandName: "Aura Acoustics",
+      currencyCode: "USD",
+      productPrice: "249.00",
+      priceValidUntil: "2026-12-31",
+      ratingValue: "4.9",
+      reviewCount: "428",
+    },
+  },
+
+  // ── 8. Universal SaaS & Software Templates ──
+  {
+    id: "saas-solution-pricing",
+    title: "Universal SaaS Solution & High-Intent Feature Matrix",
+    category: "Landing Pages",
+    format: "html",
+    description: "High-intent B2B SaaS landing page structured to rank for software category queries and capture enterprise demo requests.",
+    tags: ["SaaS", "B2B", "Software", "Lead Gen", "Universal"],
+    content: `<div class="saas-solution-container">
+  <header class="saas-hero">
+    <span class="solution-kicker">{{softwareCategory}} Platform</span>
+    <h1 class="saas-h1">{{primaryValueProp}}</h1>
+    <p class="saas-subtitle">{{softwareSubtitle}}</p>
+    <div class="saas-cta-block">
+      <a href="/signup" class="btn-saas-trial">Start Free 14-Day Trial</a>
+      <span class="saas-no-card">No credit card required &bull; 2-minute setup</span>
+    </div>
+  </header>
+  <section class="saas-features-grid">
+    <h2>Engineered for High-Velocity Modern Teams</h2>
+    <div class="features-columns">
+      {{featureCards}}
+    </div>
+  </section>
+  <section class="saas-security-trust">
+    <h3>Enterprise-Grade Trust & Compliance</h3>
+    <p>{{complianceStatement}}</p>
+  </section>
+</div>`,
+    defaultVariables: {
+      softwareCategory: "AI Search Automation & SEO Intelligence",
+      primaryValueProp: "Automate Enterprise SEO Audits & In-Browser Optimizations",
+      softwareSubtitle: "Unified AI-powered platform combining live DOM auditing, brand compliance guardrails, and Generative Engine Optimization (GEO).",
+      featureCards: `<div class="card"><h4>Real-Time In-DOM Inspection</h4><p>Inspect WCAG 2.2 AA alts, H1-H6 outline defects, and Core Web Vitals on any live webpage.</p></div><div class="card"><h4>Multi-Model AI Engine</h4><p>Deploy custom-trained LoRA models and multi-provider fallbacks for instant content generation.</p></div>`,
+      complianceStatement: "SOC 2 Type II Certified, GDPR Compliant, 99.99% Uptime SLA.",
+    },
+  },
+  {
+    id: "schema-software-application",
+    title: "Universal Schema.org SoftwareApplication JSON-LD",
+    category: "Schemas",
+    format: "json",
+    description: "Valid Schema.org/SoftwareApplication structured data for SaaS, mobile apps, or cloud developer tools.",
+    tags: ["JSON-LD", "SoftwareApplication", "SaaS", "Rich Snippets", "Universal"],
+    content: `{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "@id": "{{canonicalUrl}}#software",
+  "name": "{{softwareName}}",
+  "url": "{{canonicalUrl}}",
+  "description": "{{softwareDescription}}",
+  "applicationCategory": "{{applicationCategory}}",
+  "operatingSystem": "All (Web, macOS, Windows, Linux, Chrome)",
+  "offers": {
+    "@type": "Offer",
+    "price": "{{startingPrice}}",
+    "priceCurrency": "USD"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{companyName}}",
+    "url": "{{originUrl}}"
+  }
+}`,
+    defaultVariables: {
+      canonicalUrl: "https://example.com/platform",
+      softwareName: "Cogwheel SEO & GEO Studio",
+      softwareDescription: "Enterprise SEO and Generative Engine Optimization platform for automated DOM auditing and AI search ranking.",
+      applicationCategory: "BusinessApplication",
+      startingPrice: "0",
+      companyName: "Cogwheel AI",
+      originUrl: "https://example.com",
+    },
+  },
+
+  // ── 9. Universal Local Business & Service Templates ──
+  {
+    id: "local-business-service-hub",
+    title: "Universal Local Business NAP & Service Area Hub",
+    category: "Landing Pages",
+    format: "html",
+    description: "High-ranking local business service page engineered with NAP (Name, Address, Phone) consistency, localized schema, and click-to-call hooks.",
+    tags: ["Local SEO", "LocalBusiness", "NAP", "Service Area", "Universal"],
+    content: `<div class="local-service-page">
+  <header class="local-header">
+    <span class="local-badge">Top Rated in {{serviceCity}}</span>
+    <h1 class="local-title">{{serviceHeadline}}</h1>
+    <p class="local-desc">{{serviceDescription}}</p>
+    <div class="local-contact-bar">
+      <a href="tel:{{businessPhone}}" class="btn-phone-call">Call Now: {{businessPhone}}</a>
+      <span class="emergency-available">{{availabilityNote}}</span>
+    </div>
+  </header>
+  <section class="service-coverage">
+    <h2>Areas We Proudly Serve in {{serviceCity}} & Beyond</h2>
+    <p>{{areasServedSummary}}</p>
+  </section>
+  <section class="business-nap-footer">
+    <address>
+      <strong>{{businessName}}</strong><br>
+      {{streetAddress}}<br>
+      {{serviceCity}}, {{stateProvince}} {{postalCode}}<br>
+      Phone: <a href="tel:{{businessPhone}}">{{businessPhone}}</a>
+    </address>
+  </section>
+</div>`,
+    defaultVariables: {
+      serviceCity: "Austin",
+      serviceHeadline: "Professional Commercial & Residential HVAC Services in Austin, TX",
+      serviceDescription: "Licensed, insured, and family-owned HVAC specialists offering fast AC repair, heating maintenance, and 24/7 emergency dispatch.",
+      businessPhone: "+1-512-555-0198",
+      availabilityNote: "24/7 Emergency Dispatch Available",
+      areasServedSummary: "Proudly serving Downtown Austin, Round Rock, Cedar Park, West Lake Hills, and Travis County.",
+      businessName: "Lone Star Climate Solutions",
+      streetAddress: "400 Congress Avenue, Suite 1200",
+      stateProvince: "TX",
+      postalCode: "78701",
+    },
+  },
+  {
+    id: "schema-local-business",
+    title: "Universal Schema.org LocalBusiness & NAP Graph",
+    category: "Schemas",
+    format: "json",
+    description: "Valid Schema.org/LocalBusiness structured data with GeoCoordinates, PostalAddress, OpeningHours, and AreaServed.",
+    tags: ["JSON-LD", "LocalBusiness", "NAP", "GeoCoordinates", "Universal"],
+    content: `{
+  "@context": "https://schema.org",
+  "@type": "LocalBusiness",
+  "@id": "{{canonicalUrl}}#business",
+  "name": "{{businessName}}",
+  "url": "{{canonicalUrl}}",
+  "telephone": "{{businessPhone}}",
+  "image": "{{heroImageUrl}}",
+  "priceRange": "$$",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "{{streetAddress}}",
+    "addressLocality": "{{serviceCity}}",
+    "addressRegion": "{{stateProvince}}",
+    "postalCode": "{{postalCode}}",
+    "addressCountry": "US"
+  },
+  "geo": {
+    "@type": "GeoCoordinates",
+    "latitude": {{latitude}},
+    "longitude": {{longitude}}
+  },
+  "openingHoursSpecification": [
+    {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+      "opens": "08:00",
+      "closes": "18:00"
+    }
+  ],
+  "areaServed": "{{serviceCity}}"
+}`,
+    defaultVariables: {
+      canonicalUrl: "https://example.com/services/austin-tx",
+      businessName: "Lone Star Climate Solutions",
+      businessPhone: "+1-512-555-0198",
+      heroImageUrl: "https://example.com/images/storefront.jpg",
+      streetAddress: "400 Congress Avenue, Suite 1200",
+      serviceCity: "Austin",
+      stateProvince: "TX",
+      postalCode: "78701",
+      latitude: "30.2672",
+      longitude: "-97.7431",
+    },
+  },
+
+  // ── 10. Universal Editorial & Article Templates ──
+  {
+    id: "editorial-guide-deepdive",
+    title: "Universal Editorial Authority & In-Depth Guide Layout",
+    category: "Landing Pages",
+    format: "html",
+    description: "Authority-driven editorial layout with Key Takeaways block, Author E-E-A-T Bio, Table of Contents, and citation hooks for AI Overviews.",
+    tags: ["Editorial", "Article", "Author Authority", "AI Overviews", "Universal"],
+    content: `<article class="editorial-deep-dive">
+  <header class="article-header">
+    <span class="topic-tag">{{primaryTopic}}</span>
+    <h1 class="article-title">{{articleTitle}}</h1>
+    <div class="author-meta-bar">
+      <span>By <strong itemprop="author">{{authorName}}</strong></span>
+      <span>Updated: <time itemprop="dateModified">{{publishDate}}</time></span>
+      <span>Reading Time: {{readingMinutes}} min read</span>
+    </div>
+  </header>
+  <aside class="key-takeaways-box" aria-label="Key Takeaways for AI Overviews">
+    <h3>Executive Summary & Key Takeaways</h3>
+    <ul>
+      {{keyTakeawaysList}}
+    </ul>
+  </aside>
+  <main class="article-content">
+    <section>
+      <h2>Comprehensive Analysis</h2>
+      <p>{{introductionText}}</p>
+    </section>
+  </main>
+</article>`,
+    defaultVariables: {
+      primaryTopic: "Technical SEO & Generative Search",
+      articleTitle: "The Complete Guide to Generative Engine Optimization (GEO) in 2026",
+      authorName: "Sarah Jenkins, Head of Search Research",
+      publishDate: "November 24, 2026",
+      readingMinutes: "8",
+      keyTakeawaysList: "<li>Generative engines prioritize factual density and direct answers in the top 150 words.</li><li>Structured JSON-LD schema increases citation probability by up to 3.4x in AI Overviews.</li><li>Technical Core Web Vitals and clean heading outlines remain non-negotiable prerequisites.</li>",
+      introductionText: "As artificial intelligence reshapes search discovery, understanding how LLMs parse and cite entity-rich web content has become the decisive competitive advantage.",
+    },
+  },
+  {
+    id: "schema-article-publisher",
+    title: "Universal Schema.org Article & Publisher Graph",
+    category: "Schemas",
+    format: "json",
+    description: "Valid Schema.org/Article structured markup with author person entity, publisher organization, and dates for Google News & Top Stories.",
+    tags: ["JSON-LD", "Article", "Author Authority", "Google News", "Universal"],
+    content: `{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": "{{canonicalUrl}}#article",
+  "headline": "{{articleHeadline}}",
+  "image": "{{heroImageUrl}}",
+  "datePublished": "{{datePublished}}",
+  "dateModified": "{{dateModified}}",
+  "author": {
+    "@type": "Person",
+    "name": "{{authorName}}",
+    "jobTitle": "{{authorTitle}}"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "{{publisherName}}",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "{{publisherLogoUrl}}"
+    }
+  },
+  "description": "{{metaDescription}}"
+}`,
+    defaultVariables: {
+      canonicalUrl: "https://example.com/insights/generative-engine-optimization-guide",
+      articleHeadline: "The Complete Guide to Generative Engine Optimization (GEO) in 2026",
+      heroImageUrl: "https://example.com/images/geo-guide-hero.jpg",
+      datePublished: "2026-11-20T08:00:00+00:00",
+      dateModified: "2026-11-24T10:00:00+00:00",
+      authorName: "Sarah Jenkins",
+      authorTitle: "Head of Search Research",
+      publisherName: "Cogwheel Research",
+      publisherLogoUrl: "https://example.com/logo.png",
+      metaDescription: "In-depth guide covering the core pillars of Generative Engine Optimization (GEO), entity extraction, and schema integration for AI search engines.",
+    },
+  },
+
+  // ── 11. Modern Multi-CMS Exporters ──
+  {
+    id: "nextjs-metadata-exporter",
+    title: "Next.js 14/15 App Router TypeScript Metadata Exporter",
+    category: "CMS Exporters",
+    format: "html",
+    description: "Export clean, production-grade Next.js metadata object with OpenGraph, Twitter, canonical, and robots configuration.",
+    tags: ["Next.js", "React", "TypeScript", "App Router", "Universal"],
+    content: `// app/{{pageSlug}}/page.tsx
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "{{targetTitle}}",
+  description: "{{targetMetaDescription}}",
+  alternates: {
+    canonical: "{{canonicalUrl}}",
+  },
+  openGraph: {
+    title: "{{targetTitle}}",
+    description: "{{targetMetaDescription}}",
+    url: "{{canonicalUrl}}",
+    siteName: "{{brandName}}",
+    images: [
+      {
+        url: "{{ogImageUrl}}",
+        width: 1200,
+        height: 630,
+        alt: "{{targetTitle}}",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "{{targetTitle}}",
+    description: "{{targetMetaDescription}}",
+    images: ["{{ogImageUrl}}"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    "max-image-preview": "large",
+    "max-snippet": -1,
+  },
+};`,
+    defaultVariables: {
+      pageSlug: "solutions",
+      targetTitle: "Enterprise SEO Automation & GEO Studio | Cogwheel AI",
+      targetMetaDescription: "Autonomous search intelligence and in-browser DOM optimization engine for modern growth teams. Start your free trial today.",
+      canonicalUrl: "https://example.com/solutions",
+      brandName: "Cogwheel AI",
+      ogImageUrl: "https://example.com/og/solutions.png",
+    },
+  },
+  {
+    id: "webflow-embed-exporter",
+    title: "Webflow Custom Code Embed Head Exporter",
+    category: "CMS Exporters",
+    format: "html",
+    description: "Ready-to-paste Webflow custom head code with dynamic collection bindings and structured JSON-LD schema.",
+    tags: ["Webflow", "CMS", "Dynamic Embed", "Schema", "Universal"],
+    content: `<!-- Webflow Page Head Embed Code -->
+<title>{{targetTitle}}</title>
+<meta name="description" content="{{targetMetaDescription}}">
+<link rel="canonical" href="{{canonicalUrl}}">
+
+<!-- Open Graph -->
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{targetTitle}}">
+<meta property="og:description" content="{{targetMetaDescription}}">
+<meta property="og:url" content="{{canonicalUrl}}">
+<meta property="og:image" content="{{ogImageUrl}}">
+
+<!-- Structured JSON-LD Data -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "@id": "{{canonicalUrl}}#webpage",
+  "url": "{{canonicalUrl}}",
+  "name": "{{targetTitle}}",
+  "description": "{{targetMetaDescription}}"
+}
+</script>`,
+    defaultVariables: {
+      targetTitle: "Modern Cloud Architecture & Developer Tools | Official Site",
+      targetMetaDescription: "Build, deploy, and scale serverless applications with enterprise security, sub-second latency, and continuous deployment.",
+      canonicalUrl: "https://example.com/developer-tools",
+      ogImageUrl: "https://example.com/og-dev.png",
+    },
+  },
+
+  // ── 12. Universal AI Prompts ──
+  {
+    id: "prompt-universal-content-gap",
+    title: "Universal Competitor Content Gap & Entity Analysis Prompt",
+    category: "AI Prompts",
+    format: "markdown",
+    description: "Multi-model prompt for auditing semantic entity gaps, missing topic sub-branches, and search intent alignment against top 3 competitors.",
+    tags: ["Content Gap", "Entity Optimization", "Competitor Research", "Claude", "ChatGPT", "Universal"],
+    content: `You are a Principal Search Architect and Computational Linguist.
+Analyze the target URL and compare it with the top ranking competitors in this space.
+
+TARGET URL: {{targetUrl}}
+PRIMARY INTENT QUERY: {{primaryKeyword}}
+SITE CATEGORY: {{siteCategory}}
+COMPETITOR DOMAINS: {{competitorDomains}}
+
+REQUIRED AUDIT DELIVERABLES:
+1. Primary Entity Vector: Identify the core Wikidata/Google Knowledge Graph entities present on competitors but absent from target.
+2. Information Gain Gap: What unique value, proprietary benchmarks, or specific data must be added to achieve superior information gain?
+3. Heading Architecture Refactoring: Provide a revised H1 -> H2 -> H3 outline that satisfies transactional, informational, and comparative search intent without cannibalization.
+4. Schema Recommendations: Recommend the specific Schema.org types and mandatory properties required for rich SERP eligibility.`,
+    defaultVariables: {
+      targetUrl: "https://example.com/landing",
+      primaryKeyword: "best enterprise search optimization software",
+      siteCategory: "SaaS / B2B Technology",
+      competitorDomains: "competitor1.com, competitor2.com, competitor3.com",
+    },
+  },
+  {
+    id: "prompt-universal-geo-citation",
+    title: "Universal Generative Engine Optimization (GEO) Direct Citation Prompt",
+    category: "AI Prompts",
+    format: "markdown",
+    description: "Engineered prompt to transform any product, service, or article page into the primary cited source in ChatGPT Search, Gemini, and Perplexity.",
+    tags: ["GEO", "Perplexity", "ChatGPT Search", "Gemini Overviews", "Universal"],
+    content: `You are an AI Search Visibility Architect specializing in Generative Engine Optimization (GEO).
+
+Optimize the provided content for {{brandName}} so that it is selected as the top cited source when users query:
+"{{searchQuery}}"
+
+CONTENT INPUT:
+{{rawContent}}
+
+OPTIMIZATION DIRECTIVES:
+1. Executive Summary Answer: Craft a dense, factual 50-70 word paragraph answering the user query directly with zero promotional hyperbole.
+2. High-Trust Fact Triangulation: Include exact statistics, specifications, pricing benchmarks, and verified operational details.
+3. Structured Comparative List: Present key differentiators in bullet points or markdown tables that LLMs can easily parse into citation snippets.
+4. Schema Anchor: Provide matching JSON-LD structured data properties that validate each stated fact.`,
+    defaultVariables: {
+      brandName: "Acme Corporation",
+      searchQuery: "What is the best enterprise software for automated technical SEO auditing?",
+      rawContent: "Acme platform provides real-time DOM auditing, WCAG 2.2 AA alt text analysis, heading hierarchy checks, and Core Web Vitals optimization.",
+    },
+  },
 ];
 
 export const PRESET_CLIENT_PROFILES: ClientProfile[] = [
   {
     id: "universal-website",
-    name: "Universal Website (Any Site / E-Commerce / SaaS)",
+    name: "Universal Website (Any Site / General)",
     brand: "Independent",
     domain: "",
     city: "Global",
@@ -461,6 +975,48 @@ export const PRESET_CLIENT_PROFILES: ClientProfile[] = [
     address: "",
     postalCode: "",
     startingRate: "",
+  },
+  {
+    id: "universal-ecommerce",
+    name: "Universal E-Commerce Store (Shopify / Retail)",
+    brand: "Independent",
+    domain: "",
+    city: "New York",
+    state: "NY",
+    primaryKeywords: ["buy online", "official store", "best quality deals"],
+    usps: ["Fast & Free Express Delivery", "30-Day Money-Back Guarantee", "Verified Secure Checkout"],
+    phone: "+1-800-555-0199",
+    address: "500 5th Avenue",
+    postalCode: "10110",
+    startingRate: "$99",
+  },
+  {
+    id: "universal-saas",
+    name: "Universal SaaS & Cloud Platform (B2B Tech)",
+    brand: "Independent",
+    domain: "",
+    city: "San Francisco",
+    state: "CA",
+    primaryKeywords: ["cloud platform", "developer tools", "ai automation software"],
+    usps: ["SOC 2 Type II Certified", "14-Day Full Access Free Trial", "99.99% Uptime SLA"],
+    phone: "+1-415-555-0142",
+    address: "100 Montgomery Street",
+    postalCode: "94104",
+    startingRate: "$49/mo",
+  },
+  {
+    id: "universal-local",
+    name: "Universal Local Business & Service Provider",
+    brand: "Independent",
+    domain: "",
+    city: "Austin",
+    state: "TX",
+    primaryKeywords: ["local services", "licensed emergency contractor", "best service in austin"],
+    usps: ["Fully Licensed & Insured", "24/7 Rapid Emergency Response", "5-Star Google Verified Reviews"],
+    phone: "+1-512-555-0198",
+    address: "400 Congress Avenue",
+    postalCode: "78701",
+    startingRate: "$150",
   },
   {
     id: "springhill-pcb",
