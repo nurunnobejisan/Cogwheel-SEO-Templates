@@ -69,44 +69,185 @@ function cleanFilenameTitle(imageUrl: string): string {
   }
 }
 
-function generateOptimizedAltText(
+export const HOSPITALITY_CATEGORIES: Record<
+  string,
+  { keywords: string[]; label: string; descriptor: string }
+> = {
+  rooms: {
+    keywords: [
+      "room", "suite", "king", "queen", "bed", "bath", "living", "balcony", "terrace",
+      "penthouse", "presidential", "guestroom", "superior", "deluxe", "executive",
+      "studio", "accessible", "corner", "double",
+    ],
+    label: "Guest Room Accommodation",
+    descriptor: "with contemporary luxury bedding and spacious sitting area",
+  },
+  dining: {
+    keywords: [
+      "dining", "restaurant", "bistro", "cafe", "bar", "cocktail", "lounge", "breakfast",
+      "dinner", "chef", "wine", "culinary", "patio", "brunch", "rooftop", "tasting",
+      "table", "entree", "dessert", "spirits",
+    ],
+    label: "Culinary & Dining Experience",
+    descriptor: "featuring artisanal seasonal cuisine and cocktail presentation",
+  },
+  amenities: {
+    keywords: [
+      "pool", "spa", "wellness", "fitness", "gym", "hot-tub", "sauna", "massage",
+      "cabana", "resort", "deck", "jacuzzi", "sun-lounger", "yoga", "treatment",
+    ],
+    label: "Resort Amenities & Wellness",
+    descriptor: "offering heated outdoor relaxation and wellness amenities",
+  },
+  meetings: {
+    keywords: [
+      "meeting", "event", "conference", "boardroom", "ballroom", "wedding", "banquet",
+      "reception", "summit", "gathering", "venue", "catering", "convention",
+    ],
+    label: "Meeting & Event Spaces",
+    descriptor: "configured with high-tech audio-visual setup and banquet seating",
+  },
+  exterior: {
+    keywords: [
+      "exterior", "facade", "building", "grounds", "entrance", "skyline", "aerial",
+      "sunset", "twilight", "porte-cochere", "valet", "architecture", "courtyard", "dusk",
+    ],
+    label: "Hotel Exterior & Grounds",
+    descriptor: "showcasing landmark architectural design and surrounding city skyline",
+  },
+  lobby: {
+    keywords: [
+      "lobby", "reception", "concierge", "art", "fireplace", "chandelier", "atrium",
+      "interior", "arrival", "check-in",
+    ],
+    label: "Lobby & Interior Design",
+    descriptor: "featuring bespoke artwork and welcoming guest reception area",
+  },
+};
+
+export function classifyHospitalityContext(text: string): { category: string; descriptor: string } | null {
+  const s = text.toLowerCase();
+  for (const [category, info] of Object.entries(HOSPITALITY_CATEGORIES)) {
+    for (const kw of info.keywords) {
+      const regex = new RegExp(`\\b${kw}\\b`, "i");
+      if (regex.test(s)) {
+        return { category, descriptor: info.descriptor };
+      }
+    }
+  }
+  return null;
+}
+
+export function generateOptimizedAltText(
   imageUrl: string,
   pageTitle: string | null,
   currentAlt: string | null,
-  isDecorative: boolean
+  isDecorative: boolean,
+  pageUrl: string = ""
 ): string {
   if (isDecorative) {
     return ""; // WCAG standard: decorative images properly use empty alt=""
   }
 
-  if (currentAlt && currentAlt.trim().length > 12 && !currentAlt.includes(".jpg") && !currentAlt.includes(".png") && !/^(image|img|photo|dsc)/i.test(currentAlt.trim())) {
-    return currentAlt.trim();
+  if (currentAlt) {
+    const cClean = currentAlt.trim();
+    const isBadAlt =
+      cClean.length < 5 ||
+      /\.(?:jpg|png|webp|jpeg|gif|svg)$/i.test(cClean) ||
+      /^(?:image|img|photo|picture|dsc)[_\s-]*\d*$/i.test(cClean);
+    if (!isBadAlt && cClean.length >= 12) {
+      return cClean;
+    }
   }
 
   const cleanTitle = cleanFilenameTitle(imageUrl);
-  const cleanSitePage = (pageTitle || "")
-    .replace(/\s*[-|–|—]\s*.*$/, "")
-    .replace(/[^\w\s]/g, " ")
-    .trim();
+  const combinedContext = `${imageUrl} ${pageUrl} ${pageTitle || ""}`;
+  const hospitalityMatch = classifyHospitalityContext(combinedContext);
 
-  const isGenericFilename = /^(?:img|dsc|image|photo|pic|asset|upload|banner)[_\s-]*\d*$/i.test(cleanTitle);
-
-  if (isGenericFilename) {
-    if (cleanSitePage) {
-      return `${cleanSitePage} featured view and hospitality detail`;
+  let siteName = "";
+  let pageSubject = "";
+  if (pageTitle) {
+    const parts = pageTitle.split(/\s*[-|–|—]\s*/);
+    if (parts.length > 1) {
+      pageSubject = parts[0].trim();
+      siteName = parts[parts.length - 1].trim();
+    } else {
+      pageSubject = pageTitle.trim();
     }
-    return "Hotel property exterior and guest accommodation detail";
   }
 
-  // Capitalize words
-  const words = cleanTitle.split(/\s+/).map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
-  const titlePhrase = words.join(" ");
+  const isGeneric =
+    !cleanTitle ||
+    cleanTitle === "Image asset" ||
+    /^(?:img|dsc|image|photo|pic|asset|upload|banner|icon|header|hero)[_\s-]*\d*$/i.test(cleanTitle);
 
-  if (cleanSitePage && !titlePhrase.toLowerCase().includes(cleanSitePage.toLowerCase())) {
-    return `${cleanSitePage} — ${titlePhrase}`;
+  let candidate = "";
+  if (isGeneric) {
+    if (hospitalityMatch) {
+      const entity = siteName || pageSubject || "Hotel Property";
+      candidate = `${entity} ${hospitalityMatch.descriptor}`;
+    } else if (pageSubject) {
+      candidate = `${pageSubject} architectural view and property amenities`;
+    } else {
+      candidate = "Luxury hotel accommodation and guest hospitality amenities";
+    }
+  } else {
+    const titleWords = cleanTitle
+      .split(/\s+/)
+      .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+    const titlePhrase = titleWords.join(" ");
+
+    if (hospitalityMatch) {
+      const prefix = pageSubject || siteName;
+      candidate = prefix && !titlePhrase.toLowerCase().includes(prefix.toLowerCase())
+        ? `${prefix} ${titlePhrase} ${hospitalityMatch.descriptor}`
+        : `${titlePhrase} ${hospitalityMatch.descriptor}`;
+    } else {
+      const prefix = pageSubject || siteName;
+      candidate = prefix && !titlePhrase.toLowerCase().includes(prefix.toLowerCase())
+        ? `${prefix} ${titlePhrase}`
+        : titlePhrase;
+    }
   }
 
-  return titlePhrase;
+  // Remove redundant stop phrases
+  candidate = candidate.replace(/\b(?:image of|photo of|picture of)\s+/gi, "").trim();
+
+  // Length budget: 40 - 120 characters
+  if (candidate.length < 40) {
+    const filler = siteName || "Hotel Property";
+    candidate = `${filler} - ${candidate}`;
+  }
+  if (candidate.length > 120) {
+    const truncated = candidate.slice(0, 117);
+    const lastSpace = truncated.lastIndexOf(" ");
+    candidate = (lastSpace > 40 ? truncated.slice(0, lastSpace) : truncated).trim();
+  }
+
+  return candidate || cleanTitle || "Hotel property image";
+}
+
+export function generateTargetFilename(
+  imageUrl: string,
+  proposedAlt: string,
+  fallbackPageUrl?: string
+): string {
+  if (proposedAlt) {
+    const slug = proposedAlt
+      .toLowerCase()
+      .replace(/[^\w\s-]/g, "")
+      .replace(/[\s_]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+    const words = slug.split("-").slice(0, 6);
+    const cleanSlug = words.join("-");
+    if (cleanSlug) {
+      return `${cleanSlug}.webp`;
+    }
+  }
+  const orig = extractOriginalFilename(imageUrl, fallbackPageUrl);
+  const base = orig.replace(/\.[a-zA-Z0-9]+$/, "");
+  const slug = base.toLowerCase().replace(/[^\w-]+/g, "-").replace(/^-+|-+$/g, "");
+  return `${slug || "hotel-image"}.webp`;
 }
 
 interface RawExtractedImage {
@@ -834,8 +975,10 @@ export async function crawlWebsiteImages(
       raw.src,
       placement.pageTitle,
       raw.currentAlt,
-      raw.isDecorative
+      raw.isDecorative,
+      placement.pageUrl
     );
+    const targetFilename = generateTargetFilename(raw.src, proposedAlt, placement.pageUrl);
     const altLength = proposedAlt.length;
 
     // Flag issues
@@ -929,6 +1072,7 @@ export async function crawlWebsiteImages(
       pageTitle: placement.pageTitle,
       pageStatus: placement.pageStatus,
       filename,
+      targetFilename,
       titleLength,
       currentAlt: raw.currentAlt,
       proposedAlt,
@@ -956,6 +1100,11 @@ export async function crawlWebsiteImages(
     });
   });
 
+  const legacyBytesTotal = items
+    .filter((it) => it.fileSizeBytes && ["JPEG", "PNG"].includes(it.format))
+    .reduce((acc, it) => acc + (it.fileSizeBytes || 0), 0);
+  const estimatedSavingsKb = Math.round(((legacyBytesTotal * 0.35) / 1024) * 10) / 10;
+
   // Top findings
   const topFindings: string[] = [];
   if (missingAltCount > 0) {
@@ -965,7 +1114,7 @@ export async function crawlWebsiteImages(
     topFindings.push(`${oversizedCount} image placements exceed ${sizeThresholdKb} KB and should be compressed.`);
   }
   if (legacyFormatCount > 0) {
-    topFindings.push(`${legacyFormatCount} images use legacy formats (JPEG/PNG) that should be converted to WebP or AVIF.`);
+    topFindings.push(`${legacyFormatCount} images use legacy formats (JPEG/PNG) that should be converted to WebP or AVIF (approx ${estimatedSavingsKb} KB potential savings).`);
   }
   if (brokenCount > 0) {
     topFindings.push(`${brokenCount} image links return HTTP 4xx/5xx errors and should be fixed or removed.`);
@@ -1003,6 +1152,7 @@ export async function crawlWebsiteImages(
     missingDimensionsCount,
     legacyFormatCount,
     aboveFoldLazyCount,
+    estimatedSavingsKb,
     discoveryMethods,
     sitemapDiscoverySucceeded: sitemapSuccess,
     sitemapUrlsFound: sitemapCount,

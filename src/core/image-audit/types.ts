@@ -16,6 +16,7 @@ export interface ImageAuditItem {
   pageTitle: string;
   pageStatus: number;
   filename: string; // Decoded filename with extension for Title column
+  targetFilename?: string; // SEO-friendly kebab-case WebP target filename
   titleLength: number;
   currentAlt: string | null;
   proposedAlt: string;
@@ -69,6 +70,7 @@ export interface ImageAuditSummary {
   missingDimensionsCount: number;
   legacyFormatCount: number; // JPEG/PNG/GIF that could be WebP/AVIF
   aboveFoldLazyCount: number;
+  estimatedSavingsKb?: number;
   discoveryMethods: string[];
   sitemapDiscoverySucceeded: boolean;
   sitemapUrlsFound: number;

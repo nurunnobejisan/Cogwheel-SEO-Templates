@@ -109,6 +109,9 @@ export function generateImageAuditWorkbook(
     ["", ""],
     ["FORMAT BREAKDOWN", "ASSET COUNT"],
     ...Object.entries(summary.formatBreakdown || {}).map(([fmt, count]) => [fmt, count]),
+    ...(summary.estimatedSavingsKb && summary.estimatedSavingsKb > 0
+      ? [["Estimated Next-Gen Format Savings:", `~${summary.estimatedSavingsKb} KB (approx 35% reduction on legacy formats)`]]
+      : []),
     ["", ""],
     ["IMPORTANT COVERAGE LIMITATIONS & NOTICE", ""],
     ["Completeness Boundary:", "This audit reflects images discovered on crawlable public HTML pages and referenced sitemaps. Pages gated by authentication, robots.txt exclusions, JavaScript-only SPAs, or firewall rate-limits could not be reached."],
@@ -144,7 +147,8 @@ export function generateImageAuditWorkbook(
     "Page URL",
     "Page Title",
     "Page Status",
-    "Filename",
+    "Original Filename",
+    "Target Filename (WebP)",
     "Current ALT",
     "Proposed ALT",
     "Is Decorative",
@@ -172,6 +176,7 @@ export function generateImageAuditWorkbook(
       item.pageTitle || "-",
       item.pageStatus,
       item.filename || "-",
+      item.targetFilename || "-",
       item.currentAlt === null ? "[MISSING]" : item.currentAlt === "" ? '"" (Empty)' : item.currentAlt,
       item.proposedAlt,
       item.isDecorative ? "Yes (Decorative)" : "No",
@@ -198,7 +203,8 @@ export function generateImageAuditWorkbook(
     { wch: 35 }, // Page URL
     { wch: 28 }, // Page Title
     { wch: 10 }, // Page Status
-    { wch: 30 }, // Filename
+    { wch: 28 }, // Original Filename
+    { wch: 30 }, // Target Filename (WebP)
     { wch: 30 }, // Current ALT
     { wch: 35 }, // Proposed ALT
     { wch: 15 }, // Is Decorative
@@ -217,7 +223,7 @@ export function generateImageAuditWorkbook(
     { wch: 45 }, // Rec
     { wch: 10 }, // Priority
   ];
-  wsInv["!autofilter"] = { ref: `A1:V${Math.max(1, items.length + 1)}` };
+  wsInv["!autofilter"] = { ref: `A1:W${Math.max(1, items.length + 1)}` };
   (wsInv as Record<string, unknown>)["!views"] = [{ state: "frozen", ySplit: 1 }];
   XLSX.utils.book_append_sheet(wb, wsInv, "Image Inventory");
 

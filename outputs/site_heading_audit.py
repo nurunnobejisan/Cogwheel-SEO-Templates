@@ -20,6 +20,7 @@ Tabs generated:
 from __future__ import annotations
 
 import argparse
+import contextlib
 import html
 import io
 import json
@@ -650,12 +651,12 @@ def run_heading_audit(
     hostname_clean = origin_domain.replace(".", "_")
     checkpoint_file = f".heading_checkpoint_{hostname_clean}.json"
 
-    print(f"\n=======================================================")
-    print(f" COGWHEEL HEADING STRUCTURE OPTIMIZATION ENGINE")
+    print("\n=======================================================")
+    print(" COGWHEEL HEADING STRUCTURE OPTIMIZATION ENGINE")
     print(f" Target Site: {norm_start}")
     print(f" Crawl Limit: {max_pages} pages | Delay: {delay}s | Timeout: {timeout}s")
     print(f" Output File: {output_path}")
-    print(f"=======================================================\n")
+    print("=======================================================\n")
 
     t_start = time.time()
     queue = [norm_start]
@@ -669,7 +670,7 @@ def run_heading_audit(
     # Resume from checkpoint if requested
     if resume and os.path.exists(checkpoint_file):
         try:
-            with open(checkpoint_file, "r", encoding="utf-8") as f:
+            with open(checkpoint_file, encoding="utf-8") as f:
                 ckpt = json.load(f)
                 visited = set(ckpt.get("visited", []))
                 queue = ckpt.get("queue", queue)
@@ -740,12 +741,10 @@ def run_heading_audit(
         page_counter += 1
 
         print(f"[{page_counter}/{max_pages}] Auditing: {current_url}")
-        t0 = time.time()
 
         req = urllib.request.Request(current_url, headers={"User-Agent": USER_AGENT})
         try:
             with urllib.request.urlopen(req, timeout=timeout) as resp:
-                elapsed = round((time.time() - t0) * 1000)
                 status = resp.status
                 ct = resp.headers.get("Content-Type", "")
                 if "text/html" not in ct and "application/xhtml" not in ct:
@@ -777,10 +776,16 @@ def run_heading_audit(
                 for m_link in re.finditer(r"""<a\b[^>]*\bhref\s*=\s*["']([^"']*)["'][^>]*>""", html_text, re.I):
                     href = m_link.group(1).strip()
                     norm_link = normalize_url(href, current_url)
-                    if norm_link and norm_link.startswith(origin):
-                        if not re.search(r"\.(?:pdf|zip|docx?|xlsx?|mp4|mp3|svg|png|jpe?g|webp|gif)$", norm_link, re.I):
-                            if norm_link not in visited and norm_link not in queue and len(queue) < max_pages * 4:
-                                queue.append(norm_link)
+                    origin_match = norm_link.startswith(origin) if not allow_subdomains else (norm_link and urllib.parse.urlparse(norm_link).netloc.endswith(urllib.parse.urlparse(origin).netloc))
+                    if (
+                        norm_link
+                        and origin_match
+                        and not re.search(r"\.(?:pdf|zip|docx?|xlsx?|mp4|mp3|svg|png|jpe?g|webp|gif)$", norm_link, re.I)
+                        and norm_link not in visited
+                        and norm_link not in queue
+                        and len(queue) < max_pages * 4
+                    ):
+                        queue.append(norm_link)
 
         except urllib.error.HTTPError as e:
             crawl_errors.append(f"{current_url} (HTTP {e.code})")
@@ -796,7 +801,7 @@ def run_heading_audit(
                         "queue": queue,
                         "pages_data": pages_data,
                     }, f)
-            except Exception:
+            except OSError:
                 pass
 
         if delay > 0:
@@ -804,10 +809,8 @@ def run_heading_audit(
 
     # Clean up checkpoint on complete crawl
     if os.path.exists(checkpoint_file):
-        try:
+        with contextlib.suppress(Exception):
             os.remove(checkpoint_file)
-        except Exception:
-            pass
 
     # Sort pages to group logically: Home first, Accommodations, Dining, Experience, Meetings, Discover
     category_order = {
@@ -879,12 +882,12 @@ def run_heading_audit(
     with open(output_path, "wb") as f:
         f.write(xlsx_bytes)
 
-    print(f"=======================================================")
+    print("=======================================================")
     print(f" AUDIT COMPLETE: {len(pages_data)} pages, {total_headings} headings audited.")
     print(f" Spreadsheet saved: {os.path.abspath(output_path)}")
-    print(f" Format strictly mirrors reference Google Sheet: 'Heading Structure Optimization- thenines'")
-    print(f" Tabs: [1] Heading Optimization | [2] Audit Summary | [3] Hierarchy Analysis")
-    print(f"=======================================================\n")
+    print(" Format strictly mirrors reference Google Sheet: 'Heading Structure Optimization- thenines'")
+    print(" Tabs: [1] Heading Optimization | [2] Audit Summary | [3] Hierarchy Analysis")
+    print("=======================================================\n")
 
     return {
         "summary": summary,
