@@ -15,6 +15,7 @@
     "test:ts": "node --test --experimental-strip-types tests/ts/*.test.ts",
     "export:schemas": "node --experimental-strip-types scripts/export-schemas.ts",
     "export:json-schemas": "node --experimental-strip-types scripts/export-json-schemas.ts",
+    "build:extension": "node scripts/build-extension.js",
     "extension:build": "cd chrome-extension && npm run build",
     "extension:pack": "cd chrome-extension && npm run build && cd dist && zip -r ../../public/cogwheel-chrome-extension.zip . -x '*.DS_Store'"
   },

@@ -73,6 +73,19 @@ export function TemplateStudio({
     return pageData?.h1Elements?.[0] || activeProfile?.name || "SpringHill Suites Panama City Beachfront";
   });
 
+  // Auto-sync live fields when active page changes
+  useEffect(() => {
+    if (pageData?.title) {
+      setLiveTitle(pageData.title);
+    }
+    if (pageData?.metaDesc) {
+      setLiveMeta(pageData.metaDesc);
+    }
+    if (pageData?.h1Elements?.[0]) {
+      setLiveH1(pageData.h1Elements[0]);
+    }
+  }, [pageData?.url, pageData?.title, pageData?.metaDesc]);
+
   const [liveGeoAnswer, setLiveGeoAnswer] = useState(() => {
     return `SpringHill Suites Panama City Beachfront is located at 12513 Front Beach Rd, Panama City Beach, FL 32407. The property features 200 all-suite oceanfront guestrooms with private balconies, an on-site beachfront pool bar, lazy river, 24/7 fitness center, and complimentary hot breakfast. Self-parking and EV charging stations are available on-site. Direct beach access is steps from the sun deck.`;
   });
@@ -219,6 +232,39 @@ export function TemplateStudio({
         initial[v] = activeProfile.postalCode;
       } else if (v === "primaryH1") {
         initial[v] = liveH1;
+      } else if (v === "parkingPolicy" || v === "parkingRate") {
+        if (pageData?.extractedFacts?.parkingFee) {
+          initial[v] = v === "parkingRate" ? pageData.extractedFacts.parkingFee : `Valet and self-parking at ${pageData.extractedFacts.parkingFee}.`;
+        }
+      } else if (v === "petPolicy") {
+        if (pageData?.extractedFacts?.petPolicy) initial[v] = pageData.extractedFacts.petPolicy;
+      } else if (v === "checkInOutPolicy" || v === "checkInTime" || v === "checkOutTime") {
+        const ci = pageData?.extractedFacts?.checkInTime || "4:00 PM";
+        const co = pageData?.extractedFacts?.checkOutTime || "11:00 AM";
+        if (v === "checkInTime") initial[v] = ci;
+        else if (v === "checkOutTime") initial[v] = co;
+        else initial[v] = `Check-in starts at ${ci}; check-out is at ${co}.`;
+      } else if (v === "totalMeetingSqFt") {
+        if (pageData?.extractedFacts?.meetingSqFt) initial[v] = pageData.extractedFacts.meetingSqFt.replace(/[^0-9]/g, "");
+      } else if (v === "grandBallroomSqFt") {
+        if (pageData?.extractedFacts?.ballroomSqFt) initial[v] = pageData.extractedFacts.ballroomSqFt.replace(/[^0-9]/g, "");
+      } else if (v === "roomTitle") {
+        if (pageData?.extractedFacts?.roomTypes?.[0]) initial[v] = pageData.extractedFacts.roomTypes[0];
+      } else if (v === "kingSuiteSqFt") {
+        initial[v] = "650";
+      } else if (v === "airportCode" || v === "airportName" || v === "airportMiles" || v === "distanceToAirport") {
+        const code = pageData?.extractedFacts?.airportCode || "AIR";
+        const dist = pageData?.extractedFacts?.airportDistance || "8.5 miles";
+        if (v === "airportCode") initial[v] = code;
+        else if (v === "airportName") initial[v] = `${code} International Airport`;
+        else if (v === "airportMiles") initial[v] = dist.replace(/[^0-9.]/g, "");
+        else initial[v] = dist;
+      } else if (v === "distanceToLandmark" && pageData?.extractedFacts?.landmarkDistance) {
+        initial[v] = pageData.extractedFacts.landmarkDistance;
+      } else if (v === "amenitiesList" && pageData?.extractedAmenities?.length) {
+        initial[v] = pageData.extractedAmenities.join(", ");
+      } else if (v === "destinationOverview" && pageData?.metaDesc) {
+        initial[v] = pageData.metaDesc;
       }
     });
 
@@ -559,6 +605,69 @@ ${schemaEntityJson},
     });
   };
 
+  const [cmsUndoAvailable, setCmsUndoAvailable] = useState(false);
+
+  const handleFillActiveCmsField = (fieldType: "active" | "title" | "meta" | "schema" | "all" = "active") => {
+    if (!activeTabId || typeof chrome === "undefined" || !chrome.tabs) {
+      setActionFeedback("Target tab not connected.");
+      setTimeout(() => setActionFeedback(null), 2500);
+      return;
+    }
+
+    if (isRestrictedUrl(pageData?.url)) {
+      setActionFeedback("CMS injection is disabled on browser system pages.");
+      setTimeout(() => setActionFeedback(null), 3000);
+      return;
+    }
+
+    if (fieldType === "all") {
+      handleAutoFillCms();
+      return;
+    }
+
+    const payload: { text?: string; fieldType: "active" | "title" | "meta" | "schema" } = {
+      fieldType,
+    };
+
+    if (fieldType === "schema") {
+      payload.text = selectedTemplate.format === "json" ? resolvedOutput : readyToPasteSnippet;
+    } else if (fieldType === "title") {
+      payload.text = liveTitle;
+    } else if (fieldType === "meta") {
+      payload.text = liveMeta;
+    } else {
+      payload.text = liveTitle;
+    }
+
+    chrome.tabs.sendMessage(activeTabId, { type: "FILL_ACTIVE_CMS_FIELD", payload }, (res) => {
+      if (chrome.runtime.lastError) {
+        setActionFeedback("Please refresh target webpage to enable CMS field injection.");
+        setTimeout(() => setActionFeedback(null), 3000);
+        return;
+      }
+      if (res && res.result && res.result.success) {
+        setActionFeedback(res.result.message || `Filled: ${res.result.filledFields.join(", ")}`);
+        setCmsUndoAvailable(true);
+      } else {
+        setActionFeedback(res?.result?.message || "Could not find active input to fill.");
+      }
+      setTimeout(() => setActionFeedback(null), 3500);
+    });
+  };
+
+  const handleUndoCmsFill = () => {
+    if (!activeTabId || typeof chrome === "undefined" || !chrome.tabs) return;
+    chrome.tabs.sendMessage(activeTabId, { type: "UNDO_CMS_FILL" }, (res) => {
+      if (res && res.result && res.result.success) {
+        setActionFeedback(res.result.message);
+        setCmsUndoAvailable(false);
+      } else {
+        setActionFeedback(res?.result?.message || "Nothing to revert.");
+      }
+      setTimeout(() => setActionFeedback(null), 3000);
+    });
+  };
+
   const handleAutoFillCms = () => {
     if (!activeTabId || typeof chrome === "undefined" || !chrome.tabs) {
       setActionFeedback("Target tab not connected.");
@@ -894,12 +1003,44 @@ ${schemaEntityJson},
 
             <button
               type="button"
+              onClick={() => handleFillActiveCmsField("active")}
+              title="Safely inject into the active/focused CMS input or textarea in browser tab"
+              className="inline-flex items-center gap-1 rounded-xl border border-sky-400 bg-sky-500/10 px-2.5 py-1.5 text-xs font-bold text-sky-400 shadow-xs transition hover:bg-sky-500/20"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-sky-400" />
+              <span>Fill Active CMS Field</span>
+            </button>
+
+            <button
+              type="button"
               onClick={handleAutoFillCms}
               title="Auto-fill WordPress, Webflow, or Shopify SEO fields"
               className="inline-flex items-center gap-1 rounded-xl border border-sky-300 bg-sky-50 px-2.5 py-1.5 text-xs font-bold text-sky-800 shadow-xs transition hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
             >
-              <span>Auto-Fill CMS</span>
+              <span>Auto-Fill All</span>
             </button>
+
+            {selectedTemplate.format === "json" && (
+              <button
+                type="button"
+                onClick={() => handleFillActiveCmsField("schema")}
+                title="Inject this JSON-LD schema into active page head"
+                className="inline-flex items-center gap-1 rounded-xl border border-purple-400 bg-purple-500/10 px-2.5 py-1.5 text-xs font-bold text-purple-400 shadow-xs transition hover:bg-purple-500/20"
+              >
+                <span>Inject Schema</span>
+              </button>
+            )}
+
+            {cmsUndoAvailable && (
+              <button
+                type="button"
+                onClick={handleUndoCmsFill}
+                title="Revert recent CMS field modifications"
+                className="inline-flex items-center gap-1 rounded-xl border border-amber-400 bg-amber-500/10 px-2.5 py-1.5 text-xs font-bold text-amber-400 shadow-xs transition hover:bg-amber-500/20 animate-pulse"
+              >
+                <span>Undo Fill</span>
+              </button>
+            )}
 
             <button
               type="button"

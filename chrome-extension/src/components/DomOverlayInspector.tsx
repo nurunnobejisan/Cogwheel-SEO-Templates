@@ -299,7 +299,7 @@ export function DomOverlayInspector({ data, activeTabId }: Props) {
           ) : (
             data.schemas.map((schema, idx) => {
               const isExpanded = expandedSchemaIndex === idx;
-              const sType = schema["@type"] || "Schema Object";
+              const sType = String(schema["@type"] || "Schema Object");
 
               return (
                 <div

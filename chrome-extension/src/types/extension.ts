@@ -97,7 +97,21 @@ export interface PageAuditData {
   words: number;
   extractedAmenities?: string[];
   topKeywords?: Array<{ term: string; count: number; density: string }>;
-  schemas: any[];
+  schemas: Array<Record<string, unknown>>;
+  schemaErrors?: string[];
+  extractedFacts?: {
+    roomTypes?: string[];
+    diningOutlets?: string[];
+    meetingSqFt?: string;
+    ballroomSqFt?: string;
+    parkingFee?: string;
+    petPolicy?: string;
+    checkInTime?: string;
+    checkOutTime?: string;
+    airportDistance?: string;
+    airportCode?: string;
+    landmarkDistance?: string;
+  };
   links: {
     internal: number;
     external: number;
@@ -184,4 +198,20 @@ export interface CmsAutoFillResult {
   detectedCms: "WordPress/Yoast" | "WordPress/RankMath" | "WordPress/Classic" | "Webflow" | "Shopify" | "Generic/DOM";
   filledFields: string[];
   success: boolean;
+  undoAvailable?: boolean;
+  revertedCount?: number;
+  message?: string;
+}
+
+export interface CompetitorTabData {
+  tabId: number;
+  url: string;
+  title: string;
+  favIconUrl?: string;
+  pageData?: PageAuditData;
+  geoScore?: number;
+  entityDensityScore?: number;
+  keywordTargeting?: string[];
+  schemaTypes?: string[];
+  isLoading?: boolean;
 }

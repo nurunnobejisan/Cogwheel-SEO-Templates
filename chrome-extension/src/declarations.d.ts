@@ -87,4 +87,7 @@ declare module "lucide-react" {
   export const ImageOff: LucideIcon;
   export const CheckCheck: LucideIcon;
   export const ListTree: LucideIcon;
+  export const Users: LucideIcon;
+  export const Pin: LucideIcon;
+  export const TrendingUp: LucideIcon;
 }
