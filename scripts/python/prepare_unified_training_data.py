@@ -20,14 +20,12 @@ And produces a detailed `data/training/dataset_quality_report.json`.
 
 from __future__ import annotations
 
-import glob
 import hashlib
 import json
-import os
 import re
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
@@ -56,7 +54,7 @@ def estimate_tokens(text: str) -> int:
     return max(1, int(len(text) / 3.8))
 
 
-def make_sft_example(system_prompt: str, user_prompt: str, assistant_response: str) -> Dict[str, Any]:
+def make_sft_example(system_prompt: str, user_prompt: str, assistant_response: str) -> dict[str, Any]:
     """Build canonical chat message structure."""
     return {
         "messages": [
@@ -67,13 +65,13 @@ def make_sft_example(system_prompt: str, user_prompt: str, assistant_response: s
     }
 
 
-def generate_google_update_examples(updates_path: Path) -> List[Dict[str, Any]]:
+def generate_google_update_examples(updates_path: Path) -> list[dict[str, Any]]:
     """Generate training pairs based on Google algorithm updates history."""
-    examples: List[Dict[str, Any]] = []
+    examples: list[dict[str, Any]] = []
     if not updates_path.is_file():
         return examples
 
-    with open(updates_path, "r", encoding="utf-8") as f:
+    with open(updates_path, encoding="utf-8") as f:
         data = json.load(f)
 
     updates_list = data.get("updates", []) if isinstance(data, dict) else data
@@ -116,9 +114,9 @@ def generate_google_update_examples(updates_path: Path) -> List[Dict[str, Any]]:
     return examples
 
 
-def generate_agent_prompt_examples(agents_dir: Path) -> List[Dict[str, Any]]:
+def generate_agent_prompt_examples(agents_dir: Path) -> list[dict[str, Any]]:
     """Convert specialized Claude-SEO agent markdown prompts into instruction tuning pairs."""
-    examples: List[Dict[str, Any]] = []
+    examples: list[dict[str, Any]] = []
     if not agents_dir.is_dir():
         return examples
 
@@ -147,13 +145,13 @@ def generate_agent_prompt_examples(agents_dir: Path) -> List[Dict[str, Any]]:
     return examples
 
 
-def generate_keyword_strategy_examples(matrix_path: Path) -> List[Dict[str, Any]]:
+def generate_keyword_strategy_examples(matrix_path: Path) -> list[dict[str, Any]]:
     """Convert 78-keyword strategy matrix into keyword intent and SERP targeting pairs."""
-    examples: List[Dict[str, Any]] = []
+    examples: list[dict[str, Any]] = []
     if not matrix_path.is_file():
         return examples
 
-    with open(matrix_path, "r", encoding="utf-8") as f:
+    with open(matrix_path, encoding="utf-8") as f:
         data = json.load(f)
 
     keywords = data.get("keywords", []) if isinstance(data, dict) else data
@@ -197,9 +195,9 @@ def generate_keyword_strategy_examples(matrix_path: Path) -> List[Dict[str, Any]
     return examples
 
 
-def generate_gsc_cannibalization_examples() -> List[Dict[str, Any]]:
+def generate_gsc_cannibalization_examples() -> list[dict[str, Any]]:
     """Synthesize GSC query cannibalization & performance diagnostic pairs."""
-    examples: List[Dict[str, Any]] = []
+    examples: list[dict[str, Any]] = []
     system_prompt = (
         "You are Cogwheel's Google Search Console (GSC) Diagnostics Engine. "
         "Diagnose keyword cannibalization, CTR anomalies, and indexation issues from GSC analytics."
@@ -252,9 +250,9 @@ def generate_gsc_cannibalization_examples() -> List[Dict[str, Any]]:
     return examples
 
 
-def generate_geo_visibility_examples() -> List[Dict[str, Any]]:
+def generate_geo_visibility_examples() -> list[dict[str, Any]]:
     """Synthesize Generative Engine Optimization (GEO) & AI visibility pairs."""
-    examples: List[Dict[str, Any]] = []
+    examples: list[dict[str, Any]] = []
     system_prompt = (
         "You are Cogwheel's Chief AI Visibility & GEO Strategist. "
         "Optimize brand entity citations and structured fact density for LLM search engines "
@@ -279,7 +277,7 @@ def generate_geo_visibility_examples() -> List[Dict[str, Any]]:
             "2. **Client-Side Rendering (CSR) Overhead:** Ensure critical entity facts are in server-rendered HTML rather than deferred JS hydration.\n"
             "3. **Aggressive Bot Protection / Cloudflare WAF:** Verify that legitimate AI search crawler user-agents are not served 403 or Cloudflare challenges.\n"
             "4. **Stale or Invalid Schema.org Syntax:** Run JSON-LD validation to prevent schema parsing errors by knowledge graph parsers."
-        )
+        ),
     ]
 
     for q, a in prompts:
@@ -295,7 +293,7 @@ def main() -> int:
 
     TRAINING_DIR.mkdir(parents=True, exist_ok=True)
 
-    all_examples: List[Dict[str, Any]] = []
+    all_examples: list[dict[str, Any]] = []
 
     # 1. Google algorithm updates
     google_updates_path = DATA_DIR / "google-updates.json"
@@ -325,8 +323,8 @@ def main() -> int:
     all_examples.extend(geo_examples)
 
     # Deduplication via SHA256 of normalized user prompt
-    seen_hashes = set()
-    deduped_examples: List[Dict[str, Any]] = []
+    seen_hashes: set[str] = set()
+    deduped_examples: list[dict[str, Any]] = []
     total_tokens = 0
 
     for ex in all_examples:

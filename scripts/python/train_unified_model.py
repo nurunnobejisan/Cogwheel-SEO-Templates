@@ -17,15 +17,12 @@ Orchestrates:
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
-import os
-import random
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 DATA_DIR = PROJECT_ROOT / "data"
@@ -36,20 +33,20 @@ DEFAULT_TRAIN_FILE = TRAINING_DIR / "unified_seo_train.jsonl"
 REGISTRY_FILE = MODELS_DIR / "model_registry.json"
 
 
-def load_jsonl(file_path: Path) -> List[Dict[str, Any]]:
+def load_jsonl(file_path: Path) -> list[dict[str, Any]]:
     """Load JSONL lines safely."""
-    records = []
+    records: list[dict[str, Any]] = []
     if not file_path.is_file():
         return records
-    with open(file_path, "r", encoding="utf-8") as f:
+    with open(file_path, encoding="utf-8") as f:
         for line in f:
-            line = line.strip()
-            if line:
-                records.append(json.loads(line))
+            stripped = line.strip()
+            if stripped:
+                records.append(json.loads(stripped))
     return records
 
 
-def run_eval_benchmark(eval_records: List[Dict[str, Any]]) -> Dict[str, Any]:
+def run_eval_benchmark(eval_records: list[dict[str, Any]]) -> dict[str, Any]:
     """Simulate and evaluate benchmark metrics across the test dataset."""
     if not eval_records:
         return {
@@ -66,12 +63,9 @@ def run_eval_benchmark(eval_records: List[Dict[str, Any]]) -> Dict[str, Any]:
     for item in eval_records:
         messages = item.get("messages", [])
         assistant_msg = ""
-        user_msg = ""
         for m in messages:
             if m.get("role") == "assistant":
                 assistant_msg = m.get("content", "")
-            elif m.get("role") == "user":
-                user_msg = m.get("content", "")
 
         # Test 1: Actionable markdown structure / formatting
         if ("###" in assistant_msg or "**" in assistant_msg) and len(assistant_msg) > 60:
@@ -111,14 +105,14 @@ def run_eval_benchmark(eval_records: List[Dict[str, Any]]) -> Dict[str, Any]:
     }
 
 
-def update_model_registry(model_metadata: Dict[str, Any]) -> None:
+def update_model_registry(model_metadata: dict[str, Any]) -> None:
     """Store model version checkpoint in persistent registry."""
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
-    registry: Dict[str, Any] = {"activeModelId": None, "models": []}
+    registry: dict[str, Any] = {"activeModelId": None, "models": []}
 
     if REGISTRY_FILE.is_file():
         try:
-            with open(REGISTRY_FILE, "r", encoding="utf-8") as f:
+            with open(REGISTRY_FILE, encoding="utf-8") as f:
                 registry = json.load(f)
         except Exception:
             registry = {"activeModelId": None, "models": []}
@@ -158,9 +152,9 @@ def main() -> int:
     print(f"[+] Loaded {len(eval_records)} evaluation records from {eval_path.name}")
 
     if not train_records:
-        print("[!] No training records found. Running prepare_unified_training_data.py first...")
-        import prepare_unified_training_data
-        prepare_unified_training_data.main()
+        print("[!] No training records found. Running prepare_unified_training_data pipeline first...")
+        from scripts.python.prepare_unified_training_data import main as prep_main
+        prep_main()
         train_records = load_jsonl(train_path)
         eval_records = load_jsonl(eval_path)
 

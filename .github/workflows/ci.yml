@@ -34,6 +34,9 @@ jobs:
       - name: Run Vitest Test Suite
         run: npm test
 
+      - name: Run SEO Integrity & Node Test Suite
+        run: npm run test:seo
+
       - name: Build Next.js Production Application
         run: npm run build
 

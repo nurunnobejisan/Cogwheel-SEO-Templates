@@ -46,7 +46,13 @@ export async function runFullWebsiteAudit(
   let hasCompression = true;
   let server = "cloudflare";
 
-  if (process.env.NODE_ENV !== "test" && !process.env.OFFLINE_AUDIT) {
+  const isTestEnv =
+    process.env.NODE_ENV === "test" ||
+    Boolean(process.env.NODE_TEST_CONTEXT) ||
+    Boolean(process.env.VITEST) ||
+    Boolean(process.env.CI);
+
+  if (!isTestEnv && !process.env.OFFLINE_AUDIT) {
     try {
       const fetchStart = Date.now();
       const res = await fetch(targetUrl, {
