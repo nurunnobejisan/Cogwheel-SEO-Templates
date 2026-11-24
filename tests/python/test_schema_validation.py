@@ -8,12 +8,9 @@ ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
 from scripts.python.models import (
+    BrandRule,
     KeywordStrategyMatrix,
     OtaConfig,
-    BrandRule,
-    PageAuditData,
-    AuditPayload,
-    ScoreBreakdown,
 )
 from scripts.python.validate_schemas import validate_keyword_matrix, validate_ota_config
 
@@ -24,7 +21,7 @@ def test_keyword_strategy_matrix_validation():
     assert matrix_path.exists(), "Matrix file must exist"
     assert validate_keyword_matrix(matrix_path) is True
 
-    with open(matrix_path, "r", encoding="utf-8") as f:
+    with open(matrix_path, encoding="utf-8") as f:
         data = json.load(f)
 
     matrix = KeywordStrategyMatrix(**data)
@@ -39,7 +36,7 @@ def test_ota_config_validation():
     assert ota_path.exists(), "OTA config file must exist"
     assert validate_ota_config(ota_path) is True
 
-    with open(ota_path, "r", encoding="utf-8") as f:
+    with open(ota_path, encoding="utf-8") as f:
         data = json.load(f)
 
     config = OtaConfig(**data)

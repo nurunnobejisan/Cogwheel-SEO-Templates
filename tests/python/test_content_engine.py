@@ -2,14 +2,15 @@
 
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from api.content_engine import (
+    batch_similarity_audit,
+    calculate_jaccard_similarity,
     clean_text,
     count_words,
-    calculate_jaccard_similarity,
-    batch_similarity_audit,
-    generate_internal_link_graph
+    generate_internal_link_graph,
 )
 
 

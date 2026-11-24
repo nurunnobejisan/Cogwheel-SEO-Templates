@@ -6,7 +6,7 @@ located in schemas/*.schema.json.
 
 from __future__ import annotations
 
-from typing import Any, Literal
+from typing import Any, Literal, Optional, Union
 
 try:
     from pydantic import BaseModel, Field
@@ -157,8 +157,8 @@ class QuickWinItem(BaseModel):
     title: str
     severity: SeverityLevel
     impact: str
-    templateIdToFix: str | None = None
-    fixActionLabel: str | None = None
+    templateIdToFix: Optional[str] = None
+    fixActionLabel: Optional[str] = None
 
 
 class ScoreBreakdown(BaseModel):
@@ -184,9 +184,9 @@ class PageAuditData(BaseModel):
     protocol: str
     hostname: str
     title: str
-    titlePixelWidth: int | None = None
+    titlePixelWidth: Optional[int] = None
     metaDesc: str
-    metaDescPixelWidth: int | None = None
+    metaDescPixelWidth: Optional[int] = None
     canonical: str
     h1Elements: list[str]
     h2Elements: list[str]
@@ -203,10 +203,10 @@ class PageAuditData(BaseModel):
     ogTitle: str
     ogDescription: str
     ogImage: str
-    metaRobots: str | None = "index, follow"
-    language: str | None = "en"
-    internalUrls: list[str] | None = None
-    loadTimeMs: int | None = None
+    metaRobots: Optional[str] = "index, follow"
+    language: Optional[str] = "en"
+    internalUrls: Optional[list[str]] = None
+    loadTimeMs: Optional[int] = None
 
 
 class AuditPayload(BaseModel):
@@ -214,7 +214,7 @@ class AuditPayload(BaseModel):
 
     pageData: PageAuditData
     scores: ScoreBreakdown
-    timestamp: str | None = None
+    timestamp: Optional[str] = None
 
 
 # ==============================================================================
@@ -266,7 +266,7 @@ class RawWebInputModel(BaseModel):
     """Raw webpage snapshot captured by the Chrome extension."""
 
     url: str
-    canonicalUrl: str | None = None
+    canonicalUrl: Optional[str] = None
     domain: str
     rawTitle: str = ""
     rawMetaDesc: str = ""
@@ -283,7 +283,7 @@ class TargetOptimizedOutputModel(BaseModel):
     optimizedTitle: str
     optimizedMetaDesc: str
     optimizedH1: str
-    jsonLdSchema: dict[str, Any] | list[dict[str, Any]] = Field(default_factory=dict)
+    jsonLdSchema: Union[dict[str, Any], list[dict[str, Any]]] = Field(default_factory=dict)
     geoEntityBlock: str = ""
     brandGuardrail: str = "Independent"
 

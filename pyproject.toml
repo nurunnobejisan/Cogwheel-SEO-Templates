@@ -36,6 +36,8 @@ ignore = [
     "E501", # Line length handled by formatter
     "B008", # Do not perform function call in argument defaults
     "E402", # Module level import not at top of file
+    "UP007", # Allow Union[X, Y] for backward runtime compatibility
+    "UP045", # Allow Optional[X] for backward runtime compatibility
 ]
 
 [tool.ruff.format]

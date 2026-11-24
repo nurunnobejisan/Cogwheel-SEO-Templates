@@ -142,10 +142,10 @@ export const UNIFIED_SEO_TOOLS: UnifiedToolDefinition[] = [
   },
 ];
 
-export async function executeUnifiedTool(toolName: string, args: Record<string, any>): Promise<any> {
+export async function executeUnifiedTool(toolName: string, args: Record<string, unknown>): Promise<unknown> {
   switch (toolName) {
     case "query_google_search_console": {
-      const siteUrl = args.siteUrl;
+      const siteUrl = String(args.siteUrl || "");
       const days = Number(args.days) || 28;
       const overview = await getGscPerformanceOverview(siteUrl, days);
       const comparison = await compareGscPeriods(siteUrl, days);
@@ -153,25 +153,25 @@ export async function executeUnifiedTool(toolName: string, args: Record<string, 
     }
 
     case "inspect_url_in_gsc": {
-      return await inspectGscUrl(args.siteUrl, args.pageUrl);
+      return await inspectGscUrl(String(args.siteUrl || ""), String(args.pageUrl || ""));
     }
 
     case "detect_keyword_cannibalization": {
-      const siteUrl = args.siteUrl;
+      const siteUrl = String(args.siteUrl || "");
       const days = Number(args.days) || 28;
       return await detectGscCannibalization(siteUrl, days);
     }
 
     case "research_keywords_and_gaps": {
-      return performKeywordResearch(args.seedTerm, {
-        brand: args.brand,
-        city: args.city,
+      return performKeywordResearch(String(args.seedTerm || ""), {
+        brand: typeof args.brand === "string" ? args.brand : undefined,
+        city: typeof args.city === "string" ? args.city : undefined,
       });
     }
 
     case "analyze_ai_visibility_geo": {
-      const domain = args.domain;
-      const brand = args.brandName;
+      const domain = String(args.domain || "");
+      const brand = String(args.brandName || "");
       return evaluateAiVisibility(domain, brand, [
         { prompt: `best luxury boutique hotel in ${brand}`, category: "Branded Discovery" },
         { prompt: `downtown hotel with rooftop restaurant`, category: "Dining & Lifestyle" },
@@ -180,18 +180,18 @@ export async function executeUnifiedTool(toolName: string, args: Record<string, 
     }
 
     case "analyze_backlink_profile": {
-      return analyzeBacklinkProfile(args.targetUrlOrDomain);
+      return analyzeBacklinkProfile(String(args.targetUrlOrDomain || ""));
     }
 
     case "audit_heading_structure": {
-      return await crawlWebsiteHeadings(args.url, {
+      return await crawlWebsiteHeadings(String(args.url || ""), {
         maxPages: Number(args.maxPages) || 15,
         delayMs: 50,
       });
     }
 
     case "audit_image_optimization": {
-      return await crawlWebsiteImages(args.url, {
+      return await crawlWebsiteImages(String(args.url || ""), {
         maxPages: Number(args.maxPages) || 15,
         delayMs: 50,
       });

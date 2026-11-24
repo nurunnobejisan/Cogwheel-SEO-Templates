@@ -20,7 +20,7 @@ import random
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any, Literal, Optional, Union
 
 try:
     from pydantic import BaseModel, Field, ValidationError
@@ -73,7 +73,7 @@ class TargetSeoGeoOutput(BaseModel):
     optimizedTitle: str = Field(..., description="SERP Title within 580px budget")
     optimizedMetaDesc: str = Field(..., description="Meta description within 920px budget")
     optimizedH1: str = Field(..., description="Primary H1 headline")
-    jsonLdSchema: dict[str, Any] | list[dict[str, Any]] = Field(
+    jsonLdSchema: Union[dict[str, Any], list[dict[str, Any]]] = Field(
         ..., description="Valid Schema.org structured data"
     )
     geoEntityBlock: str = Field(..., description="Generative Engine entity facts block")
@@ -111,7 +111,7 @@ class ChatMlDatasetLine(BaseModel):
     """OpenAI / Llama / Unsloth ChatML dataset line schema."""
 
     messages: list[ChatMlMessage]
-    metadata: dict[str, Any] | None = None
+    metadata: Optional[dict[str, Any]] = None
 
 
 # ==============================================================================
@@ -499,7 +499,7 @@ if __name__ == "__main__":
 def launch_vertex_ai_job(
     train_path: Path,
     val_path: Path,
-    project_id: str | None = None,
+    project_id: Optional[str] = None,
     location: str = "us-central1",
     base_model: str = "gemini-1.5-flash-002",
     dry_run: bool = True,

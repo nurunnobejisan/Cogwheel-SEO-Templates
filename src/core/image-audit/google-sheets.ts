@@ -252,7 +252,7 @@ export async function exportAuditToGoogleSheets(
   });
 
   // 8. Style Image Optimization tab: Yellow header row, bold centered text, column widths & row heights
-  const formattingRequests: any[] = [
+  const formattingRequests: Record<string, unknown>[] = [
     // Header row styling on Image Optimization (Sheet 0): Yellow fill (#FFE599), bold, centered
     {
       repeatCell: {

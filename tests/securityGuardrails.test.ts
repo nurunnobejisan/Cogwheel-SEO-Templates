@@ -63,7 +63,7 @@ describe("Day 3: XSS Protection, Canonical Normalizer & Robots Guardrails", () =
       const leakedHtml = '<html><head><meta name="robots" content="noindex, nofollow"></head></html>';
       assert.throws(
         () => verifyProductionIndexable(leakedHtml, "production"),
-        (err: any) => err instanceof ProductionNoindexError
+        (err: unknown) => err instanceof ProductionNoindexError
       );
     });
 

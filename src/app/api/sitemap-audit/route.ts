@@ -101,10 +101,11 @@ export async function POST(req: Request) {
       } else {
         xmlText = await res.text();
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
       return NextResponse.json(
         {
-          error: `Could not fetch XML sitemap from ${sitemapUrl}: ${err.message}`,
+          error: `Could not fetch XML sitemap from ${sitemapUrl}: ${msg}`,
           sitemapUrl,
         },
         { status: 404 }
@@ -219,7 +220,8 @@ export async function POST(req: Request) {
       healthScore: Math.max(50, healthScore),
       issues,
     });
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to parse sitemap" }, { status: 500 });
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : "Failed to parse sitemap";
+    return NextResponse.json({ error: msg }, { status: 500 });
   }
 }

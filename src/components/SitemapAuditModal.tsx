@@ -62,8 +62,9 @@ export function SitemapAuditModal({ defaultUrl = "", onClose }: Props) {
       }
       setResult(data);
       setSelectedCategory("All");
-    } catch (err: any) {
-      setError(err.message || "Could not fetch or audit XML sitemap.");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Could not fetch or audit XML sitemap.";
+      setError(msg);
     } finally {
       setLoading(false);
     }

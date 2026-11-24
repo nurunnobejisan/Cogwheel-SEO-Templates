@@ -196,7 +196,7 @@ export async function exportHeadingAuditToGoogleSheets(
   });
 
   // Formatting Requests: Yellow headers, green recommendations, column widths
-  const formattingRequests: any[] = [
+  const formattingRequests: Record<string, unknown>[] = [
     // Column Widths on Sheet 0
     { updateDimensionProperties: { range: { sheetId: 0, dimension: "COLUMNS", startIndex: 0, endIndex: 1 }, properties: { pixelSize: 260 }, fields: "pixelSize" } },
     { updateDimensionProperties: { range: { sheetId: 0, dimension: "COLUMNS", startIndex: 1, endIndex: 2 }, properties: { pixelSize: 260 }, fields: "pixelSize" } },

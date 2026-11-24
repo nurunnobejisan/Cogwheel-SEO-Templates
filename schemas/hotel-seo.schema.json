@@ -1,0 +1,174 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HotelSeoSchema",
+  "description": "Single Source of Truth JSON Schema for Hotel Property SEO, Generative Engine Optimization (GEO) Signals, and Template Payloads.",
+  "type": "object",
+  "properties": {
+    "property": {
+      "$ref": "#/definitions/PropertyAudit"
+    },
+    "geoSignals": {
+      "$ref": "#/definitions/GeoSignals"
+    },
+    "templatePayload": {
+      "$ref": "#/definitions/TemplatePayload"
+    },
+    "auditTimestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 audit generation timestamp."
+    }
+  },
+  "required": [
+    "property",
+    "geoSignals"
+  ],
+  "additionalProperties": false,
+  "definitions": {
+    "PropertyAudit": {
+      "type": "object",
+      "description": "Core on-page and technical hospitality audit data for a single inspected property.",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "Fully qualified target URL of the inspected hotel page."
+        },
+        "hotelName": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Official hotel property name."
+        },
+        "brand": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Hospitality parent brand or franchise flag (e.g. Marriott, Hilton, IHG, Hyatt, Independent)."
+        },
+        "city": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Primary municipality or destination market."
+        },
+        "neighborhood": {
+          "type": "string",
+          "description": "Micro-neighborhood, district, or geographic demand generator anchor."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1,
+          "description": "SERP title tag string."
+        },
+        "metaDescription": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Meta description tag string."
+        },
+        "h1": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Primary above-the-fold H1 headline string."
+        },
+        "canonical": {
+          "type": "string",
+          "format": "uri",
+          "description": "Canonical URL link target."
+        },
+        "wordCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total body prose word count excluding boilerplate navigation."
+        }
+      },
+      "required": [
+        "url",
+        "hotelName",
+        "brand",
+        "city",
+        "neighborhood",
+        "title",
+        "metaDescription",
+        "h1",
+        "canonical",
+        "wordCount"
+      ],
+      "additionalProperties": false
+    },
+    "GeoSignals": {
+      "type": "object",
+      "description": "Generative Engine Optimization (GEO) and AI search visibility signals.",
+      "properties": {
+        "hasHotelSchema": {
+          "type": "boolean",
+          "description": "Whether valid Schema.org/Hotel or LodgingBusiness JSON-LD is detected."
+        },
+        "hasFaqSchema": {
+          "type": "boolean",
+          "description": "Whether valid Schema.org/FAQPage JSON-LD is detected."
+        },
+        "entityDensityScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Normalized score (0-100) reflecting factual and entity density in prose."
+        },
+        "citationReadinessScore": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Normalized score (0-100) evaluating citation likelihood in Gemini, Perplexity, and ChatGPT Search."
+        },
+        "missingEntities": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "List of recognized local or brand entities missing from the page copy."
+        }
+      },
+      "required": [
+        "hasHotelSchema",
+        "hasFaqSchema",
+        "entityDensityScore",
+        "citationReadinessScore",
+        "missingEntities"
+      ],
+      "additionalProperties": false
+    },
+    "TemplatePayload": {
+      "type": "object",
+      "description": "Payload for template rendering and variable substitution.",
+      "properties": {
+        "templateId": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Identifier of the Cogwheel template being executed."
+        },
+        "variables": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Key-value dictionary of string variables resolved into template placeholders."
+        },
+        "renderedOutput": {
+          "type": "string",
+          "description": "Fully resolved template content ready for deployment or export."
+        },
+        "validationWarnings": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Deterministic warnings raised during validation or variable replacement."
+        }
+      },
+      "required": [
+        "templateId",
+        "variables",
+        "renderedOutput",
+        "validationWarnings"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
