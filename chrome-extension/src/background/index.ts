@@ -42,7 +42,7 @@ function flushSidePanelQueue(tabId: number): void {
 
 /**
  * Universal content script pinger & auto-injector.
- * Pings the tab; if unresponsive, injects via chrome.scripting.executeScript and retries once.
+ * Pings the tab; if unresponsive, injects via chrome.scripting.executeScript into main frame and retries once.
  */
 async function ensureContentScriptInjected(tabId: number): Promise<boolean> {
   return new Promise((resolve) => {
@@ -53,22 +53,24 @@ async function ensureContentScriptInjected(tabId: number): Promise<boolean> {
           return;
         }
 
-        // Script not active or not injected; inject dynamically
+        // Script not active or not injected; inject dynamically into main frame
         if (chrome.scripting && chrome.scripting.executeScript) {
           chrome.scripting
             .executeScript({
-              target: { tabId, allFrames: true },
+              target: { tabId },
               files: ["content.js"],
             })
             .then(() => {
-              // Retry ping once after injection
-              chrome.tabs.sendMessage(tabId, { type: "PING" }, (retryRes) => {
-                if (!chrome.runtime.lastError && retryRes && retryRes.status === "PONG") {
-                  resolve(true);
-                } else {
-                  resolve(false);
-                }
-              });
+              // Retry ping once after injection with slight delay for listener setup
+              setTimeout(() => {
+                chrome.tabs.sendMessage(tabId, { type: "PING" }, (retryRes) => {
+                  if (!chrome.runtime.lastError && retryRes && retryRes.status === "PONG") {
+                    resolve(true);
+                  } else {
+                    resolve(false);
+                  }
+                });
+              }, 100);
             })
             .catch(() => resolve(false));
         } else {
@@ -80,6 +82,33 @@ async function ensureContentScriptInjected(tabId: number): Promise<boolean> {
     }
   });
 }
+
+/**
+ * Injects content.js into all matching open tabs so that existing tabs
+ * become instantly inspectable without requiring a manual refresh.
+ */
+async function injectContentScriptIntoAllTabs(): Promise<void> {
+  try {
+    const tabs = await chrome.tabs.query({ url: ["http://*/*", "https://*/*"] });
+    for (const tab of tabs) {
+      if (tab.id && !isRestrictedUrl(tab.url)) {
+        try {
+          await chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            files: ["content.js"],
+          });
+        } catch {
+          // Tab may not be ready or allowed; safely ignore
+        }
+      }
+    }
+  } catch {
+    // Ignore
+  }
+}
+
+// Ensure open tabs are immediately scriptable upon background worker start
+injectContentScriptIntoAllTabs();
 
 /**
  * Common extraction dispatcher for a tab.
@@ -111,6 +140,9 @@ async function triggerPageDataExtraction(tabId: number, url?: string): Promise<v
 }
 
 chrome.runtime.onInstalled.addListener(() => {
+  // Inject content script into all currently open tabs upon extension install or update
+  injectContentScriptIntoAllTabs();
+
   // Allow Side Panel to open upon clicking the action if supported
   if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
     chrome.sidePanel

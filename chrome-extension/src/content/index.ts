@@ -3,8 +3,19 @@ import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { COGWHEEL_OPTIMAL_AUDIT_DATA } from "../data/cogwheelTemplates";
 import { extractCapturedWebSample } from "./training-capture";
 
+function isTopLevelWindow(): boolean {
+  try {
+    return window.self === window.top;
+  } catch {
+    return false;
+  }
+}
+
 // Listen for messages from Side Panel, Popup, or Background Worker
 chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+  if (!isTopLevelWindow()) {
+    return false;
+  }
   if (request.type === "PING") {
     sendResponse({ status: "PONG" });
     return true;
@@ -1417,59 +1428,61 @@ function checkAndDispatchSpaChange(): void {
 }
 
 // 1. Patch history API
-(function patchHistoryApi() {
-  const originalPush = history.pushState;
-  const originalReplace = history.replaceState;
+if (isTopLevelWindow()) {
+  (function patchHistoryApi() {
+    const originalPush = history.pushState;
+    const originalReplace = history.replaceState;
 
-  history.pushState = function (...args) {
-    const res = originalPush.apply(this, args);
-    window.dispatchEvent(new Event("cogwheel-spa-navigate"));
-    return res;
-  };
+    history.pushState = function (...args) {
+      const res = originalPush.apply(this, args);
+      window.dispatchEvent(new Event("cogwheel-spa-navigate"));
+      return res;
+    };
 
-  history.replaceState = function (...args) {
-    const res = originalReplace.apply(this, args);
-    window.dispatchEvent(new Event("cogwheel-spa-navigate"));
-    return res;
-  };
+    history.replaceState = function (...args) {
+      const res = originalReplace.apply(this, args);
+      window.dispatchEvent(new Event("cogwheel-spa-navigate"));
+      return res;
+    };
 
-  window.addEventListener("cogwheel-spa-navigate", checkAndDispatchSpaChange);
-  window.addEventListener("popstate", checkAndDispatchSpaChange);
-  window.addEventListener("hashchange", checkAndDispatchSpaChange);
-})();
+    window.addEventListener("cogwheel-spa-navigate", checkAndDispatchSpaChange);
+    window.addEventListener("popstate", checkAndDispatchSpaChange);
+    window.addEventListener("hashchange", checkAndDispatchSpaChange);
+  })();
 
-// 2. MutationObserver on document.title & main/article/body
-(function observeDomMutations() {
-  const target = document.body || document.documentElement;
-  if (!target) return;
+  // 2. MutationObserver on document.title & main/article/body
+  (function observeDomMutations() {
+    const target = document.body || document.documentElement;
+    if (!target) return;
 
-  const observer = new MutationObserver((mutations) => {
-    let shouldCheck = false;
-    for (const m of mutations) {
-      if (m.type === "childList" && m.addedNodes.length > 0) {
-        shouldCheck = true;
-        break;
+    const observer = new MutationObserver((mutations) => {
+      let shouldCheck = false;
+      for (const m of mutations) {
+        if (m.type === "childList" && m.addedNodes.length > 0) {
+          shouldCheck = true;
+          break;
+        }
+        if (m.type === "characterData") {
+          shouldCheck = true;
+          break;
+        }
       }
-      if (m.type === "characterData") {
-        shouldCheck = true;
-        break;
+      if (shouldCheck) {
+        checkAndDispatchSpaChange();
       }
-    }
-    if (shouldCheck) {
-      checkAndDispatchSpaChange();
-    }
-  });
+    });
 
-  observer.observe(target, {
-    childList: true,
-    subtree: true,
-    characterData: true,
-  });
+    observer.observe(target, {
+      childList: true,
+      subtree: true,
+      characterData: true,
+    });
 
-  const titleEl = document.querySelector("title");
-  if (titleEl) {
-    const titleObserver = new MutationObserver(() => checkAndDispatchSpaChange());
-    titleObserver.observe(titleEl, { childList: true, characterData: true, subtree: true });
-  }
-})();
+    const titleEl = document.querySelector("title");
+    if (titleEl) {
+      const titleObserver = new MutationObserver(() => checkAndDispatchSpaChange());
+      titleObserver.observe(titleEl, { childList: true, characterData: true, subtree: true });
+    }
+  })();
+}
 

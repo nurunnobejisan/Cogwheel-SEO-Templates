@@ -10,6 +10,7 @@ export const RESTRICTED_URL_PREFIXES = [
   "about:",
   "view-source:",
   "https://chromewebstore.google.com",
+  "https://chrome.google.com/webstore",
   "chrome-search://",
   "devtools://",
 ];

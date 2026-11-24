@@ -11,33 +11,76 @@ export function PopupApp() {
   const [isRestricted, setIsRestricted] = useState(false);
   const [restrictionReason, setRestrictionReason] = useState<string | undefined>();
   const [needsReload, setNeedsReload] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const auditTab = (targetTabId: number) => {
+    setLoading(true);
+    setNeedsReload(false);
+
+    chrome.tabs.sendMessage(targetTabId, { type: "EXTRACT_PAGE_DATA" }, async (res) => {
+      if (!chrome.runtime.lastError && res && res.data) {
+        setPageData(res.data);
+        setNeedsReload(false);
+        setLoading(false);
+        return;
+      }
+
+      // If content script was not already running (e.g. tab opened before extension load/update),
+      // dynamically inject content.js on the fly via chrome.scripting
+      if (chrome.scripting && chrome.scripting.executeScript) {
+        try {
+          await chrome.scripting.executeScript({
+            target: { tabId: targetTabId },
+            files: ["content.js"],
+          });
+
+          // Wait 120ms for listener initialization and retry extraction
+          setTimeout(() => {
+            chrome.tabs.sendMessage(targetTabId, { type: "EXTRACT_PAGE_DATA" }, (retryRes) => {
+              if (!chrome.runtime.lastError && retryRes && retryRes.data) {
+                setPageData(retryRes.data);
+                setNeedsReload(false);
+              } else {
+                setNeedsReload(true);
+              }
+              setLoading(false);
+            });
+          }, 120);
+          return;
+        } catch {
+          setNeedsReload(true);
+          setLoading(false);
+          return;
+        }
+      }
+
+      setNeedsReload(true);
+      setLoading(false);
+    });
+  };
 
   useEffect(() => {
     if (typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.query) {
       chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-        if (!tab || !tab.id) return;
+        if (!tab || !tab.id) {
+          setLoading(false);
+          return;
+        }
         setTabId(tab.id);
 
         const check = checkPageRestriction(tab.url);
         if (check.isRestricted) {
           setIsRestricted(true);
           setRestrictionReason(check.reason);
+          setLoading(false);
           return;
         }
 
         setIsRestricted(false);
-        chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, (res) => {
-          if (chrome.runtime.lastError) {
-            // Handled: tab needs a refresh to connect to the content script
-            setNeedsReload(true);
-            return;
-          }
-          if (res && res.data) {
-            setPageData(res.data);
-            setNeedsReload(false);
-          }
-        });
+        auditTab(tab.id);
       });
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -54,11 +97,12 @@ export function PopupApp() {
 
   const handleReload = () => {
     if (tabId && typeof chrome !== "undefined" && chrome.tabs?.reload) {
+      setLoading(true);
+      setNeedsReload(false);
       chrome.tabs.reload(tabId, {}, () => {
-        if (chrome.runtime.lastError) {
-          // Handled
-        }
-        window.close();
+        setTimeout(() => {
+          if (tabId) auditTab(tabId);
+        }, 1200);
       });
     }
   };
@@ -66,12 +110,12 @@ export function PopupApp() {
   const scores = pageData
     ? calculateSeoScores(pageData)
     : {
-        overall: isRestricted ? 100 : 92,
-        onPage: 90,
-        schemaTechnical: 95,
-        geoAiReadiness: 90,
-        grade: isRestricted ? "A" : "A+",
-        gradeColor: "#10b981",
+        overall: isRestricted ? 100 : 0,
+        onPage: isRestricted ? 100 : 0,
+        schemaTechnical: isRestricted ? 100 : 0,
+        geoAiReadiness: isRestricted ? 100 : 0,
+        grade: isRestricted ? "A" : "—",
+        gradeColor: isRestricted ? "#10b981" : "#64748b",
         quickWins: [],
       };
 
@@ -94,13 +138,26 @@ export function PopupApp() {
       {pageData && !isRestricted && (
         <div className="mt-2.5 flex items-center justify-between gap-1.5 rounded-lg border border-slate-800 bg-slate-950/80 px-2.5 py-1.5 text-[10px]">
           <div className="flex items-center gap-1.5 truncate">
-            <span className="h-1.5 w-1.5 rounded-full bg-brand animate-pulse" />
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span className="font-semibold text-emerald-300 truncate">
               {pageData.siteCategoryLabel || "Universal Site"}
             </span>
           </div>
           <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] font-medium text-slate-300">
             {pageData.detectedCmsLabel || "Web Application"}
+          </span>
+        </div>
+      )}
+      {loading && !pageData && !isRestricted && (
+        <div className="mt-2.5 flex items-center justify-between gap-1.5 rounded-lg border border-slate-800 bg-slate-950/80 px-2.5 py-1.5 text-[10px]">
+          <div className="flex items-center gap-1.5">
+            <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-ping" />
+            <span className="font-semibold text-blue-300">
+              Auditing Active DOM...
+            </span>
+          </div>
+          <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] font-medium text-slate-400">
+            Detecting CMS...
           </span>
         </div>
       )}
@@ -142,26 +199,28 @@ export function PopupApp() {
           </span>
           <div className="flex items-baseline gap-2">
             <span className="font-display text-2xl font-black text-emerald-400">
-              {scores.overall}
+              {loading && !pageData ? "..." : scores.overall}
             </span>
             <span className="rounded-md bg-emerald-950 px-1.5 py-0.5 text-[10px] font-extrabold text-emerald-300">
-              GRADE {scores.grade}
+              GRADE {loading && !pageData ? "..." : scores.grade}
             </span>
           </div>
           <p className="text-[10px] text-slate-400">
             {isRestricted
               ? "All templates & brand profiles active"
+              : loading && !pageData
+              ? "Scanning DOM & structured data..."
               : pageData
               ? `${pageData.hostname}`
-              : "Auditing active webpage..."}
+              : "Ready"}
           </p>
         </div>
 
         <ScoreGauge
-          score={scores.overall}
+          score={loading && !pageData ? 0 : scores.overall}
           label=""
           size={64}
-          color={scores.gradeColor}
+          color={loading && !pageData ? "#3b82f6" : scores.gradeColor}
         />
       </div>
 
@@ -170,25 +229,25 @@ export function PopupApp() {
         <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-2">
           <span className="block text-[8px] font-bold text-slate-400 uppercase">H1 TAGS</span>
           <span className="block text-xs font-bold text-white mt-0.5">
-            {pageData?.h1Elements.length ?? 1}
+            {loading && !pageData ? "..." : pageData ? pageData.h1Elements.length : 0}
           </span>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-2">
           <span className="block text-[8px] font-bold text-slate-400 uppercase">SCHEMAS</span>
           <span className="block text-xs font-bold text-emerald-400 mt-0.5">
-            {pageData?.schemas.length ?? 2}
+            {loading && !pageData ? "..." : pageData ? pageData.schemas.length : 0}
           </span>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-2">
           <span className="block text-[8px] font-bold text-slate-400 uppercase">WORDS</span>
           <span className="block text-xs font-bold text-white mt-0.5">
-            {pageData?.words ?? 650}
+            {loading && !pageData ? "..." : pageData ? pageData.words : 0}
           </span>
         </div>
         <div className="rounded-xl border border-slate-800 bg-slate-950/40 p-2">
           <span className="block text-[8px] font-bold text-slate-400 uppercase">MISSING ALT</span>
           <span className="block text-xs font-bold text-rose-400 mt-0.5">
-            {pageData?.imagesWithoutAlt ?? 0}
+            {loading && !pageData ? "..." : pageData ? pageData.imagesWithoutAlt : 0}
           </span>
         </div>
       </div>

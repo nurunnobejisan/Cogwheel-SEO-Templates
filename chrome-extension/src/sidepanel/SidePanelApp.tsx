@@ -149,8 +149,42 @@ export function SidePanelApp() {
           }
 
           setIsRestrictedTab(false);
-          chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, (res) => {
-            if (chrome.runtime.lastError) {
+          chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, async (res) => {
+            if (chrome.runtime.lastError || !res?.data) {
+              // Attempt dynamic on-the-fly auto-injection fallback
+              if (chrome.scripting && chrome.scripting.executeScript && tab.id) {
+                try {
+                  await chrome.scripting.executeScript({
+                    target: { tabId: tab.id },
+                    files: ["content.js"],
+                  });
+                  setTimeout(() => {
+                    if (!tab.id) return;
+                    chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, (retryRes) => {
+                      if (!chrome.runtime.lastError && retryRes && retryRes.data) {
+                        setPageData(retryRes.data);
+                        setNeedsReload(false);
+                        const sc = calculateSeoScores(retryRes.data);
+                        chrome.runtime.sendMessage({
+                          type: "UPDATE_BADGE",
+                          tabId: tab.id,
+                          score: sc.overall,
+                        }, () => {
+                          if (chrome.runtime.lastError) { }
+                        });
+                      } else {
+                        setNeedsReload(true);
+                      }
+                      setLoading(false);
+                    });
+                  }, 120);
+                  return;
+                } catch {
+                  setNeedsReload(true);
+                  setLoading(false);
+                  return;
+                }
+              }
               setNeedsReload(true);
               setLoading(false);
               return;
