@@ -85,10 +85,25 @@ export function PopupApp() {
             RAZIB MARKETING
           </span>
         </div>
-        <span className="rounded-md bg-slate-800 px-1.5 py-0.5 text-[9px] font-bold text-slate-400">
-          COGWHEEL v2.7
+        <span className="rounded-md bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0.5 text-[9px] font-bold text-emerald-400">
+          COGWHEEL v3.0.0
         </span>
       </div>
+
+      {/* Universal Category & CMS Pill */}
+      {pageData && !isRestricted && (
+        <div className="mt-2.5 flex items-center justify-between gap-1.5 rounded-lg border border-slate-800 bg-slate-950/80 px-2.5 py-1.5 text-[10px]">
+          <div className="flex items-center gap-1.5 truncate">
+            <span className="h-1.5 w-1.5 rounded-full bg-brand animate-pulse" />
+            <span className="font-semibold text-emerald-300 truncate">
+              {pageData.siteCategoryLabel || "Universal Site"}
+            </span>
+          </div>
+          <span className="rounded bg-slate-800 px-1.5 py-0.5 text-[9px] font-medium text-slate-300">
+            {pageData.detectedCmsLabel || "Web Application"}
+          </span>
+        </div>
+      )}
 
       {/* Restricted System Page Banner */}
       {isRestricted && (
@@ -138,7 +153,7 @@ export function PopupApp() {
               ? "All templates & brand profiles active"
               : pageData
               ? `${pageData.hostname}`
-              : "Auditing active hotel page..."}
+              : "Auditing active webpage..."}
           </p>
         </div>
 

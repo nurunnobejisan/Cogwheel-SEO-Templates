@@ -26,6 +26,8 @@ import { SettingsBrandProfiles } from "../components/SettingsBrandProfiles";
 import { UpdateBanner } from "../components/UpdateBanner";
 import { CopyFixedCodeDrawer } from "../components/CopyFixedCodeDrawer";
 import { ExportAuditDropdown } from "../components/ExportAuditDropdown";
+import { UniversalImageAuditCard } from "../components/UniversalImageAuditCard";
+import { UniversalHeadingAuditCard } from "../components/UniversalHeadingAuditCard";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
 import { generateSeoAutoFix } from "../engine/custom-model-client";
@@ -446,8 +448,8 @@ export function SidePanelApp() {
               <span className="text-xs font-semibold tracking-wider text-[#FAFAFA] uppercase">
                 COGWHEEL SEO STUDIO
               </span>
-              <span className="rounded-md border border-[#27272A] bg-[#18181B] px-1.5 py-0.5 text-[9px] font-semibold text-[#A1A1AA] tabular-nums">
-                v2.7
+              <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400 tabular-nums">
+                v3.0.0
               </span>
             </div>
 
@@ -676,8 +678,46 @@ export function SidePanelApp() {
                 </div>
               </div>
 
+              {/* Universal Site Category & Platform Banner */}
+              {!isRestrictedTab && (
+                <div className="flex items-center justify-between gap-2 rounded-xl border border-[#27272A] bg-emerald-950/20 px-3 py-2 text-xs">
+                  <div className="flex items-center gap-2 truncate">
+                    <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="font-semibold text-emerald-300 truncate">
+                      {pageData.siteCategoryLabel || "Universal Website"}
+                    </span>
+                    {pageData.ecommerce?.isEcommerce && (
+                      <span className="rounded bg-emerald-500/20 border border-emerald-500/30 px-1.5 py-0.2 text-[9px] font-bold text-emerald-200">
+                        {pageData.ecommerce.price ? `${pageData.ecommerce.price} ${pageData.ecommerce.currency || ""}` : "Product Store"}
+                      </span>
+                    )}
+                  </div>
+                  <span className="shrink-0 rounded bg-[#18181B] border border-[#27272A] px-2 py-0.5 text-[10px] font-medium text-slate-300">
+                    {pageData.detectedCmsLabel || "Web Application"}
+                  </span>
+                </div>
+              )}
+
               {/* SERP & Social Card Preview */}
               <SerpSocialPreview data={pageData} />
+
+              {/* Universal Image Optimization & WCAG 2.2 AA Audit Card */}
+              <UniversalImageAuditCard
+                images={pageData.detailedImages}
+                vitals={pageData.vitals}
+                totalImages={pageData.totalImages}
+                imagesWithoutAlt={pageData.imagesWithoutAlt}
+                hostname={pageData.hostname}
+              />
+
+              {/* Universal Heading Structure & Hierarchy Audit Card */}
+              <UniversalHeadingAuditCard
+                hierarchy={pageData.headingHierarchy}
+                issues={pageData.headingIssues}
+                h1Count={pageData.h1Elements.length}
+                h2Count={pageData.h2Elements.length}
+                h3Count={pageData.h3Elements.length}
+              />
 
               {/* Quick Wins / Detected Issues */}
               <QuickWinsList
