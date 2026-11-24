@@ -38,6 +38,7 @@ ignore = [
     "E402", # Module level import not at top of file
     "UP007", # Allow Union[X, Y] for backward runtime compatibility
     "UP045", # Allow Optional[X] for backward runtime compatibility
+    "UP017", # Allow datetime.timezone.utc for backward runtime compatibility
 ]
 
 [tool.ruff.format]
