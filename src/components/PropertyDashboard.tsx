@@ -66,6 +66,17 @@ const CRAWL_TASK_IDS = new Set([
   "image-optimization",
   "duplicate-content-audit",
   "schema-markup",
+  "sitemap-navigation-optimization",
+  "site-tech-re-audit-report",
+  "compsets-keywords-analysis",
+  "keyword-ranking-report-comp-set",
+  "internal-kickoff-strategy-list",
+  "email-outreach-formatting",
+  "competitors-backlink-analysis",
+  "backlinking-strategy-execution",
+  "google-map-citation",
+  "ai-seo-visibility-report",
+  "final-seo-geo-project-report",
 ]);
 
 const ACTIVE_PROPERTY_KEY = "razib_active_property_v1";
@@ -1096,11 +1107,7 @@ export default function PropertyDashboard() {
 
               <Card
                 title={`${activeTab} Tasks`}
-                subtitle={
-                  activeTab === "Off Page" || activeTab === "Local"
-                    ? `All ${activeTab} modules are currently in development for Phase 2 & 3 (Coming Soon). Click any card to preview module requirements and request early access.`
-                    : `Active production modules run through the shared validation pipeline with automatic Flag Summaries.`
-                }
+                subtitle="Active enterprise production modules run through the shared validation pipeline with automatic Flag Summaries and live LLM grounding."
               >
                 {sectionTasks.length === 0 ? (
                   <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-10 text-center dark:border-slate-800 dark:bg-slate-800/40">

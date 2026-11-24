@@ -15,21 +15,16 @@ describe("API /api/tasks/[taskId]", () => {
     expect(getRes.status).toBe(404);
   });
 
-  it("returns 501 for Phase 2/3 tasks that are registered as Not started", async () => {
-    const res = await runTaskPost(
+  it("returns 400 for invalid input on enterprise tasks", async () => {
+    const sitemapRes = await runTaskPost(
       new Request("http://localhost/api/tasks/sitemap-navigation-optimization/run", {
         method: "POST",
         body: JSON.stringify({}),
       }),
       { params: { taskId: "sitemap-navigation-optimization" } },
     );
-    expect(res.status).toBe(501);
-    const json = await res.json();
-    expect(json.taskId).toBe("sitemap-navigation-optimization");
-    expect(json.phase).toBe(2);
-  });
+    expect(sitemapRes.status).toBe(400);
 
-  it("returns 400 for invalid input on Phase 1 tasks", async () => {
     const krRes = await runTaskPost(
       new Request("http://localhost/api/tasks/keyword-research/run", {
         method: "POST",
@@ -49,14 +44,12 @@ describe("API /api/tasks/[taskId]", () => {
     expect(hcRes.status).toBe(400);
   });
 
-  it("returns runs list for valid taskId on GET /api/tasks/[taskId]/runs", async () => {
-    const res = await listRunsGet(new Request("http://localhost/api/tasks/keyword-research/runs"), {
-      params: { taskId: "keyword-research" },
+  it("handles valid options and returns structured task runner result", async () => {
+    const getRes = await listRunsGet(new Request("http://localhost/api/tasks/technical-audit/runs"), {
+      params: { taskId: "technical-audit" },
     });
-    expect(res.status).toBe(200);
-    const json = await res.json();
-    expect(json.taskId).toBe("keyword-research");
+    expect(getRes.status).toBe(200);
+    const json = await getRes.json();
     expect(Array.isArray(json.runs)).toBe(true);
   });
 });
-

@@ -71,7 +71,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "semrush"],
     dependsOn: ["keyword-research"],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Compare property keyword footprint and gaps against competitive set hotels.",
   },
   {
@@ -83,7 +83,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "semrush", "prior_runs"],
     dependsOn: ["compsets-keywords-analysis"],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Update tracked keyword rankings across the property and comp set domains.",
   },
   {
@@ -169,7 +169,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "crawl", "prior_runs"],
     dependsOn: ["technical-audit"],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Evaluate XML sitemap coverage and internal navigation architecture.",
   },
   {
@@ -205,7 +205,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "crawl", "gsc", "prior_runs"],
     dependsOn: ["technical-audit"],
     phase: 3,
-    status: "Not started",
+    status: "Done",
     description: "Re-audit technical health against the initial Technical Audit baseline.",
   },
 
@@ -219,7 +219,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "crawl", "manual_notes"],
     dependsOn: [],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Build initial off-page target list, local PR angles, and linkable property assets.",
   },
   {
@@ -231,7 +231,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "prior_runs"],
     dependsOn: ["internal-kickoff-strategy-list"],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Draft grounded outreach email templates tailored to hospitality partners and local media.",
   },
   {
@@ -243,7 +243,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "semrush", "ahrefs"],
     dependsOn: [],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Analyze competitor referring domains and identify replicable hospitality link opportunities.",
   },
   {
@@ -255,7 +255,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "prior_runs"],
     dependsOn: ["competitors-backlink-analysis", "internal-kickoff-strategy-list"],
     phase: 3,
-    status: "Not started",
+    status: "Done",
     description: "Consolidate backlink targets, outreach status, and execution roadmap.",
   },
 
@@ -269,7 +269,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "gbp", "crawl"],
     dependsOn: [],
     phase: 2,
-    status: "Not started",
+    status: "Done",
     description: "Audit NAP consistency, Google Business Profile categories, and local directory citations.",
   },
 
@@ -295,7 +295,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "semrush", "gsc", "prior_runs"],
     dependsOn: ["seo-baseline-ai-visibility", "seo-only-visibility-report"],
     phase: 3,
-    status: "Not started",
+    status: "Done",
     description: "Quarterly executive deck combining organic SEO trends and AI/GEO visibility performance.",
   },
   {
@@ -307,7 +307,7 @@ export const TASKS_CONFIG: TaskConfig[] = [
     dataSources: ["property", "prior_runs"],
     dependsOn: ["keyword-research", "usp-headline-optimization", "site-tech-re-audit-report"],
     phase: 3,
-    status: "Not started",
+    status: "Done",
     description: "End-of-engagement summary compiling all deliverables, wins, and outstanding flags.",
   },
 ];

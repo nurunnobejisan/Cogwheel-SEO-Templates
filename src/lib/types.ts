@@ -2,13 +2,54 @@ export type TemplateId = "A" | "B";
 
 export type RationaleStyle = "arrive" | "catbird" | "reitz";
 
+export interface Client {
+  id: string;
+  name: string;
+  contactEmail?: string;
+  contactName?: string;
+  industry?: string;
+  status: "active" | "archived" | "onboarding";
+  propertyCount?: number;
+  properties?: Property[];
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CompetitorProperty {
+  id: string;
+  name: string;
+  url: string;
+  brand?: string;
+  city: string;
+  state: string;
+  distanceMiles?: number;
+  starRating?: number;
+  primaryKeywords?: string[];
+}
+
 export interface Property {
+  id?: string;
+  clientId?: string;
+  groupName?: string;
   name: string;
   url?: string;
   brand: string;
+  propertyType?: string;
+  market?: string;
+  address?: string;
   city: string;
   /** 2-letter USPS code */
   state: string;
+  country?: string;
+  phone?: string;
+  email?: string;
+  targetAudience?: string[];
+  amenities?: string[];
+  diningInfo?: string[];
+  roomInfo?: string[];
+  meetingEventInfo?: string[];
+  sitemapUrls?: string[];
+  brandGuidelines?: string;
   notes?: string;
   petFriendly?: boolean;
   attractions?: string[];
@@ -16,6 +57,7 @@ export interface Property {
   templateDocUrl?: string;
   allowedLocations: string[];
   excludedLocations: string[];
+  competitors?: CompetitorProperty[];
 }
 
 export interface SitemapPage {

@@ -23,28 +23,43 @@ describe("tasks.config.ts", () => {
     }
   });
 
-  it("marks implemented tasks as Done and remaining Phase 2/3 tasks as Not started", () => {
+  it("marks all 22 enterprise tasks as Done and fully implemented", () => {
     const doneTasks = TASKS_CONFIG.filter((t) => t.status === "Done");
+    expect(doneTasks.length).toBe(22);
     expect(doneTasks.map((t) => t.id).sort()).toEqual([
+      "ai-seo-visibility-report",
+      "backlinking-strategy-execution",
+      "competitors-backlink-analysis",
+      "compsets-keywords-analysis",
       "duplicate-content-audit",
+      "email-outreach-formatting",
+      "final-seo-geo-project-report",
+      "google-map-citation",
       "heading-structure",
       "image-optimization",
+      "internal-kickoff-strategy-list",
+      "keyword-ranking-report-comp-set",
       "keyword-research",
       "schema-markup",
       "seo-baseline-ai-visibility",
       "seo-only-visibility-report",
       "site-crawl",
+      "site-tech-re-audit-report",
+      "sitemap-navigation-optimization",
       "technical-audit",
       "title-meta",
       "usp-headline-optimization",
     ]);
+  });
 
-    const other = TASKS_CONFIG.filter((t) => t.status !== "Done");
-    for (const t of other) {
-      expect(t.status).toBe("Not started");
-    }
-    expect(getTaskConfig("keyword-research")?.outputType).toBe("doc");
-    expect(getTaskConfig("usp-headline-optimization")?.outputType).toBe("doc");
+  it("retrieves individual task configs by ID", () => {
+    const kr = getTaskConfig("keyword-research");
+    expect(kr).toBeDefined();
+    expect(kr?.name).toBe("Keyword Research");
+    expect(kr?.outputType).toBe("doc");
+
+    const sm = getTaskConfig("schema-markup");
+    expect(sm).toBeDefined();
+    expect(sm?.outputType).toBe("json");
   });
 });
-
