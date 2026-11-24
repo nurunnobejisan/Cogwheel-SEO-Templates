@@ -64,6 +64,9 @@ const HeadingStructureAuditModal = dynamic(() =>
 const KeywordResearchView = dynamic(() =>
   import("./KeywordResearchView").then((m) => m.KeywordResearchView),
 );
+const UnifiedSeoSuiteView = dynamic(() =>
+  import("./UnifiedSeoSuiteView").then((m) => m.UnifiedSeoSuiteView),
+);
 
 const CRAWL_TASK_IDS = new Set([
   "title-meta",
@@ -132,7 +135,7 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
 };
 
 export default function PropertyDashboard() {
-  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords">("home");
+  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo">("home");
   const [labsSubTab, setLabsSubTab] = useState<"geo" | "compset" | "sandbox">("geo");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
@@ -451,6 +454,7 @@ export default function PropertyDashboard() {
             {(
               [
                 { id: "home", label: "Home" },
+                { id: "unified-seo", label: "Unified SEO Suite" },
                 { id: "keywords", label: "Keywords" },
                 { id: "tasks", label: `Tasks (${readyCount})` },
                 { id: "labs", label: "Labs" },
@@ -902,6 +906,35 @@ export default function PropertyDashboard() {
                 </div>
               </section>
 
+              {/* Unified SEO Suite Hero Card */}
+              <div className="rounded-2xl border-2 border-brand/30 bg-gradient-to-r from-brand/10 via-emerald-50/50 to-purple-50/40 p-6 shadow-sm dark:from-brand/10 dark:via-slate-900 dark:to-purple-950/20 dark:border-brand/40">
+                <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="rounded-md bg-brand px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-900">
+                        New Engine
+                      </span>
+                      <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">
+                        Unified Source Code Integration (Claude-SEO + Open-SEO + FastMCP GSC)
+                      </span>
+                    </div>
+                    <h3 className="mt-2 font-display text-lg font-bold text-slate-900 dark:text-white">
+                      Autonomous 11-Dimension Website Audit &amp; AI Search Engine
+                    </h3>
+                    <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 max-w-2xl">
+                      Run automated crawls across technical health, headings, images, Search Console cannibalization, and Generative Engine Optimization (GEO) in one click.
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setMainTab("unified-seo")}
+                    className="flex-shrink-0 rounded-xl bg-brand px-5 py-2.5 text-xs font-bold text-slate-900 shadow-sm transition hover:brightness-105"
+                  >
+                    Open Unified SEO Suite &rarr;
+                  </button>
+                </div>
+              </div>
+
               <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="card-hover rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
                   <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -961,6 +994,15 @@ export default function PropertyDashboard() {
                 </button>
               </section>
             </>
+          )}
+
+          {mainTab === "unified-seo" && (
+            <UnifiedSeoSuiteView
+              property={activeProperty}
+              onBackToDashboard={() => setMainTab("home")}
+              onOpenImageAudit={() => setShowImageAudit(true)}
+              onOpenHeadingAudit={() => setShowHeadingAudit(true)}
+            />
           )}
 
           {mainTab === "keywords" && (
