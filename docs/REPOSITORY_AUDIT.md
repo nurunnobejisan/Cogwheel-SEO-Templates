@@ -192,7 +192,7 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 
 ### Remaining
 
-- M11 extension hardening: content-script idempotency guard, tighter permissions, encrypted storage for keys, OTA config consumption, theme toggle.
+- **M11 extension hardening complete**: content-script idempotency guard, tighter permissions (http/https hosts only, no `unlimitedStorage`/`api.github.com`), AES-GCM secret storage for API keys/tokens, OTA pixel limits consumed in the live audit card, and a functional persisted dark/light theme toggle.
 - Duplicate SEO engines (`rules/` vs `validators/`, three GEO scorers).
 
 ---
