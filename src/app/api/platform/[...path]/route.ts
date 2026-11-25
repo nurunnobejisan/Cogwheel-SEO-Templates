@@ -53,7 +53,7 @@ async function forward(req: NextRequest, context: RouteContext): Promise<NextRes
 
   // Fail closed: everything except the public health probe needs a verified
   // session. Local dev auth (`PLATFORM_DEV_AUTH=1`) satisfies this too.
-  const isHealth = subPath === "health" && method === "GET";
+  const isHealth = (subPath === "health" || subPath === "v1/health") && method === "GET";
   if (!isHealth && !isAuthenticatedPrincipal(principal)) {
     return NextResponse.json(
       {

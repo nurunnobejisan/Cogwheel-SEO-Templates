@@ -88,7 +88,20 @@ export const RATE_LIMITS = {
   apiRead: { limit: 240, windowMs: 60_000 },
   /** Costly crawl/audit endpoints (each triggers outbound fetches). */
   crawl: { limit: 10, windowMs: 60_000 },
+  /** Paid AI/provider endpoints — bounded per IP to cap anonymous spend. */
+  aiGeneration: { limit: 20, windowMs: 3_600_000 },
 } satisfies Record<string, RateLimitRule>;
+
+const AI_ROUTES = [
+  "/api/ai-training",
+  "/api/generate-hc",
+  "/api/generate-kr",
+  "/api/ingest",
+  "/api/select-kw",
+  "/api/semrush-pull",
+  "/api/visibility-suite",
+  "/api/tasks/",
+];
 
 const CRAWL_ROUTES = [
   "/api/crawl-property",
@@ -100,8 +113,12 @@ const CRAWL_ROUTES = [
 ];
 
 export function limitForRequest(pathname: string, method: string): RateLimitRule {
+  const isRead = method === "GET" || method === "HEAD";
+  if (!isRead && AI_ROUTES.some((route) => pathname.startsWith(route))) {
+    return RATE_LIMITS.aiGeneration;
+  }
   if (CRAWL_ROUTES.some((route) => pathname.startsWith(route))) {
     return RATE_LIMITS.crawl;
   }
-  return method === "GET" || method === "HEAD" ? RATE_LIMITS.apiRead : RATE_LIMITS.apiWrite;
+  return isRead ? RATE_LIMITS.apiRead : RATE_LIMITS.apiWrite;
 }

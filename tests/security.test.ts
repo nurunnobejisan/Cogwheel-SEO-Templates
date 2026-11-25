@@ -83,6 +83,8 @@ describe("Rate limiting", () => {
     expect(limitForRequest("/api/full-audit", "POST").limit).toBe(10);
     expect(limitForRequest("/api/templates", "GET").limit).toBe(240);
     expect(limitForRequest("/api/templates", "POST").limit).toBe(30);
+    expect(limitForRequest("/api/generate-hc", "POST").limit).toBe(20);
+    expect(limitForRequest("/api/generate-hc", "GET").limit).toBe(240);
   });
 
   it("prefers the first x-forwarded-for hop", () => {

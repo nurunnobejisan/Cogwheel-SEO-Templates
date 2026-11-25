@@ -41,14 +41,17 @@
 **C2 — AI/GEO visibility data is fabricated.**
 `src/core/open-seo/ai-visibility.ts:52-90` hardcodes `isMentioned: true`, invents `quotedSnippet` and `sourceCitations`, and returns fixed `engineRankings { chatgpt: 92, perplexity: 96, google_ai_overview: 78, claude: 88 }` with hardcoded competitor names (`:119-129`). No engine is ever queried. `src/core/open-seo/backlinks.ts:42-80` and `keyword-research.ts:37-153` likewise return hardcoded DR/volume/CPC data. `src/engine/unified-ai-orchestrator.ts:82` advertises "Measure citation share of voice in ChatGPT, Perplexity, Claude and Google AI Overviews" but dispatches to that same hardcoded code.
 *Impact:* the flagship GEO claim is not backed by measurement.
+*Resolved — see §6: live measurement + `dataProvenance`; unmeasured dimensions report `dataAvailable: false`.
 
 **C3 — No application-level authentication or middleware.**
 26 route handlers under `src/app/api/**`; **no `middleware.ts`**. Auth exists only where `COGWHEEL_API_BEARER_TOKEN` happens to be set (`ai-training` POST), and `src/lib/platform/auth.ts:44-52` derives identity from spoofable `x-actor-role`/cookie headers defaulting to `viewer` with no JWT/session verification.
 *Impact:* anyone can invoke paid AI providers (`ANTHROPIC_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY`, `GEMINI_API_KEY`) and the Supabase **service-role** key (`src/lib/supabase.ts:13`).
+*Resolved — see §6: signed sessions, fail-closed platform API, middleware rate limits and CSRF origin checks.*
 
 **C4 — Command execution endpoints reachable without auth.**
 `src/app/api/client-email/route.ts` uses `child_process.exec` with an interpolated recipient (`:62`) and an absolute local path `/Users/jisanjomadder/.gemini/antigravity/bin/gmail` (`:47`) plus a personal address (`:73,103`). `src/app/api/seo-visibility-report/route.ts` shells out to local `python3` via `execFile` (`~:160-360`) with no auth.
 *Impact:* unauthenticated command execution / injection surface and environment coupling.
+*Resolved — see §6: argument-array `execFile` behind opt-in env flags, explicit `501` by default, no shell interpolation, no hardcoded personal account.*
 
 **C5 — The shipped Chrome extension content script is broken.**
 `chrome-extension`'s Vite build (`vite.config.ts:10-27`) emits a code-split ES-module bundle, but `chrome-extension/public/manifest.json:50-55` registers `content.js` as a classic MV3 content script. Verified in the committed `public/cogwheel-chrome-extension.zip`: `content.js` begins `import{...}from"./assets/pixelCalculator-…js"`, which Chrome cannot load. The core DOM-audit feature fails on every page.
@@ -155,7 +158,31 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 
 ---
 
-## 6. Known limitations of this audit
+## 6. Remediation status
+
+### Completed — integrity (C1, C2, H1)
+
+- `src/core/full-audit/audit-runner.ts` now measures the live page with `rules/` + `rules/html-snapshot.ts`; every dimension is derived from the fetch or reported unavailable. GEO is an explicitly labelled on-page readiness heuristic.
+- Synthetic GSC rows, keyword volumes, backlink profiles and AI citations are gated behind `ALLOW_SIMULATED_DATA` (default off) in `src/core/{gsc,open-seo}`.
+- Reports carry `dataProvenance` (measured / unavailable / methodology); UI shows a provenance banner.
+- Python: `hotel_extractor.py` no longer invents rooms, venues, meeting-space numbers, policies, airports, convention centres or landmarks; `template_processor.py` emits `Not provided` / `Not measured` gaps instead of defaults; `batch_portfolio_audit.py` audits real fetched pages; `train_unified_model.py` no longer inflates benchmark adherence.
+- `CompsetRankingMatrix` requires operator-entered ranks (no random seeds); Labs GEO simulator and rich-snippet mockup are labelled illustrative instead of presenting invented scores.
+
+### Completed — security (C3, C4, H2, H10, M4)
+
+- `src/middleware.ts`: per-IP API rate limits (read/write/crawl tiers), cross-origin write rejection, security headers, `noindex` for `/api/*` and `/platform`.
+- `src/lib/platform/session.ts` + `src/app/api/platform/session/route.ts`: HMAC-signed `cw_session` tokens, `PLATFORM_OPERATOR_TOKEN` sign-in, `PLATFORM_SESSION_SECRET` signing key; platform API fails closed (`401`) except `GET /health`; spoofable `x-actor-role` only honoured under explicit local `PLATFORM_DEV_AUTH=1`.
+- `src/lib/security/egress.ts`: DNS-aware SSRF validation + redirect-revalidating `safeFetch`, applied to full audit, sitemap audit, property autofill, visibility report, site crawl, heading audit and image audit.
+- OS-exec removed from request paths: Gmail CLI and python-pptx builder are opt-in (`COGWHEEL_ALLOW_LOCAL_*`), use `execFile` argument arrays, and return `501` by default.
+- Tests: `tests/security.test.ts` covers IP classification, egress rejection, rate-limit windows, session signing/tampering/expiry and header-spoofing rejection.
+
+### Remaining
+
+- C5 (extension content script module format), H6 (real PDF/PPTX exporter), H8/H9/M11 (extension build/version reconciliation), `shared/schemas/` materialization, duplicate SEO engines (`rules/` vs `validators/`).
+
+---
+
+## 7. Known limitations of this audit
 
 - Findings were produced by parallel static inspection plus executed gates; business-logic depth (template content, scoring thresholds) was sampled, not exhaustively enumerated.
 - Python was validated on macOS Python 3.9 locally; CI targets 3.11.

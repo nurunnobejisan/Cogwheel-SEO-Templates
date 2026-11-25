@@ -74,7 +74,7 @@ export function middleware(req: NextRequest): NextResponse {
   }
 
   const rule = limitForRequest(pathname, req.method);
-  const result = consume(`api:${clientKey(req.headers)}:${pathname.split("/").slice(0, 4).join("/")}`, rule);
+  const result = consume(`api:${clientKey(req.headers)}:${pathname.split("/").slice(0, 3).join("/")}`, rule);
   if (!result.allowed) {
     return jsonError(
       429,

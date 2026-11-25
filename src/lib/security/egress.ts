@@ -122,7 +122,33 @@ export async function safeFetch(
 
 /** Reads a response body as text, capped to `maxBytes` to bound memory. */
 export async function readTextCapped(response: Response, maxBytes = 2_000_000): Promise<string> {
-  const buffer = await response.arrayBuffer();
-  const decoder = new TextDecoder("utf-8");
-  return decoder.decode(buffer.slice(0, maxBytes));
+  if (!response.body) {
+    return "";
+  }
+
+  const reader = response.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let total = 0;
+
+  try {
+    while (total < maxBytes) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      if (!value || value.byteLength === 0) continue;
+      const remaining = maxBytes - total;
+      const chunk = value.byteLength > remaining ? value.subarray(0, remaining) : value;
+      chunks.push(chunk);
+      total += chunk.byteLength;
+    }
+  } finally {
+    await reader.cancel().catch(() => {});
+  }
+
+  const merged = new Uint8Array(total);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return new TextDecoder("utf-8").decode(merged);
 }
