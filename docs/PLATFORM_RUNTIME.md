@@ -1,10 +1,11 @@
-# Platform Runtime, Governance & Operator API — Implementation Notes (Phase 5)
+# Platform Runtime, Governance & Operator Console (Phase 5)
 
-Implements the remaining production requirements from
+Implements the production requirements from
 [`ROADMAP_UNIVERSAL_AUDIT_AND_CMS_AUTOFIX.md`](./ROADMAP_UNIVERSAL_AUDIT_AND_CMS_AUTOFIX.md)
 (§3 *Backend Orchestration Layer* and §7 *Security, Trust & Rollback Safeguards*):
 the authenticated, rate-limited, fully-audited control plane that ties
-Phases 1–4 together.
+Phases 1–4 together, plus the durable persistence and in-app operator console
+delivered in Phase 5.1.
 
 It is **additive** — nothing in Hotel Mode, the exporters or Phases 1–4 changes.
 
@@ -23,24 +24,29 @@ platform/
 ├── connector-registry.ts   # target URL → bound CmsConnector
 ├── credential-store.ts     # vault-sealed credential persistence
 ├── gateway.ts              # framework-agnostic request router / service
+├── durable.ts              # hydrate + write-through persistence wiring
 ├── worker.ts               # scheduler drain → healing pipeline
-└── http.ts                 # node:http adapter + dev authenticator
+├── http.ts                 # node:http adapter + dev authenticator
+└── persistence/
+    ├── adapter.ts          # PersistenceAdapter contract + collection names
+    ├── memory-adapter.ts   # in-memory (tests / ephemeral)
+    └── jsonl-adapter.ts    # durable NDJSON files (atomic, locked)
 ```
 
 The gateway is **HTTP-framework-agnostic**: `handle(request)` takes a normalized
-`PlatformRequest` and returns a `PlatformResponse`, so the same code backs
+`PlatformRequest` and returns a `PlatformResponse`, so the same code backs the
 Next.js route handlers, the `node:http` adapter and unit tests.
 
 ## Roles (RBAC)
 
 | Capability | Viewer | Specialist | Admin |
 | --- | :---: | :---: | :---: |
-| Read audits / patches / history / audit log | ✅ | ✅ | ✅ |
+| Read audits / patches / history / audit log / connectors | ✅ | ✅ | ✅ |
 | Run audits & manage schedules | — | ✅ | ✅ |
 | Approve & deploy **low/medium** risk | — | ✅ | ✅ |
 | Approve **high** risk | — | — | ✅ |
 | One-click undo | — | ✅ | ✅ |
-| Connect CMS write credentials | — | read only | ✅ |
+| Connect CMS credentials & targets | read only | read only | ✅ |
 
 `authorize(principal, permission)` throws `401`/`403`; `requireRiskApproval`
 enforces the risk ceiling (a specialist cannot approve a canonical/`meta_robots`
@@ -48,11 +54,13 @@ change — that needs an admin).
 
 ## Immutable audit logging
 
-Every credential change, patch queue/approve/reject, deploy, rollback and undo is
-appended with actor, role, timestamp and before/after state. Entries are linked
-by SHA-256 (`previousHash` + canonical contents) and **append-only**: there is no
-update or delete API. `verify()` recomputes the chain and reports the first
-broken sequence, so any tampering is detectable.
+Every credential change, patch queue/approve/reject, deploy, rollback, audit,
+connector registration and undo is appended with actor, role, timestamp and
+before/after state. Entries are linked by SHA-256 (`previousHash` + canonical
+contents) and **append-only**: there is no update or delete API. `verify()`
+recomputes the chain and reports the first broken sequence, so any tampering is
+detectable. The canonical form skips `undefined` properties, so the hash is
+identical before and after a JSON round-trip (i.e. across a restart).
 
 ```
 GET /v1/audit-log          → { entries, verification }
@@ -80,6 +88,8 @@ restores that snapshot through the connector, marks the entry undone and writes 
 | --- | --- | --- |
 | `GET` | `/v1/health` | public |
 | `GET` / `POST` | `/v1/credentials` | `credential:read` / `credential:write` (admin) |
+| `GET` / `POST` | `/v1/connectors` | `connector:read` / `connector:write` (admin) |
+| `POST` | `/v1/audits` | `audit:run` |
 | `POST` | `/v1/patches/preview` | `patch:read` |
 | `POST` | `/v1/deployments` | `patch:deploy` |
 | `GET` | `/v1/approvals` | `patch:read` |
@@ -99,26 +109,91 @@ restores that snapshot through the connector, marks the entry undone and writes 
 - `approveAll: true` → operator approval (risk-ceiling checked) then deploy.
 - otherwise → the patch is stored and routed to the approval queue (`202`).
 
-## Usage
+### Targets
+
+`POST /v1/connectors` binds a page URL to a connector:
+
+- with `credentialId` → the Phase 3 credential factory (WordPress / Shopify /
+  Webflow),
+- without → the universal runtime connector (works on any site by serving a
+  client-side patch config).
+
+`POST /v1/audits` fetches the page, runs the Phase 1 rules and returns a
+standardized `AuditReport` — the entry point the console uses before healing.
+
+## Durable persistence (Phase 5.1)
+
+`createDurablePlatform()` hydrates the stores from a `PersistenceAdapter`,
+attaches write-through hooks, and flushes the write queue after each request:
+
+```
+adapter.readAll() ─▶ createAuditLog/createDeploymentHistory/…(initial)
+                       │
+        every store mutation ─▶ write queue ─▶ adapter.append/put/remove
+                       │
+        gateway.handle() ─▶ onRequestComplete ─▶ flush()
+```
+
+Two adapters ship:
+
+- `createMemoryAdapter()` — ephemeral; the default in tests.
+- `createJsonFileAdapter({ dir })` — durable NDJSON, one file per collection,
+  atomic rewrites (`temp + rename`) under a per-collection lock. Good for a
+  container volume or a single-instance deployment.
 
 ```ts
-import {
-  createPlatformGateway,
-  createHttpServer,
-  createHeaderAuthenticator,
-} from "./platform/index.ts";
-import { createCredentialVault } from "./cms/index.ts";
+import { createDurablePlatform, createJsonFileAdapter } from "./platform/index.ts";
 
-const gateway = createPlatformGateway({
+const platform = await createDurablePlatform({
+  adapter: createJsonFileAdapter({ dir: ".platform-data" }),
   vault: createCredentialVault(process.env.CMS_VAULT_KEY!),
-  fetchImpl: fetch,
 });
 
-gateway.connectors.register("https://example.com/blog/post", connector);
-gateway.scheduler.register({ targetUrl: "https://example.com/blog/post", cron: "0 3 * * *" });
-
-createHttpServer({ gateway, authenticate: createHeaderAuthenticator() }).listen(8080);
+await platform.close(); // flush + release handles
 ```
+
+To move to PostgreSQL/Redis, implement the four-method `PersistenceAdapter`
+(`readAll`, `append`, `put`, `remove`) and pass it in — no gateway changes.
+
+## Next.js mount
+
+`src/app/api/platform/[...path]/route.ts` forwards every verb to the gateway at
+`/api/platform/v1/*`:
+
+- `src/lib/platform/runtime.ts` — memoized singleton that builds the durable
+  platform (NDJSON on disk, `/tmp` on Vercel, or in-memory with
+  `PLATFORM_STORAGE=memory`).
+- `src/lib/platform/auth.ts` — maps the request to a `Principal`. **Replace
+  `principalFromRequest()` with real JWT/session verification before
+  production**; the dev implementation reads `x-actor-*` headers or the
+  `cw_actor_*` cookies the console sets.
+- `src/lib/platform/client.ts` — typed browser client used by the console.
+
+| Env var | Purpose |
+| --- | --- |
+| `CMS_VAULT_KEY` | AES-256-GCM key for stored CMS secrets (**required** in prod) |
+| `PLATFORM_DATA_DIR` | NDJSON directory (default `.platform-data`) |
+| `PLATFORM_STORAGE` | `memory` to disable disk persistence |
+| `VERCEL` | auto-detected; defaults storage to `/tmp` |
+
+## Operator console
+
+`/platform` renders `src/components/OperatorConsole.tsx`:
+
+- **Overview** — pending approvals, undoable changes, audit integrity, recent
+  activity, runtime health.
+- **Approvals** — review queued patches; approve/reject with the role's risk
+  ceiling enforced (a specialist sees high-risk approvals disabled).
+- **History** — every deployment with a snapshot-backed **Undo**.
+- **Audit log** — the hash-chained entries plus a **Verify chain** action.
+- **Targets** — register page URLs, store CMS credentials (admin), schedule
+  scans.
+- **Self-heal** — enter a URL, scan it, inspect the issues, then auto-heal
+  (low/medium), force-approve (admin) or queue for review; the pipeline result
+  shows the applied mutations and post-fix verification.
+
+A role switcher (viewer / specialist / admin) drives the dev identity so the
+RBAC behaviour is demonstrable end-to-end.
 
 ## Scan worker
 
@@ -140,28 +215,29 @@ worker.start();        // or poll on an interval
 
 ## Tests
 
-`tests/platform-runtime.test.ts` (Vitest, **36 tests**) covers the RBAC matrix
-and risk ceilings, hash-chained audit log + tamper-sensitive hashing, token
-buckets / backoff / serial queue, deployment history and undo (including
-conflict/not-found paths), the scan worker (cron drain, retry, non-retryable
-errors, healing runner), and every gateway route — auth, credential redaction,
-preview, dry-run, deploy, queue→approve (with specialist blocked / admin
-allowed)→deploy, reject, history+undo, audit verification, events, schedules,
-429 rate limiting, 404 routing and the full self-healing run.
+`tests/platform-runtime.test.ts` (**36 tests**) covers the RBAC matrix and risk
+ceilings, hash-chained audit log + tamper-sensitive hashing, token buckets /
+backoff / serial queue, deployment history and undo (including conflict /
+not-found paths), the scan worker (cron drain, retry, non-retryable errors,
+healing runner), and every gateway route.
+
+`tests/platform-durable.test.ts` (**9 tests**) covers both persistence adapters
+(including concurrent appends), write-queue ordering and error surfacing,
+restart hydration (audit chain, history, snapshots, redacted credentials), the
+`/v1/audits` scan route and `/v1/connectors` registration + RBAC.
 
 ```bash
-npx vitest run tests/platform-runtime.test.ts tests/healing-pipeline.test.ts \
-  tests/cms-integration.test.ts tests/ai-seo-brain.test.ts tests/universal-mode.test.ts
-# 134 passed
+npx vitest run tests/platform-runtime.test.ts tests/platform-durable.test.ts \
+  tests/healing-pipeline.test.ts tests/cms-integration.test.ts \
+  tests/ai-seo-brain.test.ts tests/universal-mode.test.ts
+# 143 passed
 ```
 
 ## Remaining production wiring
 
-- Replace the in-memory stores (audit log, history, credentials, patches,
-  rollback snapshots) with PostgreSQL/Redis behind the same interfaces.
-- Mount the gateway in Next.js route handlers (`src/app/api/platform/[...path]`)
-  and add real JWT/session verification to `Authenticate`.
+- Swap the NDJSON adapter for PostgreSQL/Redis for multi-instance deployments.
+- Replace the development principal reader with real JWT/session verification.
 - Drive `createScanWorker` from Cloud Scheduler / BullMQ and connect CMS publish
   webhooks to `scheduler.onCmsPublish()`.
-- Build the side-panel UI against `/v1/approvals`, `/v1/history`, `/v1/events`
-  and `/v1/audit-log`.
+- Add PostgreSQL row-level tenancy once `organizationId` scoping is enforced in
+  the stores (the field is already carried end-to-end).

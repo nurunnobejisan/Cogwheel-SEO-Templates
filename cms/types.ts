@@ -90,6 +90,16 @@ export interface CmsConnector {
   /** Optional live verification after applying. */
   verify?(): Promise<VerifyResult>;
   restore(snapshot: Record<string, unknown>): Promise<void>;
+  /**
+   * How the healing pipeline should verify a deploy:
+   *   "live-dom"  — fetch the public URL and compare the rendered DOM (default).
+   *   "connector" — trust `verify()`; used when the fix is applied client-side
+   *                 (e.g. the universal runtime connector) so the server HTML
+   *                 is intentionally unchanged.
+   */
+  readonly verificationMode?: "live-dom" | "connector";
+  /** Whether this connector can express a field. Defaults to true. */
+  supportsField?(field: string): boolean;
 }
 
 export interface PatchDiffEntry {

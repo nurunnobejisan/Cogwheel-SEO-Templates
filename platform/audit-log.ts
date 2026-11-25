@@ -55,7 +55,11 @@ export function canonicalJson(value: unknown): string {
     return `[${value.map((entry) => canonicalJson(entry)).join(",")}]`;
   }
   const record = value as Record<string, unknown>;
-  const keys = Object.keys(record).sort();
+  // Skip undefined values so the hash is identical before and after a
+  // JSON round-trip (JSON.stringify drops undefined object properties).
+  const keys = Object.keys(record)
+    .filter((key) => record[key] !== undefined)
+    .sort();
   return `{${keys
     .map((key) => `${JSON.stringify(key)}:${canonicalJson(record[key])}`)
     .join(",")}}`;
