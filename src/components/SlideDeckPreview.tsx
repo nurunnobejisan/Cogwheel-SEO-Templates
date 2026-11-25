@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "./ui";
-import { downloadManager } from "@/lib/download-manager";
 
 interface SlideDeckPreviewProps {
   propertyName?: string;
@@ -10,46 +9,30 @@ interface SlideDeckPreviewProps {
   propertyState?: string;
   matchedServices?: string[];
   reportMonth?: string;
-  onDownloadPptx?: () => void;
+  /** Generates the real deck in callers that have a report pipeline. */
+  onDownloadPptx?: () => void | Promise<void>;
   onClose?: () => void;
 }
 
 export function SlideDeckPreview({
-  propertyName = "Renaissance Shoals Resort & Spa",
-  propertyCity = "Florence",
-  propertyState = "AL",
-  matchedServices = ["Hotel & Lodging", "Resort & Getaways", "Spa & Wellness"],
-  reportMonth = "November 2026",
+  propertyName = "",
+  propertyCity = "",
+  propertyState = "",
+  matchedServices = [],
+  reportMonth = new Date().toLocaleString("en-US", { month: "long", year: "numeric" }),
   onDownloadPptx,
   onClose,
 }: SlideDeckPreviewProps) {
   const [currentSlide, setCurrentSlide] = useState(1);
   const totalSlides = 5;
 
-  // Editable text notes for quick customizations before download
-  const [executiveNote, setExecutiveNote] = useState(
-    "High-intent local terms saw notable upward momentum this cycle. The property reclaimed the #1 spot for 'florence alabama resort' and gained +4 overall positions on dining and spa discovery phrases."
-  );
-  const [top10Count, setTop10Count] = useState(18);
-  const [improvedCount, setImprovedCount] = useState(4);
+  // Operator-entered values only: the preview ships with no ranking dataset.
+  const [executiveNote, setExecutiveNote] = useState("");
+  const [top10Count, setTop10Count] = useState(0);
+  const [improvedCount, setImprovedCount] = useState(0);
 
   const handleNext = () => setCurrentSlide((prev) => (prev < totalSlides ? prev + 1 : 1));
   const handlePrev = () => setCurrentSlide((prev) => (prev > 1 ? prev - 1 : totalSlides));
-
-  const handleTriggerDownload = () => {
-    if (onDownloadPptx) {
-      onDownloadPptx();
-    } else {
-      downloadManager.startDownload({
-        filename: `${propertyName.replace(/[^a-zA-Z0-9]/g, "_")}_Monthly_Visibility_Deck.pptx`,
-        format: "pptx",
-        countdownSeconds: 3,
-        onExecute: async () => {
-          await new Promise((r) => setTimeout(r, 600));
-        },
-      });
-    }
-  };
 
   return (
     <div className="flex flex-col space-y-4">
@@ -94,9 +77,15 @@ export function SlideDeckPreview({
             Next
           </Button>
 
-          <Button variant="primary" onClick={handleTriggerDownload} className="text-xs py-1.5">
-            Download .pptx
-          </Button>
+          {onDownloadPptx ? (
+            <Button variant="primary" onClick={() => void onDownloadPptx()} className="text-xs py-1.5">
+              Generate .pptx
+            </Button>
+          ) : (
+            <span className="text-[11px] text-slate-500">
+              Preview only — export a measured deck from Full Website Audit
+            </span>
+          )}
         </div>
       </div>
 
@@ -128,9 +117,9 @@ export function SlideDeckPreview({
                 Search Engine &amp; AI Visibility Performance Review
               </p>
               <div className="mt-4 flex items-center gap-3 text-xs text-purple-300 font-mono">
-                <span>{propertyCity}, {propertyState}</span>
+                <span>{[propertyCity, propertyState].filter(Boolean).join(", ") || "Property location not set"}</span>
                 <span>•</span>
-                <span>Audit Version 3.2</span>
+                <span>Layout preview — no metrics included</span>
               </div>
             </div>
 
@@ -189,38 +178,12 @@ export function SlideDeckPreview({
 
             {/* Content Area */}
             <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4 flex-1">
-              <div className="rounded-xl border border-slate-200 overflow-hidden">
-                <table className="w-full text-left text-xs">
-                  <thead className="bg-[#381a5e]/10 text-[#381a5e] font-bold uppercase text-[10px]">
-                    <tr>
-                      <th className="p-2">Primary Keyword</th>
-                      <th className="p-2 text-center">Rank</th>
-                      <th className="p-2 text-right">Search Vol</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-slate-100 font-medium">
-                    <tr>
-                      <td className="p-2">hotels in {propertyCity.toLowerCase()} al</td>
-                      <td className="p-2 text-center font-bold text-emerald-600">#2 (▲ +1)</td>
-                      <td className="p-2 text-right font-mono">1,600</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2">{propertyCity.toLowerCase()} alabama resort</td>
-                      <td className="p-2 text-center font-bold text-emerald-600">#1 (▲ +2)</td>
-                      <td className="p-2 text-right font-mono">880</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2">florence spa resort packages</td>
-                      <td className="p-2 text-center font-bold text-slate-800">#3 (&mdash;)</td>
-                      <td className="p-2 text-right font-mono">420</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2">tennessee river hotel view</td>
-                      <td className="p-2 text-center font-bold text-emerald-600">#1 (▲ +1)</td>
-                      <td className="p-2 text-right font-mono">590</td>
-                    </tr>
-                  </tbody>
-                </table>
+              <div className="flex h-full flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center">
+                <p className="text-xs font-bold text-slate-700">No verified keyword rows loaded</p>
+                <p className="mt-1 text-[11px] leading-relaxed text-slate-500">
+                  Rankings and search volumes must come from your rank tracker or the measured
+                  audit. This layout preview intentionally ships without numbers.
+                </p>
               </div>
 
               {/* Editable Executive Insight Box */}
@@ -270,43 +233,12 @@ export function SlideDeckPreview({
             </div>
 
             {/* Ancillary Table */}
-            <div className="mt-4 flex-1 rounded-xl border border-slate-200 overflow-hidden">
-              <table className="w-full text-left text-xs">
-                <thead className="bg-[#381a5e]/10 text-[#381a5e] font-bold uppercase text-[10px]">
-                  <tr>
-                    <th className="p-2.5">Ancillary Keyword</th>
-                    <th className="p-2.5 text-center">Ranking</th>
-                    <th className="p-2.5 text-right">Search Volume</th>
-                    <th className="p-2.5 text-center">Service Category</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium">
-                  <tr>
-                    <td className="p-2.5 font-semibold text-slate-900">florence alabama resort</td>
-                    <td className="p-2.5 text-center font-bold text-emerald-600">1</td>
-                    <td className="p-2.5 text-right font-mono">70</td>
-                    <td className="p-2.5 text-center text-slate-600">Resort &amp; Getaways</td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-semibold text-slate-900">hotel spa in florence alabama</td>
-                    <td className="p-2.5 text-center font-bold text-emerald-600">2</td>
-                    <td className="p-2.5 text-right font-mono">140</td>
-                    <td className="p-2.5 text-center text-slate-600">Spa &amp; Wellness</td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-semibold text-slate-900">wedding reception venues florence al</td>
-                    <td className="p-2.5 text-center font-bold text-slate-700">4</td>
-                    <td className="p-2.5 text-right font-mono">210</td>
-                    <td className="p-2.5 text-center text-slate-600">Hotel &amp; Lodging</td>
-                  </tr>
-                  <tr>
-                    <td className="p-2.5 font-semibold text-slate-900">fine dining river view florence</td>
-                    <td className="p-2.5 text-center font-bold text-emerald-600">1</td>
-                    <td className="p-2.5 text-right font-mono">90</td>
-                    <td className="p-2.5 text-center text-slate-600">Dining &amp; Lounges</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="mt-4 flex flex-1 flex-col items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-5 text-center">
+              <p className="text-xs font-bold text-slate-700">No ancillary keyword rows loaded</p>
+              <p className="mt-1 max-w-xl text-[11px] leading-relaxed text-slate-500">
+                Connect a rank tracker or paste verified rows before producing a client deck. The
+                template does not generate keyword positions or volumes.
+              </p>
             </div>
 
             <div className="mt-3 text-[11px] text-slate-500">
@@ -334,17 +266,17 @@ export function SlideDeckPreview({
                   SEO is an ongoing visibility investment. Monitoring keyword positions reveals shift patterns before they impact revenue, allowing immediate optimization against OTA displacement and local comp-set moves.
                 </p>
                 <div className="mt-4 rounded-lg bg-emerald-50 border border-emerald-200 p-2.5 text-xs text-emerald-800 font-semibold">
-                  Direct bookings generate +18% higher net RevPAR compared to OTA commission channels.
+                  Track direct-booking queries alongside OTA queries to see where organic visibility supports net revenue.
                 </div>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <h3 className="font-bold text-sm text-[#381a5e]">Workbook Integration</h3>
                 <p className="mt-2 text-xs text-slate-600 leading-relaxed">
-                  Every query tracked in this slide deck syncs with your comprehensive Keywords Master Workbook, mapping primary landing pages, seasonal demand trends, and search difficulty scores.
+                  Verified keyword rows can be mapped to landing pages, seasonal demand and difficulty in your rank tracker. This preview ships without a dataset.
                 </p>
                 <div className="mt-4 rounded-lg bg-purple-50 border border-purple-200 p-2.5 text-xs text-purple-900 font-mono">
-                  Full list: 120+ keywords audited monthly.
+                  No keyword count is assumed until a tracker is connected.
                 </div>
               </div>
             </div>
@@ -366,38 +298,40 @@ export function SlideDeckPreview({
             <div className="mt-4 grid grid-cols-3 gap-4 flex-1">
               <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4">
                 <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
-                  HEALTH SCORE: 92/100
+                  NOT MEASURED
                 </span>
-                <h3 className="mt-2 font-bold text-sm text-slate-900">Core Web Vitals</h3>
+                <h3 className="mt-2 font-bold text-sm text-slate-900">Technical health</h3>
                 <p className="mt-1 text-xs text-slate-600">
-                  LCP 1.8s &bull; CLS 0.02 &bull; Mobile-ready responsive markup verified.
+                  Run Full Website Audit to populate Core Web Vitals and technical findings. No
+                  sample score is shown here.
                 </p>
               </div>
 
               <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-4">
                 <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-800">
-                  ACTION ITEM
+                  FROM THE REPORT
                 </span>
-                <h3 className="mt-2 font-bold text-sm text-slate-900">Spa Schema Addition</h3>
+                <h3 className="mt-2 font-bold text-sm text-slate-900">Measured actions</h3>
                 <p className="mt-1 text-xs text-slate-600">
-                  Implement DaySpa schema to capture ChatGPT and Google AI Overview citations.
+                  Use the P0/P1 items from the audit action plan instead of template assumptions.
                 </p>
               </div>
 
               <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4">
                 <span className="rounded-full bg-purple-100 px-2.5 py-0.5 text-[10px] font-bold text-purple-800">
-                  PRIORITY FOCUS
+                  TO BE SET
                 </span>
-                <h3 className="mt-2 font-bold text-sm text-slate-900">Local Comp-Set Dominance</h3>
+                <h3 className="mt-2 font-bold text-sm text-slate-900">Client priorities</h3>
                 <p className="mt-1 text-xs text-slate-600">
-                  Defend #1 position on &ldquo;florence alabama resort&rdquo; and optimize wedding event inquiries.
+                  Agree the focus with the account manager; the template does not assume rankings
+                  or competitor positions.
                 </p>
               </div>
             </div>
 
             <div className="mt-3 flex items-center justify-between text-xs text-slate-400 border-t border-slate-100 pt-3">
-              <span>Prepared by Razib Marketing &bull; Cogwheel SEO</span>
-              <span>Next Review: December 2026</span>
+              <span>Prepared by Cogwheel SEO</span>
+              <span>Next review: set by account manager</span>
             </div>
           </div>
         )}

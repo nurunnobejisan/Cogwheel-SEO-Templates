@@ -15,50 +15,56 @@ interface ExecutivePitchDeckProps {
   onOpenEmail?: () => void;
 }
 
+/**
+ * Two-page executive pitch template.
+ *
+ * White-label fields are editable; every performance number is a placeholder
+ * that must be filled from a measured audit or rank tracker. The template does
+ * not invent competitors, rankings, CTR lifts or revenue recovery.
+ */
 export function ExecutivePitchDeckModal({
   property,
   onClose,
   onOpenEmail,
 }: ExecutivePitchDeckProps) {
-  const defaultPropertyName = property?.name || "Renaissance Shoals Resort & Spa";
-  const defaultCity = property?.city || "Florence";
-  const defaultState = property?.state || "AL";
-  const defaultUrl = property?.url || "https://www.marriott.com/en-us/hotels/mslbr-renaissance-shoals-resort-and-spa/overview/";
+  const propertyName = property?.name?.trim() || "Property name not set";
+  const location = [property?.city, property?.state].filter(Boolean).join(", ");
 
   // White-label custom agency settings
   const [agencyName, setAgencyName] = useState("Razib Marketing");
   const [agencyTagline, setAgencyTagline] = useState("Hospitality Organic Growth & GEO Advisory");
   const [leadConsultant, setLeadConsultant] = useState("Senior Search Strategist");
-  const [contactEmail, setContactEmail] = useState("growth@razibmarketing.com");
+  const [contactEmail, setContactEmail] = useState("");
   const [targetExecutive, setTargetExecutive] = useState("General Manager & Asset Management");
   const [isEditingWhiteLabel, setIsEditingWhiteLabel] = useState(false);
   const [copiedSummary, setCopiedSummary] = useState(false);
 
-  const reportDate = "November 2026";
+  const reportDate = new Date().toLocaleString("en-US", { month: "long", year: "numeric" });
 
   const handlePrint = () => {
     window.print();
   };
 
   const handleCopySummary = () => {
-    const summary = `EXECUTIVE PITCH DECK & DIRECT-BOOKING AUDIT
-PREPARED BY: ${agencyName} (${agencyTagline})
-CLIENT: ${defaultPropertyName} (${defaultCity}, ${defaultState})
+    const summary = `EXECUTIVE PITCH DECK TEMPLATE
+PREPARED BY: ${agencyName}${agencyTagline ? ` (${agencyTagline})` : ""}
+CLIENT: ${propertyName}${location ? ` (${location})` : ""}
 TARGET AUDIENCE: ${targetExecutive}
 DATE: ${reportDate}
 
-EXECUTIVE METRICS:
-- Direct Booking Health Index: 92/100
-- Local Comp-Set Win Rate: 84%
-- Generative AI (GEO) Readiness: 78%
-- Est. Annual OTA Commission Recovery: $42,000 - $58,000/year
+STATUS: NO VERIFIED METRICS HAVE BEEN ADDED
 
-STRATEGIC ROADMAP:
-1. DaySpa & Hotel Schema Graph Deployment (+16% organic CTR)
-2. Room Type & Suite Content Differentiation (Bypass OTA rate parity filters)
-3. Generative Engine Optimization for ChatGPT Search & Google AI Overviews
+Add measured values from the Full Website Audit or your rank tracker before
+sending. This template does not include rankings, share of voice, AI citation
+scores or revenue estimates.
 
-CONTACT: ${contactEmail}`;
+CHECKLIST
+1. Run the Full Website Audit for the property.
+2. Attach the exported report (HTML/PDF/PPTX).
+3. Replace every "—" placeholder with a measured value, or remove it.
+4. Agree the action owners and next review date with the client.
+
+CONTACT: ${contactEmail || "[add contact email]"}`;
 
     navigator.clipboard?.writeText(summary);
     setCopiedSummary(true);
@@ -75,11 +81,12 @@ CONTACT: ${contactEmail}`;
               Agency Suite
             </span>
             <span className="font-display text-sm font-bold text-slate-900 dark:text-white">
-              Executive 2-Page Direct-Booking Pitch Deck
+              Executive 2-Page Pitch Template
             </span>
           </div>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-            Formatted for General Managers, owners, and asset managers with white-label branding and 2-page print export.
+            White-label layout for GMs, owners and asset managers. Metrics are placeholders until
+            you add verified data.
           </p>
         </div>
 
@@ -92,7 +99,7 @@ CONTACT: ${contactEmail}`;
             {isEditingWhiteLabel ? "Done Editing" : "White-Label Settings"}
           </Button>
           <Button variant="secondary" onClick={handleCopySummary} className="text-xs">
-            {copiedSummary ? "Copied Summary!" : "Copy Summary"}
+            {copiedSummary ? "Copied Summary" : "Copy Summary"}
           </Button>
           <Button variant="primary" onClick={handlePrint} className="text-xs">
             <svg className="mr-1.5 h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -154,9 +161,10 @@ CONTACT: ${contactEmail}`;
             <div>
               <label className="text-[11px] font-semibold text-slate-600 dark:text-slate-400">Contact Email</label>
               <input
-                type="text"
+                type="email"
                 value={contactEmail}
                 onChange={(e) => setContactEmail(e.target.value)}
+                placeholder="you@agency.com"
                 className="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
               />
             </div>
@@ -180,111 +188,53 @@ CONTACT: ${contactEmail}`;
               </h1>
               <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
                 Prepared for <span className="font-semibold text-slate-900 dark:text-white">{targetExecutive}</span> at{" "}
-                <span className="font-semibold text-slate-900 dark:text-white">{defaultPropertyName}</span>
+                <span className="font-semibold text-slate-900 dark:text-white">{propertyName}</span>
               </p>
             </div>
             <div className="text-right">
               <span className="rounded-md bg-slate-100 px-2.5 py-1 font-mono text-[11px] font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-200">
                 {reportDate}
               </span>
-              <div className="mt-2 text-[10px] text-slate-400">Confidential Executive Memo</div>
+              <div className="mt-2 text-[10px] text-slate-400">Template — add verified metrics</div>
             </div>
           </div>
 
-          {/* 4 Big KPI Cards */}
+          <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+            <strong>No performance numbers are included.</strong> Fill each card from the measured
+            audit or rank tracker; the template will not estimate them.
+          </div>
+
+          {/* 4 Big KPI placeholders */}
           <div className="mt-6 grid grid-cols-2 gap-4 lg:grid-cols-4 print:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Direct Booking Index
-              </span>
-              <div className="mt-1 font-display text-2xl font-black text-emerald-600 dark:text-emerald-400">
-                92 / 100
+            {[
+              { label: "Direct Booking Index", note: "Add measured index" },
+              { label: "Local Comp-Set Win Rate", note: "Add tracker result" },
+              { label: "GEO AI Citation Score", note: "Not measured" },
+              { label: "Est. Commission Recovery", note: "Add model + method" },
+            ].map((kpi) => (
+              <div
+                key={kpi.label}
+                className="rounded-xl border border-dashed border-slate-300 bg-slate-50/70 p-4 dark:border-slate-700 dark:bg-slate-800/40"
+              >
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                  {kpi.label}
+                </span>
+                <div className="mt-1 font-display text-2xl font-black text-slate-400 dark:text-slate-500">
+                  —
+                </div>
+                <p className="mt-0.5 text-[10px] text-slate-500">{kpi.note}</p>
               </div>
-              <p className="mt-0.5 text-[10px] text-slate-500">Top 5% in regional hospitality</p>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Local Comp-Set Win Rate
-              </span>
-              <div className="mt-1 font-display text-2xl font-black text-sky-600 dark:text-sky-400">
-                84%
-              </div>
-              <p className="mt-0.5 text-[10px] text-slate-500">Leading 3 of 4 battlegrounds</p>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                GEO AI Citation Score
-              </span>
-              <div className="mt-1 font-display text-2xl font-black text-purple-600 dark:text-purple-400">
-                78%
-              </div>
-              <p className="mt-0.5 text-[10px] text-slate-500">Perplexity &amp; ChatGPT cited</p>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
-                Est. Commission Recovery
-              </span>
-              <div className="mt-1 font-display text-2xl font-black text-amber-600 dark:text-amber-400">
-                $48,600 / yr
-              </div>
-              <p className="mt-0.5 text-[10px] text-slate-500">Recaptured from OTAs</p>
-            </div>
+            ))}
           </div>
 
           {/* Market Position & Comp-Set Benchmark */}
           <div className="mt-6 rounded-xl border border-slate-200 p-4 dark:border-slate-800">
             <h3 className="font-display text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-              Competitive Battlefield ({defaultCity}, {defaultState})
+              Competitive Battlefield {location ? `(${location})` : ""}
             </h3>
-            <div className="mt-3 overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-100 text-[11px] font-semibold text-slate-400 dark:border-slate-800">
-                    <th className="pb-2">Property</th>
-                    <th className="pb-2">Est. Organic Share</th>
-                    <th className="pb-2">Primary Keyword Rank</th>
-                    <th className="pb-2">AI Search Readiness</th>
-                    <th className="pb-2">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  <tr className="font-semibold text-slate-900 dark:text-white">
-                    <td className="py-2">{defaultPropertyName} (Target)</td>
-                    <td className="py-2 text-emerald-600">38.4%</td>
-                    <td className="py-2">#1 (&ldquo;florence al resort&rdquo;)</td>
-                    <td className="py-2">78% Verified</td>
-                    <td className="py-2">
-                      <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                        Market Leader
-                      </span>
-                    </td>
-                  </tr>
-                  <tr className="text-slate-600 dark:text-slate-400">
-                    <td className="py-2">GunRunner Boutique Hotel</td>
-                    <td className="py-2">26.1%</td>
-                    <td className="py-2">#3 (&ldquo;boutique hotel florence&rdquo;)</td>
-                    <td className="py-2">54% Partial</td>
-                    <td className="py-2">Challenger</td>
-                  </tr>
-                  <tr className="text-slate-600 dark:text-slate-400">
-                    <td className="py-2">Courtyard Florence</td>
-                    <td className="py-2">18.5%</td>
-                    <td className="py-2">#4 (&ldquo;florence al hotels&rdquo;)</td>
-                    <td className="py-2">42% Brand Only</td>
-                    <td className="py-2">Defending</td>
-                  </tr>
-                  <tr className="text-slate-600 dark:text-slate-400">
-                    <td className="py-2">Hampton Inn Downtown</td>
-                    <td className="py-2">12.8%</td>
-                    <td className="py-2">#6 (&ldquo;downtown florence hotel&rdquo;)</td>
-                    <td className="py-2">35% Unclaimed</td>
-                    <td className="py-2">Vulnerable</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div className="mt-3 rounded-lg border border-dashed border-slate-300 p-5 text-center text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
+              No competitor data loaded. Add the comp-set and measured positions from your rank
+              tracker; no competitor names or shares are assumed.
             </div>
           </div>
 
@@ -304,84 +254,60 @@ CONTACT: ${contactEmail}`;
                 {agencyName} Strategy
               </span>
               <h2 className="mt-1 font-display text-xl font-black text-slate-900 dark:text-white">
-                Revenue Recovery Roadmap: 3 High-Impact Action Items
+                How to Build the Roadmap
               </h2>
             </div>
             <div className="text-right text-[11px] text-slate-500">
-              Implementation Window: Next 14-30 Days
+              Add owners and review dates
             </div>
           </div>
 
-          {/* 3 Strategic Action Cards */}
+          {/* 3 Action Cards */}
           <div className="mt-5 space-y-4">
-            {/* Action 1 */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-emerald-600 font-mono text-xs font-bold text-white">
-                    1
+            {[
+              {
+                color: "bg-emerald-600",
+                title: "Attach the measured audit",
+                body: "Run the Full Website Audit, export HTML/PDF/PPTX, and attach it. The deck should reference measured findings, not template claims.",
+                outcome: "Evidence: exported audit report ID and date.",
+              },
+              {
+                color: "bg-sky-600",
+                title: "Select the P0/P1 actions",
+                body: "Copy the highest-priority items from the audit action plan, with the affected URLs and remediation guidance. Remove items the client has not approved.",
+                outcome: "Evidence: action IDs, owners and due dates.",
+              },
+              {
+                color: "bg-purple-600",
+                title: "Agree measurement and review date",
+                body: "Define which metrics will be checked next cycle (rank tracker, Search Console, or crawl findings) and when the next review happens.",
+                outcome: "Evidence: metric owners, data sources and next review date.",
+              },
+            ].map((step, index) => (
+              <div
+                key={step.title}
+                className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-800/40"
+              >
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={`flex h-6 w-6 items-center justify-center rounded-lg ${step.color} font-mono text-xs font-bold text-white`}>
+                      {index + 1}
+                    </span>
+                    <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white">
+                      {step.title}
+                    </h4>
+                  </div>
+                  <span className="rounded bg-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-600 dark:bg-slate-700 dark:text-slate-300">
+                    Checklist
                   </span>
-                  <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white">
-                    Deploy Hotel, DaySpa &amp; FAQ Schema Graph
-                  </h4>
                 </div>
-                <span className="rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
-                  +16% Organic CTR
-                </span>
-              </div>
-              <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-300">
-                Implement structured JSON-LD `@graph` data covering rooms, spa packages, and official pet policies. Unlocks Google Rich Snippets (star ratings, room price ranges, FAQ accordions) and prevents zero-click searches.
-              </p>
-              <div className="mt-2 text-[11px] text-slate-500">
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Target Outcome:</span> 240+ additional monthly direct clicks previously lost to Expedia/Booking.com SERP ads.
-              </div>
-            </div>
-
-            {/* Action 2 */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-sky-600 font-mono text-xs font-bold text-white">
-                    2
-                  </span>
-                  <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white">
-                    Room Type &amp; Suite Content Differentiation
-                  </h4>
+                <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-300">{step.body}</p>
+                <div className="mt-2 text-[11px] text-slate-500">
+                  <span className="font-semibold text-slate-700 dark:text-slate-300">Required:</span>{" "}
+                  {step.outcome}
                 </div>
-                <span className="rounded bg-sky-100 px-2 py-0.5 text-[10px] font-bold text-sky-800 dark:bg-sky-950 dark:text-sky-300">
-                  OTA Defense
-                </span>
               </div>
-              <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-300">
-                Rewrite room and suite copy to exceed the 500-word depth threshold with unique view descriptions, bed configuration details, and direct-booking perks. Defeats canonical duplication penalties and prevents OTAs from outranking individual room pages.
-              </p>
-              <div className="mt-2 text-[11px] text-slate-500">
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Target Outcome:</span> Direct room page bookings increase by 18-25% without discounting rack rates.
-              </div>
-            </div>
-
-            {/* Action 3 */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-purple-600 font-mono text-xs font-bold text-white">
-                    3
-                  </span>
-                  <h4 className="font-display text-sm font-bold text-slate-900 dark:text-white">
-                    Generative Engine Optimization (GEO) Calibration
-                  </h4>
-                </div>
-                <span className="rounded bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-800 dark:bg-purple-950 dark:text-purple-300">
-                  Future-Proof AI Search
-                </span>
-              </div>
-              <p className="mt-1.5 text-xs text-slate-600 dark:text-slate-300">
-                Calibrate entity consistency across ChatGPT Search, Google AI Overviews, and Perplexity. Fixes the unverified pet-fee alert and ensures {defaultPropertyName} is the #1 recommended boutique resort in local AI queries.
-              </p>
-              <div className="mt-2 text-[11px] text-slate-500">
-                <span className="font-semibold text-slate-700 dark:text-slate-300">Target Outcome:</span> Retain #1 citation spot for high-intent AI queries across Alabama and Tennessee Valley travellers.
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Sign-off & Implementation Approval Box */}
@@ -389,13 +315,15 @@ CONTACT: ${contactEmail}`;
             <div className="grid grid-cols-2 gap-6 text-xs">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Strategy Approved By Agency:
+                  Strategy Prepared By Agency:
                 </span>
                 <div className="mt-2 font-display text-sm font-bold text-slate-900 dark:text-white">
                   {agencyName}
                 </div>
                 <div className="text-[11px] text-slate-500">{leadConsultant}</div>
-                <div className="font-mono text-[10px] text-slate-400">{contactEmail}</div>
+                <div className="font-mono text-[10px] text-slate-400">
+                  {contactEmail || "[add contact email]"}
+                </div>
               </div>
               <div className="border-l border-slate-100 pl-6 dark:border-slate-800">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
@@ -412,7 +340,7 @@ CONTACT: ${contactEmail}`;
 
           {/* Page 2 Footer */}
           <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4 text-[10px] text-slate-400 dark:border-slate-800">
-            <span>{agencyName} Hospitality Growth &bull; Client Delivery Master</span>
+            <span>{agencyName} Hospitality Growth &bull; Client Delivery Template</span>
             <span>Page 2 of 2</span>
           </div>
         </div>

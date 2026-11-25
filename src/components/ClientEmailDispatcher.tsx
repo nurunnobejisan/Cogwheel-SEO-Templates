@@ -13,41 +13,38 @@ interface ClientEmailProps {
 }
 
 export function ClientEmailDispatcher({
-  propertyName = "Renaissance Shoals Resort & Spa",
-  propertyCity = "Florence",
-  propertyState = "AL",
-  top10Count = 18,
-  improvedCount = 4,
+  propertyName,
+  propertyCity,
+  propertyState,
+  top10Count,
+  improvedCount,
   onClose,
 }: ClientEmailProps) {
-  const [recipient, setRecipient] = useState("gm@renaissanceshoals.com");
+  const displayName = propertyName?.trim() || "the property";
+  const location = [propertyCity, propertyState].filter(Boolean).join(", ");
+  const [recipient, setRecipient] = useState("");
   const [subject, setSubject] = useState(
-    `[Monthly SEO & GEO Update] ${propertyName} — Visibility & Rankings Highlights`
+    `[Monthly SEO & GEO Update] ${displayName} — Visibility & Rankings Highlights`
   );
 
+  // The template only states what the caller actually supplied. It does not
+  // invent rankings, search volumes or AI citation scores.
   const defaultBody = `Hi Team,
 
-Here is your executive search and AI visibility summary for ${propertyName} (${propertyCity}, ${propertyState}) for this month:
+Here is the monthly search and AI visibility summary for ${displayName}${location ? ` (${location})` : ""}.
 
-Key Highlights & Ranking Wins:
-• Total Top 10 Search Positions: ${top10Count} keywords
-• Positive Ranking Momentum: +${improvedCount} core terms improved
-• #1 Ranking: "florence alabama resort" (880 monthly search volume)
-• #2 Ranking: "hotels in florence al" (1,600 monthly search volume)
-• Generative AI Citation Score: 78/100 (Indexed in ChatGPT Search & Google AI Overviews)
+Metrics provided to this draft:
+• Top-10 search positions: ${top10Count ?? "not provided"}
+• Positive ranking movements: ${improvedCount ?? "not provided"}
+• AI / GEO citation score: not measured — no AI engine or licensed visibility provider is connected
 
-Priority Technical Actions for Next Cycle:
-1. Add DaySpa schema to capture AI voice and conversational search bookings.
-2. Publish Pet Policy FAQ block to resolve unverified OTA fees in Google AI Overviews.
-3. Optimize wedding and corporate conference landing pages for seasonal inquiry surges.
-
-The complete PowerPoint Monthly Visibility Deck and 1-Page Executive Memo are attached.
-
-Please let me know if you would like to review this on our monthly strategy call.
+Before sending:
+1. Confirm the reporting window and keyword set with the account team.
+2. Attach the measured audit deck exported from Full Website Audit → Export.
+3. Remove any line above that your rank tracker does not support.
 
 Best regards,
-Razib Marketing — Cogwheel SEO Team
-Connected via: riboynjsr@gmail.com`;
+Cogwheel SEO Team`;
 
   const [body, setBody] = useState(defaultBody);
   const [busy, setBusy] = useState(false);
@@ -79,8 +76,8 @@ Connected via: riboynjsr@gmail.com`;
       setStatusMessage(
         data.cliResult?.message ||
           (action === "draft"
-            ? "Draft successfully saved in your riboynjsr@gmail.com account!"
-            : "Email dispatched successfully!")
+            ? "Draft request completed. Use “Open in Gmail Web” to review and send."
+            : "Send request completed.")
       );
 
       // If user wants to review draft immediately
@@ -122,11 +119,9 @@ Connected via: riboynjsr@gmail.com`;
             Dispatch Monthly Performance Memo
           </h2>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Send an executive summary to hotel leadership via your connected Gmail (
-            <span className="font-mono text-slate-800 dark:text-slate-200 font-semibold">
-              riboynjsr@gmail.com
-            </span>
-            ).
+            Compose a client-ready memo from the metrics you supply. The template never fills in
+            rankings or citation scores on its own; use the local Gmail bridge only when explicitly
+            enabled.
           </p>
         </div>
 
@@ -197,6 +192,7 @@ Connected via: riboynjsr@gmail.com`;
           <Button
             variant="secondary"
             onClick={handleOpenWebCompose}
+            disabled={!recipient.trim()}
             className="text-xs"
           >
             Open in Gmail Web
@@ -206,7 +202,7 @@ Connected via: riboynjsr@gmail.com`;
         <div className="flex items-center gap-2">
           <Button
             variant="secondary"
-            disabled={busy}
+            disabled={busy || !recipient.trim()}
             onClick={() => handleDispatch("draft")}
             className="text-xs"
           >
@@ -214,11 +210,11 @@ Connected via: riboynjsr@gmail.com`;
           </Button>
           <Button
             variant="primary"
-            disabled={busy}
+            disabled={busy || !recipient.trim()}
             onClick={() => handleDispatch("send")}
             className="text-xs"
           >
-            {busy ? "Sending..." : "Send Email via riboynjsr@gmail.com"}
+            {busy ? "Sending..." : "Send Email"}
           </Button>
         </div>
       </div>

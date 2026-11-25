@@ -176,9 +176,23 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 - OS-exec removed from request paths: Gmail CLI and python-pptx builder are opt-in (`COGWHEEL_ALLOW_LOCAL_*`), use `execFile` argument arrays, and return `501` by default.
 - Tests: `tests/security.test.ts` covers IP classification, egress rejection, rate-limit windows, session signing/tampering/expiry and header-spoofing rejection.
 
+### Completed — reporting (H6)
+
+- `src/core/reporting/` adds self-contained HTML, PDF 1.4, CSV and PPTX writers plus a Zod schema for submitted reports.
+- `POST /api/audit-report` exports the exact report the operator is viewing (validated payload, `Content-Disposition` filenames, crawl-tier rate limit).
+- Every format carries the provenance section and warns when simulated data was enabled; unavailable dimensions are labelled, never filled in. See `docs/REPORTING.md`.
+
+### Completed — extension packaging (C5, H8, H9)
+
+- `vite.content.config.ts` builds the content script as a single classic IIFE, and `scripts/build-extension.js` fails the build if ES-module syntax reappears.
+- The build uses `chrome-extension/node_modules` binaries, runs both Vite builds, removes stale ZIPs before packaging, and verifies the manifest version against `updates.xml`.
+- Artifact naming is unified on `cogwheel-seo-studio.zip` (site downloads, release workflow, auto-updater, `updates.xml`); the stale root `manifest.json` (2.0.0) was removed.
+
 ### Remaining
 
-- C5 (extension content script module format), H6 (real PDF/PPTX exporter), H8/H9/M11 (extension build/version reconciliation), `shared/schemas/` materialization, duplicate SEO engines (`rules/` vs `validators/`).
+- M11 extension hardening: content-script idempotency guard, tighter permissions, encrypted storage for keys, OTA config consumption, theme toggle.
+- `shared/schemas/` materialization and a TS↔Python parity test.
+- Duplicate SEO engines (`rules/` vs `validators/`, three GEO scorers).
 
 ---
 
