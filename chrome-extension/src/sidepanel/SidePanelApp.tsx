@@ -55,36 +55,27 @@ export function SidePanelApp() {
   const [siteBundle, setSiteBundle] = useState<ExtensionSiteBundle | null>(null);
 
   // Default fallback mock data containing the 6 baseline unoptimized audit issues
+  // Neutral empty state — real data is always fetched from the active tab on mount
   const [pageData, setPageData] = useState<PageAuditData>({
-    url: "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/",
-    origin: "https://www.marriott.com",
-    pathname: "/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/",
+    url: "",
+    origin: "",
+    pathname: "",
     protocol: "https:",
-    hostname: "www.marriott.com",
-    title: "Beachfront Hotels Panama City Beach | SpringHill Suites Panama City Beachfront Resort & Spa", // 88 chars (exceeds 50-60 chars)
-    titlePixelWidth: 820,
-    metaDesc: "Stay beachfront in Panama City Beach suites with lazy river pool access.", // 72 chars (under 130-155 chars)
-    metaDescPixelWidth: 590,
-    canonical: "", // missing canonical
-    h1Elements: ["SpringHill Suites", "Panama City Beachfront Resort"], // multiple H1s
-    h2Elements: [
-      "Oceanfront Suites & Amenities",
-      "Resort Amenities & Lazy River",
-      "Dining & Beachfront Bar",
-      "Panama City Beach Attractions Nearby",
-    ],
-    h3Elements: ["King Suite", "Double Queen Suite", "Gulf View Studio"],
-    totalImages: 24,
+    hostname: "",
+    title: "",
+    titlePixelWidth: 0,
+    metaDesc: "",
+    metaDescPixelWidth: 0,
+    canonical: "",
+    h1Elements: [],
+    h2Elements: [],
+    h3Elements: [],
+    totalImages: 0,
     imagesWithoutAlt: 0,
-    oversizedImages: 1,
-    words: 320, // under 450 words
-    schemas: [
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [{ name: "Home" }, { name: "Panama City Beach Hotels" }],
-      },
-    ], // missing Hotel and FAQ schemas
-    links: { internal: 42, external: 8, nofollow: 2 },
+    oversizedImages: 0,
+    words: 0,
+    schemas: [],
+    links: { internal: 0, external: 0, nofollow: 0 },
     hasViewport: true,
     hasOgTitle: false,
     hasOgImage: false,
