@@ -108,6 +108,12 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
     provider = "deterministic";
   }
 
+  const provenance = verifyProvenance(interpretation, audit, retrieved);
+  if (!provenance.ok && provider === "llm") {
+    interpretation = deterministicInterpretation(audit, retrieved);
+    provider = "deterministic (provenance gate)";
+  }
+
   return {
     targetUrl,
     audit,
@@ -137,4 +143,25 @@ function deterministicInterpretation(audit: Awaited<ReturnType<typeof runFullWeb
   lines.push("");
   lines.push("Dimensions not measured are reported as unavailable rather than estimated.");
   return lines.join("\n");
+}
+
+export interface ProvenanceResult {
+  ok: boolean;
+  untracedNumbers: string[];
+}
+
+export function verifyProvenance(
+  text: string,
+  audit: Awaited<ReturnType<typeof runFullWebsiteAudit>>,
+  retrieved: Array<{ text?: string; title?: string }>,
+): ProvenanceResult {
+  const haystack =
+    JSON.stringify(audit) +
+    " " +
+    String(audit.actionPlan?.length ?? 0) +
+    " 100 0 " +
+    retrieved.map((c) => `${c.title ?? ""} ${c.text ?? ""}`).join(" ");
+  const numbers = Array.from(new Set(text.match(/\b\d+(?:\.\d+)?\b/g) ?? []));
+  const untraced = numbers.filter((n) => !haystack.includes(n));
+  return { ok: untraced.length === 0, untracedNumbers: untraced };
 }

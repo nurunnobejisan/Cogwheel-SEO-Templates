@@ -1,0 +1,702 @@
+[
+  {
+    "url": "https://www.marriott.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.hilton.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.ihg.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.hyatt.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.wyndhamhotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.choicehotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.bestwestern.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.radissonhotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.accor.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.fourseasons.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.ritzcarlton.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.stregis.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.westin.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.sheraton.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.courtyard.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.residenceinn.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.springhillsuites.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.fairfieldinn.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.towneplace.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.elementhotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.alofthotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.moxyhotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.ac-hotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.autographhotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.designhotels.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.apple.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.microsoft.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.google.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.amazon.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.netflix.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.spotify.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.airbnb.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.uber.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.shopify.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.wordpress.org",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.wikipedia.org",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.github.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.stackoverflow.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.reddit.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.medium.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.nytimes.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.bbc.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.cnn.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.forbes.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.techcrunch.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.moz.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.searchenginejournal.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.ahrefs.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.semrush.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  },
+  {
+    "url": "https://www.hubspot.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": [
+      "ranking",
+      "search volume",
+      "citation score",
+      "competitor",
+      "revenue",
+      "fees",
+      "conversion rate"
+    ],
+    "verifiedBy": "pending"
+  }
+]

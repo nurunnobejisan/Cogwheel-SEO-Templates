@@ -37,6 +37,8 @@ jobs:
         run: npm run test:seo
       - name: TypeScript integration tests (node:test)
         run: npm run test:ts
+      - name: Brain provenance gate (fabrication rate must be 0)
+        run: npm run brain:eval data/brain-gold.example.json
       - name: Production build (next build)
         run: npm run build
 
