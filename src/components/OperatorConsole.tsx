@@ -21,6 +21,7 @@ import {
   setActor as persistActor,
   type ActorIdentity,
   type CmsPlatform,
+  type SessionStatus,
 } from "@/lib/platform/client";
 
 type Tab = "overview" | "approvals" | "history" | "audit" | "targets" | "heal";
@@ -56,15 +57,34 @@ export function OperatorConsole() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [session, setSession] = useState<SessionStatus | null>(null);
+  const [tokenInput, setTokenInput] = useState("");
+  const [signingIn, setSigningIn] = useState(false);
 
-  /* Resolve the acting principal once, defaulting to a dev admin identity. */
+  /* Resolve the session (signed cookie) or fall back to dev auth. */
   useEffect(() => {
-    const current = readActor();
-    const initial = current.id ? current : DEMO_ACTORS[0]!;
-    if (!current.id) {
-      persistActor(initial);
-    }
-    setActorState(initial);
+    let cancelled = false;
+    void (async () => {
+      const status = await client.session().catch(() => null);
+      if (cancelled) return;
+      setSession(status);
+
+      if (status?.authenticated && status.principal) {
+        setActorState(status.principal);
+        return;
+      }
+      if (status?.devAuth) {
+        const current = readActor();
+        const initial = current.id ? current : DEMO_ACTORS[0]!;
+        if (!current.id) persistActor(initial);
+        setActorState(initial);
+        return;
+      }
+      setActorState({ id: "", role: "viewer" });
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const reportError = useCallback((cause: unknown) => {
@@ -76,7 +96,10 @@ export function OperatorConsole() {
   }, []);
 
   const load = useCallback(async () => {
-    if (!actor.id) return;
+    if (!actor.id) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     const [health, approvals, history, audit, events, schedules, connectors, credentials] =
       await Promise.allSettled([
@@ -130,6 +153,37 @@ export function OperatorConsole() {
     setActorState(next);
   }
 
+  async function signIn(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!tokenInput.trim()) return;
+    setSigningIn(true);
+    setError(null);
+    try {
+      const status = await client.signIn(tokenInput.trim());
+      setSession(status);
+      if (status.principal) setActorState(status.principal);
+      setTokenInput("");
+    } catch (cause) {
+      reportError(cause);
+    } finally {
+      setSigningIn(false);
+    }
+  }
+
+  async function signOut() {
+    setSigningIn(true);
+    try {
+      await client.signOut();
+    } catch {
+      // Clearing the cookie locally still ends the session on this browser.
+    } finally {
+      setSession({ authenticated: false, principal: null, devAuth: false, signInConfigured: session?.signInConfigured });
+      setActorState({ id: "", role: "viewer" });
+      setData(EMPTY_DATA);
+      setSigningIn(false);
+    }
+  }
+
   const role = actor.role;
 
   return (
@@ -157,18 +211,29 @@ export function OperatorConsole() {
               <span className={`h-1.5 w-1.5 rounded-full ${data.health?.ok ? "bg-emerald-500" : "bg-rose-500"}`} />
               {data.health?.ok ? "online" : "offline"}
             </span>
-            <select
-              aria-label="Acting role"
-              value={actor.id}
-              onChange={(event) => switchActor(event.target.value)}
-              className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:border-brand focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
-            >
-              {DEMO_ACTORS.map((candidate) => (
-                <option key={candidate.id} value={candidate.id}>
-                  {candidate.role} · {candidate.id}
-                </option>
-              ))}
-            </select>
+            {session?.devAuth ? (
+              <select
+                aria-label="Acting role"
+                value={actor.id}
+                onChange={(event) => switchActor(event.target.value)}
+                className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:border-brand focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+              >
+                {DEMO_ACTORS.map((candidate) => (
+                  <option key={candidate.id} value={candidate.id}>
+                    {candidate.role} · {candidate.id}
+                  </option>
+                ))}
+              </select>
+            ) : session?.authenticated && session.principal ? (
+              <>
+                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                  {session.principal.role} · {session.principal.id}
+                </span>
+                <Button size="sm" variant="secondary" onClick={() => void signOut()} disabled={signingIn}>
+                  Sign out
+                </Button>
+              </>
+            ) : null}
             <Button size="sm" variant="secondary" onClick={() => void load()} disabled={loading}>
               {loading ? "Loading…" : "Refresh"}
             </Button>
@@ -204,13 +269,49 @@ export function OperatorConsole() {
       </header>
 
       <main className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6">
-        <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
-          <span>
-            <strong>Development auth.</strong> The acting identity is chosen in the header. Wire JWT/session verification in{" "}
-            <code className="font-mono">src/lib/platform/auth.ts</code> before production.
-          </span>
-          <span className="font-mono">role: {role}</span>
-        </div>
+        {!session?.authenticated && !session?.devAuth ? (
+          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+            {session?.signInConfigured ? (
+              <form onSubmit={signIn} className="flex flex-wrap items-center gap-2">
+                <label htmlFor="operator-token" className="font-semibold text-slate-700 dark:text-slate-200">
+                  Operator token
+                </label>
+                <input
+                  id="operator-token"
+                  type="password"
+                  value={tokenInput}
+                  onChange={(event) => setTokenInput(event.target.value)}
+                  autoComplete="current-password"
+                  placeholder="PLATFORM_OPERATOR_TOKEN"
+                  className="min-w-[16rem] flex-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-mono text-xs text-slate-800 focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                />
+                <Button size="sm" type="submit" disabled={signingIn || !tokenInput.trim()}>
+                  {signingIn ? "Signing in…" : "Sign in"}
+                </Button>
+              </form>
+            ) : (
+              <span>
+                <strong>Signed out.</strong> Set <code className="font-mono">PLATFORM_OPERATOR_TOKEN</code> and{" "}
+                <code className="font-mono">PLATFORM_SESSION_SECRET</code> on the server to enable sign-in.
+              </span>
+            )}
+          </div>
+        ) : session?.devAuth ? (
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
+            <span>
+              <strong>Development auth.</strong> The acting identity is chosen in the header and is refused when{" "}
+              <code className="font-mono">NODE_ENV=production</code>.
+            </span>
+            <span className="font-mono">role: {role}</span>
+          </div>
+        ) : (
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
+            <span>
+              <strong>Signed session.</strong> Requests carry an HMAC-verified <code className="font-mono">cw_session</code> cookie.
+            </span>
+            <span className="font-mono">role: {role}</span>
+          </div>
+        )}
 
         {error && (
           <div className="flex items-start justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300">

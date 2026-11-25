@@ -77,6 +77,16 @@ async function bootstrap(): Promise<RuntimeHandle> {
   }
   const vault = createCredentialVault(vaultKey);
 
+  // Sessions are only verifiable when a signing secret exists. Warn loudly:
+  // without it, the platform API answers 401 for every non-health route.
+  if (!process.env.PLATFORM_SESSION_SECRET) {
+    console.warn(
+      "[platform] PLATFORM_SESSION_SECRET is not set — signed sessions cannot be " +
+        "issued or verified and all non-health platform API calls will return 401. " +
+        "Set it to a random value of at least 32 characters in every deployment.",
+    );
+  }
+
   const empty = await adapter.readAll("audit_log");
   const coldStart = empty.length === 0;
 

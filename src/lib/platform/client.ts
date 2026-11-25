@@ -39,6 +39,13 @@ export interface ScheduleView {
   lastRunAt?: string;
 }
 
+export interface SessionStatus {
+  authenticated: boolean;
+  principal: ActorIdentity | null;
+  devAuth?: boolean;
+  signInConfigured?: boolean;
+}
+
 export interface PlatformApiErrorBody {
   error: { code: string; message: string; retryAfterMs?: number; details?: unknown };
 }
@@ -103,6 +110,12 @@ export interface ApprovalView {
 export function createPlatformClient(options: ClientOptions = {}) {
   return {
     health: () => request<HealthResponse>(options, "GET", "/health"),
+
+    /* -------- session -------- */
+    session: () => request<SessionStatus>(options, "GET", "/session"),
+    signIn: (token: string, role?: Role) =>
+      request<SessionStatus>(options, "POST", "/session", { token, role }),
+    signOut: () => request<{ authenticated: boolean }>(options, "DELETE", "/session"),
 
     /* -------- connectors -------- */
     listConnectors: () => request<{ targets: string[] }>(options, "GET", "/connectors"),
