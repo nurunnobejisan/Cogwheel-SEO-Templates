@@ -8,6 +8,17 @@ import { cleanContent, countWords, generateNgrams, calculateJaccardSimilarity } 
 import { normalizeCanonicalUrl } from "../../validators/canonicalNormalizer";
 import { GeoReadinessRadar } from "./GeoReadinessRadar";
 import { CompsetRankingMatrix } from "./CompsetRankingMatrix";
+import dynamic from "next/dynamic";
+
+const TemplatesHubClient = dynamic(() =>
+  import("../app/templates/TemplatesHubClient").then((m) => m.TemplatesHubClient)
+);
+const StrategyMatrixContent = dynamic(() =>
+  import("./StrategyMatrixContent").then((m) => m.StrategyMatrixContent)
+);
+const ArchitectureContent = dynamic(() =>
+  import("./ArchitectureContent").then((m) => m.ArchitectureContent)
+);
 
 interface LabsViewProps {
   property?: {
@@ -17,8 +28,8 @@ interface LabsViewProps {
     state: string;
     url: string;
   };
-  activeSubTab?: "geo" | "compset" | "sandbox";
-  onSubTabChange?: (tab: "geo" | "compset" | "sandbox") => void;
+  activeSubTab?: "geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture";
+  onSubTabChange?: (tab: "geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture") => void;
   onRunDeckGeneration?: () => void;
   onExportMemo?: () => void;
   onOpenImageAudit?: () => void;
@@ -34,12 +45,12 @@ export function LabsView({
   onOpenImageAudit,
   onOpenHeadingAudit,
 }: LabsViewProps) {
-  const [internalSubTab, setInternalSubTab] = useState<"geo" | "compset" | "sandbox">(
+  const [internalSubTab, setInternalSubTab] = useState<"geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture">(
     activeSubTab || "geo"
   );
 
   const currentTab = activeSubTab || internalSubTab;
-  const setTab = (t: "geo" | "compset" | "sandbox") => {
+  const setTab = (t: "geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture") => {
     setInternalSubTab(t);
     onSubTabChange?.(t);
   };
@@ -425,6 +436,39 @@ export function LabsView({
           >
             Diagnostic Sandbox (8 Tools)
           </button>
+          <button
+            type="button"
+            onClick={() => setTab("templates")}
+            className={`rounded-lg px-3.5 py-1.5 transition ${
+              currentTab === "templates"
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            Templates
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("matrix")}
+            className={`rounded-lg px-3.5 py-1.5 transition ${
+              currentTab === "matrix"
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            Strategy Matrix
+          </button>
+          <button
+            type="button"
+            onClick={() => setTab("architecture")}
+            className={`rounded-lg px-3.5 py-1.5 transition ${
+              currentTab === "architecture"
+                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
+                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            Architecture
+          </button>
         </div>
       </div>
 
@@ -442,6 +486,27 @@ export function LabsView({
           property={property}
           onExportMemo={onExportMemo}
         />
+      )}
+
+      {/* Sub-tab: Templates */}
+      {currentTab === "templates" && (
+        <div className="space-y-6">
+          <TemplatesHubClient />
+        </div>
+      )}
+
+      {/* Sub-tab: Strategy Matrix */}
+      {currentTab === "matrix" && (
+        <div className="space-y-6">
+          <StrategyMatrixContent />
+        </div>
+      )}
+
+      {/* Sub-tab: Architecture */}
+      {currentTab === "architecture" && (
+        <div className="space-y-6">
+          <ArchitectureContent />
+        </div>
       )}
 
       {/* Sub-tab 3: Diagnostic Sandbox */}

@@ -19,7 +19,7 @@ export interface CommandPaletteProps {
   onClose: () => void;
   onSelectProperty: (property: TrainedProperty) => void;
   onNavigateTab: (tab: "home" | "tasks" | "labs" | "crawl" | "keywords") => void;
-  onNavigateLabsSubTab?: (subTab: "geo" | "compset" | "sandbox") => void;
+  onNavigateLabsSubTab?: (subTab: "geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture") => void;
   onOpenDeliverables?: (initialTab?: "deck" | "pptx" | "memo") => void;
   onOpenVisibilitySuite?: () => void;
   onOpenSitemapAudit?: () => void;
@@ -212,6 +212,45 @@ export function CommandPalette({
       action: () => {
         onClose();
         onNavigateLabsSubTab?.("sandbox");
+        onNavigateTab("labs");
+      },
+    });
+
+    list.push({
+      id: "nav-labs-templates",
+      title: "Labs: SEO Templates Library",
+      subtitle: "Browse and apply structured SEO templates for any task",
+      category: "Navigation",
+      badge: "Labs",
+      action: () => {
+        onClose();
+        onNavigateLabsSubTab?.("templates");
+        onNavigateTab("labs");
+      },
+    });
+
+    list.push({
+      id: "nav-labs-matrix",
+      title: "Labs: 78-Keyword Strategy Matrix",
+      subtitle: "6-funnel keyword matrix for hospitality SEO & GEO dominance",
+      category: "Navigation",
+      badge: "Labs",
+      action: () => {
+        onClose();
+        onNavigateLabsSubTab?.("matrix");
+        onNavigateTab("labs");
+      },
+    });
+
+    list.push({
+      id: "nav-labs-architecture",
+      title: "Labs: System Architecture",
+      subtitle: "Manifest V3, AI training data vault, hybrid inference routing & Python pipelines",
+      category: "Navigation",
+      badge: "Labs",
+      action: () => {
+        onClose();
+        onNavigateLabsSubTab?.("architecture");
         onNavigateTab("labs");
       },
     });
