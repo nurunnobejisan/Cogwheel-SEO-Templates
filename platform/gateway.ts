@@ -15,9 +15,15 @@
 import { z } from "zod";
 import type { AuditReport } from "../rules/types.ts";
 import type { FixPatch } from "../ai/types.ts";
-import type { CmsSeoPlugin, CmsSecretPayload, FetchLike } from "../cms/types.ts";
+import type { CmsConnector, CmsSeoPlugin, CmsSecretPayload, CmsTarget, FetchLike } from "../cms/types.ts";
 import { createCmsCredential, redactCmsCredential } from "../cms/credentials.ts";
 import type { CredentialVault } from "../cms/vault.ts";
+import { createConnectorForCredential } from "../cms/factory.ts";
+import {
+  createCustomConnector,
+  createMemoryPatchRegistry,
+  type PatchRegistry,
+} from "../cms/custom/connector.ts";
 import { deployPatch, previewPatchDiff } from "../cms/deploy.ts";
 import {
   createApprovalQueue,
@@ -43,6 +49,7 @@ import { createRateLimiter, type RateLimiter } from "./rate-limit.ts";
 import { authorize, requireRiskApproval } from "./rbac.ts";
 import type {
   BucketConfig,
+  ConnectorRegisterRequest,
   CredentialCreateRequest,
   HttpMethod,
   PatchPreviewResponse,
@@ -53,7 +60,7 @@ import type {
   ScheduleCreateRequest,
 } from "./types.ts";
 
-const VERSION = "phase-5.0.0";
+const VERSION = "phase-5.1.0";
 
 /* ----------------------------------------------------------- validation --- */
 
@@ -88,6 +95,13 @@ const scheduleCreateSchema = z.object({
   targetUrl: z.string().min(1),
   cron: z.string().min(1),
   enabled: z.boolean().optional(),
+});
+
+const connectorRegisterSchema = z.object({
+  targetUrl: z.string().min(1),
+  credentialId: z.string().min(1).optional(),
+  resourceId: z.string().min(1).optional(),
+  resourceType: z.string().min(1).optional(),
 });
 
 const deploySchema = z.object({
@@ -175,6 +189,7 @@ function matchSegments(route: string[], actual: string[]): Record<string, string
 export interface GatewayOptions {
   vault: CredentialVault;
   auditLog?: AuditLog;
+  history?: DeploymentHistory;
   rollbackStore?: RollbackStore;
   events?: HealingEventBus;
   approvals?: ApprovalQueue;
@@ -187,6 +202,13 @@ export interface GatewayOptions {
   rateConfig?: BucketConfig;
   /** Injected into the healing micro-crawler (defaults to global fetch). */
   fetchImpl?: FetchLike;
+  /** Runtime patch registry backing the universal `custom` connector. */
+  patchRegistry?: PatchRegistry;
+  /**
+   * Awaited after each request so durable stores can flush their write-through
+   * queue before the response is returned.
+   */
+  onRequestComplete?: () => Promise<void> | void;
   now?: () => string;
   version?: string;
 }
@@ -213,12 +235,13 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
 
   const vault = options.vault;
   const auditLog = options.auditLog ?? createAuditLog({ now });
-  const history = createDeploymentHistory(now);
+  const history = options.history ?? createDeploymentHistory(now);
   const approvals = options.approvals ?? createApprovalQueue();
   const patches = options.patches ?? createPatchStore();
   const rollbackStore = options.rollbackStore ?? createRollbackStore();
   const events = options.events ?? createHealingEventBus(now);
   const connectors = options.connectors ?? createConnectorRegistry();
+  const patchRegistry = options.patchRegistry ?? createMemoryPatchRegistry();
   const credentials = options.credentials ?? createCredentialStore();
   const scheduler = options.scheduler ?? createScanScheduler();
   const rateLimiter =
@@ -234,6 +257,44 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
     if (!connector) {
       throw notFound(`no connector registered for ${targetUrl}`);
     }
+    return connector;
+  }
+
+  /**
+   * Bind a target URL to a connector: either a stored credential (WordPress /
+   * Shopify / Webflow) or the universal runtime connector that works for any
+   * platform without a write API.
+   */
+  function registerConnector(input: ConnectorRegisterRequest, principal: Principal): CmsConnector {
+    const target: CmsTarget = {
+      url: input.targetUrl,
+      resourceId: input.resourceId,
+      resourceType: input.resourceType,
+    };
+
+    let connector: CmsConnector;
+    if (input.credentialId) {
+      const credential = credentials.get(input.credentialId);
+      if (!credential) {
+        throw notFound(`credential "${input.credentialId}" not found`);
+      }
+      connector = createConnectorForCredential({
+        credential,
+        vault,
+        target,
+        fetchImpl: options.fetchImpl,
+        patchRegistry,
+      });
+    } else {
+      connector = createCustomConnector({
+        clientId: principal.organizationId ?? "platform",
+        target,
+        registry: patchRegistry,
+        fetchImpl: options.fetchImpl,
+      });
+    }
+
+    connectors.register(input.targetUrl, connector);
     return connector;
   }
 
@@ -364,6 +425,41 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
           at: now(),
         });
         return { status: 201, body: redactCmsCredential(vault, credential) };
+      },
+    },
+
+    /* -------- connectors -------- */
+    {
+      method: "GET",
+      segments: ["v1", "connectors"],
+      permission: "connector:read",
+      handler: () => ({
+        status: 200,
+        body: { targets: connectors.targets() },
+      }),
+    },
+    {
+      method: "POST",
+      segments: ["v1", "connectors"],
+      permission: "connector:write",
+      handler: ({ principal, body }) => {
+        const input = parse(connectorRegisterSchema, body, "connector") as ConnectorRegisterRequest;
+        const connector = registerConnector(input, principal);
+        auditLog.append({
+          principal,
+          action: "connector.register",
+          targetUrl: input.targetUrl,
+          after: { platform: connector.platform, credentialId: input.credentialId ?? null },
+          at: now(),
+        });
+        return {
+          status: 201,
+          body: {
+            targetUrl: input.targetUrl,
+            platform: connector.platform,
+            targets: connectors.targets(),
+          },
+        };
       },
     },
 
@@ -678,8 +774,15 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
         query,
         body: request.body,
       });
+      await options.onRequestComplete?.();
       return response;
     } catch (error) {
+      // Persist anything written before the failure, but never mask the error.
+      try {
+        await options.onRequestComplete?.();
+      } catch {
+        /* best-effort flush */
+      }
       if (error instanceof PlatformError) {
         const headers: Record<string, string> = {};
         if (error.retryAfterMs !== undefined) {

@@ -8,6 +8,10 @@
 
 import type { FixPatch } from "../ai/types.ts";
 
+export interface PatchStoreHooks {
+  onPut?: (patch: FixPatch) => void;
+}
+
 export interface PatchStore {
   put(patch: FixPatch): FixPatch;
   get(patchId: string): FixPatch | null;
@@ -16,11 +20,19 @@ export interface PatchStore {
   clear(): void;
 }
 
-export function createPatchStore(): PatchStore {
+export function createPatchStore(
+  initial: FixPatch[] = [],
+  hooks: PatchStoreHooks = {}
+): PatchStore {
   const patches = new Map<string, FixPatch>();
+  for (const patch of initial) {
+    patches.set(patch.patchId, patch);
+  }
+
   return {
     put(patch) {
       patches.set(patch.patchId, patch);
+      hooks.onPut?.(patch);
       return patch;
     },
     get(patchId) {

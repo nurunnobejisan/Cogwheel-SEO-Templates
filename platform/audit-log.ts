@@ -73,12 +73,16 @@ export function hashAuditEntry(
 export interface CreateAuditLogOptions {
   now?: () => string;
   hash?: (input: string) => string;
+  /** Hydrate a previously persisted chain (must be the full ordered history). */
+  initial?: AuditLogEntry[];
+  /** Write-through hook fired after every append. */
+  onAppend?: (entry: AuditLogEntry) => void;
 }
 
 export function createAuditLog(options: CreateAuditLogOptions = {}): AuditLog {
   const now = options.now ?? (() => new Date().toISOString());
   const hashImpl = options.hash;
-  const entries: AuditLogEntry[] = [];
+  const entries: AuditLogEntry[] = options.initial ? [...options.initial] : [];
 
   function hashOf(entry: Omit<AuditLogEntry, "hash">): string {
     return hashImpl ? hashAuditEntry(entry, hashImpl) : hashAuditEntry(entry);
@@ -105,6 +109,7 @@ export function createAuditLog(options: CreateAuditLogOptions = {}): AuditLog {
       };
       const entry: AuditLogEntry = Object.freeze({ ...base, hash: hashOf(base) });
       entries.push(entry);
+      options.onAppend?.({ ...entry });
       return { ...entry };
     },
 

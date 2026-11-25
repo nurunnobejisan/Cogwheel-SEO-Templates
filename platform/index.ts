@@ -17,8 +17,10 @@ export * from "./patch-store.ts";
 export * from "./connector-registry.ts";
 export * from "./credential-store.ts";
 export * from "./gateway.ts";
+export * from "./durable.ts";
 export * from "./worker.ts";
 export * from "./http.ts";
+export * from "./persistence/index.ts";
 
 // Re-exported so the runtime layer is a single entry point for callers.
 export { createScanScheduler } from "../healing/scheduler.ts";

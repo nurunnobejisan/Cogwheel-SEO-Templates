@@ -22,6 +22,7 @@ const VIEWER: Permission[] = [
   "schedule:read",
   "history:read",
   "audit-log:read",
+  "connector:read",
 ];
 
 const SPECIALIST: Permission[] = [
@@ -37,6 +38,7 @@ const SPECIALIST: Permission[] = [
 const ADMIN: Permission[] = [
   ...SPECIALIST,
   "credential:write",
+  "connector:write",
 ];
 
 export const ROLE_PERMISSIONS: Record<Role, readonly Permission[]> = {

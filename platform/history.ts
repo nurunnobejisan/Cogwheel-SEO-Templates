@@ -38,6 +38,11 @@ export interface DeploymentHistory {
   size(): number;
 }
 
+export interface HistoryHooks {
+  onRecord?: (entry: DeploymentHistoryEntry) => void;
+  onUpdate?: (entry: DeploymentHistoryEntry) => void;
+}
+
 let counter = 0;
 
 function nextId(): string {
@@ -46,9 +51,14 @@ function nextId(): string {
 }
 
 export function createDeploymentHistory(
-  now: () => string = () => new Date().toISOString()
+  now: () => string = () => new Date().toISOString(),
+  initial: DeploymentHistoryEntry[] = [],
+  hooks: HistoryHooks = {}
 ): DeploymentHistory {
   const entries = new Map<string, DeploymentHistoryEntry>();
+  for (const entry of initial) {
+    entries.set(entry.id, entry);
+  }
 
   return {
     record(input) {
@@ -68,6 +78,7 @@ export function createDeploymentHistory(
         undone: false,
       };
       entries.set(entry.id, entry);
+      hooks.onRecord?.({ ...entry });
       return { ...entry };
     },
 
@@ -104,6 +115,7 @@ export function createDeploymentHistory(
         undoneBy: by,
       };
       entries.set(id, updated);
+      hooks.onUpdate?.({ ...updated });
       return { ...updated };
     },
 

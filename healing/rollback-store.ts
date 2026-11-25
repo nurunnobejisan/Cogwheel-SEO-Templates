@@ -27,6 +27,10 @@ export interface RollbackStore {
   size(): number;
 }
 
+export interface RollbackStoreHooks {
+  onRecord?: (record: SnapshotRecord) => void;
+}
+
 let counter = 0;
 
 function nextId(): string {
@@ -34,9 +38,19 @@ function nextId(): string {
   return `snap_${Date.now().toString(36)}${counter.toString(36)}`;
 }
 
-export function createRollbackStore(): RollbackStore {
+export function createRollbackStore(
+  initial: SnapshotRecord[] = [],
+  hooks: RollbackStoreHooks = {}
+): RollbackStore {
   const byId = new Map<string, SnapshotRecord>();
   const byTarget = new Map<string, SnapshotRecord[]>();
+
+  for (const record of [...initial].sort((a, b) => a.version - b.version)) {
+    byId.set(record.id, record);
+    const history = byTarget.get(record.targetUrl) ?? [];
+    history.push(record);
+    byTarget.set(record.targetUrl, history);
+  }
 
   return {
     record(input: RecordSnapshotInput): SnapshotRecord {
@@ -54,6 +68,7 @@ export function createRollbackStore(): RollbackStore {
       history.push(record);
       byTarget.set(input.targetUrl, history);
       byId.set(record.id, record);
+      hooks.onRecord?.({ ...record });
       return record;
     },
 

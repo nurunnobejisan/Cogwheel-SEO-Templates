@@ -28,6 +28,8 @@ export type Permission =
   | "patch:deploy"
   | "credential:read"
   | "credential:write"
+  | "connector:read"
+  | "connector:write"
   | "schedule:read"
   | "schedule:write"
   | "history:read"
@@ -166,6 +168,16 @@ export interface ScheduleCreateRequest {
   targetUrl: string;
   cron: string;
   enabled?: boolean;
+}
+
+export interface ConnectorRegisterRequest {
+  /** The live page the connector deploys to. */
+  targetUrl: string;
+  /** Stored credential to bind (omit to use the universal runtime connector). */
+  credentialId?: string;
+  /** CMS resource identity for the target, when the credential needs it. */
+  resourceId?: string;
+  resourceType?: string;
 }
 
 export interface PatchPreviewResponse {
