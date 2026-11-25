@@ -9,6 +9,7 @@ import {
   deriveTargetKeyword,
   type RawExtractedHeading,
 } from "./analyzer.ts";
+import { assertEgressAllowed, readTextCapped, safeFetch } from "../../lib/security/egress.ts";
 
 const CRAWLER_USER_AGENT =
   "Mozilla/5.0 (compatible; CogwheelHeadingAudit/2.8; +https://cogwheel-seo-templates.vercel.app)";
@@ -168,13 +169,14 @@ async function discoverSitemapUrls(origin: string, timeoutMs: number): Promise<s
     visitedSitemaps.add(sitemapUrl);
 
     try {
-      const res = await fetch(sitemapUrl, {
-        headers: { "User-Agent": CRAWLER_USER_AGENT },
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+      const { response: res } = await safeFetch(
+        sitemapUrl,
+        { headers: { "User-Agent": CRAWLER_USER_AGENT } },
+        { timeoutMs, maxRedirects: 3 },
+      );
       if (!res.ok) return;
 
-      const xml = await res.text();
+      const xml = await readTextCapped(res);
 
       // Check for sitemap index
       const subSitemaps = [...xml.matchAll(/<sitemap>\s*<loc>([^<]+)<\/loc>/gi)].map((m) => m[1].trim());
@@ -217,7 +219,7 @@ export async function crawlWebsiteHeadings(
   const timeoutMs = options.timeoutMs ?? 10000;
   const includeSubdomains = Boolean(options.includeSubdomains);
 
-  const validStart = normalizeUrl(startUrl);
+  const validStart = await assertEgressAllowed(normalizeUrl(startUrl) ?? "");
   if (!validStart) {
     throw new Error(`Invalid target website URL: "${startUrl}". Must be a valid http/https address.`);
   }

@@ -5,7 +5,7 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 import * as XLSX from "xlsx";
-import { safeFetch, readTextCapped } from "@/lib/security/egress";
+import { safeFetch, readTextCapped, assertEgressAllowed } from "@/lib/security/egress";
 
 const execFileAsync = promisify(execFile);
 
@@ -308,6 +308,22 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // PowerPoint generation runs the local Python builder (python-pptx). That is
+    // a host-process execution path, so it is disabled unless an operator
+    // explicitly opts in on a trusted machine. It is never available on
+    // serverless deployments (no python3/python-pptx).
+    if (process.env.COGWHEEL_ALLOW_LOCAL_PYTHON !== "1") {
+      return NextResponse.json(
+        {
+          error:
+            "Server-side report generation is disabled. Run `python3 api/seo_visibility_report.py --template <pptx> --xlsx <xlsx> --output <out.pptx>` locally, " +
+            "or set COGWHEEL_ALLOW_LOCAL_PYTHON=1 on a trusted self-hosted instance.",
+          code: "report_generation_disabled",
+        },
+        { status: 501 }
+      );
+    }
+
     const tempDir = await fs.mkdtemp(path.join(os.tmpdir(), "pptx-gen-"));
     const templatePath = path.join(tempDir, "template.pptx");
     const xlsxPath = path.join(tempDir, "keywords.xlsx");
@@ -321,6 +337,18 @@ export async function POST(req: NextRequest) {
     }
 
     const scriptPath = path.resolve(process.cwd(), "api/seo_visibility_report.py");
+    const scriptExists = await fs
+      .stat(scriptPath)
+      .then(() => true)
+      .catch(() => false);
+    if (!scriptExists) {
+      await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
+      return NextResponse.json(
+        { error: "Report generator script not found on this host." },
+        { status: 501 },
+      );
+    }
+
     const args = [
       scriptPath,
       "--template", templatePath,
@@ -331,11 +359,21 @@ export async function POST(req: NextRequest) {
       args.push("--pdf", pdfPath);
     }
 
-    // Execute Python report generator (which automatically strips all comments)
-    await execFileAsync("python3", args, {
-      env: { ...process.env, PYTHONPATH: path.resolve(process.cwd(), "api") },
-      timeout: 45000,
-    });
+    try {
+      // Argument-array exec (no shell). Paths are server-generated inside a
+      // fresh temp dir, so no user-controlled value reaches the process args.
+      await execFileAsync(process.env.PYTHON_BIN ?? "python3", args, {
+        env: { ...process.env, PYTHONPATH: path.resolve(process.cwd(), "api") },
+        timeout: 45_000,
+        maxBuffer: 8 * 1024 * 1024,
+      });
+    } catch (err) {
+      await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
+      return NextResponse.json(
+        { error: `Report generation failed: ${(err as Error).message}` },
+        { status: 500 },
+      );
+    }
 
     const outputBuffer = await fs.readFile(outputPath);
     await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
