@@ -68,6 +68,13 @@ async function bootstrap(): Promise<RuntimeHandle> {
   // A missing key still works (dev), but the vault then only protects state on
   // this machine. Production MUST set CMS_VAULT_KEY.
   const vaultKey = process.env.CMS_VAULT_KEY ?? "cogwheel-dev-insecure-vault-key";
+  if (!process.env.CMS_VAULT_KEY) {
+    console.warn(
+      "[platform] CMS_VAULT_KEY is not set — the credential vault is using an " +
+        "insecure development fallback key. Set CMS_VAULT_KEY in every deployed " +
+        "environment before storing real CMS credentials.",
+    );
+  }
   const vault = createCredentialVault(vaultKey);
 
   const empty = await adapter.readAll("audit_log");

@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/api/"],
+        disallow: ["/api/", "/platform"],
       },
     ],
     sitemap: "https://cogwheel-seo-templates.vercel.app/sitemap.xml",
