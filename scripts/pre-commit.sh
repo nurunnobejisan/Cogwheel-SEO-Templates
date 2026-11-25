@@ -9,7 +9,7 @@ if grep -rnE "(ghp_[a-zA-Z0-9]{20,}|sk-[a-zA-Z0-9]{20,}|AIza[0-9A-Za-z-_]{35})" 
 fi
 
 echo "🚀 Running 10-Gate SEO Integrity Linter..."
-node --experimental-strip-types tests/seoLinter.ts
+./node_modules/.bin/tsx tests/ts/seoLinter.ts
 if [ $? -ne 0 ]; then
   echo "❌ COMMIT BLOCKED: SEO Integrity Linter failed."
   exit 1

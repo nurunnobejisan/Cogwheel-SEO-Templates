@@ -106,6 +106,6 @@ Before pushing any commit:
 - [ ] `npm run typecheck` passes with zero TypeScript errors.
 - [ ] `npm test` passes 100% of Vitest suites.
 - [ ] `python3 tests/python/run_tests.py` passes all 16 Python tests.
-- [ ] `python3 scripts/python/validate_schemas.py` verifies SSOT contracts.
+- [ ] `python3 python/scripts/validate_schemas.py` verifies SSOT contracts.
 - [ ] `npm run build` generates all static routes with zero build warnings.
 - [ ] All routes validated for semantic HTML5 landmarks and metadata length bounds.

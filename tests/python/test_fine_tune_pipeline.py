@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Unit tests for scripts/python/fine_tune_pipeline.py."""
+"""Unit tests for python/scripts/fine_tune_pipeline.py."""
 
 import json
 import shutil

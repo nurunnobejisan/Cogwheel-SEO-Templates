@@ -11,11 +11,13 @@ We welcome contributions! By participating in this project you agree to follow o
    git checkout -b feature/your-feature-name
    ```
 3. **Make your changes**. Keep the code style consistent – we run `npm run lint`
-   and `ruff check` as part of CI.
+   as part of CI.
 4. **Write tests** for new functionality (Vitest for TypeScript, Pytest for Python).
 5. **Run the full test suite** locally:
    ```bash
-   npm test && pytest -q python
+   npm run typecheck && npm run lint && npm test
+   npm run lint:seo && npm run test:seo && npm run test:ts
+   pytest tests/python -q
    ```
 6. **Commit with a clear message** and push to your fork.
 7. **Open a Pull Request** targeting the `main` branch of the upstream repo.
@@ -29,19 +31,20 @@ We welcome contributions! By participating in this project you agree to follow o
 
 ## Development Scripts
 
-- `npm run dev` – Starts a Vite dev server for UI components.
-- `npm run build` – Builds the Chrome extension into `dist/`.
-- `npm run lint` – Executes TypeScript compile‑time checks.
-- `npm run test` – Runs Vitest.
-- `ruff check python` – Lints Python code.
-- `mypy python` – Type checks Python.
-- `pytest -q python` – Runs Python unit tests.
+- `npm run dev` – Starts the Next.js dev server (`next dev`).
+- `npm run build` – Production build of the Next.js app (`next build`).
+- `npm run build:extension` / `npm run extension:build` – Builds the Chrome extension.
+- `npm run lint` – Runs ESLint via `next lint`.
+- `npm run typecheck` – Runs `tsc --noEmit`.
+- `npm test` – Runs the Vitest suite.
+- `npm run lint:seo` – Runs the 10-gate SEO integrity linter.
+- `npm run test:seo` / `npm run test:ts` – Runs the `node:test` integration suites.
+- `pytest tests/python -q` – Runs Python unit tests.
 
 ## Code Style
 
 - Use **Tailwind** utility classes for styling.
 - Follow the **semantic‑HTML5** guidelines from `GEMINI.md`.
 - Keep TypeScript types strict; avoid `any` where possible.
-- Python code follows `ruff` and `mypy` recommendations.
 
 Happy hacking! 🎉

@@ -45,7 +45,7 @@ echo "✔ ESLint passed with 0 errors."
 
 # 5. Master 10-Gate SEO Linter
 echo "▶ [5/6] Running Master 10-Gate SEO Integrity Linter..."
-node --experimental-strip-types tests/seoLinter.ts
+./node_modules/.bin/tsx tests/ts/seoLinter.ts
 if [ $? -ne 0 ]; then
   echo "❌ COMMIT BLOCKED: SEO Integrity Linter failed."
   exit 1
@@ -54,7 +54,7 @@ echo "✔ All 10 SEO Integrity gates passed."
 
 # 6. Single Source of Truth Schema Validation
 echo "▶ [6/6] Validating JSON Schemas & Single Source of Truth..."
-python3 scripts/python/validate_schemas.py
+python3 -m python.scripts.validate_schemas
 if [ $? -ne 0 ]; then
   echo "❌ COMMIT BLOCKED: JSON schema verification failed."
   exit 1

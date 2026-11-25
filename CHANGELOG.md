@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Multi-provider inference support for Tuned Google Gemini (Vertex AI / Google AI Studio), custom REST API endpoints (vLLM / HuggingFace TGI), and local open-weight instances (Ollama / LoRA).
   - Zero-latency 3-tier automatic fallback to Cogwheel's local deterministic rules engine on network failure or rate limits.
   - Dedicated inference settings interface in **Settings** tab with model endpoint configuration, API keys, temperature parameters, and live latency connection testing.
-- **Python Supervised Fine-Tuning (SFT) & LoRA Pipeline** (`scripts/python/fine_tune_pipeline.py`):
+- **Python Supervised Fine-Tuning (SFT) & LoRA Pipeline** (`python/scripts/fine_tune_pipeline.py`):
   - End-to-end dataset ingestion with strict Pydantic token and schema validation.
   - Deterministic 90/10 train-validation dataset split.
   - Automated generation of 4-bit Unsloth / PEFT LoRA training scripts (Llama 3, Mistral 7B) and Google Cloud Vertex AI Gemini tuning job scripts.
@@ -51,7 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Portfolio CSV Export: Tabular export for monthly visibility decks and BI tracking.
 - Comprehensive Vitest unit test suite covering exact SERP pixel calculations, 5 hotel brand guardrails, JSON-LD schema integrity, and SemVer comparisons.
 - Single Source of Truth data validation architecture with TypeScript Zod schemas (`src/schemas/`) and JSON Schema Draft-7 exports (`schemas/`).
-- Python 3.11+ Pydantic models (`scripts/python/models.py`), schema validation CLI, and batch portfolio auditor.
+- Python 3.11+ Pydantic models (`python/scripts/models.py`), schema validation CLI, and batch portfolio auditor.
 - Automated two-layer free update engine: Layer A silent Over-The-Air (OTA) rule sync and Layer B binary update notification banner.
 - Unified CI workflow (`.github/workflows/ci.yml`) running TypeScript typecheck, Vitest tests, Next.js build, Python ruff/mypy checks, and JSON dataset validation.
 

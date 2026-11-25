@@ -14,13 +14,13 @@ Cogwheel SEO & GEO Studio is engineered as an enterprise hybrid web application,
 
 ### Core Architectural Tenets
 - **Local-First & Offline Resilience**: Page inspection, pixel calculation, brand guardrail validation, and structured data generation run client-side without dependency on external third-party crawlers.
-- **Single Source of Truth (SSOT)**: A single canonical schema definition authored in TypeScript Zod (`src/schemas/`) compiles into standard JSON Schema Draft-7 files (`schemas/`) and Python 3.11+ Pydantic models (`scripts/python/models.py`), ensuring bidirectional contract consistency across web, extension, and automation layers.
+- **Single Source of Truth (SSOT)**: A single canonical schema definition authored in TypeScript Zod (`src/schemas/`) compiles into standard JSON Schema Draft-7 files (`schemas/`) and Python 3.11+ Pydantic models (`python/scripts/models.py`), ensuring bidirectional contract consistency across web, extension, and automation layers.
 - **Strict Deterministic Pixel Budgeting**: Character-width lookup tables based on Google SERP Arial typography replace rough character count heuristics with exact physical pixel measurements (580px Title ceiling, 920px Meta Description ceiling).
 - **Two-Layer Free Over-the-Air (OTA) Updates**: Decouples lightweight rule and keyword matrix updates (synced silently in the background via GitHub raw endpoints) from binary extension updates (notified via badge alerts and 1-click package downloads).
 - **Universal Privacy-Preserving AI Training Harvest**: Non-destructive, read-only DOM capture coupled with an automated PII redaction engine (scrubbing emails, telephone numbers, IP addresses, credit cards, and URL auth query tokens) allows continuous collection of high-quality hospitality training data directly in the browser.
 - **Client-Side IndexedDB Training Vault**: Local, persistent storage (`CogwheelTrainingVaultDB`) with deterministic canonical URL hashing, quality score algorithms (0-100), and multi-format Supervised Fine-Tuning (SFT) dataset builders (Gemini JSONL, ChatML OpenAI/Unsloth, and Alpaca).
 - **Hybrid Inference & Automatic Fallback Routing**: Multi-provider inference router allowing properties to connect custom fine-tuned models (Google Cloud Vertex AI, fine-tuned Gemini, Ollama, vLLM, HuggingFace TGI) with seamless zero-latency fallback to Cogwheel's local deterministic rules engine.
-- **End-to-End Supervised Fine-Tuning (SFT) Pipeline**: Standalone Python pipeline (`scripts/python/fine_tune_pipeline.py`) providing dataset validation, deterministic 90/10 train-test splits, auto-generation of Unsloth/LoRA training scripts, and automated SERP/Schema accuracy benchmarking.
+- **End-to-End Supervised Fine-Tuning (SFT) Pipeline**: Standalone Python pipeline (`python/scripts/fine_tune_pipeline.py`) providing dataset validation, deterministic 90/10 train-test splits, auto-generation of Unsloth/LoRA training scripts, and automated SERP/Schema accuracy benchmarking.
 
 ---
 
@@ -348,10 +348,10 @@ src/schemas/validation.ts (TypeScript Zod Canonical Source)
   │             ├── page-audit-data.schema.json
   │             └── ota-config.schema.json
   │
-  └──> scripts/python/models.py (Python 3.11+ Pydantic Models)
-         ├──> scripts/python/validate_schemas.py
-         ├──> scripts/python/batch_portfolio_audit.py
-         └──> scripts/python/fine_tune_pipeline.py (SFT Pydantic Schemas)
+  └──> python/scripts/models.py (Python 3.11+ Pydantic Models)
+         ├──> python/scripts/validate_schemas.py
+         ├──> python/scripts/batch_portfolio_audit.py
+         └──> python/scripts/fine_tune_pipeline.py (SFT Pydantic Schemas)
 ```
 
 ---

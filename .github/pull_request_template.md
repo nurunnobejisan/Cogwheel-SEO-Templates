@@ -17,7 +17,7 @@
 - [ ] Next.js Studio Dashboard (`src/app/`, `src/components/`)
 - [ ] Universal Chrome Extension MV3 (`chrome-extension/`)
 - [ ] Unified AI Engine & Model Orchestrator (`src/engine/`)
-- [ ] Python Suite & Serverless Functions (`python/`, `scripts/python/`, `outputs/`)
+- [ ] Python Suite & Serverless Functions (`python/`, `api/`)
 - [ ] Schemas & Data Models (`schemas/`, `src/types/`, `python/models/`)
 - [ ] CMS Exporters & Adapters (`exporters/`, `validators/`)
 
@@ -36,7 +36,7 @@
 - [ ] SEO 10-Gate Linter passed: `npm run lint:seo`
 - [ ] TypeScript & Node test suite passed: `npm run test:seo`
 - [ ] Python test suite passed: `python3 tests/python/run_tests.py`
-- [ ] Schema validation passed: `python3 scripts/python/validate_schemas.py`
+- [ ] Schema validation passed: `python3 -m python.scripts.validate_schemas`
 - [ ] Production build passed: `npm run build`
 
 ## Secret Scanning & Guardrails

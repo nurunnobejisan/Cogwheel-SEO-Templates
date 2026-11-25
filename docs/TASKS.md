@@ -46,7 +46,7 @@
 - [ ] **Task 5.2: Review Status Gate for Training Exports** (Est: 20m)
   - *Done-Criterion*: Samples track `reviewStatus: "pending" | "approved" | "rejected"`; dataset exporters strictly filter for `approved` samples with `qualityScore >= 70`.
 - [ ] **Task 5.3: Python Pipeline & Pydantic Model Alignment** (Est: 25m)
-  - *Done-Criterion*: Pydantic models in `scripts/python/models.py` and `fine_tune_pipeline.py` updated with new provenance and status fields; ruff, mypy, and pytest tests pass 100%.
+  - *Done-Criterion*: Pydantic models in `python/scripts/models.py` and `fine_tune_pipeline.py` updated with new provenance and status fields; ruff, mypy, and pytest tests pass 100%.
 - [ ] **Task 5.4: 25-Page Benchmark Suite & Evaluator CLI** (Est: 25m)
   - *Done-Criterion*: 25 HTML fixture pages with expected audit goldens created; automated evaluation script benchmarks model or rule engine accuracy.
 
