@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runBrain } from "@/core/brain";
+import { recordClientUsage } from "@/core/brain/metering";
 import { principalFromRequest, isAuthenticatedPrincipal } from "@/lib/platform/auth";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +21,7 @@ export async function POST(req: NextRequest) {
       question: typeof body.question === "string" ? body.question : undefined,
       maxPages: typeof body.maxPages === "number" ? body.maxPages : undefined,
     });
+    await recordClientUsage(principal.id);
     return NextResponse.json({ success: true, ...result });
   } catch (err) {
     return NextResponse.json(

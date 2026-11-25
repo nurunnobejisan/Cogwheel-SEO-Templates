@@ -1,6 +1,7 @@
 import "server-only";
 
 import { runFullWebsiteAudit } from "@/core/full-audit";
+import { fullAuditTool, schemaCheckTool, keywordResearchTool, searchConsoleTool, serpDataTool, type ToolResult } from "./tools";
 import { loadRepoCorpus } from "./corpus";
 import { canUseLlm, recordLlmUsage } from "./usage";
 import { createRagPipeline, type RagPipeline } from "../../../ai/rag";
@@ -53,12 +54,13 @@ async function getPipeline(): Promise<RagPipeline> {
 
 export async function runBrain(request: BrainRequest): Promise<BrainResult> {
   const targetUrl = request.targetUrl.trim();
-  const audit = await runFullWebsiteAudit({
-    targetUrl,
-    maxPages: request.maxPages ?? 10,
-    includeGsc: true,
-    includeGeo: true,
-  });
+  const auditResult = await fullAuditTool(targetUrl, request.maxPages ?? 10);
+  const audit = auditResult.data!;
+  const schemaResult = schemaCheckTool(audit);
+  const keywordResult = keywordResearchTool(new URL(targetUrl).hostname);
+  const gscResult = searchConsoleTool(audit);
+  const serpResult = serpDataTool(audit);
+  const toolResults = [auditResult, schemaResult, keywordResult, gscResult, serpResult];
 
   const pipeline = await getPipeline();
   const query =
@@ -73,13 +75,15 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
     scores: audit.scores,
     provenance: audit.dataProvenance,
     topActions: (audit.actionPlan ?? []).slice(0, 15).map((a) => ({ priority: a.priority, title: a.title, category: a.category })),
+    tools: toolResults.map((t) => ({ name: t.name, available: t.available, reason: t.reason })),
   };
   const auditJson = JSON.stringify(compactAudit, null, 2);
   const contextText = retrieved
     .map((c) => `[${c.id}] ${c.title} (${c.source}, score ${c.score})\n${c.text}`)
     .join("\n\n");
 
-  const prompt = `AUDIT REPORT (measured facts only):\n${auditJson}\n\nRETRIEVED KNOWLEDGE:\n${contextText}\n\nUSER QUESTION:\n${request.question?.trim() || "Summarise the top issues and the safest next actions."}\n\nRespond with a concise, grounded summary. Mark any unavailable dimension explicitly.`;
+  const toolJson = JSON.stringify(toolResults.map((t) => ({ name: t.name, available: t.available, reason: t.reason, data: t.available ? t.data : null })), null, 2).slice(0, 8000);
+  const prompt = `TOOLS (unconnected tools return "unavailable" — do not fabricate):\n${toolJson}\n\nAUDIT REPORT (measured facts only):\n${auditJson}\n\nRETRIEVED KNOWLEDGE:\n${contextText}\n\nUSER QUESTION:\n${request.question?.trim() || "Summarise the top issues and the safest next actions."}\n\nRespond with a concise, grounded summary. Mark any unavailable dimension explicitly. Cite source doc/rule ids in brackets.`;
 
   let interpretation: string;
   let provider: string;

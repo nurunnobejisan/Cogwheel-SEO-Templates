@@ -40,6 +40,7 @@ function tagFor(rel: string): string[] {
 
 export async function loadRepoCorpus(): Promise<RagChunk[]> {
   const chunks: RagChunk[] = [];
+  const seen = new Set<string>();
   const files = await walk(ROOT);
   for (const file of files) {
     const rel = path.relative(ROOT, file).replace(/\\/g, "/");
@@ -57,7 +58,12 @@ export async function loadRepoCorpus(): Promise<RagChunk[]> {
     // Skip huge files
     if (text.length > 200_000) text = text.slice(0, 200_000);
     const id = rel.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
-    chunks.push(...chunkDocument({ id, title: rel, text, source: "repo", url: rel, tags: tagFor(rel), maxChars: 900 }));
+    for (const c of chunkDocument({ id, title: rel, text, source: "repo", url: rel, tags: tagFor(rel), maxChars: 900 })) {
+      const key = c.text.trim().toLowerCase().slice(0, 200);
+      if (seen.has(key)) continue;
+      seen.add(key);
+      chunks.push(c);
+    }
   }
   return chunks;
 }

@@ -46,6 +46,34 @@ export function SidePanelApp() {
 
   const [isDarkMode, setIsDarkMode] = useState(true);
 
+  const [brainQuestion, setBrainQuestion] = useState("");
+  const [brainAnswer, setBrainAnswer] = useState("");
+  const [brainLoading, setBrainLoading] = useState(false);
+
+  const askBrain = async () => {
+    if (!brainQuestion.trim()) return;
+    setBrainLoading(true);
+    setBrainAnswer("");
+    try {
+      const res = await fetch("https://cogwheel-seo-templates.vercel.app/api/brain", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ targetUrl: pageData?.url || (typeof window !== "undefined" ? window.location.href : ""), question: brainQuestion }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setBrainAnswer(data.interpretation || "No answer.");
+      } else {
+        setBrainAnswer(`Error: ${data.error || res.status}`);
+      }
+    } catch (e) {
+      setBrainAnswer(`Error: ${String(e)}`);
+    } finally {
+      setBrainLoading(false);
+    }
+  };
+
   useEffect(() => {
     try {
       if (isDarkMode) {
@@ -757,6 +785,31 @@ export function SidePanelApp() {
 
         {/* Tab Body */}
         <main className="flex-1 p-3.5 space-y-4">
+          {/* Ask the brain */}
+          {activeTab === "dashboard" && (
+            <div className="rounded-xl border border-[#27272A] bg-[#111113] p-4 text-[#FAFAFA]">
+              <div className="text-[10px] font-bold uppercase tracking-wider text-[#A1A1AA] mb-2">Ask the brain</div>
+              <textarea
+                value={brainQuestion}
+                onChange={(e) => setBrainQuestion(e.target.value)}
+                placeholder="Ask about this page..."
+                className="w-full rounded-lg border border-[#27272A] bg-[#09090B] p-2 text-xs text-[#FAFAFA] placeholder:text-[#71717A]"
+                rows={3}
+              />
+              <button
+                type="button"
+                onClick={askBrain}
+                disabled={brainLoading}
+                className="mt-2 rounded-lg bg-emerald-500 px-3 py-1.5 text-xs font-semibold text-slate-950 hover:bg-emerald-400 disabled:opacity-50"
+              >
+                {brainLoading ? "Thinking..." : "Ask"}
+              </button>
+              {brainAnswer && (
+                <pre className="mt-3 whitespace-pre-wrap rounded-lg border border-[#27272A] bg-[#09090B] p-2 text-[11px] text-[#A1A1AA]">{brainAnswer}</pre>
+              )}
+            </div>
+          )}
+
           {/* TAB 1: Audit & Radial Gauges */}
           {activeTab === "dashboard" && (
             <div className="space-y-4">

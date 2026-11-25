@@ -57,13 +57,22 @@ export function createKnowledgeBase(embedder: Embedder): KnowledgeBaseHandle {
     search(query: string, options: KnowledgeBaseSearchOptions = {}): ScoredChunk[] {
       const { topK = 4, tags, minScore = 0 } = options;
       const queryVector = embedder.embed(query);
+      const queryTokens = query.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
       const scored: ScoredChunk[] = [];
 
       for (const { chunk, vector } of index.values()) {
         if (tags && tags.length > 0 && !chunk.tags.some((tag) => tags.includes(tag))) {
           continue;
         }
-        const score = Number(cosineSimilarity(queryVector, vector).toFixed(6));
+        const cos = cosineSimilarity(queryVector, vector);
+        const text = `${chunk.title} ${chunk.text}`.toLowerCase();
+        let kw = 0;
+        for (const t of queryTokens) {
+          if (text.includes(t)) kw += 1;
+        }
+        const kwScore = queryTokens.length ? kw / queryTokens.length : 0;
+        // Hybrid: embeddings + keyword overlap, reranked.
+        const score = Number((0.7 * cos + 0.3 * kwScore).toFixed(6));
         if (score < minScore) {
           continue;
         }
