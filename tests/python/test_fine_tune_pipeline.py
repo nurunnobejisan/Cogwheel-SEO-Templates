@@ -11,7 +11,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.python.fine_tune_pipeline import (
+from python.scripts.fine_tune_pipeline import (
     compute_evaluation_benchmark,
     generate_lora_training_config,
     launch_vertex_ai_job,

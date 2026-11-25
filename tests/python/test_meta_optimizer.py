@@ -93,9 +93,9 @@ class TestMetaRulesAndRepair:
         assert len(excessive_meta) > 160
 
         tightened = sample_optimizer._repair_meta_length(
-            meta=excessive_meta,
-            keyword="luxury hotel Bend",
-            cta="Book direct for best rates.",
+            excessive_meta,
+            "luxury hotel Bend",
+            "Book direct for best rates.",
         )
         assert len(tightened) <= 160
         assert "luxury hotel bend" in tightened.lower()

@@ -7,12 +7,12 @@ from pathlib import Path
 ROOT_DIR = Path(__file__).resolve().parent.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from scripts.python.models import (
+from python.scripts.models import (
     BrandRule,
     KeywordStrategyMatrix,
     OtaConfig,
 )
-from scripts.python.validate_schemas import validate_keyword_matrix, validate_ota_config
+from python.scripts.validate_schemas import validate_keyword_matrix, validate_ota_config
 
 
 def test_keyword_strategy_matrix_validation():

@@ -1,68 +1,54 @@
-name: Auto-Build & Release Chrome Extension
+name: Release Chrome Extension
 
 on:
+  workflow_dispatch:
   push:
-    branches:
-      - main
+    branches: [main]
+    paths:
+      - 'chrome-extension/**'
 
 permissions:
   contents: write
 
 jobs:
-  build-and-release:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install & Build Extension
-        run: |
-          if [ -d "chrome-extension" ]; then
-            cd chrome-extension
-            npm ci
-            npm run build
-            cd dist
-            zip -r ../../cogwheel-seo-studio.zip .
-            cd ../..
-          else
-            npm ci
-            npm run build
-            cd dist
-            zip -r ../cogwheel-seo-studio.zip .
-            cd ..
-          fi
-
-      - name: Read Extension Version from manifest.json
+      - name: Read extension version from manifest.json
         id: meta
         run: |
           VERSION=$(node -p "require('./chrome-extension/public/manifest.json').version")
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
-      - name: Generate Chrome updates.xml
+      - name: Skip if this version is already released
+        id: check
         run: |
-          cat <<EOF > updates.xml
-          <?xml version='1.0' encoding='UTF-8'?>
-          <gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
-            <app appid='cogwheelseostudioinspectorid0001'>
-              <updatecheck codebase='https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/releases/latest/download/cogwheel-seo-studio.zip' version='${{ steps.meta.outputs.version }}' />
-            </app>
-          </gupdate>
-          EOF
+          if git ls-remote --tags origin "refs/tags/v${{ steps.meta.outputs.version }}" | grep -q .; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+            echo "Tag v${{ steps.meta.outputs.version }} already exists — skipping."
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
 
-      - name: Commit Updated updates.xml
+      - name: Setup Node.js
+        if: steps.check.outputs.exists == 'false'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build & package extension
+        if: steps.check.outputs.exists == 'false'
         run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add updates.xml
-          git diff --staged --quiet || git commit -m "chore: update updates.xml to v${{ steps.meta.outputs.version }}"
-          git push
+          cd chrome-extension
+          npm ci
+          npm run build
+          cd dist
+          zip -r "$GITHUB_WORKSPACE/cogwheel-seo-studio.zip" .
 
       - name: Publish GitHub Release
+        if: steps.check.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.meta.outputs.version }}

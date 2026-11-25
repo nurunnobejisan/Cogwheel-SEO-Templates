@@ -153,7 +153,7 @@ def main() -> int:
 
     if not train_records:
         print("[!] No training records found. Running prepare_unified_training_data pipeline first...")
-        from scripts.python.prepare_unified_training_data import main as prep_main
+        from python.scripts.prepare_unified_training_data import main as prep_main
         prep_main()
         train_records = load_jsonl(train_path)
         eval_records = load_jsonl(eval_path)

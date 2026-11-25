@@ -19,7 +19,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SCRIPT_DIR.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from scripts.python.models import KeywordStrategyMatrix, OtaConfig
+from python.scripts.models import KeywordStrategyMatrix, OtaConfig
 
 REPO_OWNER = "jisan-razibmarketing"
 REPO_NAME = "Cogwheel-SEO-Templates"

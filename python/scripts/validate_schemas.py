@@ -18,7 +18,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SCRIPT_DIR.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
-from scripts.python.models import (
+from python.scripts.models import (
     KeywordStrategyMatrix,
     OtaConfig,
 )

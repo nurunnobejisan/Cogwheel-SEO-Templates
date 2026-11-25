@@ -8,7 +8,7 @@ from pathlib import Path
 import openpyxl
 import pytest
 
-from cogwheel_auto import CogwheelAutoRunner
+from python.cogwheel_auto import CogwheelAutoRunner
 from python.generators.image_optimizer import (
     ImageAssetRecord,
     ImageOptimizer,
