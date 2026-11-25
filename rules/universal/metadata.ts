@@ -108,14 +108,13 @@ export const metaDescriptionPresenceRule: AuditRule = {
 export const metaDescriptionLengthRule: AuditRule = {
   id: "universal/metadata/meta-description-length",
   pillar: "metadata",
-  description: "Meta descriptions should be 120–160 characters and fit the 920px SERP ceiling.",
+  description: "Meta descriptions should be 120–160 characters to avoid SERP truncation.",
   evaluate({ snapshot }) {
     const description = snapshot.metaDescription.trim();
     if (!description) {
       return [];
     }
     const charCount = description.length;
-    const pixelWidth = calculatePixelWidth(description);
 
     if (charCount < META_DESC_MIN_CHARS) {
       return [
@@ -131,14 +130,14 @@ export const metaDescriptionLengthRule: AuditRule = {
       ];
     }
 
-    if (charCount > META_DESC_MAX_CHARS || pixelWidth > META_DESC_MAX_PX) {
+    if (charCount > META_DESC_MAX_CHARS) {
       return [
         makeIssue({
           issueId: "iss_meta_desc_too_long",
           category: "metadata",
           severity: "low",
           cmsTargetField: "meta_description",
-          currentValue: `${charCount} chars / ${pixelWidth}px`,
+          currentValue: `${charCount} chars / ${calculatePixelWidth(description)}px`,
           selector: "head > meta[name='description']",
           recommendedAction: `Shorten the meta description to ${META_DESC_MAX_CHARS} characters so it is not truncated.`,
         }),

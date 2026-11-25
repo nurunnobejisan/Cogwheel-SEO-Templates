@@ -7,8 +7,8 @@
  * Universal Mode without altering any hotel workflow.
  */
 
-import type { AuditMode, ModeDetection, PageSnapshot } from "../types.ts";
-import { createMemoryOverrideStore, type ModeOverrideStore } from "./mode-override.ts";
+import type { AuditMode, ModeDetection, ModeOverrideStoreLike, PageSnapshot } from "../types.ts";
+import { createMemoryOverrideStore } from "./mode-override.ts";
 
 /**
  * Schema.org types that identify a hospitality property. Covers LodgingBusiness
@@ -160,7 +160,7 @@ function findReservationParam(snapshot: PageSnapshot): string | null {
  */
 export function resolveAuditMode(
   snapshot: PageSnapshot,
-  overrideStore: ModeOverrideStore = createMemoryOverrideStore()
+  overrideStore: ModeOverrideStoreLike = createMemoryOverrideStore()
 ): ModeDetection {
   const detected = detectMode(snapshot);
   const override = overrideStore.get(snapshot.hostname);

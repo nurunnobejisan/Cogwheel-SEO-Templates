@@ -1,0 +1,92 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UniversalAuditReport",
+  "description": "Standardized mode-aware audit payload emitted by the Cogwheel Universal SEO Engine (rules/index.ts). Consumed by the AI patch engine and the CMS deployment gateway.",
+  "type": "object",
+  "properties": {
+    "auditId": { "type": "string", "minLength": 1 },
+    "domain": { "type": "string", "minLength": 1 },
+    "pageUrl": { "type": "string", "minLength": 1 },
+    "timestamp": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["universal", "hotel"] },
+    "modeDetection": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string", "enum": ["universal", "hotel"] },
+        "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+        "signals": { "type": "array", "items": { "type": "string" } },
+        "overridden": { "type": "boolean" }
+      },
+      "required": ["mode", "confidence", "signals", "overridden"],
+      "additionalProperties": false
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "issueId": { "type": "string", "minLength": 1 },
+          "category": {
+            "type": "string",
+            "enum": ["metadata", "content", "media", "technical", "accessibility", "schema", "hospitality"]
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["critical", "high", "medium", "low", "info"]
+          },
+          "fixable": { "type": "boolean" },
+          "cmsTargetField": { "type": ["string", "null"] },
+          "context": {
+            "type": "object",
+            "properties": {
+              "currentValue": { "type": ["string", "number", "boolean", "null"] },
+              "selector": { "type": "string" },
+              "imageSrc": { "type": "string" },
+              "recommendedAction": { "type": "string" }
+            },
+            "required": ["currentValue", "selector", "recommendedAction"],
+            "additionalProperties": false
+          }
+        },
+        "required": ["issueId", "category", "severity", "fixable", "cmsTargetField", "context"],
+        "additionalProperties": false
+      }
+    },
+    "summary": {
+      "type": "object",
+      "properties": {
+        "totalIssues": { "type": "integer", "minimum": 0 },
+        "bySeverity": {
+          "type": "object",
+          "properties": {
+            "critical": { "type": "integer", "minimum": 0 },
+            "high": { "type": "integer", "minimum": 0 },
+            "medium": { "type": "integer", "minimum": 0 },
+            "low": { "type": "integer", "minimum": 0 },
+            "info": { "type": "integer", "minimum": 0 }
+          },
+          "required": ["critical", "high", "medium", "low", "info"],
+          "additionalProperties": false
+        },
+        "byCategory": {
+          "type": "object",
+          "properties": {
+            "metadata": { "type": "integer", "minimum": 0 },
+            "content": { "type": "integer", "minimum": 0 },
+            "media": { "type": "integer", "minimum": 0 },
+            "technical": { "type": "integer", "minimum": 0 },
+            "accessibility": { "type": "integer", "minimum": 0 },
+            "schema": { "type": "integer", "minimum": 0 },
+            "hospitality": { "type": "integer", "minimum": 0 }
+          },
+          "additionalProperties": false
+        },
+        "score": { "type": "number", "minimum": 0, "maximum": 100 }
+      },
+      "required": ["totalIssues", "bySeverity", "byCategory", "score"],
+      "additionalProperties": false
+    }
+  },
+  "required": ["auditId", "domain", "pageUrl", "timestamp", "mode", "modeDetection", "issues", "summary"],
+  "additionalProperties": false
+}
