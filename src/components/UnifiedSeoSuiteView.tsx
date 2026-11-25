@@ -177,7 +177,7 @@ export function UnifiedSeoSuiteView({
   const [trainingLoading, setTrainingLoading] = useState<boolean>(false);
 
   useEffect(() => {
-    if (subTab !== "model-training" || trainingData || trainingLoading) return;
+    if (subTab !== "model-training" || trainingData) return;
     let cancelled = false;
     setTrainingLoading(true);
 
@@ -202,7 +202,7 @@ export function UnifiedSeoSuiteView({
     return () => {
       cancelled = true;
     };
-  }, [subTab, trainingData, trainingLoading]);
+  }, [subTab, trainingData]);
 
   // Run Full Audit Handler
   const handleRunAudit = async (e?: React.FormEvent) => {
@@ -325,8 +325,8 @@ export function UnifiedSeoSuiteView({
           { id: "full-audit", label: "Full Website Audit", tag: "11-D" },
           { id: "gsc-intel", label: "GSC Performance & Cannibalization", tag: "FastMCP" },
           { id: "geo-visibility", label: "AI & GEO Visibility", tag: "AI Citations" },
-          { id: "ai-orchestrator", label: "Unified AI Assistant", tag: "20 Agents" },
-          { id: "model-training", label: "AI Model & Training Vault", tag: "SFT v3.0" },
+          { id: "ai-orchestrator", label: "Audit Assistant", tag: "Rules-based" },
+          { id: "model-training", label: "Training Rules", tag: "Stored" },
         ].map((tab) => (
           <button
             key={tab.id}
@@ -738,10 +738,11 @@ export function UnifiedSeoSuiteView({
       {subTab === "ai-orchestrator" && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
           <h2 className="font-display text-base font-bold text-slate-900 dark:text-white">
-            Unified AI SEO Model &amp; Multi-Agent Orchestrator
+            Audit Assistant
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            Interactive multi-tool assistant with direct access to all 9 integrated SEO tools.
+            Answers are derived from the current audit report by the rules engine. No external AI
+            model is called, and unavailable data sources are named rather than estimated.
           </p>
 
           <div className="mt-4 flex flex-col h-[400px] rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
@@ -768,7 +769,7 @@ export function UnifiedSeoSuiteView({
                 </div>
               ))}
               {isChatLoading && (
-                <div className="text-xs text-slate-500 italic">AI is evaluating tools and compiling diagnostic data...</div>
+                <div className="text-xs text-slate-500 italic">Reading the current audit report...</div>
               )}
             </div>
 
@@ -797,7 +798,7 @@ export function UnifiedSeoSuiteView({
                 type="text"
                 value={chatInput}
                 onChange={(e) => setChatInput(e.target.value)}
-                placeholder="Ask about query cannibalization, Google algorithm updates, or GEO citations..."
+                placeholder="Ask about Search Console, GEO, algorithm risk, headings, images or technical health..."
                 className="flex-1 rounded-xl border border-slate-300 bg-white px-3.5 py-2.5 text-xs text-slate-900 shadow-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
               />
               <button
@@ -812,108 +813,125 @@ export function UnifiedSeoSuiteView({
         </div>
       )}
 
-      {/* SUBTAB 5: MODEL TRAINING & REGISTRY */}
+      {/* SUBTAB 5: TRAINING RULES & CHANGE HISTORY */}
       {subTab === "model-training" && (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="font-display text-base font-bold text-slate-900 dark:text-white">
-            Fine-Tuning Dataset &amp; Model Checkpoint Vault
-          </h2>
-          <p className="mt-1 text-xs text-slate-500">
-            Synthesized from Google Update archives, 20 agent instruction sets, and hospitality SERP matrix.
-          </p>
+        <div className="space-y-6">
+          <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <h2 className="font-display text-base font-bold text-slate-900 dark:text-white">
+              Training Rules &amp; Change History
+            </h2>
+            <p className="mt-1 text-xs text-slate-500">
+              Loaded live from <code className="font-mono">/api/ai-training</code>. Rules are the
+              operator guidance the platform applies; the list below is the stored state, not a demo
+              dataset.
+            </p>
 
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[11px] font-bold uppercase text-slate-500">Active Checkpoint</span>
-              <div className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white truncate">
-                {modelRegistry.activeModelId}
+            {trainingLoading && (
+              <p className="mt-6 text-xs italic text-slate-500">Loading stored rules…</p>
+            )}
+
+            {trainingError && (
+              <div className="mt-6 rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
+                <strong>Could not load training data:</strong> {trainingError}
               </div>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[11px] font-bold uppercase text-slate-500">Train / Eval Examples</span>
-              <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">
-                {modelRegistry.totalTrainingExamples} / {modelRegistry.totalEvalExamples}
-              </div>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[11px] font-bold uppercase text-slate-500">Holdout Benchmark</span>
-              <div className="mt-1 font-display text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-                {modelRegistry.benchmarkScore}%
-              </div>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[11px] font-bold uppercase text-slate-500">Hallucination Rate</span>
-              <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">
-                {modelRegistry.hallucinationRate}%
-              </div>
-            </div>
+            )}
+
+            {trainingData && (
+              <>
+                <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
+                    <span className="text-[11px] font-bold uppercase text-slate-500">AI Provider</span>
+                    <div className="mt-1 font-mono text-xs font-bold text-slate-900 dark:text-white truncate">
+                      {trainingData.provider}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
+                    <span className="text-[11px] font-bold uppercase text-slate-500">Stored Rules</span>
+                    <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">
+                      {trainingData.rules.length}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
+                    <span className="text-[11px] font-bold uppercase text-slate-500">Active Rules</span>
+                    <div className="mt-1 font-display text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+                      {trainingData.rules.filter((rule) => rule.active).length}
+                    </div>
+                  </div>
+                  <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
+                    <span className="text-[11px] font-bold uppercase text-slate-500">Feedback Records</span>
+                    <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">
+                      {trainingData.history.length}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                      Stored rules
+                    </h3>
+                    {trainingData.rules.length === 0 ? (
+                      <p className="mt-3 text-xs text-slate-500">No rules are stored yet.</p>
+                    ) : (
+                      <ul className="mt-3 space-y-3">
+                        {trainingData.rules.slice(0, 6).map((rule) => (
+                          <li key={rule.id} className="rounded-lg border border-slate-200 bg-white p-3 text-xs dark:border-slate-800 dark:bg-slate-900">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-bold text-slate-900 dark:text-white">{rule.title}</span>
+                              <span className={`rounded px-1.5 py-0.5 text-[10px] font-bold uppercase ${rule.active ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300" : "bg-slate-200 text-slate-600 dark:bg-slate-800 dark:text-slate-400"}`}>
+                                {rule.active ? "active" : "inactive"}
+                              </span>
+                            </div>
+                            <p className="mt-1 text-slate-600 dark:text-slate-400">{rule.ruleText}</p>
+                            <p className="mt-1 text-[10px] text-slate-400">
+                              {rule.taskId ? `Task: ${rule.taskId}` : "Global rule"}
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+
+                  <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30">
+                    <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+                      Recent feedback
+                    </h3>
+                    {trainingData.history.length === 0 ? (
+                      <p className="mt-3 text-xs text-slate-500">
+                        No feedback has been recorded on this instance. Feedback history is kept in
+                        memory and resets when the server restarts.
+                      </p>
+                    ) : (
+                      <ul className="mt-3 space-y-3">
+                        {trainingData.history.slice(-6).reverse().map((entry) => (
+                          <li key={entry.id} className="rounded-lg border border-slate-200 bg-white p-3 text-xs dark:border-slate-800 dark:bg-slate-900">
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="font-bold text-slate-900 dark:text-white">{entry.authorName}</span>
+                              <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold uppercase text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                                {entry.status}
+                              </span>
+                            </div>
+                            <p className="mt-1 text-slate-600 dark:text-slate-400">{entry.summary || entry.requestText}</p>
+                            <p className="mt-1 text-[10px] text-slate-400">{new Date(entry.createdAt).toLocaleString()}</p>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
-          {/* SFT Dataset & Loss Curve Breakdown */}
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                SFT Dataset Composition (168 Total Examples)
-              </h3>
-              <div className="mt-3 space-y-2 text-xs">
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
-                    <span>Google Algorithm Updates (2019-2024)</span>
-                    <span className="font-mono font-bold text-slate-900 dark:text-white">35 pairs (21%)</span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                    <div className="h-full rounded-full bg-blue-500" style={{ width: "21%" }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
-                    <span>20 Specialized Claude-SEO Agents</span>
-                    <span className="font-mono font-bold text-slate-900 dark:text-white">20 pairs (12%)</span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                    <div className="h-full rounded-full bg-purple-500" style={{ width: "12%" }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
-                    <span>78-Keyword Strategy &amp; Intent Matrix</span>
-                    <span className="font-mono font-bold text-slate-900 dark:text-white">78 pairs (46%)</span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                    <div className="h-full rounded-full bg-brand" style={{ width: "46%" }} />
-                  </div>
-                </div>
-                <div>
-                  <div className="flex justify-between text-[11px] text-slate-500 dark:text-slate-400 mb-1">
-                    <span>Search Console Query Cannibalization &amp; GEO</span>
-                    <span className="font-mono font-bold text-slate-900 dark:text-white">35 pairs (21%)</span>
-                  </div>
-                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-200 dark:bg-slate-700">
-                    <div className="h-full rounded-full bg-emerald-500" style={{ width: "21%" }} />
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="rounded-xl border border-slate-200 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-800/30">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-300">
-                Fine-Tuning Convergence &amp; Quality Metrics
-              </h3>
-              <div className="mt-3 space-y-3 text-xs">
-                <div className="flex items-center justify-between rounded-lg bg-white p-2.5 shadow-2xs dark:bg-slate-900">
-                  <span className="text-slate-600 dark:text-slate-400">Initial Validation Loss</span>
-                  <span className="font-mono font-bold text-slate-900 dark:text-white">1.842</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-white p-2.5 shadow-2xs dark:bg-slate-900">
-                  <span className="text-slate-600 dark:text-slate-400">Final Epoch 3 Loss</span>
-                  <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">0.412 (-77.6%)</span>
-                </div>
-                <div className="flex items-center justify-between rounded-lg bg-white p-2.5 shadow-2xs dark:bg-slate-900">
-                  <span className="text-slate-600 dark:text-slate-400">Deterministic Formatting Compliance</span>
-                  <span className="font-mono font-bold text-brand-dark dark:text-brand">100.0%</span>
-                </div>
-              </div>
-            </div>
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/60 p-5 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-400">
+            <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">
+              No model checkpoint is configured
+            </h3>
+            <p className="mt-1">
+              Holdout benchmark, validation loss and hallucination rate require a trained checkpoint
+              plus an evaluation harness. Neither exists in this deployment, so those figures are not
+              shown — placeholder numbers would misrepresent the system&apos;s quality.
+            </p>
           </div>
         </div>
       )}

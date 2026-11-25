@@ -25,6 +25,10 @@ const CONTENT_W = PAGE_W - MARGIN * 2;
 
 type Cell = string | number;
 
+function toTableRows(rows: Cell[][]): PptxGenJS.TableRow[] {
+  return rows.map((row) => row.map((cell) => ({ text: String(cell) })));
+}
+
 function truncate(value: string, max: number): string {
   const text = String(value ?? "").trim();
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
@@ -189,7 +193,7 @@ export async function buildAuditPptxReport(report: FullWebsiteAuditReport): Prom
   const addTableSlide = (title: string, subtitle: string, rows: Cell[][], page: number) => {
     const slide = pptx.addSlide();
     addHeader(slide, title, subtitle);
-    slide.addTable(rows, {
+    slide.addTable(toTableRows(rows), {
       x: MARGIN,
       y: 1.2,
       w: CONTENT_W,
@@ -339,7 +343,7 @@ export async function buildAuditPptxReport(report: FullWebsiteAuditReport): Prom
           item.effort,
         ]);
       }
-      slide.addTable(rows, {
+      slide.addTable(toTableRows(rows), {
         x: MARGIN,
         y: 1.2,
         w: CONTENT_W,
@@ -360,11 +364,11 @@ export async function buildAuditPptxReport(report: FullWebsiteAuditReport): Prom
   const prov = pptx.addSlide();
   addHeader(prov, "Data provenance", "What was measured, estimated and unavailable");
   const provRows: Cell[][] = [
-    ["Measured", prov.measured.join("; ") || "None"],
-    ["Estimated", prov.estimated.join("; ") || "None"],
-    ["Unavailable", prov.unavailable.join("; ") || "None"],
+    ["Measured", r.dataProvenance.measured.join("; ") || "None"],
+    ["Estimated", r.dataProvenance.estimated.join("; ") || "None"],
+    ["Unavailable", r.dataProvenance.unavailable.join("; ") || "None"],
   ];
-  prov.addTable(provRows, {
+  prov.addTable(toTableRows(provRows), {
     x: MARGIN,
     y: 1.2,
     w: CONTENT_W,
@@ -376,8 +380,8 @@ export async function buildAuditPptxReport(report: FullWebsiteAuditReport): Prom
     valign: "top",
     margin: 0.08,
   });
-  if (prov.notes.length > 0) {
-    prov.addText(prov.notes.map((note) => `• ${note}`).join("\n"), {
+  if (r.dataProvenance.notes.length > 0) {
+    prov.addText(r.dataProvenance.notes.map((note) => `• ${note}`).join("\n"), {
       x: MARGIN,
       y: 3.35,
       w: CONTENT_W,

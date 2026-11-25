@@ -51,24 +51,25 @@ export async function POST(req: NextRequest) {
 
   const { format, report } = parsed.data;
 
+  const { contentType } = AUDIT_REPORT_FORMATS[format];
+
   try {
-    let body: string | Uint8Array;
+    let body: string | Blob;
     switch (format as AuditReportFormat) {
       case "html":
         body = buildAuditHtmlReport(report);
         break;
       case "pdf":
-        body = new Uint8Array(buildAuditPdfReport(report));
+        body = new Blob([new Uint8Array(buildAuditPdfReport(report))], { type: contentType });
         break;
       case "csv":
         body = buildAuditCsvReport(report);
         break;
       case "pptx":
-        body = new Uint8Array(await buildAuditPptxReport(report));
+        body = new Blob([new Uint8Array(await buildAuditPptxReport(report))], { type: contentType });
         break;
     }
 
-    const { contentType } = AUDIT_REPORT_FORMATS[format];
     return new NextResponse(body, {
       status: 200,
       headers: {

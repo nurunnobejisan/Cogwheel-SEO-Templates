@@ -125,8 +125,8 @@ export function CommandPalette({
       action: () => {
         onClose();
         const a = document.createElement("a");
-        a.href = "/cogwheel-chrome-extension.zip";
-        a.download = "cogwheel-chrome-extension.zip";
+        a.href = "/cogwheel-seo-studio.zip";
+        a.download = "cogwheel-seo-studio.zip";
         a.click();
       },
     });

@@ -17,7 +17,7 @@
     "export:json-schemas": "tsx scripts/export-json-schemas.ts",
     "build:extension": "node scripts/build-extension.js",
     "extension:build": "cd chrome-extension && npm run build",
-    "extension:pack": "cd chrome-extension && npm run build && cd dist && rm -f ../../public/cogwheel-chrome-extension.zip && zip -r ../../public/cogwheel-chrome-extension.zip . -x '*.DS_Store'"
+    "extension:pack": "cd chrome-extension && npm run build && cd dist && rm -f ../../public/cogwheel-seo-studio.zip && zip -r ../../public/cogwheel-seo-studio.zip . -x '*.DS_Store'"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
