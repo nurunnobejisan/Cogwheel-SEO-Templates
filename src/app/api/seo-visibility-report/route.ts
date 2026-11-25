@@ -5,6 +5,7 @@ import fs from "fs/promises";
 import path from "path";
 import os from "os";
 import * as XLSX from "xlsx";
+import { safeFetch, readTextCapped } from "@/lib/security/egress";
 
 const execFileAsync = promisify(execFile);
 
@@ -167,26 +168,23 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      // SSRF guard: reject internal hosts / hostnames resolving to private IPs.
+      try {
+        await assertEgressAllowed(effectiveUrl);
+      } catch (err: unknown) {
+        return NextResponse.json(
+          { error: err instanceof Error ? err.message : "Invalid target URL." },
+          { status: 400 }
+        );
+      }
+
       const cacheKey = `${effectiveUrl.toLowerCase()}_${workbookKeywords.length}`;
       const cached = CRAWL_CACHE.get(cacheKey);
       if (cached && Date.now() - cached.timestamp < CRAWL_CACHE_TTL_MS) {
         return NextResponse.json(cached.data);
       }
 
-      // Try running the Python crawl script first if available
-      try {
-        const pythonScript = path.resolve(process.cwd(), "api/seo-visibility-report.py");
-        const scriptExists = await fs.stat(pythonScript).then(() => true).catch(() => false);
-
-        if (scriptExists) {
-          // We can call python script or inspect directly
-          // Direct high-speed crawler in TypeScript:
-        }
-      } catch {
-        // fallback
-      }
-
-      // High-speed robust crawler
+      // High-speed robust crawler (SSRF-guarded: every hop is validated)
       let pageTitle = cleanTitleFromUrl(effectiveUrl);
       const urlText = effectiveUrl.replace(/[^a-z0-9]+/gi, " ");
       const webServices = detectServicesInText(urlText);
@@ -194,21 +192,20 @@ export async function POST(req: NextRequest) {
 
       // Fetch homepage text with timeout
       try {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), 4500);
-
-        const res = await fetch(effectiveUrl, {
-          headers: {
-            "User-Agent":
-              "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+        const { response: res } = await safeFetch(
+          effectiveUrl,
+          {
+            headers: {
+              "User-Agent":
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+              Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+            },
           },
-          signal: controller.signal,
-        });
-        clearTimeout(timeout);
+          { timeoutMs: 4500, maxRedirects: 3 },
+        );
 
         if (res.ok) {
-          const html = await res.text();
+          const html = await readTextCapped(res, 1_500_000);
           const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
           if (titleMatch && titleMatch[1]) {
             const cleanT = titleMatch[1].replace(/[\r\n\t]+/g, " ").trim();

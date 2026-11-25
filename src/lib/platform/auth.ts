@@ -3,50 +3,58 @@
  *
  * Maps an inbound Next.js request to a platform `Principal`.
  *
- * In production this is where JWT/session verification lives: replace
- * `principalFromRequest()` with a call to your auth provider and read the
- * subject + role claims. The development implementation reads the actor from
- * headers (or the `cw_actor_*` cookies the operator console sets) so the API is
- * usable locally before auth is wired.
+ * Production path: a signed session token in the `cw_session` cookie is
+ * verified with HMAC-SHA256 (`session.ts`). There is no trusted-header path —
+ * `x-actor-role` is ignored unless the insecure local fallback below is
+ * explicitly enabled.
+ *
+ * Local development: with `PLATFORM_DEV_AUTH=1` (and `NODE_ENV !== production`)
+ * the console's role switcher can act via the unsigned `cw_actor_*` cookies.
+ * Never enable that on a public deployment.
  */
 
-import type { Principal, Role } from "../../../platform/index.ts";
+import type { Principal } from "../../../platform/index.ts";
+import { devAuthEnabled, isRole, readCookie, SESSION_COOKIE, verifySessionToken } from "./session.ts";
 
-const ROLES: readonly Role[] = ["viewer", "specialist", "admin"];
-
-export function isRole(value: string | undefined | null): value is Role {
-  return typeof value === "string" && (ROLES as readonly string[]).includes(value);
-}
+export { isRole } from "./session.ts";
 
 export interface PrincipalReader {
   header(name: string): string | null;
 }
 
-function cookie(reader: PrincipalReader, name: string): string | null {
-  const raw = reader.header("cookie");
-  if (!raw) {
-    return null;
-  }
-  for (const part of raw.split(";")) {
-    const [key, ...rest] = part.trim().split("=");
-    if (key === name) {
-      return decodeURIComponent(rest.join("="));
-    }
-  }
-  return null;
-}
-
-function pick(reader: PrincipalReader, headerName: string, cookieName: string): string | null {
-  return reader.header(headerName) ?? cookie(reader, cookieName);
-}
-
-/** Derive the acting principal. Returns an empty id when unauthenticated. */
-export function principalFromRequest(reader: PrincipalReader): Principal {
-  const role = pick(reader, "x-actor-role", "cw_actor_role");
-  const organizationId = pick(reader, "x-organization-id", "cw_actor_org") ?? undefined;
+function devPrincipal(reader: PrincipalReader): Principal {
+  const pick = (cookieName: string): string | null => readCookie(reader.header("cookie"), cookieName);
+  const role = pick("cw_actor_role");
+  const organizationId = pick("cw_actor_org") || undefined;
   return {
-    id: pick(reader, "x-actor-id", "cw_actor_id") ?? "",
+    id: pick("cw_actor_id") || "",
     role: isRole(role) ? role : "viewer",
     ...(organizationId ? { organizationId } : {}),
   };
+}
+
+/**
+ * Derive the acting principal from a verified session.
+ *
+ * Returns an anonymous viewer (`id: ""`) when there is no valid session. Callers
+ * that need a real identity must check `principal.id` — see
+ * `isAuthenticatedPrincipal`.
+ */
+export async function principalFromRequest(reader: PrincipalReader): Promise<Principal> {
+  const token = readCookie(reader.header("cookie"), SESSION_COOKIE);
+  const session = await verifySessionToken(token);
+  if (session) {
+    return session;
+  }
+
+  if (devAuthEnabled()) {
+    return devPrincipal(reader);
+  }
+
+  return { id: "", role: "viewer" };
+}
+
+/** True when the principal came from a verified session (or local dev auth). */
+export function isAuthenticatedPrincipal(principal: Principal): boolean {
+  return principal.id.trim().length > 0;
 }

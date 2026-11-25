@@ -1,4 +1,5 @@
 import type { RobotsRuleSet } from "./types";
+import { readTextCapped, safeFetch } from "../../lib/security/egress";
 
 export const CRAWLER_USER_AGENT = "HiltonSEOStudioCrawler/1.0 (+https://hilton-seo-studio.vercel.app)";
 const BOT_TOKEN = "hiltonseostudiocrawler";
@@ -95,12 +96,13 @@ export function isUrlAllowedByRobots(url: string, rules: RobotsRuleSet): boolean
 
 export async function fetchRobotsTxt(origin: string, timeoutMs = 5000): Promise<RobotsRuleSet> {
   try {
-    const res = await fetch(`${origin}/robots.txt`, {
-      headers: { "User-Agent": CRAWLER_USER_AGENT },
-      signal: AbortSignal.timeout(timeoutMs),
-    });
-    if (!res.ok) return { allow: [], disallow: [], sitemaps: [], raw: "" };
-    const text = await res.text();
+    const { response } = await safeFetch(
+      `${origin}/robots.txt`,
+      { headers: { "User-Agent": CRAWLER_USER_AGENT } },
+      { timeoutMs, maxRedirects: 3 },
+    );
+    if (!response.ok) return { allow: [], disallow: [], sitemaps: [], raw: "" };
+    const text = await readTextCapped(response);
     return parseRobotsTxt(text);
   } catch {
     return { allow: [], disallow: [], sitemaps: [], raw: "" };

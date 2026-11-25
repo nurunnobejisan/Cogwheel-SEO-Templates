@@ -1,4 +1,5 @@
 import { CRAWLER_USER_AGENT } from "./robots";
+import { assertEgressAllowed } from "../../lib/security/egress";
 import type { RedirectHop } from "./types";
 
 const MAX_REDIRECTS = 10;
@@ -68,6 +69,8 @@ export async function fetchPageWithRedirects(
     try {
       for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
         await limiter.wait();
+        // Re-validate every hop: a redirect can point at internal infrastructure.
+        currentUrl = await assertEgressAllowed(currentUrl);
         const res = await fetchSingleHop(currentUrl, timeoutMs);
         statusCode = res.status;
 

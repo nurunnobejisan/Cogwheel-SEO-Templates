@@ -26,20 +26,42 @@ const TRACKING_PARAMS = new Set([
   "igshid",
 ]);
 
-function isPrivateOrReservedIp(ip: string): boolean {
+function isPrivateOrReservedIpv4(ip: string): boolean {
+  const [a, b, c] = ip.split(".").map(Number);
+  if (a === 0 || a === 10 || a === 127) return true;
+  if (a === 100 && b >= 64 && b <= 127) return true; // carrier-grade NAT
+  if (a === 169 && b === 254) return true; // link-local / cloud metadata
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  if (a === 192 && b === 0 && (c === 0 || c === 2)) return true; // IETF protocol / TEST-NET-1
+  if (a === 198 && (b === 18 || b === 19)) return true; // benchmarking
+  if (a === 198 && b === 51 && c === 100) return true; // TEST-NET-2
+  if (a === 203 && b === 0 && c === 113) return true; // TEST-NET-3
+  if (a >= 224) return true; // multicast + reserved + broadcast
+  return false;
+}
+
+/**
+ * True for loopback, private, link-local, carrier-grade NAT, multicast and
+ * other non-routable/reserved addresses. Used for outbound request (SSRF)
+ * protection whenever a user supplies a URL.
+ */
+export function isPrivateOrReservedIp(ip: string): boolean {
   const version = net.isIP(ip);
   if (version === 4) {
-    const [a, b] = ip.split(".").map(Number);
-    if (a === 10 || a === 127 || a === 0) return true;
-    if (a === 169 && b === 254) return true;
-    if (a === 172 && b >= 16 && b <= 31) return true;
-    if (a === 192 && b === 168) return true;
-    if (a >= 224) return true;
-    return false;
+    return isPrivateOrReservedIpv4(ip);
   }
   if (version === 6) {
     const lower = ip.toLowerCase();
-    return lower === "::1" || lower === "::" || lower.startsWith("fe80:") || lower.startsWith("fc") || lower.startsWith("fd");
+    // IPv4-mapped IPv6 (::ffff:127.0.0.1) — validate the embedded address.
+    const mapped = lower.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
+    if (mapped) return isPrivateOrReservedIpv4(mapped[1]);
+    if (lower === "::1" || lower === "::") return true;
+    if (lower.startsWith("fe80:")) return true; // link-local
+    if (lower.startsWith("fc") || lower.startsWith("fd")) return true; // unique local
+    if (lower.startsWith("ff")) return true; // multicast
+    if (lower.startsWith("2001:db8")) return true; // documentation
+    return false;
   }
   return false;
 }

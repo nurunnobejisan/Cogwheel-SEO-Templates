@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { assertEgressAllowed, readTextCapped, safeFetch } from "@/lib/security/egress";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
@@ -65,6 +66,14 @@ export async function POST(req: Request) {
       inputUrl = `https://${inputUrl}`;
     }
 
+    // SSRF guard: reject internal hosts and hostnames that resolve to private IPs.
+    try {
+      inputUrl = await assertEgressAllowed(inputUrl);
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Invalid URL";
+      return NextResponse.json({ error: msg }, { status: 400 });
+    }
+
     let sitemapUrl = inputUrl;
     if (!inputUrl.endsWith(".xml") && !inputUrl.includes("sitemap")) {
       const trimmed = inputUrl.replace(/\/+$/, "");
@@ -74,32 +83,38 @@ export async function POST(req: Request) {
     let xmlText = "";
     let finalSitemapUrl = sitemapUrl;
     try {
-      const res = await fetch(sitemapUrl, {
-        headers: {
-          "User-Agent": "Mozilla/5.0 (compatible; CogwheelSEOSitemapBot/2.6; +https://cogwheel.hospitality)",
-          Accept: "application/xml, text/xml, */*",
+      const { response: res } = await safeFetch(
+        sitemapUrl,
+        {
+          headers: {
+            "User-Agent": "Mozilla/5.0 (compatible; CogwheelSEOSitemapBot/2.6; +https://cogwheel.hospitality)",
+            Accept: "application/xml, text/xml, */*",
+          },
         },
-        signal: AbortSignal.timeout(10000),
-      });
+        { timeoutMs: 10_000, maxRedirects: 3 },
+      );
 
       if (!res.ok) {
         // Try fallback sitemap_index.xml or index.xml
         const fallbackUrl = sitemapUrl.replace("/sitemap.xml", "/sitemap_index.xml");
-        const fbRes = await fetch(fallbackUrl, {
-          headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; CogwheelSEOSitemapBot/2.6)",
-            Accept: "application/xml, text/xml, */*",
+        const { response: fbRes } = await safeFetch(
+          fallbackUrl,
+          {
+            headers: {
+              "User-Agent": "Mozilla/5.0 (compatible; CogwheelSEOSitemapBot/2.6)",
+              Accept: "application/xml, text/xml, */*",
+            },
           },
-          signal: AbortSignal.timeout(8000),
-        });
+          { timeoutMs: 8000, maxRedirects: 3 },
+        );
         if (fbRes.ok) {
-          xmlText = await fbRes.text();
+          xmlText = await readTextCapped(fbRes);
           finalSitemapUrl = fallbackUrl;
         } else {
           throw new Error(`Sitemap responded with HTTP ${res.status}`);
         }
       } else {
-        xmlText = await res.text();
+        xmlText = await readTextCapped(res);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : String(err);
@@ -121,16 +136,17 @@ export async function POST(req: Request) {
       const discoveredSubUrls: string[] = [];
       for (const subUrl of subSitemaps.slice(0, 3)) {
         try {
-          const subRes = await fetch(subUrl, {
-            headers: { "User-Agent": "CogwheelSEOSitemapBot/2.6" },
-            signal: AbortSignal.timeout(5000),
-          });
+          const { response: subRes } = await safeFetch(
+            subUrl,
+            { headers: { "User-Agent": "CogwheelSEOSitemapBot/2.6" } },
+            { timeoutMs: 5000, maxRedirects: 3 },
+          );
           if (subRes.ok) {
-            const subXml = await subRes.text();
+            const subXml = await readTextCapped(subRes);
             discoveredSubUrls.push(...extractLocsFromXml(subXml));
           }
         } catch {
-          // ignore individual sub-sitemap failures
+          // ignore individual sub-sitemap failures (including blocked URLs)
         }
       }
       if (discoveredSubUrls.length > 0) {

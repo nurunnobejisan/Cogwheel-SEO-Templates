@@ -1,6 +1,7 @@
 import { CRAWLER_USER_AGENT } from "./robots";
 import type { SitemapStatusEntry } from "./types";
 import { normalizeCrawlUrl } from "./url";
+import { readTextCapped, safeFetch } from "../../lib/security/egress";
 
 export function parseSitemapXml(xmlText: string): { isIndex: boolean; locs: string[] } {
   if (!xmlText) return { isIndex: false, locs: [] };
@@ -13,12 +14,16 @@ export function parseSitemapXml(xmlText: string): { isIndex: boolean; locs: stri
 
 async function fetchXml(url: string, timeoutMs = 5000): Promise<{ status: number; text: string }> {
   try {
-    const res = await fetch(url, {
-      headers: { "User-Agent": CRAWLER_USER_AGENT, Accept: "application/xml,text/xml,*/*;q=0.8" },
-      signal: AbortSignal.timeout(timeoutMs),
-    });
-    const text = res.ok ? await res.text() : "";
-    return { status: res.status, text };
+    // Sitemap URLs come from robots.txt / sitemap XML (attacker-controllable).
+    const { response } = await safeFetch(
+      url,
+      {
+        headers: { "User-Agent": CRAWLER_USER_AGENT, Accept: "application/xml,text/xml,*/*;q=0.8" },
+      },
+      { timeoutMs, maxRedirects: 3 },
+    );
+    const text = response.ok ? await readTextCapped(response) : "";
+    return { status: response.status, text };
   } catch {
     return { status: 0, text: "" };
   }

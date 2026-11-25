@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { parseHtmlPage, validateTargetUrl } from "@/core/crawler";
+import { parseHtmlPage } from "@/core/crawler";
+import { readTextCapped, safeFetch } from "@/lib/security/egress";
 
 export const runtime = "nodejs";
 
@@ -53,17 +54,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Property URL is required." }, { status: 400 });
     }
 
-    const safeUrl = validateTargetUrl(rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`);
-    const controller = new AbortController();
-    const timer = setTimeout(() => controller.abort(), 7000);
-
-    const res = await fetch(safeUrl, {
-      signal: controller.signal,
-      headers: {
-        "User-Agent": "RazibMarketingSEOBot/1.0 (+https://razibmarketing.com)",
-        Accept: "text/html,application/xhtml+xml",
+    const { response: res, requestedUrl } = await safeFetch(
+      rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`,
+      {
+        headers: {
+          "User-Agent": "RazibMarketingSEOBot/1.0 (+https://razibmarketing.com)",
+          Accept: "text/html,application/xhtml+xml",
+        },
       },
-    }).finally(() => clearTimeout(timer));
+      { timeoutMs: 7000, maxRedirects: 3 },
+    );
 
     if (!res.ok) {
       return NextResponse.json(
@@ -72,8 +72,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const html = await res.text();
-    const parsed = parseHtmlPage(safeUrl, html);
+    const html = await readTextCapped(res);
+    const parsed = parseHtmlPage(requestedUrl, html);
 
     let name = "";
     let city = "";
@@ -107,7 +107,7 @@ export async function POST(req: Request) {
     const h1Text = parsed.h1H6.find((h) => h.level === 1)?.text ?? "";
 
     if (!name) {
-      name = (titleText.split("|")[0] || titleText.split("–")[0] || h1Text || new URL(safeUrl).hostname).trim();
+      name = (titleText.split("|")[0] || titleText.split("–")[0] || h1Text || new URL(requestedUrl).hostname).trim();
     }
 
     if (!city || !state) {
@@ -117,7 +117,7 @@ export async function POST(req: Request) {
     }
 
     if (!brand) {
-      brand = inferBrand(`${name} ${titleText} ${safeUrl}`);
+      brand = inferBrand(`${name} ${titleText} ${requestedUrl}`);
     }
 
     return NextResponse.json({
@@ -126,7 +126,7 @@ export async function POST(req: Request) {
         brand,
         city,
         state,
-        url: safeUrl,
+        url: requestedUrl,
       },
     });
   } catch (err) {

@@ -8,7 +8,7 @@ export * from "./url";
 
 // Compatibility facade for /api/crawl-property and existing tests
 import { fetchAndParseSitemaps } from "./sitemap";
-import { validateTargetUrl } from "./url";
+import { assertEgressAllowed, readTextCapped, safeFetch } from "../../lib/security/egress";
 
 export const SERVICE_PATTERNS: Record<string, RegExp> = {
   lodging: /\b(?:hotels?|inns?|motels?|lodging|stays?|places\s+to\s+stay|rooms?)\b/i,
@@ -140,7 +140,7 @@ export function clearCrawlCache(): void {
 }
 
 export async function crawlTargetWebsite(targetUrl: string, options: CrawlOptions = {}): Promise<CrawlResult> {
-  const normalizedUrl = validateTargetUrl(targetUrl);
+  const normalizedUrl = await assertEgressAllowed(targetUrl);
   const fallbackText = (options.fallbackText ?? "").trim();
   const cacheKey = `${normalizedUrl.toLowerCase()}|${fallbackText.toLowerCase()}`;
   const cached = crawlCache.get(cacheKey);
@@ -157,24 +157,28 @@ export async function crawlTargetWebsite(targetUrl: string, options: CrawlOption
 
   let sitemapCount = 0;
   try {
-    const [sm, res] = await Promise.all([
+    const [sm, page] = await Promise.all([
       fetchAndParseSitemaps(normalizedUrl),
-      fetch(normalizedUrl, {
-        headers: { "User-Agent": "HiltonSEOStudioCrawler/1.0 (+https://hilton-seo-studio.vercel.app)" },
-        signal: AbortSignal.timeout(8000),
-      }).catch(() => null),
+      safeFetch(
+        normalizedUrl,
+        {
+          headers: { "User-Agent": "HiltonSEOStudioCrawler/1.0 (+https://hilton-seo-studio.vercel.app)" },
+        },
+        { timeoutMs: 8000 },
+      ).catch(() => null),
     ]);
+    const res = page?.response ?? null;
     sitemapCount = sm.sitemapUrls.length;
     if (!res || !res.ok) {
       blocked = true;
       warnings.push(res ? `Site returned HTTP ${res.status} — using defaults.` : `Could not reach ${normalizedUrl}.`);
     } else {
-      const html = await res.text();
+      const html = await readTextCapped(res, 1_500_000);
       const ext = extractHtmlCrawlText(html);
       pageTitle = ext.title;
       plainText = ext.text;
       pageTopics.push(...ext.headings);
-      crawledUrls.push(res.url || normalizedUrl);
+      crawledUrls.push(page?.finalUrl || normalizedUrl);
     }
   } catch (e) {
     blocked = true;

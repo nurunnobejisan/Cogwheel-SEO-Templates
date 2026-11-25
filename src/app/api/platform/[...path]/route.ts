@@ -12,7 +12,7 @@
 
 import { NextResponse, type NextRequest } from "next/server";
 import type { HttpMethod, PlatformRequest } from "../../../../../platform/index.ts";
-import { principalFromRequest } from "../../../../lib/platform/auth.ts";
+import { isAuthenticatedPrincipal, principalFromRequest } from "../../../../lib/platform/auth.ts";
 import { getPlatformRuntime } from "../../../../lib/platform/runtime.ts";
 
 export const runtime = "nodejs";
@@ -49,11 +49,29 @@ async function forward(req: NextRequest, context: RouteContext): Promise<NextRes
   }
 
   const subPath = (context.params.path ?? []).join("/");
+  const principal = await readPrincipal(req);
+
+  // Fail closed: everything except the public health probe needs a verified
+  // session. Local dev auth (`PLATFORM_DEV_AUTH=1`) satisfies this too.
+  const isHealth = subPath === "health" && method === "GET";
+  if (!isHealth && !isAuthenticatedPrincipal(principal)) {
+    return NextResponse.json(
+      {
+        error: {
+          code: "unauthenticated",
+          message:
+            "A valid session is required. Sign in, or set PLATFORM_SESSION_SECRET and issue a cw_session token.",
+        },
+      },
+      { status: 401 }
+    );
+  }
+
   const platformRequest: PlatformRequest = {
     method: method as HttpMethod,
     path: `/${subPath}${req.nextUrl.search}`,
     body,
-    principal: readPrincipal(req),
+    principal,
   };
 
   const { platform } = await getPlatformRuntime();
