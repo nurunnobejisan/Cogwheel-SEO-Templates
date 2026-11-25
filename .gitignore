@@ -104,3 +104,5 @@ temp/
 # Platform runtime state (durable NDJSON stores — never commit)
 # ------------------------------------------------------------------------------
 .platform-data/
+.vercel
+.env*
