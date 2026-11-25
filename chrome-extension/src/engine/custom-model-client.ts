@@ -149,9 +149,9 @@ export async function testCustomModelConnection(
     if (config.provider === "tuned_gemini") {
       // If endpoint is a model name (e.g. tunedModels/hospitality-v1 or models/gemini-1.5-flash)
       if (!endpoint.startsWith("http://") && !endpoint.startsWith("https://")) {
-        const keyQuery = config.apiKey ? `?key=${config.apiKey.trim()}` : "";
-        url = `https://generativelanguage.googleapis.com/v1beta/${endpoint}:generateContent${keyQuery}`;
-      } else if (config.apiKey) {
+        url = `https://generativelanguage.googleapis.com/v1beta/${endpoint}:generateContent`;
+      }
+      if (config.apiKey) {
         headers["x-goog-api-key"] = config.apiKey.trim();
       }
 
@@ -442,9 +442,9 @@ export async function generateSeoAutoFix(
 
     if (config.provider === "tuned_gemini") {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        const keyQuery = config.apiKey ? `?key=${config.apiKey.trim()}` : "";
-        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent${keyQuery}`;
-      } else if (config.apiKey) {
+        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent`;
+      }
+      if (config.apiKey) {
         headers["x-goog-api-key"] = config.apiKey.trim();
       }
     } else if (config.apiKey) {
@@ -598,9 +598,9 @@ export async function generateGeoSummary(
 
     if (config.provider === "tuned_gemini") {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        const keyQuery = config.apiKey ? `?key=${config.apiKey.trim()}` : "";
-        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent${keyQuery}`;
-      } else if (config.apiKey) {
+        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent`;
+      }
+      if (config.apiKey) {
         headers["x-goog-api-key"] = config.apiKey.trim();
       }
     } else if (config.apiKey) {
