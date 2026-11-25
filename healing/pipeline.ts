@@ -58,6 +58,7 @@ export async function runHealingPipeline(options: HealingRunOptions): Promise<He
 
   /* Step 2 — triage & patch synthesis -------------------------------------- */
   const { patch, validation, deferred } = await generateFixPatch(options.report, options.patchOptions);
+  options.onPatch?.(patch);
   events.emit({
     type: "patch_synthesized",
     message: `Synthesized ${patch.mutations.length} mutation(s) (${deferred.length} deferred)`,

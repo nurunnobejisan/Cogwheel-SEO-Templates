@@ -173,6 +173,8 @@ export interface HealingRunOptions {
   fetchImpl?: import("../cms/types.ts").FetchLike;
   /** Operator override: deploy every non-review mutation regardless of policy. */
   approveAll?: boolean;
+  /** Called with the synthesized patch so callers can persist it for approval. */
+  onPatch?: (patch: FixPatch) => void;
   /** Delay before live verification. Default 0. */
   settleMs?: number;
   sleep?: (ms: number) => Promise<void>;
