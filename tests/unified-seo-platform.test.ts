@@ -1,5 +1,12 @@
 import { describe, it } from "node:test";
 import assert from "node:assert/strict";
+
+// This suite exercises the bundled demo dataset (thenines.com / Portland) that
+// populates the GSC, keyword, backlink and GEO engines when no live data source
+// is connected. Simulation is opt-in, so enable it here. Production code must
+// NOT set this — without it, those engines return honest empty results.
+process.env.ALLOW_SIMULATED_DATA = "1";
+
 import { UnifiedGscClient } from "../src/core/gsc/client.ts";
 import {
   evaluateAuditIssues,

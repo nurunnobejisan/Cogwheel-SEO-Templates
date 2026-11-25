@@ -9,8 +9,12 @@ from __future__ import annotations
 
 import argparse
 import csv
+import re
 import sys
+import urllib.parse
 from pathlib import Path
+
+from bs4 import BeautifulSoup, Tag
 
 # Ensure parent directory is in sys.path
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -184,42 +188,78 @@ def calculate_seo_scores(
 
 
 def audit_property_url(url: str, property_name: str | None = None) -> AuditPayload:
-    """Run simulated or live audit for a property URL.
+    """Fetch and audit a property URL with the live extractor.
+
+    Performs a real HTTP fetch + DOM parse (HotelExtractor). When the page
+    cannot be fetched, returns an explicit empty audit (near-zero score) rather
+    than a fabricated profile — no metrics are invented.
 
     Args:
         url: The property website URL.
-        property_name: Optional hotel name label.
+        property_name: Optional label; the page-declared name takes precedence.
 
     Returns:
         AuditPayload with page context and calculated KPI scores.
     """
-    clean_name = property_name or url.split("/")[-2].replace("-", " ").title() if "/" in url else url
+    parsed = urllib.parse.urlparse(url)
+    hostname = parsed.hostname or url
 
-    is_cogwheel = "Cogwheel-SEO-Templates" in url or "cogwheel" in url.lower()
-    if is_cogwheel:
-        # Optimal 100/100 profile
-        title = "Cogwheel SEO & Hospitality Templates Studio | Official Site"
-        meta_desc = "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing."
-        h1 = [clean_name]
-        has_canonical = True
-        has_viewport = True
-        has_lodging = True
-        images_no_alt = 0
-        words = 1450
-        has_faq = True
-        has_og = True
+    extractor = HotelExtractor()
+    html = ""
+    try:
+        html = extractor._fetch_with_urllib(url, 15)
+    except Exception as exc:  # network / DNS / TLS failures
+        print(f"  [!] Could not fetch {url}: {exc}")
+
+    if html:
+        facts = extractor.extract_from_html(html, url=url)
+        tech = facts.technical_flags
+        soup = BeautifulSoup(html, "html.parser")
+
+        schema_types = [str(item.get("@type", "")) for item in facts.raw_json_ld]
+        has_lodging = any(t in ("Hotel", "LodgingBusiness", "Resort", "Motel") for t in schema_types)
+        has_faq = any(t == "FAQPage" for t in schema_types)
+
+        viewport_tag = soup.find("meta", attrs={"name": re.compile(r"^viewport$", re.I)})
+        og_title_tag = soup.find(
+            "meta", attrs={"property": re.compile(r"^og:title$", re.I)}
+        ) or soup.find("meta", attrs={"name": re.compile(r"^og:title$", re.I)})
+        og_image_tag = soup.find(
+            "meta", attrs={"property": re.compile(r"^og:image$", re.I)}
+        ) or soup.find("meta", attrs={"name": re.compile(r"^og:image$", re.I)})
+        has_og = isinstance(og_title_tag, Tag) and isinstance(og_image_tag, Tag)
+
+        title = facts.property.title
+        meta_desc = facts.property.metaDescription
+        h1 = tech.h1_tags
+        has_canonical = tech.has_canonical
+        has_viewport = isinstance(viewport_tag, Tag)
+        images_no_alt = tech.missing_alt_images_count
+        words = tech.word_count
+        total_images = tech.total_images
+        canonical = facts.property.canonical
+        schemas = [{"@type": t} for t in schema_types]
+        og_title = str(og_title_tag.get("content", "")) if isinstance(og_title_tag, Tag) else ""
+        og_description = meta_desc
+        og_image = str(og_image_tag.get("content", "")) if isinstance(og_image_tag, Tag) else ""
     else:
-        # Baseline unoptimized hotel profile
-        title = f"Beachfront Hotel {clean_name} Resort & Spa Luxury Oceanfront"
-        meta_desc = "Stay at our hotel with great amenities and ocean views."
-        h1 = [clean_name, "Welcome to Paradise"]
+        # Unfetched page → explicit empty audit, never invented values.
+        title = ""
+        meta_desc = ""
+        h1 = []
         has_canonical = False
-        has_viewport = True
+        has_viewport = False
         has_lodging = False
-        images_no_alt = 2
-        words = 340
+        images_no_alt = 0
+        words = 0
         has_faq = False
         has_og = False
+        total_images = 0
+        canonical = ""
+        schemas = []
+        og_title = ""
+        og_description = ""
+        og_image = ""
 
     scores = calculate_seo_scores(
         title=title,
@@ -236,28 +276,28 @@ def audit_property_url(url: str, property_name: str | None = None) -> AuditPaylo
 
     page_data = PageAuditData(
         url=url,
-        origin=url.split("/")[0] + "//" + url.split("/")[2] if "//" in url else url,
-        pathname="/" + "/".join(url.split("/")[3:]) if "//" in url else "/",
-        protocol="https:",
-        hostname=url.split("/")[2] if "//" in url else url,
+        origin=f"{parsed.scheme}://{parsed.netloc}" if parsed.scheme else url,
+        pathname=parsed.path or "/",
+        protocol=f"{parsed.scheme}:" if parsed.scheme else "https:",
+        hostname=hostname,
         title=title,
         metaDesc=meta_desc,
-        canonical=url if has_canonical else "",
+        canonical=canonical,
         h1Elements=h1,
-        h2Elements=["Amenities", "Accommodations", "Location"],
-        h3Elements=["King Room", "Queen Suite"],
-        totalImages=12,
+        h2Elements=[],
+        h3Elements=[],
+        totalImages=total_images,
         imagesWithoutAlt=images_no_alt,
         oversizedImages=0,
         words=words,
-        schemas=[{"@type": "Hotel"}] if has_lodging else [],
-        links={"internal": 24, "external": 6, "nofollow": 0},
+        schemas=schemas,
+        links={"internal": 0, "external": 0, "nofollow": 0},
         hasViewport=has_viewport,
         hasOgTitle=has_og,
         hasOgImage=has_og,
-        ogTitle=title if has_og else "",
-        ogDescription=meta_desc if has_og else "",
-        ogImage="https://example.com/banner.jpg" if has_og else "",
+        ogTitle=og_title,
+        ogDescription=og_description,
+        ogImage=og_image,
     )
 
     return AuditPayload(pageData=page_data, scores=scores)

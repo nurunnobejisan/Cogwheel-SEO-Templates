@@ -24,6 +24,12 @@ from python.scraper.hotel_extractor import HotelExtractor
 class TemplateProcessor:
     """Renders Cogwheel SEO and GEO templates grounded in live property facts."""
 
+    # Explicit marker for facts that were not present on the source page. Used
+    # instead of a plausible default so generated copy never asserts invented
+    # property data (see docs/REPOSITORY_AUDIT.md, C2).
+    NOT_PROVIDED: str = "Not provided"
+    NOT_MEASURED: str = "Not measured"
+
     TEMPLATES_DIR: Path = Path(__file__).parent.parent.parent / "templates"
 
     # Recognized template IDs and filenames
@@ -91,21 +97,22 @@ class TemplateProcessor:
             loyalty_prog = "Independent Guest Recognition"
             collection = "Independent Boutique Collection"
 
-        # GEO scores
-        density_str = f"{geo.signals.entityDensityScore:.1f}" if geo else "78.5"
-        citation_str = f"{geo.signals.citationReadinessScore:.1f}" if geo else "82.0"
+        # GEO scores: report only measured signals. Without a GeoScoreResult the
+        # template must not present a plausible-looking score.
+        density_str = f"{geo.signals.entityDensityScore:.1f}" if geo else self.NOT_MEASURED
+        citation_str = f"{geo.signals.citationReadinessScore:.1f}" if geo else self.NOT_MEASURED
         has_hotel_s = "true" if (geo and geo.signals.hasHotelSchema) else "false"
         has_faq_s = "true" if (geo and geo.signals.hasFaqSchema) else "false"
 
-        airport_name = airport.name if airport else "Metropolitan International Airport"
-        airport_code = "AIR"
+        airport_name = airport.name if airport else self.NOT_PROVIDED
+        airport_code = "—"
         code_match = re.search(r"\(([A-Z]{3})\)|([A-Z]{3})\s+Airport", airport_name)
         if code_match:
-            airport_code = code_match.group(1) or code_match.group(2) or "AIR"
+            airport_code = code_match.group(1) or code_match.group(2) or "—"
 
-        airport_dist = f"{airport.distance_miles:.1f}" if (airport and airport.distance_miles) else "8.5"
+        airport_dist = f"{airport.distance_miles:.1f}" if (airport and airport.distance_miles) else self.NOT_PROVIDED
         landmark_name = landmark.name if landmark else f"Historic {prop.city} Center"
-        landmark_dist = f"{landmark.distance_miles:.1f}" if (landmark and landmark.distance_miles) else "0.8"
+        landmark_dist = f"{landmark.distance_miles:.1f}" if (landmark and landmark.distance_miles) else self.NOT_PROVIDED
         cc_name = convention_center.name if convention_center else f"{prop.city} Convention Center"
 
         state_code = "CA"
@@ -127,10 +134,15 @@ class TemplateProcessor:
         elif "portland" in city_lower:
             state_code = "OR"
 
-        # Formatting FAQ amenities
-        faq_parking = f"{pol.parking_type} available on-site at {pol.parking_fee}."
-        faq_checkin = f"Standard check-in begins at {pol.check_in_time}; check-out is at {pol.check_out_time}. Early check-in upon availability."
-        faq_pets = f"{pol.pet_policy}. Fee: {pol.pet_fee}."
+        # Formatting FAQ amenities — unknown values surface as an explicit gap.
+        parking_type_str = pol.parking_type or self.NOT_PROVIDED
+        parking_fee_str = pol.parking_fee or self.NOT_PROVIDED
+        faq_parking = f"{parking_type_str} available on-site at {parking_fee_str}."
+        faq_checkin = (
+            f"Standard check-in begins at {pol.check_in_time or self.NOT_PROVIDED}; "
+            f"check-out is at {pol.check_out_time or self.NOT_PROVIDED}. Early check-in upon availability."
+        )
+        faq_pets = f"{pol.pet_policy or self.NOT_PROVIDED}. Fee: {pol.pet_fee or self.NOT_PROVIDED}."
 
         variables: dict[str, str] = {
             # Core Property Identity
@@ -147,50 +159,51 @@ class TemplateProcessor:
             "brandDomain": brand_domain,
             "brandCollectionName": collection,
             "loyaltyProgram": loyalty_prog,
-            "localPhoneNumber": "+1 (555) 328-9400",
-            "priceRangeSymbol": "$$$",
-            "starRatingValue": "4.5",
+            # Not extracted by the pipeline → left blank rather than invented.
+            "localPhoneNumber": "",
+            "priceRangeSymbol": "",
+            "starRatingValue": "",
             "primaryLocalKeyword": f"luxury hotel in {prop.city}",
 
-            # Guestrooms & Suites
-            "kingSuiteSqFt": str(king_room.sq_ft or 550) if king_room else "550",
-            "doubleQueenSqFt": str(queen_room.sq_ft or 420) if queen_room else "420",
-            "roomTitle": king_room.name if king_room else "Executive King Guest Room",
-            "roomStartingRate": king_room.starting_rate if (king_room and king_room.starting_rate) else "$229",
+            # Guestrooms & Suites (only measured values; unknowns reported)
+            "kingSuiteSqFt": str(king_room.sq_ft) if (king_room and king_room.sq_ft) else self.NOT_MEASURED,
+            "doubleQueenSqFt": str(queen_room.sq_ft) if (queen_room and queen_room.sq_ft) else self.NOT_MEASURED,
+            "roomTitle": king_room.name if king_room else self.NOT_PROVIDED,
+            "roomStartingRate": king_room.starting_rate if (king_room and king_room.starting_rate) else self.NOT_PROVIDED,
             "roomDescription": f"Spacious {prop.hotelName} accommodations featuring floor-to-ceiling windows, bespoke work desk, and luxury spa bath.",
             "roomAmenities": "High-speed Wi-Fi, Nespresso coffee maker, marble walk-in shower, 65-inch Smart TV, 24-hour in-room dining.",
 
             # Dining & Culinary
             "diningDistrict": f"{prop.neighborhood} Culinary District",
-            "restaurantName": primary_dining.name if primary_dining else "Signature Kitchen & Bar",
+            "restaurantName": primary_dining.name if primary_dining else self.NOT_PROVIDED,
             "breakfastType": "Artisanal European breakfast buffet & grab-and-go espresso bar",
             "poolDescription": "Heated outdoor terrace pool with private cabanas and cocktail service.",
             "brandStandardAmenity": "complimentary high-speed fiber Wi-Fi, 24/7 fitness studio, and concierge service",
 
-            # Meeting & Event Spaces
-            "totalMeetingSqFt": str(meet.total_sq_ft or 12500),
-            "grandBallroomSqFt": str(meet.largest_ballroom_sq_ft or 6500),
-            "ballroomLength": "85",
-            "ballroomWidth": "75",
-            "ballroomCeiling": "18",
-            "capBanquet": str(meet.max_banquet_capacity or 450),
-            "capReception": str(meet.max_reception_capacity or 650),
-            "capTheater": "520",
-            "capClassroom": "280",
-            "boardroomSqFt": "650",
-            "boardroomLength": "26",
-            "boardroomWidth": "25",
-            "boardroomFixedCap": "16",
-            "avPatchFee": "$250",
+            # Meeting & Event Spaces (only measured values; unknowns reported)
+            "totalMeetingSqFt": str(meet.total_sq_ft) if meet.total_sq_ft else self.NOT_MEASURED,
+            "grandBallroomSqFt": str(meet.largest_ballroom_sq_ft) if meet.largest_ballroom_sq_ft else self.NOT_MEASURED,
+            "ballroomLength": "",
+            "ballroomWidth": "",
+            "ballroomCeiling": "",
+            "capBanquet": str(meet.max_banquet_capacity) if meet.max_banquet_capacity else self.NOT_MEASURED,
+            "capReception": str(meet.max_reception_capacity) if meet.max_reception_capacity else self.NOT_MEASURED,
+            "capTheater": "",
+            "capClassroom": "",
+            "boardroomSqFt": "",
+            "boardroomLength": "",
+            "boardroomWidth": "",
+            "boardroomFixedCap": "",
+            "avPatchFee": "",
 
             # Policies & Operational Facts
             "checkInOutPolicy": faq_checkin,
-            "checkInTime": pol.check_in_time or "4:00 PM",
-            "checkOutTime": pol.check_out_time or "11:00 AM",
+            "checkInTime": pol.check_in_time or self.NOT_PROVIDED,
+            "checkOutTime": pol.check_out_time or self.NOT_PROVIDED,
             "parkingPolicy": faq_parking,
-            "parkingRate": pol.parking_fee or "$35/night",
+            "parkingRate": parking_fee_str,
             "petPolicy": faq_pets,
-            "petFee": pol.pet_fee or "$75 per stay",
+            "petFee": pol.pet_fee or self.NOT_PROVIDED,
 
             # Geography & Distances
             "distanceMiles": landmark_dist,
@@ -202,15 +215,19 @@ class TemplateProcessor:
             "airportCode": airport_code,
             "airportMiles": airport_dist,
             "distanceToAirport": f"{airport_dist} miles",
-            "airportDriveOffPeak": "16 minutes",
-            "airportDrivePeak": "28 minutes",
-            "airportShuttleType": "Complimentary scheduled airport shuttle",
-            "airportTransitLine": "MET Metro Gold Line Direct",
-            "airportShuttleDetail": "Runs every 30 minutes from Terminal 1 & 2 directly to hotel main entrance.",
+            "airportDriveOffPeak": "",
+            "airportDrivePeak": "",
+            "airportShuttleType": "",
+            "airportTransitLine": "",
+            "airportShuttleDetail": "",
 
             # USPs & Packages
             "propertyUniqueUsp1": f"Prime location in the heart of {prop.neighborhood} within {landmark_dist} miles of {landmark_name}",
-            "propertyUniqueUsp2": f"{meet.total_sq_ft or 12500} sq ft of versatile meeting venues and luxury culinary dining",
+            "propertyUniqueUsp2": (
+                f"{meet.total_sq_ft} sq ft of versatile meeting venues and luxury culinary dining"
+                if meet.total_sq_ft
+                else "Versatile meeting venues and luxury culinary dining"
+            ),
             "packageTitle1": "Direct Booking Best Rate & Valet Credit",
             "packageDescription1": f"Save up to 15% off standard rates plus $25 daily parking credit when booking direct on {brand_domain}.",
             "packageCode1": "DIRCRED",
@@ -221,10 +238,11 @@ class TemplateProcessor:
             "hasFaqSchema": has_faq_s,
             "entityDensityScore": density_str,
             "citationReadinessScore": citation_str,
-            "googlePlaceId": "ChIJ_example_hotel_place_id",
-            "latitude": "37.7749",
-            "longitude": "-122.4194",
-            "wikidataEntityId": "Q987654321",
+            # Not extracted → blank rather than a placeholder identifier.
+            "googlePlaceId": "",
+            "latitude": "",
+            "longitude": "",
+            "wikidataEntityId": "",
             "auditDate": datetime.date.today().isoformat(),
 
             # HTML Template Placeholders
@@ -233,7 +251,11 @@ class TemplateProcessor:
             "destinationOverview": f"{prop.hotelName} offers premier access to {prop.neighborhood}, blending hospitality excellence with easy proximity to {landmark_name} and {airport_name}.",
             "attractionsSummary": f"Conveniently situated {landmark_dist} miles from {landmark_name} and {airport_dist} miles from {airport_code} Airport.",
             "bookingPerks": f"Exclusive direct booking rates, flexible cancellation, and member rewards through {loyalty_prog}.",
-            "amenitiesList": f"On-site dining at {primary_dining.name if primary_dining else 'Restaurant'}, {pol.parking_type}, pet-friendly accommodations, and {meet.total_sq_ft or 12500} sq ft of event space.",
+            "amenitiesList": (
+                f"On-site dining at {primary_dining.name if primary_dining else 'Restaurant'}, {parking_type_str}, pet-friendly accommodations, and {meet.total_sq_ft} sq ft of event space."
+                if meet.total_sq_ft
+                else f"On-site dining at {primary_dining.name if primary_dining else 'Restaurant'}, {parking_type_str}, and pet-friendly accommodations."
+            ),
         }
 
         return variables

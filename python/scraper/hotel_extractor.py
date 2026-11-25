@@ -420,24 +420,29 @@ class HotelExtractor:
         if rec_match:
             reception_cap = int(rec_match.group(1).replace(",", ""))
 
+        # Report only measured values; unknown fields stay null rather than using
+        # a plausible default that would misrepresent the property.
         return MeetingSpaceFact(
-            total_sq_ft=total_sqft or 12500,
-            room_count=room_count or 8,
-            largest_ballroom_sq_ft=ballroom_sqft or 6200,
-            max_banquet_capacity=banquet_cap or 420,
-            max_reception_capacity=reception_cap or 650,
+            total_sq_ft=total_sqft,
+            room_count=room_count,
+            largest_ballroom_sq_ft=ballroom_sqft,
+            max_banquet_capacity=banquet_cap,
+            max_reception_capacity=reception_cap,
         )
 
     def _extract_policy_facts(self, soup: BeautifulSoup, json_ld: list[dict[str, Any]]) -> PolicyFact:
         """Extract check-in/out times, parking rates, and pet policies."""
         text = soup.get_text(" ", strip=True)
 
-        check_in = "4:00 PM"
-        check_out = "11:00 AM"
-        parking_type = "Valet & Self-Parking"
-        parking_fee = "$35/night"
-        pet_policy = "Pet-friendly (up to 2 pets per room)"
-        pet_fee = "$75 per stay"
+        # No fabricated policy defaults: report only what the page or JSON-LD
+        # states. `None` means "not published", which the templates surface as a
+        # gap instead of a made-up time or fee.
+        check_in: Optional[str] = None
+        check_out: Optional[str] = None
+        parking_type: Optional[str] = None
+        parking_fee: Optional[str] = None
+        pet_policy: Optional[str] = None
+        pet_fee: Optional[str] = None
         has_ev = bool(re.search(r"\b(?:EV\s+charging|electric\s+vehicle)\b", text, re.I))
 
         # JSON-LD policy checks
@@ -459,6 +464,9 @@ class HotelExtractor:
             check_out = co_match.group(1).strip()
 
         # Parking
+        park_type_match = re.search(r"(valet\s+parking|self-?parking|off-?site\s+parking)", text, re.I)
+        if park_type_match:
+            parking_type = park_type_match.group(1).strip().title()
         park_match = re.search(r"(?:valet\s+parking|self-?parking|parking\s+fee).*?(\$\d+(?:\s*(?:per|/)\s*(?:day|night))?)", text, re.I)
         if park_match:
             parking_fee = park_match.group(1).strip()
@@ -485,38 +493,41 @@ class HotelExtractor:
         self, soup: BeautifulSoup, _json_ld: list[dict[str, Any]]
     ) -> list[AttractionFact]:
         """Extract nearby attractions, convention centers, and airport distance/transit facts."""
+        # Only report attractions the page actually states; no fabricated airport,
+        # convention center or landmark distances.
         attractions: list[AttractionFact] = []
         text = soup.get_text(" ", strip=True)
 
-        # Search for airport
-        airport_match = re.search(r"([A-Z]{3})\s+Airport|Airport\s+\(([A-Z]{3})\)|(\d+(?:\.\d+)?)\s*(?:miles?|mi)\s+(?:from|to)\s+([A-Za-z\s]+(?:Airport|International))", text, re.I)
-        if airport_match:
-            code = airport_match.group(1) or airport_match.group(2) or "AIR"
-            dist = float(airport_match.group(3)) if airport_match.group(3) else 8.5
+        # Airport: distance-to-airport phrase, or an airport name/code mention.
+        dist_airport = re.search(
+            r"(\d+(?:\.\d+)?)\s*(?:miles?|mi)\s+(?:from|to)\s+([A-Za-z][A-Za-z\s]*?(?:Airport|International))",
+            text,
+            re.I,
+        )
+        code_airport = re.search(r"\b([A-Z]{3})\s+Airport\b", text)
+        code_paren = re.search(r"Airport\s+\(([A-Z]{3})\)", text)
+        if dist_airport:
+            dist = float(dist_airport.group(1))
+            name = dist_airport.group(2).strip()
             attractions.append(
-                AttractionFact(name=f"{code} International Airport", category="airport", distance_miles=dist, drive_time_minutes=int(dist * 2.2))
+                AttractionFact(name=name, category="airport", distance_miles=dist, drive_time_minutes=int(dist * 2.2))
             )
-        else:
-            attractions.append(
-                AttractionFact(name="Metropolitan International Airport (MET)", category="airport", distance_miles=9.2, drive_time_minutes=18)
-            )
+        elif code_airport or code_paren:
+            code = (code_airport.group(1) if code_airport else None) or (code_paren.group(1) if code_paren else "AIR")
+            attractions.append(AttractionFact(name=f"{code} Airport", category="airport"))
 
-        # Search for convention center
+        # Convention center
         cc_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:miles?|mi|blocks?)\s+(?:from|to)\s+([A-Za-z\s]+Convention\s+Center)", text, re.I)
         if cc_match:
             dist = float(cc_match.group(1))
             name = cc_match.group(2).strip()
             attractions.append(AttractionFact(name=name, category="convention_center", distance_miles=dist, drive_time_minutes=int(dist * 3)))
-        else:
-            attractions.append(AttractionFact(name="Downtown Convention Center", category="convention_center", distance_miles=0.8, drive_time_minutes=4))
 
-        # Search for local landmark or stadium
+        # Local landmark / stadium / museum / park
         lm_match = re.search(r"(\d+(?:\.\d+)?)\s*(?:miles?|mi)\s+(?:from|to)\s+([A-Za-z\s]+(?:Stadium|Arena|Museum|Park|Square))", text, re.I)
         if lm_match:
             dist = float(lm_match.group(1))
             name = lm_match.group(2).strip()
             attractions.append(AttractionFact(name=name, category="landmark", distance_miles=dist))
-        else:
-            attractions.append(AttractionFact(name="Historic City Center & Arts District", category="landmark", distance_miles=0.5))
 
         return attractions

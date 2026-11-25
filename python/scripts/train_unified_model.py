@@ -47,7 +47,12 @@ def load_jsonl(file_path: Path) -> list[dict[str, Any]]:
 
 
 def run_eval_benchmark(eval_records: list[dict[str, Any]]) -> dict[str, Any]:
-    """Simulate and evaluate benchmark metrics across the test dataset."""
+    """Evaluate heuristic benchmark metrics across the holdout dataset.
+
+    These are lexical proxies computed from the assistant responses actually
+    present in the dataset — not model-quality measurements. They are labelled
+    as such so the output is never mistaken for validated accuracy.
+    """
     if not eval_records:
         return {
             "totalEvaluated": 0,
@@ -75,11 +80,10 @@ def run_eval_benchmark(eval_records: list[dict[str, Any]]) -> dict[str, Any]:
         if any(term in assistant_msg.lower() for term in ["seo", "schema", "google", "canonical", "ctr", "impressions", "update"]):
             grounding_accuracy_count += 1
 
-        # Test 3: Title / character constraints adherence if mentioned
+        # Test 3: Title / character constraints adherence when the answer
+        # actually discusses the SERP budget. Silent answers are not counted.
         if "580px" in assistant_msg or "55 characters" in assistant_msg or "character" in assistant_msg or "budget" in assistant_msg:
             budget_adherence_count += 1
-        else:
-            budget_adherence_count += 1  # general compliant answer
 
         # Test 4: JSON-LD or structured markup reference
         if "schema" in assistant_msg.lower() or "json" in assistant_msg.lower() or "http" in assistant_msg.lower():
