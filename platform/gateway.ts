@@ -14,6 +14,7 @@
 
 import { z } from "zod";
 import type { AuditReport } from "../rules/types.ts";
+import { buildSnapshotFromHtml, runAudit } from "../rules/index.ts";
 import type { FixPatch } from "../ai/types.ts";
 import type { CmsConnector, CmsSeoPlugin, CmsSecretPayload, CmsTarget, FetchLike } from "../cms/types.ts";
 import { createCmsCredential, redactCmsCredential } from "../cms/credentials.ts";
@@ -102,6 +103,10 @@ const connectorRegisterSchema = z.object({
   credentialId: z.string().min(1).optional(),
   resourceId: z.string().min(1).optional(),
   resourceType: z.string().min(1).optional(),
+});
+
+const auditRequestSchema = z.object({
+  url: z.string().min(1),
 });
 
 const deploySchema = z.object({
@@ -232,6 +237,7 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
   const now = options.now ?? (() => new Date().toISOString());
   const version = options.version ?? VERSION;
   const startedAt = Date.now();
+  const fetchImpl = options.fetchImpl ?? fetch;
 
   const vault = options.vault;
   const auditLog = options.auditLog ?? createAuditLog({ now });
@@ -268,7 +274,8 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
   function registerConnector(input: ConnectorRegisterRequest, principal: Principal): CmsConnector {
     const target: CmsTarget = {
       url: input.targetUrl,
-      resourceId: input.resourceId,
+      // Fall back to the page URL when the platform resource id is unknown.
+      resourceId: input.resourceId ?? input.targetUrl,
       resourceType: input.resourceType,
     };
 
@@ -282,7 +289,7 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
         credential,
         vault,
         target,
-        fetchImpl: options.fetchImpl,
+        fetchImpl,
         patchRegistry,
       });
     } else {
@@ -290,7 +297,7 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
         clientId: principal.organizationId ?? "platform",
         target,
         registry: patchRegistry,
-        fetchImpl: options.fetchImpl,
+        fetchImpl,
       });
     }
 
@@ -463,6 +470,45 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
       },
     },
 
+    /* -------- audits -------- */
+    {
+      method: "POST",
+      segments: ["v1", "audits"],
+      permission: "audit:run",
+      handler: async ({ principal, body }) => {
+        const input = parse(auditRequestSchema, body, "audit request") as { url: string };
+        let host: string;
+        try {
+          host = new URL(input.url).host;
+        } catch {
+          throw badRequest(`"${input.url}" is not a valid URL`);
+        }
+        limit(`cms:${host}`);
+
+        const response = await fetchImpl(input.url, {
+          headers: { "user-agent": "CogwheelAuditor/1.0 (+https://cogwheel.dev)" },
+        });
+        if (!response.ok) {
+          throw badRequest(`failed to fetch ${input.url} (HTTP ${response.status})`);
+        }
+        const html = await response.text();
+        const report = runAudit(buildSnapshotFromHtml(html, input.url), { now: now() });
+
+        auditLog.append({
+          principal,
+          action: "audit.run",
+          targetUrl: input.url,
+          metadata: {
+            auditId: report.auditId,
+            mode: report.mode,
+            issues: report.summary.totalIssues,
+          },
+          at: now(),
+        });
+        return { status: 200, body: report };
+      },
+    },
+
     /* -------- patches -------- */
     {
       method: "POST",
@@ -628,7 +674,7 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
           queue: approvals,
           rollbackStore,
           onPatch: (patch) => void patches.put(patch),
-          fetchImpl: options.fetchImpl,
+          fetchImpl,
           now,
         });
 
