@@ -54,47 +54,50 @@ console.log("✔ Version and auto-update URL verified.");
 // 2. TypeScript compilation & production Vite bundle
 console.log("\n▶ [2/4] Compiling TypeScript & building production bundle with Vite...");
 
-const tscBin = path.join(ROOT_DIR, "node_modules", ".bin", "tsc");
-const viteBin = path.join(ROOT_DIR, "node_modules", ".bin", "vite");
+const extBin = path.join(EXT_DIR, "node_modules", ".bin");
+const tscBin = path.join(extBin, "tsc");
+const viteBin = path.join(extBin, "vite");
+
+if (!fs.existsSync(tscBin) || !fs.existsSync(viteBin)) {
+  console.error("❌ ERROR: chrome-extension dependencies are missing. Run `npm install --prefix chrome-extension` first.");
+  process.exit(1);
+}
 
 try {
-  // Run typecheck
   console.log("  - Running tsc --noEmit...");
   execSync(`"${process.execPath}" "${tscBin}" --noEmit`, { cwd: EXT_DIR, stdio: "inherit" });
 
-  // Run vite build
-  console.log("  - Running vite build...");
-  try {
-    execSync(`"${process.execPath}" "${viteBin}" build`, { cwd: EXT_DIR, stdio: "pipe" });
-  } catch (viteErr) {
-    const errOutput =
-      (viteErr.stderr ? viteErr.stderr.toString() : "") +
-      (viteErr.stdout ? viteErr.stdout.toString() : "") +
-      (viteErr.message || "");
+  console.log("  - Running vite build (pages + module service worker)...");
+  execSync(`"${process.execPath}" "${viteBin}" build`, { cwd: EXT_DIR, stdio: "inherit" });
 
-    if (
-      errOutput.includes("ERR_DLOPEN_FAILED") ||
-      errOutput.includes("Team IDs") ||
-      errOutput.includes("code signature")
-    ) {
-      console.warn("  [Notice] Local macOS environment detected (macOS Electron Team ID restriction for Rollup native addon).");
-      console.warn("  [Notice] TypeScript validated 100% clean. Proceeding with packaging extension distribution artifacts.");
-    } else {
-      throw viteErr;
-    }
-  }
+  console.log("  - Running vite build (classic IIFE content script)...");
+  execSync(`"${process.execPath}" "${viteBin}" build --config vite.content.config.ts`, {
+    cwd: EXT_DIR,
+    stdio: "inherit",
+  });
 } catch (err) {
+  // Never package a partial or stale build.
   console.error("❌ ERROR: Extension TypeScript or Vite build failed:", err.message);
   process.exit(1);
 }
 
-if (!fs.existsSync(DIST_DIR)) {
-  fs.mkdirSync(DIST_DIR, { recursive: true });
-}
 if (!fs.existsSync(path.join(DIST_DIR, "manifest.json"))) {
   fs.copyFileSync(MANIFEST_JSON, path.join(DIST_DIR, "manifest.json"));
 }
-console.log("✔ Extension compiled and bundled into dist/ successfully.");
+
+// A content script registered without "type": "module" must be a classic
+// script. Reject any ES-module output so the shipped zip cannot regress (C5).
+const contentPath = path.join(DIST_DIR, "content.js");
+if (!fs.existsSync(contentPath)) {
+  console.error("❌ ERROR: dist/content.js is missing — the content script did not build.");
+  process.exit(1);
+}
+const contentSource = fs.readFileSync(contentPath, "utf-8");
+if (/^\s*(import|export)\s/m.test(contentSource)) {
+  console.error("❌ ERROR: dist/content.js contains ES module syntax; Chrome cannot load it as a content script.");
+  process.exit(1);
+}
+console.log("✔ Extension compiled; content.js verified as a classic IIFE bundle.");
 
 // 3. Packaging ZIP artifact for GitHub Releases
 console.log("\n▶ [3/4] Packaging extension zip for GitHub Releases...");
@@ -104,7 +107,8 @@ if (!fs.existsSync(PUBLIC_DIR)) {
 
 const zipPath = path.join(PUBLIC_DIR, "cogwheel-chrome-extension.zip");
 try {
-  // Use zip CLI command
+  // Remove first: `zip -r` updates an existing archive and would keep stale files.
+  fs.rmSync(zipPath, { force: true });
   execSync(`zip -r "${zipPath}" . -x "*.DS_Store"`, { cwd: DIST_DIR, stdio: "inherit" });
   console.log(`✔ Created release ZIP: ${path.relative(ROOT_DIR, zipPath)}`);
 } catch (err) {

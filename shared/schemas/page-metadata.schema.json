@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "PageMetadata",
+  "type": "object",
+  "required": [
+    "title",
+    "metaDescription",
+    "canonicalUrl"
+  ],
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 10,
+      "maxLength": 70
+    },
+    "metaDescription": {
+      "type": "string",
+      "minLength": 50,
+      "maxLength": 160
+    },
+    "canonicalUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "robotsDirective": {
+      "type": "string",
+      "default": "index, follow"
+    },
+    "focusKeyword": {
+      "type": "string"
+    }
+  }
+}
