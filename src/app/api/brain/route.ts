@@ -5,7 +5,7 @@ import { principalFromRequest, isAuthenticatedPrincipal } from "@/lib/platform/a
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
-  const principal = await principalFromRequest(req);
+  const principal = await principalFromRequest({ header: (name: string) => req.headers.get(name) });
   if (!isAuthenticatedPrincipal(principal)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
-  const principal = await principalFromRequest(req);
+  const principal = await principalFromRequest({ header: (name: string) => req.headers.get(name) });
   if (!isAuthenticatedPrincipal(principal)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
