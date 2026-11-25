@@ -54,6 +54,13 @@ const result = await deployPatch(patch, { connector, autoPilot: true }); // stat
 - **Atomic safety** — a snapshot is captured before any write, and the connector
   restores it on apply failure, thrown errors, or live-verification failure.
 - `previewPatchDiff(patch)` yields the before/after diff for the review UI.
+- **Verification mode** — a connector may set `verificationMode: "connector"`
+  when its fix lands client-side (the universal runtime connector): the healing
+  pipeline then trusts the connector's own `verify()` instead of comparing
+  server HTML that is intentionally unchanged.
+- **Capability probe** — a connector may implement `supportsField(field)`; the
+  pipeline defers unsupported fields (the run reports `queued`) rather than
+  deploying a partial patch and rolling back.
 
 ## Encrypted credential vault (`vault.ts`)
 

@@ -101,6 +101,22 @@ Within seconds of deployment the live public URL is fetched and checked for:
 Only fields the crawler can actually read back are asserted, so alt-text and
 schema-only fixes don't produce false failures.
 
+### Connector-aware verification
+
+A connector can override how its deploy is verified through `verificationMode`:
+
+- `"live-dom"` (default) — fetch the public URL and compare the rendered DOM /
+  JSON-LD, as described above.
+- `"connector"` — the fix is applied **client-side** (the universal runtime
+  connector serves a patch config the browser applies), so the server HTML never
+  changes. A DOM comparison would always fail; the pipeline defers to the
+  connector's own `verify()` instead.
+
+A connector may also implement `supportsField(field)`. Fields the connector
+cannot express are filtered out of the deploy before it runs, so the run reports
+`queued` (nothing auto-applied) rather than deploying a partial patch and
+rolling back.
+
 > The roadmap mentions a ~15s settle delay; `settleMs` defaults to 0 and is
 > injectable (`sleep`) so tests run instantly and production can wait for caches.
 
@@ -116,17 +132,18 @@ dashboard.
 
 ## Tests
 
-`tests/healing-pipeline.test.ts` (Vitest, **28 tests**) covers cron matching and
+`tests/healing-pipeline.test.ts` (Vitest, **31 tests**) covers cron matching and
 schedule queueing, field/issue/patch triage, the Auto-Pilot approval gate and
 queue decisions, rollback-store versioning, the JSON-LD linter, micro-crawler
 verification (match, mismatch, HTTP error, network error), the event bus, the
-scan scheduler, and the full pipeline (queued with no write, deploy→verify,
+scan scheduler, connector-aware deployment (runtime connector mode, unsupported
+fields deferred), and the full pipeline (queued with no write, deploy→verify,
 JSON-LD verification, rollback on DOM mismatch, rollback on CMS rejection,
 early failure on snapshot error, injected bus/store).
 
 ```bash
 npx vitest run tests/healing-pipeline.test.ts tests/cms-integration.test.ts tests/ai-seo-brain.test.ts tests/universal-mode.test.ts
-# 98 passed
+# 101 passed
 ```
 
 ## Remaining Phase 4 items

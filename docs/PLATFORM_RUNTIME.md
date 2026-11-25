@@ -195,6 +195,21 @@ To move to PostgreSQL/Redis, implement the four-method `PersistenceAdapter`
 A role switcher (viewer / specialist / admin) drives the dev identity so the
 RBAC behaviour is demonstrable end-to-end.
 
+### Connector-aware verification
+
+A connector declares how a deploy should be verified via `verificationMode`:
+
+- `"live-dom"` (default) — the pipeline fetches the public URL and compares the
+  rendered DOM / JSON-LD against the expected values.
+- `"connector"` — the fix is applied **client-side** (the universal runtime
+  connector), so the server HTML is intentionally unchanged. Comparing it would
+  always fail; the pipeline trusts the connector's own `verify()` instead.
+
+Connectors may also implement `supportsField(field)`. The pipeline filters
+unsupported fields out of the deploy (the run reports `queued` rather than
+rolling back) so a platform that cannot express, say, `image_alt_text` degrades
+gracefully instead of failing.
+
 ## Scan worker
 
 ```ts
@@ -226,11 +241,17 @@ healing runner), and every gateway route.
 restart hydration (audit chain, history, snapshots, redacted credentials), the
 `/v1/audits` scan route and `/v1/connectors` registration + RBAC.
 
+`tests/healing-pipeline.test.ts` (**31 tests**) additionally covers the
+connector-aware deployment path: the universal runtime advertises
+`verificationMode: "connector"` and `supportsField`, a runtime patch deploys and
+verifies through the connector (not the live DOM), and unsupported fields are
+deferred instead of failing.
+
 ```bash
 npx vitest run tests/platform-runtime.test.ts tests/platform-durable.test.ts \
   tests/healing-pipeline.test.ts tests/cms-integration.test.ts \
   tests/ai-seo-brain.test.ts tests/universal-mode.test.ts
-# 143 passed
+# 146 passed
 ```
 
 ## Remaining production wiring
