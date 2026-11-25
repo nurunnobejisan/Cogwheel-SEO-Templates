@@ -139,6 +139,11 @@ export interface AiGeoVisibilitySummary {
   visibilityScore: number; // 0 - 100
   brandEntityClarity: number; // 0 - 100
   factDensityScore: number; // 0 - 100
+  /** True only when AI-engine citations were actually queried. */
+  dataAvailable: boolean;
+  /** How the scores were produced (measured vs heuristic estimate). */
+  methodology: string;
+  engineBreakdown: Record<string, number>;
   estimatedCitationsAcrossEngines: {
     googleAiOverviews: number;
     perplexity: number;
@@ -147,6 +152,25 @@ export interface AiGeoVisibilitySummary {
   };
   keyEntityStrengths: string[];
   recommendations: string[];
+}
+
+/**
+ * Provenance of each report section. Lets the UI distinguish fields measured
+ * from the live page, values produced by a heuristic estimate, and dimensions
+ * that require a data source which is not connected (and so are not shown as
+ * real numbers).
+ */
+export interface DataProvenanceReport {
+  /** Report sections derived from a live fetch + parse of the target page. */
+  measured: string[];
+  /** Sections produced by a documented heuristic, not by measurement. */
+  estimated: string[];
+  /** Sections that require a connection/credentials that are absent. */
+  unavailable: string[];
+  /** True only when ALLOW_SIMULATED_DATA enabled synthetic demo data. */
+  simulated: boolean;
+  /** Human-readable notes, e.g. which env vars unlock a section. */
+  notes: string[];
 }
 
 export interface AlgorithmImpactSummary {
@@ -187,4 +211,6 @@ export interface FullWebsiteAuditReport {
   aiGeoVisibility: AiGeoVisibilitySummary;
   algorithmImpact: AlgorithmImpactSummary;
   actionPlan: ActionItem[];
+  /** Where each section's data came from (measured / estimated / unavailable). */
+  dataProvenance: DataProvenanceReport;
 }

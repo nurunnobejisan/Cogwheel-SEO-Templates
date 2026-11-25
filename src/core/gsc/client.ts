@@ -1,4 +1,5 @@
 import { google } from "googleapis";
+import { isSimulatedDataAllowed } from "../data-policy.ts";
 import type {
   GscSite,
   GscSearchAnalyticsQuery,
@@ -45,10 +46,13 @@ export function getSearchConsoleClient() {
 
 export async function listGscProperties(): Promise<GscSite[]> {
   if (!isGoogleConfigured()) {
-    return [
-      { siteUrl: "sc-domain:thenines.com", permissionLevel: "siteOwner" },
-      { siteUrl: "https://thenines.com/", permissionLevel: "siteOwner" },
-    ];
+    // No credentials → no properties. Simulated data is opt-in only.
+    return isSimulatedDataAllowed()
+      ? [
+          { siteUrl: "sc-domain:thenines.com", permissionLevel: "siteOwner" },
+          { siteUrl: "https://thenines.com/", permissionLevel: "siteOwner" },
+        ]
+      : [];
   }
 
   const client = getSearchConsoleClient();
@@ -65,8 +69,9 @@ export async function getGscSearchAnalytics(
   query: GscSearchAnalyticsQuery
 ): Promise<GscSearchRow[]> {
   if (!isGoogleConfigured()) {
-    // Generate realistic simulated GSC data based on siteUrl
-    return generateSimulatedGscRows(query);
+    // Unconfigured: return no rows (honest) unless simulated data is explicitly
+    // enabled for a demo. Never fabricate Search Console performance.
+    return isSimulatedDataAllowed() ? generateSimulatedGscRows(query) : [];
   }
 
   const client = getSearchConsoleClient();
@@ -314,21 +319,36 @@ export async function inspectGscUrl(
   pageUrl: string
 ): Promise<GscUrlInspectionResult> {
   if (!isGoogleConfigured()) {
+    if (isSimulatedDataAllowed()) {
+      return {
+        inspectionUrl: pageUrl,
+        indexStatusResult: {
+          verdict: "PASS",
+          coverageState: "Submitted and indexed",
+          crawledAs: "Googlebot smartphone",
+          googleCanonical: pageUrl,
+          userCanonical: pageUrl,
+          indexingState: "INDEXING_ALLOWED",
+          lastCrawlTime: new Date(Date.now() - 86400000 * 2).toISOString(),
+          pageFetchState: "SUCCESSFUL",
+          robotsTxtState: "ALLOWED",
+        },
+        mobileUsabilityResult: { verdict: "PASS" },
+        richResultsResult: { verdict: "PASS", detectedItems: ["Hotel", "LocalBusiness", "BreadcrumbList"] },
+      };
+    }
+    // Not connected: report unknown rather than asserting a passing inspection.
     return {
       inspectionUrl: pageUrl,
       indexStatusResult: {
-        verdict: "PASS",
-        coverageState: "Submitted and indexed",
-        crawledAs: "Googlebot smartphone",
+        verdict: "NEUTRAL",
+        coverageState: "Unknown — Google Search Console is not connected",
         googleCanonical: pageUrl,
         userCanonical: pageUrl,
-        indexingState: "INDEXING_ALLOWED",
-        lastCrawlTime: new Date(Date.now() - 86400000 * 2).toISOString(),
-        pageFetchState: "SUCCESSFUL",
-        robotsTxtState: "ALLOWED",
+        indexingState: "INDEXING_STATE_UNSPECIFIED",
       },
-      mobileUsabilityResult: { verdict: "PASS" },
-      richResultsResult: { verdict: "PASS", detectedItems: ["Hotel", "LocalBusiness", "BreadcrumbList"] },
+      mobileUsabilityResult: { verdict: "NEUTRAL" },
+      richResultsResult: { verdict: "NEUTRAL", detectedItems: [] },
     };
   }
 
@@ -359,6 +379,9 @@ export async function inspectGscUrl(
 
 export async function listGscSitemaps(siteUrl: string): Promise<GscSitemapInfo[]> {
   if (!isGoogleConfigured()) {
+    if (!isSimulatedDataAllowed()) {
+      return [];
+    }
     const origin = new URL(siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl.replace("sc-domain:", "")}`).origin;
     return [
       {
