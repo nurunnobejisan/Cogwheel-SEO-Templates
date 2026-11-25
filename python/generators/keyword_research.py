@@ -21,21 +21,19 @@ import json
 import logging
 import os
 import re
-import sys
 import urllib.parse
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Optional
 
-import docx
 from docx import Document
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.oxml import OxmlElement, parse_xml
-from docx.oxml.ns import nsdecls, qn
+from docx.oxml import parse_xml
+from docx.oxml.ns import nsdecls
 from docx.shared import Inches, Pt, RGBColor
 
-from python.crawler.site_mapper import DiscoveredPage, SiteInventory, SiteMapper
+from python.crawler.site_mapper import SiteInventory, SiteMapper
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("KeywordResearchEngine")
@@ -56,7 +54,7 @@ class KeywordCandidate:
     assigned_page_path: Optional[str] = None
     bucket_name: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -74,7 +72,7 @@ class PageAssignment:
     intent: str = "Commercial"
     rationale: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -82,9 +80,9 @@ class PageAssignment:
 class KeywordBucket:
     bucket_name: str
     total_volume: int
-    keywords: List[KeywordCandidate] = field(default_factory=list)
+    keywords: list[KeywordCandidate] = field(default_factory=list)
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "bucket_name": self.bucket_name,
             "total_volume": self.total_volume,
@@ -114,9 +112,9 @@ class KeywordResearchEngine:
         self.output_base_dir = output_base_dir
 
         self.inventory: Optional[SiteInventory] = None
-        self.all_keywords: List[KeywordCandidate] = []
-        self.buckets: List[KeywordBucket] = []
-        self.assignments: List[PageAssignment] = []
+        self.all_keywords: list[KeywordCandidate] = []
+        self.buckets: list[KeywordBucket] = []
+        self.assignments: list[PageAssignment] = []
 
         # Ensure output folder
         self.domain_output_dir = Path(self.output_base_dir) / self.domain
@@ -136,12 +134,11 @@ class KeywordResearchEngine:
     # -----------------------------------------------------------------------
     # Step 2: Keyword Ingestion (CSV / API / Fallback Seed Expansion)
     # -----------------------------------------------------------------------
-    def _parse_csv_keywords(self, file_path: str) -> List[KeywordCandidate]:
+    def _parse_csv_keywords(self, file_path: str) -> list[KeywordCandidate]:
         """Parse keyword data from Semrush, Ahrefs, GSC, or generic CSV export."""
-        candidates: List[KeywordCandidate] = []
-        with open(file_path, mode="r", encoding="utf-8-sig", errors="replace") as f:
+        candidates: list[KeywordCandidate] = []
+        with open(file_path, encoding="utf-8-sig", errors="replace") as f:
             reader = csv.DictReader(f)
-            fieldnames = [c.lower().strip() for c in (reader.fieldnames or [])]
 
             # Column normalizers
             kw_col = next((c for c in reader.fieldnames or [] if c.lower().strip() in ["keyword", "query", "search term", "keywords"]), None)
@@ -188,18 +185,17 @@ class KeywordResearchEngine:
         logger.info("Successfully ingested %d keywords from CSV: %s", len(candidates), file_path)
         return candidates
 
-    def _generate_seed_expansion_keywords(self) -> List[KeywordCandidate]:
+    def _generate_seed_expansion_keywords(self) -> list[KeywordCandidate]:
         """Generate high-intent seed keywords calibrated for any website using discovered archetypes."""
         assert self.inventory is not None
         brand = self.inventory.brand_name
         loc = self.inventory.primary_location
         city = loc.split(",")[0].strip() if "," in loc else loc
-        offerings = self.inventory.core_offerings
 
-        candidates: List[KeywordCandidate] = []
-        seen: Set[str] = set()
+        candidates: list[KeywordCandidate] = []
+        seen: set[str] = set()
 
-        def add_kw(kw: str, vol: int, kd: int, intent: str, pos: Optional[int] = None):
+        def add_kw(kw: str, vol: int, kd: int, intent: str, pos: Optional[int] = None) -> None:
             clean = kw.strip().lower()
             if clean and clean not in seen:
                 seen.add(clean)
@@ -283,7 +279,7 @@ class KeywordResearchEngine:
         logger.info("Generated %d seed-expansion keywords with calibrated SV & KD", len(candidates))
         return candidates
 
-    def ingest_keywords(self) -> List[KeywordCandidate]:
+    def ingest_keywords(self) -> list[KeywordCandidate]:
         """Ingest keywords from CSV, API credentials if available, or seed-expansion."""
         if self.csv_path and os.path.exists(self.csv_path):
             self.all_keywords = self._parse_csv_keywords(self.csv_path)
@@ -292,7 +288,7 @@ class KeywordResearchEngine:
             self.all_keywords = self._generate_seed_expansion_keywords()
 
         # Deduplicate
-        unique_map: Dict[str, KeywordCandidate] = {}
+        unique_map: dict[str, KeywordCandidate] = {}
         for k in self.all_keywords:
             clean = k.keyword.strip().lower()
             if clean not in unique_map or k.volume > unique_map[clean].volume:
@@ -303,8 +299,9 @@ class KeywordResearchEngine:
     # -----------------------------------------------------------------------
     # Step 3: Thematic Clustering & Bucket Grouping
     # -----------------------------------------------------------------------
-    def cluster_into_buckets(self) -> List[KeywordBucket]:
+    def cluster_into_buckets(self) -> list[KeywordBucket]:
         """Cluster keywords into thematic buckets sorted descending by total search volume."""
+        assert self.inventory is not None
         bucket_defs = [
             ("Brand & Direct Navigation", r"\b(official|reviews?|contact|hours|ratings?|address|direct)\b|^\s*" + re.escape(self.inventory.brand_name.lower())),
             ("Primary Accommodations & Room Types", r"\b(rooms?|suites?|king|queen|balcony|guestroom|accommodations?|penthouses?)\b"),
@@ -316,7 +313,7 @@ class KeywordResearchEngine:
             ("Local Attractions & Travel FAQs", r"\b(things to do|attractions?|check in|airport|directions?|faq|faqs|questions?)\b"),
         ]
 
-        buckets_map: Dict[str, List[KeywordCandidate]] = {b[0]: [] for b in bucket_defs}
+        buckets_map: dict[str, list[KeywordCandidate]] = {b[0]: [] for b in bucket_defs}
         buckets_map["General Commercial Opportunities"] = []
 
         for kw in self.all_keywords:
@@ -331,7 +328,7 @@ class KeywordResearchEngine:
                 kw.bucket_name = "General Commercial Opportunities"
                 buckets_map["General Commercial Opportunities"].append(kw)
 
-        clustered: List[KeywordBucket] = []
+        clustered: list[KeywordBucket] = []
         for name, kw_list in buckets_map.items():
             if kw_list:
                 total_vol = sum(k.volume for k in kw_list)
@@ -346,21 +343,20 @@ class KeywordResearchEngine:
     # -----------------------------------------------------------------------
     # Step 4: Page Assignment & Cannibalization Prevention
     # -----------------------------------------------------------------------
-    def assign_keywords_to_pages(self) -> List[PageAssignment]:
+    def assign_keywords_to_pages(self) -> list[PageAssignment]:
         """Assign 1 primary keyword focus per page with strict de-cannibalization."""
         assert self.inventory is not None
-        assigned_keywords: Set[str] = set()
-        assignments: List[PageAssignment] = []
+        assigned_keywords: set[str] = set()
+        assignments: list[PageAssignment] = []
 
         brand = self.inventory.brand_name
         city = self.inventory.primary_location.split(",")[0].strip()
 
         for idx, page in enumerate(self.inventory.pages):
             clean_path = page.path.strip("/").lower()
-            page_text = f"{clean_path} {page.title.lower()} {page.h1.lower()} {' '.join(page.topics).lower()}"
 
             # Score each available keyword for this page
-            scored: List[Tuple[float, KeywordCandidate]] = []
+            scored: list[tuple[float, KeywordCandidate]] = []
             for kw in self.all_keywords:
                 if kw.keyword.lower() in assigned_keywords:
                     continue
@@ -389,9 +385,8 @@ class KeywordResearchEngine:
                 elif page.archetype in ["product_or_room", "category_overview"]:
                     if any(w in k_lower for w in ["room", "suite", "king", "queen", "accommodations"]):
                         score += 90
-                elif page.archetype in ["faq", "about_or_history"]:
-                    if any(w in k_lower for w in ["faq", "about", "directions", "check in", "hours", "contact"]):
-                        score += 80
+                elif page.archetype in ["faq", "about_or_history"] and any(w in k_lower for w in ["faq", "about", "directions", "check in", "hours", "contact"]):
+                    score += 80
 
                 # URL slug token overlap
                 slug_tokens = set(re.findall(r"[a-z]{3,}", clean_path))
@@ -476,7 +471,7 @@ class KeywordResearchEngine:
         COLOR_TEXT = RGBColor(30, 41, 59)       # Slate 800
 
         # Helper: Style Table Header
-        def style_header_cell(cell, text: str, width_in: float):
+        def style_header_cell(cell: Any, text: str, width_in: float) -> None:
             cell.width = Inches(width_in)
             cell.text = text
             shading = parse_xml(r'<w:shd {} w:fill="0F172A"/>'.format(nsdecls("w")))
@@ -489,7 +484,7 @@ class KeywordResearchEngine:
                 run.font.color.rgb = RGBColor(255, 255, 255)
                 run.font.name = "Arial"
 
-        def style_body_cell(cell, text: str, width_in: float, highlight: bool = False, bold: bool = False):
+        def style_body_cell(cell: Any, text: str, width_in: float, highlight: bool = False, bold: bool = False) -> None:
             cell.width = Inches(width_in)
             cell.text = text
             if highlight:
@@ -517,6 +512,7 @@ class KeywordResearchEngine:
         run_title.font.bold = True
         run_title.font.color.rgb = COLOR_PRIMARY
 
+        assert self.inventory is not None
         sub_p = doc.add_paragraph()
         sub_p.paragraph_format.space_after = Pt(14)
         run_sub = sub_p.add_run(
@@ -703,6 +699,7 @@ class KeywordResearchEngine:
     # -----------------------------------------------------------------------
     def generate_json_map(self) -> Path:
         """Save structured site-keyword-map.json for consumption by downstream commands."""
+        assert self.inventory is not None
         json_path = self.domain_output_dir / "site-keyword-map.json"
         data = {
             "domain": self.domain,
@@ -730,7 +727,7 @@ class KeywordResearchEngine:
     # -----------------------------------------------------------------------
     # Full Orchestrated Pipeline
     # -----------------------------------------------------------------------
-    def execute(self) -> Dict[str, Any]:
+    def execute(self) -> dict[str, Any]:
         """Execute complete automated keyword research and page mapping workflow."""
         # 1. Crawl and inventory site
         self.run_site_discovery()
@@ -745,6 +742,7 @@ class KeywordResearchEngine:
         # 4. Generate outputs (.docx + .json)
         docx_path = self.generate_docx_report()
         json_path = self.generate_json_map()
+        assert self.inventory is not None
 
         return {
             "domain": self.domain,
@@ -763,7 +761,7 @@ def run_keyword_research(
     csv_path: Optional[str] = None,
     max_pages: int = 35,
     output_dir: str = "output",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Helper entry point for direct programmatic invocation."""
     engine = KeywordResearchEngine(
         target_url=url,
@@ -774,7 +772,7 @@ def run_keyword_research(
     return engine.execute()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Automated Keyword Research & Page-Mapping Engine")
     parser.add_argument("--url", required=True, help="Target website URL to crawl and map")
     parser.add_argument("--csv", default=None, help="Optional path to keyword CSV (Semrush / Ahrefs / GSC)")

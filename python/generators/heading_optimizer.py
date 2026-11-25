@@ -29,18 +29,15 @@ import json
 import logging
 import os
 import re
-import sys
 import urllib.parse
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Optional
 
 import openpyxl
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-from openpyxl.utils import get_column_letter
 from bs4 import BeautifulSoup
+from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 
-from python.crawler.site_mapper import DiscoveredPage, SiteInventory, SiteMapper
 from python.generators.keyword_research import KeywordResearchEngine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -98,7 +95,7 @@ class HeadingItem:
     issue: str = "none"            # multiple_h1, missing_h1, inverted_hierarchy, skipped_level, non_semantic_stat, non_semantic_badge, non_semantic_quote, non_semantic_footer, all_caps, none
     rationale: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -109,14 +106,14 @@ class PageHeadingAudit:
     path: str
     category: str
     keyword: str
-    headings: List[HeadingItem] = field(default_factory=list)
-    issues_found: List[str] = field(default_factory=list)
+    headings: list[HeadingItem] = field(default_factory=list)
+    issues_found: list[str] = field(default_factory=list)
     h1_count_before: int = 0
     h1_count_after: int = 1
     total_headings: int = 0
     health_score: int = 100
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "url": self.url,
             "path": self.path,
@@ -152,11 +149,11 @@ class HeadingOptimizer:
         self.domain_output_dir.mkdir(parents=True, exist_ok=True)
 
         self.keyword_map_path = keyword_map_path or str(self.domain_output_dir / "site-keyword-map.json")
-        self.keyword_data: Dict[str, Any] = {}
+        self.keyword_data: dict[str, Any] = {}
         self.brand_name: str = ""
         self.location: str = ""
-        self.audits: List[PageHeadingAudit] = []
-        self.all_heading_items: List[HeadingItem] = []
+        self.audits: list[PageHeadingAudit] = []
+        self.all_heading_items: list[HeadingItem] = []
 
     # -----------------------------------------------------------------------
     # 1. Title Case and String Formatting Utilities
@@ -189,7 +186,7 @@ class HeadingOptimizer:
     # 2. Non-Semantic Heading Detection
     # -----------------------------------------------------------------------
     @classmethod
-    def detect_non_semantic(cls, text: str) -> Optional[Tuple[str, str]]:
+    def detect_non_semantic(cls, text: str) -> Optional[tuple[str, str]]:
         """
         Check if a heading is non-semantic.
         Returns (issue_code, rationale) if non-semantic, or None if legitimate.
@@ -217,12 +214,12 @@ class HeadingOptimizer:
     # -----------------------------------------------------------------------
     # 3. Heading & Section Extraction from DOM
     # -----------------------------------------------------------------------
-    def extract_dom_headings(self, soup: BeautifulSoup, page_url: str) -> List[Tuple[str, str]]:
+    def extract_dom_headings(self, soup: BeautifulSoup, _page_url: str = "") -> list[tuple[str, str]]:
         """
         Extract all headings in top-to-bottom visual DOM order.
         Returns list of (level, headline_text).
         """
-        results: List[Tuple[str, str]] = []
+        results: list[tuple[str, str]] = []
 
         # Find all heading tags and styled heading sections
         elements = soup.find_all(["h1", "h2", "h3", "h4", "p", "div", "span"])
@@ -238,10 +235,14 @@ class HeadingOptimizer:
                 continue
 
             # Visual section labels styled as headings
-            classes = " ".join(el.get("class", [])) if el.get("class") else ""
-            if any(h_class in classes.lower() for h_class in ["section-title", "eyebrow", "sub-heading", "heading-styled", "hero-subtitle"]):
-                if len(text.split()) <= 8 and not any(r[1] == text for r in results):
-                    results.append(("TEXT", text))
+            raw_classes = el.get("class")
+            classes = " ".join(raw_classes) if isinstance(raw_classes, list) else str(raw_classes or "")
+            if (
+                any(h_class in classes.lower() for h_class in ["section-title", "eyebrow", "sub-heading", "heading-styled", "hero-subtitle"])
+                and len(text.split()) <= 8
+                and not any(r[1] == text for r in results)
+            ):
+                results.append(("TEXT", text))
 
         return results
 
@@ -253,7 +254,7 @@ class HeadingOptimizer:
         page_url: str,
         keyword: str,
         category: str,
-        raw_headings: List[Tuple[str, str]],
+        raw_headings: list[tuple[str, str]],
         brand_name: str,
         location: str,
         page_title: str = "",
@@ -266,8 +267,8 @@ class HeadingOptimizer:
         clean_brand = brand_name or self.domain.split(".")[0].title()
         city = location.split(",")[0].strip() if location else ""
 
-        issues_found: List[str] = []
-        optimized_items: List[HeadingItem] = []
+        issues_found: list[str] = []
+        optimized_items: list[HeadingItem] = []
 
         # Analyze current H1 counts and hierarchy
         h1_indices = [i for i, (lvl, txt) in enumerate(raw_headings) if lvl == "H1"]
@@ -320,7 +321,7 @@ class HeadingOptimizer:
         current_hierarchy_level = 1 if h1_assigned else 0
 
         # Process each raw heading in order
-        for idx, (raw_lvl, raw_txt) in enumerate(raw_headings):
+        for _idx, (raw_lvl, raw_txt) in enumerate(raw_headings):
             cleaned_txt = self.clean_headline(raw_txt)
             is_all_caps = cleaned_txt.isupper() and len(cleaned_txt) > 3
 
@@ -425,11 +426,11 @@ class HeadingOptimizer:
                     if "amenit" in new_h2.lower():
                         new_h2 = f"Hotel Amenities in {city}" if city else f"Curated {clean_brand} Amenities"
                     elif "din" in new_h2.lower() or "restaurant" in new_h2.lower():
-                        new_h2 = f"Downtown {city} Dining & Cocktails" if city else f"Signature Dining & Cocktails"
+                        new_h2 = f"Downtown {city} Dining & Cocktails" if city else "Signature Dining & Cocktails"
                     elif "room" in new_h2.lower() or "suite" in new_h2.lower():
-                        new_h2 = f"Luxury Rooms & Suites"
+                        new_h2 = "Luxury Rooms & Suites"
                     elif "offer" in new_h2.lower() or "package" in new_h2.lower():
-                        new_h2 = f"Special Offers & Packages"
+                        new_h2 = "Special Offers & Packages"
 
                 change = "normalize_caps" if is_all_caps else ("optimize_h2" if new_h2 != cleaned_txt else "no_change")
                 optimized_items.append(
@@ -591,14 +592,14 @@ class HeadingOptimizer:
     # -----------------------------------------------------------------------
     # 5. Ingest Crawled Data and Optimize All Pages
     # -----------------------------------------------------------------------
-    def _load_keyword_map(self) -> Dict[str, Any]:
+    def _load_keyword_map(self) -> dict[str, Any]:
         """Load /output/<domain>/site-keyword-map.json or trigger keyword research if missing."""
         if self.keyword_data:
             return self.keyword_data
 
         if os.path.exists(self.keyword_map_path):
             logger.info("Loading existing keyword map from: %s", self.keyword_map_path)
-            with open(self.keyword_map_path, "r", encoding="utf-8") as f:
+            with open(self.keyword_map_path, encoding="utf-8") as f:
                 self.keyword_data = json.load(f)
                 self.brand_name = self.keyword_data.get("brand_name", self.domain.split(".")[0].title())
                 self.location = self.keyword_data.get("primary_location", "")
@@ -612,13 +613,13 @@ class HeadingOptimizer:
         )
         engine.execute()
 
-        with open(self.keyword_map_path, "r", encoding="utf-8") as f:
+        with open(self.keyword_map_path, encoding="utf-8") as f:
             self.keyword_data = json.load(f)
             self.brand_name = self.keyword_data.get("brand_name", self.domain.split(".")[0].title())
             self.location = self.keyword_data.get("primary_location", "")
         return self.keyword_data
 
-    def _fetch_live_page_headings(self, url: str) -> Optional[List[Tuple[str, str]]]:
+    def _fetch_live_page_headings(self, url: str) -> Optional[list[tuple[str, str]]]:
         """Fetch live page HTML and extract headings in DOM order."""
         try:
             req = urllib.request.Request(
@@ -635,7 +636,7 @@ class HeadingOptimizer:
             logger.debug("Live fetch for %s encountered: %s; using fallback extraction", url, e)
         return None
 
-    def optimize_all(self, custom_pages: Optional[List[Dict[str, Any]]] = None) -> List[PageHeadingAudit]:
+    def optimize_all(self, custom_pages: Optional[list[dict[str, Any]]] = None) -> list[PageHeadingAudit]:
         """Process all pages from site-keyword-map.json or custom crawled pages."""
         if not custom_pages:
             self._load_keyword_map()
@@ -646,8 +647,8 @@ class HeadingOptimizer:
         self.brand_name = self.brand_name or self.domain.split(".")[0].title()
         self.location = self.location or "United States"
 
-        audits: List[PageHeadingAudit] = []
-        all_items: List[HeadingItem] = []
+        audits: list[PageHeadingAudit] = []
+        all_items: list[HeadingItem] = []
 
         for p in pages:
             url = p.get("url", f"{self.target_url}{p.get('path', '/')}")
@@ -658,7 +659,7 @@ class HeadingOptimizer:
             raw_title = p.get("title", f"{self.brand_name} Page")
 
             # Collect raw headings from page payload, live fetch, or fallback synthesis
-            raw_headings: List[Tuple[str, str]] = []
+            raw_headings: list[tuple[str, str]] = []
             if "raw_headings" in p:
                 raw_headings = p["raw_headings"]
             elif "headings" in p and isinstance(p["headings"], list):
@@ -688,7 +689,7 @@ class HeadingOptimizer:
 
     def _synthesize_sample_headings(
         self, archetype: str, page_title: str, brand: str, location: str
-    ) -> List[Tuple[str, str]]:
+    ) -> list[tuple[str, str]]:
         """Generate realistic crawled heading list reflecting real-world CMS issues for an archetype."""
         city = location.split(",")[0].strip() if location else "Downtown"
 
@@ -753,7 +754,6 @@ class HeadingOptimizer:
         COLOR_GOLD_FILL = "FEF3C7"  # Soft Gold for optimized/caps normalization
         COLOR_GOLD_TEXT = "92400E"  # Dark Amber text
         COLOR_BORDER = "CBD5E1"     # Light Slate border
-        COLOR_GRAY_BG = "F8FAFC"    # Subtle background
 
         font_header = Font(name="Arial", size=10, bold=True, color="FFFFFF")
         font_body = Font(name="Arial", size=9, color="1E293B")
@@ -768,7 +768,6 @@ class HeadingOptimizer:
         fill_h1_fix = PatternFill(start_color=COLOR_GREEN_FILL, end_color=COLOR_GREEN_FILL, fill_type="solid")
         fill_promote = PatternFill(start_color=COLOR_BLUE_LIGHT, end_color=COLOR_BLUE_LIGHT, fill_type="solid")
         fill_optimize = PatternFill(start_color=COLOR_GOLD_FILL, end_color=COLOR_GOLD_FILL, fill_type="solid")
-        fill_zebra = PatternFill(start_color="F1F5F9", end_color="F1F5F9", fill_type="solid")
 
         border_cell = Border(
             left=Side(style="thin", color=COLOR_BORDER),
@@ -873,7 +872,7 @@ class HeadingOptimizer:
 
         # Group items by Navigation Category
         category_order = ["HOME", "PRODUCTS / ROOMS", "SERVICES / AMENITIES", "ABOUT", "RESOURCES / BLOG", "FOOTER"]
-        grouped_items: Dict[str, List[HeadingItem]] = {cat: [] for cat in category_order}
+        grouped_items: dict[str, list[HeadingItem]] = {cat: [] for cat in category_order}
 
         for item in self.all_heading_items:
             cat = item.category if item.category in grouped_items else "SERVICES / AMENITIES"
@@ -996,7 +995,7 @@ class HeadingOptimizer:
     # -----------------------------------------------------------------------
     # 8. Full Orchestration Execution
     # -----------------------------------------------------------------------
-    def execute(self) -> Dict[str, Any]:
+    def execute(self) -> dict[str, Any]:
         """Execute complete Heading Structure Optimization workflow."""
         self.optimize_all()
         xlsx_path = self.generate_excel_workbook()
@@ -1034,7 +1033,7 @@ def run_heading_optimizer(
     url: str,
     keyword_map: Optional[str] = None,
     output_dir: str = "output",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Programmatic entry point for Heading Structure Optimization."""
     optimizer = HeadingOptimizer(
         domain_or_url=url,
@@ -1044,7 +1043,7 @@ def run_heading_optimizer(
     return optimizer.execute()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Automated Heading Structure Optimization for Any Website.")
     parser.add_argument("--url", required=True, help="Target website URL or domain")
     parser.add_argument("--keyword-map", default=None, help="Path to site-keyword-map.json (optional)")

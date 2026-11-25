@@ -29,20 +29,17 @@ import json
 import logging
 import os
 import re
-import sys
 import urllib.parse
 import urllib.request
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Optional
 
 import openpyxl
+from bs4 import BeautifulSoup
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-from openpyxl.utils import get_column_letter
-from bs4 import BeautifulSoup
 
-from python.crawler.site_mapper import DiscoveredPage, SiteInventory, SiteMapper
 from python.generators.keyword_research import KeywordResearchEngine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -73,8 +70,8 @@ class ImageAssetRecord:
     old_alt_length: int
     optimized_alt: str
     optimized_alt_length: int
-    page_urls: List[str] = field(default_factory=list)
-    surrounding_headings: List[str] = field(default_factory=list)
+    page_urls: list[str] = field(default_factory=list)
+    surrounding_headings: list[str] = field(default_factory=list)
     is_raw_filename: bool = False
     is_missing_alt: bool = False
     is_overlong_alt: bool = False
@@ -82,7 +79,7 @@ class ImageAssetRecord:
     dimensions: str = "Responsive"
     primary_subject: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -107,16 +104,16 @@ class ImageOptimizer:
         self.domain_output_dir.mkdir(parents=True, exist_ok=True)
 
         self.keyword_map_path = keyword_map_path or str(self.domain_output_dir / "site-keyword-map.json")
-        self.keyword_data: Dict[str, Any] = {}
+        self.keyword_data: dict[str, Any] = {}
         self.brand_name: str = ""
         self.location: str = ""
-        self.image_records: List[ImageAssetRecord] = []
+        self.image_records: list[ImageAssetRecord] = []
 
     # -----------------------------------------------------------------------
     # 1. Filename & Normalization Utilities
     # -----------------------------------------------------------------------
     @classmethod
-    def clean_filename(cls, raw_url: str) -> Tuple[str, str, str]:
+    def clean_filename(cls, raw_url: str) -> tuple[str, str, str]:
         """Extract clean filename, stem title, and file extension from image URL."""
         parsed = urllib.parse.urlparse(raw_url)
         path = parsed.path
@@ -167,7 +164,7 @@ class ImageOptimizer:
         page_topic: str,
         brand_name: str,
         city: str,
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """
         Synthesize concise, descriptive ALT text (50-85 characters target, hard cap <= 125 chars).
         Combines visual subject, brand name, and city location without filler words.
@@ -241,14 +238,15 @@ class ImageOptimizer:
     # -----------------------------------------------------------------------
     # 3. DOM Image Extraction & Crawl Parser
     # -----------------------------------------------------------------------
-    def extract_page_images(self, html: str, page_url: str) -> List[Dict[str, Any]]:
+    def extract_page_images(self, html: str, page_url: str) -> list[dict[str, Any]]:
         """Extract all img, picture, and CSS hero background images from page HTML."""
         soup = BeautifulSoup(html, "html.parser")
-        extracted: List[Dict[str, Any]] = []
+        extracted: list[dict[str, Any]] = []
 
         # Track surrounding headings
         for img_tag in soup.find_all("img"):
-            src = img_tag.get("src") or img_tag.get("data-src") or img_tag.get("srcset")
+            raw_src = img_tag.get("src") or img_tag.get("data-src") or img_tag.get("srcset")
+            src = raw_src[0] if isinstance(raw_src, list) else str(raw_src or "")
             if not src or src.startswith("data:"):
                 continue
 
@@ -261,8 +259,8 @@ class ImageOptimizer:
             if curr:
                 section_heading = curr.get_text(separator=" ", strip=True)
 
-            existing_alt = img_tag.get("alt", "").strip()
-            title_attr = img_tag.get("title", "").strip()
+            existing_alt = str(img_tag.get("alt") or "").strip()
+            title_attr = str(img_tag.get("title") or "").strip()
             width = img_tag.get("width", "")
             height = img_tag.get("height", "")
             dims = f"{width}x{height}" if width and height else "Responsive"
@@ -278,7 +276,7 @@ class ImageOptimizer:
 
         # Check for CSS hero background images in hero sections
         for hero_el in soup.find_all(class_=re.compile(r"hero|banner|showcase|carousel", re.I)):
-            style = hero_el.get("style", "")
+            style = str(hero_el.get("style") or "")
             bg_match = re.search(r"url\(['\"]?([^'\")]+)['\"]?\)", style)
             if bg_match:
                 bg_src = urllib.parse.urljoin(page_url, bg_match.group(1).strip())
@@ -299,14 +297,14 @@ class ImageOptimizer:
     # -----------------------------------------------------------------------
     # 4. Crawl / Map Ingestion and Image Deduplication
     # -----------------------------------------------------------------------
-    def _load_keyword_map(self) -> Dict[str, Any]:
+    def _load_keyword_map(self) -> dict[str, Any]:
         """Load /output/<domain>/site-keyword-map.json or run keyword discovery if missing."""
         if self.keyword_data:
             return self.keyword_data
 
         if os.path.exists(self.keyword_map_path):
             logger.info("Loading existing keyword map from: %s", self.keyword_map_path)
-            with open(self.keyword_map_path, "r", encoding="utf-8") as f:
+            with open(self.keyword_map_path, encoding="utf-8") as f:
                 self.keyword_data = json.load(f)
                 self.brand_name = self.keyword_data.get("brand_name", self.domain.split(".")[0].title())
                 self.location = self.keyword_data.get("primary_location", "")
@@ -320,13 +318,13 @@ class ImageOptimizer:
         )
         engine.execute()
 
-        with open(self.keyword_map_path, "r", encoding="utf-8") as f:
+        with open(self.keyword_map_path, encoding="utf-8") as f:
             self.keyword_data = json.load(f)
             self.brand_name = self.keyword_data.get("brand_name", self.domain.split(".")[0].title())
             self.location = self.keyword_data.get("primary_location", "")
         return self.keyword_data
 
-    def audit_all_images(self, custom_pages: Optional[List[Dict[str, Any]]] = None) -> List[ImageAssetRecord]:
+    def audit_all_images(self, custom_pages: Optional[list[dict[str, Any]]] = None) -> list[ImageAssetRecord]:
         """
         Audit and optimize all unique site images across crawled pages.
         Deduplicates by canonical asset URL while retaining multi-page appearances.
@@ -342,14 +340,14 @@ class ImageOptimizer:
         city = self.location.split(",")[0].strip() if self.location else "Downtown"
 
         # Unique asset map: canonical_url -> dict
-        unique_assets: Dict[str, Dict[str, Any]] = {}
+        unique_assets: dict[str, dict[str, Any]] = {}
 
         for p in pages:
             url = p.get("url", f"{self.target_url}{p.get('path', '/')}")
             archetype = p.get("archetype", "service_or_amenity")
             page_title = p.get("title", f"{self.brand_name} Page")
 
-            page_images: List[Dict[str, Any]] = []
+            page_images: list[dict[str, Any]] = []
 
             # 1. Check if page payload includes pre-extracted images
             if "images" in p and isinstance(p["images"], list):
@@ -388,8 +386,8 @@ class ImageOptimizer:
                         unique_assets[clean_src]["section_heading"] = img["section_heading"]
 
         # Audit and synthesize Optimized ALT text for each unique asset
-        records: List[ImageAssetRecord] = []
-        seen_alts: Set[str] = {}
+        records: list[ImageAssetRecord] = []
+        seen_alts: dict[str, str] = {}
 
         for can_url, data in unique_assets.items():
             filename, clean_title, ext = self.clean_filename(can_url)
@@ -439,7 +437,7 @@ class ImageOptimizer:
         logger.info("Audited %d unique image assets across %d pages", len(records), len(pages))
         return self.image_records
 
-    def _fetch_live_images(self, url: str) -> Optional[List[Dict[str, Any]]]:
+    def _fetch_live_images(self, url: str) -> Optional[list[dict[str, Any]]]:
         """Fetch live page HTML and parse images."""
         try:
             req = urllib.request.Request(
@@ -455,7 +453,7 @@ class ImageOptimizer:
             logger.debug("Live image fetch for %s encountered: %s", url, e)
         return None
 
-    def _synthesize_sample_images(self, archetype: str, page_title: str, page_url: str) -> List[Dict[str, Any]]:
+    def _synthesize_sample_images(self, archetype: str, _page_title: str = "", _page_url: str = "") -> list[dict[str, Any]]:
         """Synthesize realistic crawled image records reflecting real-world CMS issues."""
         domain = self.domain
         if archetype == "home":
@@ -540,7 +538,6 @@ class ImageOptimizer:
         COLOR_RED_FILL = "FCE8E6"   # Alert Red for overlong ALTs (>125 chars)
         COLOR_RED_TEXT = "C5221F"   # Alert Red text
         COLOR_BORDER = "CBD5E1"     # Light Slate border
-        COLOR_GRAY_LIGHT = "F8FAFC" # Off-white background
 
         font_header = Font(name="Arial", size=10, bold=True, color="FFFFFF")
         font_body = Font(name="Arial", size=9, color="1E293B")
@@ -723,7 +720,7 @@ class ImageOptimizer:
     # -----------------------------------------------------------------------
     # 7. Full Orchestration Execution
     # -----------------------------------------------------------------------
-    def execute(self) -> Dict[str, Any]:
+    def execute(self) -> dict[str, Any]:
         """Execute complete Image Optimization workflow."""
         self.audit_all_images()
         xlsx_path = self.generate_excel_workbook()
@@ -759,7 +756,7 @@ def run_image_optimizer(
     url: str,
     keyword_map: Optional[str] = None,
     output_dir: str = "output",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Programmatic entry point for Image Optimization."""
     optimizer = ImageOptimizer(
         domain_or_url=url,
@@ -769,7 +766,7 @@ def run_image_optimizer(
     return optimizer.execute()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Automated Image SEO & ALT Text Optimization for Any Website.")
     parser.add_argument("--url", required=True, help="Target website URL or domain")
     parser.add_argument("--keyword-map", default=None, help="Path to site-keyword-map.json (optional)")

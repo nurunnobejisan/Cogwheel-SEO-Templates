@@ -23,14 +23,13 @@ import argparse
 import json
 import logging
 import re
-import sys
 import urllib.error
 import urllib.parse
 import urllib.request
+import xml.etree.ElementTree as ET
 from collections import deque
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, List, Optional, Set
-import xml.etree.ElementTree as ET
+from typing import Any, Optional
 
 from bs4 import BeautifulSoup
 
@@ -61,15 +60,15 @@ class DiscoveredPage:
     title: str
     archetype: PageArchetype
     h1: str = ""
-    h2_list: List[str] = field(default_factory=list)
+    h2_list: list[str] = field(default_factory=list)
     meta_description: str = ""
-    topics: List[str] = field(default_factory=list)
+    topics: list[str] = field(default_factory=list)
     word_count: int = 0
     internal_links_count: int = 0
     external_links_count: int = 0
     status_code: int = 200
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return asdict(self)
 
 
@@ -79,12 +78,12 @@ class SiteInventory:
     target_url: str
     brand_name: str
     primary_location: str
-    core_offerings: List[str] = field(default_factory=list)
-    pages: List[DiscoveredPage] = field(default_factory=list)
+    core_offerings: list[str] = field(default_factory=list)
+    pages: list[DiscoveredPage] = field(default_factory=list)
     total_pages_found: int = 0
     sitemap_url: Optional[str] = None
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "domain": self.domain,
             "target_url": self.target_url,
@@ -120,13 +119,13 @@ class SiteMapper:
         self.max_pages = max_pages
         self.timeout = timeout
 
-        self.visited_urls: Set[str] = set()
-        self.discovered_pages: List[DiscoveredPage] = []
+        self.visited_urls: set[str] = set()
+        self.discovered_pages: list[DiscoveredPage] = []
         self.sitemap_url: Optional[str] = None
 
         self.brand_name: str = ""
         self.primary_location: str = ""
-        self.core_offerings: List[str] = []
+        self.core_offerings: list[str] = []
 
     def _fetch_url(self, url: str) -> Optional[str]:
         """Fetch URL content with custom User-Agent, handling redirects and SSL gracefully."""
@@ -137,14 +136,14 @@ class SiteMapper:
                 content_type = response.headers.get("Content-Type", "").lower()
                 if "text/html" not in content_type and "xml" not in content_type and "text/plain" not in content_type:
                     return None
-                return response.read().decode("utf-8", errors="replace")
+                return str(response.read().decode("utf-8", errors="replace"))
         except Exception as e:
             logger.debug("Fetch failed for %s: %s", url, e)
             return None
 
-    def _discover_sitemap_urls(self) -> List[str]:
+    def _discover_sitemap_urls(self) -> list[str]:
         """Check robots.txt and sitemap.xml for indexable page endpoints."""
-        urls: List[str] = []
+        urls: list[str] = []
         candidates = [
             f"{self.scheme}://{self.netloc}/sitemap.xml",
             f"{self.scheme}://{self.netloc}/sitemap_index.xml",
@@ -210,7 +209,7 @@ class SiteMapper:
                     valid_urls.append(u.split("#")[0].split("?")[0])
         return list(dict.fromkeys(valid_urls))
 
-    def _classify_page_archetype(self, path: str, title: str, h1: str, body_text: str) -> PageArchetype:
+    def _classify_page_archetype(self, path: str, title: str, h1: str, _body_text: str = "") -> PageArchetype:
         """Classify a page into one of the 10 archetype categories based on URL, title, and DOM content."""
         clean_path = path.strip("/").lower()
         full_context = f"{clean_path} {title.lower()} {h1.lower()}"
@@ -278,13 +277,13 @@ class SiteMapper:
         title = soup.title.string.strip() if (soup.title and soup.title.string) else ""
         if not title:
             og_title = soup.find("meta", property="og:title")
-            title = og_title.get("content", "").strip() if og_title else ""
+            title = str(og_title.get("content") or "").strip() if og_title else ""
 
         # Meta Description
         meta_desc = ""
         meta_tag = soup.find("meta", attrs={"name": "description"}) or soup.find("meta", property="og:description")
         if meta_tag and meta_tag.get("content"):
-            meta_desc = meta_tag.get("content", "").strip()
+            meta_desc = str(meta_tag.get("content") or "").strip()
 
         # Primary H1
         h1_tag = soup.find("h1")
@@ -305,7 +304,7 @@ class SiteMapper:
             "the", "and", "for", "with", "that", "this", "from", "you", "are", "have",
             "our", "all", "your", "can", "will", "was", "were", "been", "has", "more"
         }
-        word_freq: Dict[str, int] = {}
+        word_freq: dict[str, int] = {}
         for w in words:
             lw = w.lower()
             if lw not in stop_words and len(lw) >= 4:
@@ -316,7 +315,7 @@ class SiteMapper:
         internal_links = 0
         external_links = 0
         for a in soup.find_all("a", href=True):
-            href = a["href"].strip()
+            href = str(a["href"]).strip()
             if href.startswith("#") or href.startswith("javascript:") or href.startswith("mailto:") or href.startswith("tel:"):
                 continue
             parsed = urllib.parse.urlparse(href)
@@ -348,7 +347,7 @@ class SiteMapper:
         # 1. Brand name
         og_site_name = home_soup.find("meta", property="og:site_name")
         if og_site_name and og_site_name.get("content"):
-            self.brand_name = og_site_name.get("content", "").strip()
+            self.brand_name = str(og_site_name.get("content") or "").strip()
         elif home_title:
             # Common patterns: "The Nines | Luxury Hotel" or "Marriott - City Center"
             splitters = ["|", " - ", " – ", " — ", " • "]
@@ -437,7 +436,7 @@ class SiteMapper:
             if len(self.discovered_pages) + len(queue) < self.max_pages:
                 soup = BeautifulSoup(html, "html.parser")
                 for a in soup.find_all("a", href=True):
-                    href = a["href"].strip()
+                    href = str(a["href"]).strip()
                     if href.startswith("#") or href.startswith("javascript:") or href.startswith("mailto:") or href.startswith("tel:"):
                         continue
                     resolved = urllib.parse.urljoin(current_url, href)
@@ -481,7 +480,7 @@ class SiteMapper:
         )
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Automated Site Discovery & Archetype Classifier")
     parser.add_argument("--url", required=True, help="Target website URL (e.g. https://example.com)")
     parser.add_argument("--max-pages", type=int, default=30, help="Maximum number of pages to crawl")

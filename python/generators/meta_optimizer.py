@@ -24,19 +24,15 @@ import datetime
 import json
 import logging
 import os
-import re
-import sys
 import urllib.parse
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Optional
 
 import openpyxl
 from openpyxl.formatting.rule import CellIsRule
 from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-from openpyxl.utils import get_column_letter
 
-from python.crawler.site_mapper import DiscoveredPage, SiteInventory, SiteMapper
 from python.generators.keyword_research import KeywordResearchEngine
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
@@ -57,10 +53,10 @@ class OptimizedMetaRow:
     new_meta: str
     new_meta_len: int
     archetype: str
-    usps_used: List[str] = field(default_factory=list)
+    usps_used: list[str] = field(default_factory=list)
     cta_used: str = ""
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         d = asdict(self)
         d["title_length"] = self.new_title_len
         d["meta_length"] = self.new_meta_len
@@ -87,19 +83,19 @@ class MetaOptimizer:
         self.domain_output_dir.mkdir(parents=True, exist_ok=True)
 
         self.map_json_path = map_json_path or str(self.domain_output_dir / "site-keyword-map.json")
-        self.map_data: Dict[str, Any] = {}
+        self.map_data: dict[str, Any] = {}
         self.brand_name: str = ""
         self.location: str = ""
-        self.optimized_rows: List[OptimizedMetaRow] = []
+        self.optimized_rows: list[OptimizedMetaRow] = []
 
-    def _load_or_generate_keyword_map(self) -> Dict[str, Any]:
+    def _load_or_generate_keyword_map(self) -> dict[str, Any]:
         """Load existing site-keyword-map.json, or run site discovery & keyword mapping if missing."""
         if self.map_data:
             return self.map_data
 
         if os.path.exists(self.map_json_path):
             logger.info("Loading existing keyword map from: %s", self.map_json_path)
-            with open(self.map_json_path, "r", encoding="utf-8") as f:
+            with open(self.map_json_path, encoding="utf-8") as f:
                 self.map_data = json.load(f)
                 return self.map_data
 
@@ -111,7 +107,7 @@ class MetaOptimizer:
         )
         engine.execute()
 
-        with open(self.map_json_path, "r", encoding="utf-8") as f:
+        with open(self.map_json_path, encoding="utf-8") as f:
             self.map_data = json.load(f)
         return self.map_data
 
@@ -237,7 +233,7 @@ class MetaOptimizer:
     # -----------------------------------------------------------------------
     # 2. Deterministic Meta Description Optimizer (145–160 chars target, <= 160 hard cap)
     # -----------------------------------------------------------------------
-    def _repair_meta_length(self, meta: str, keyword: str = "", cta: str = "") -> str:
+    def _repair_meta_length(self, meta: str, _keyword: str = "", cta: str = "") -> str:
         """Deterministically tighten meta text down to <= 160 characters without cutting words mid-token."""
         if len(meta) <= 160:
             return meta
@@ -259,9 +255,9 @@ class MetaOptimizer:
         archetype: str = "service_or_amenity",
         page_title: str = "",
         existing_meta: str = "",
-        page_topics: Optional[List[str]] = None,
+        page_topics: Optional[list[str]] = None,
         page: Optional[Any] = None,
-    ) -> Tuple[str, List[str], str]:
+    ) -> tuple[str, list[str], str]:
         """
         Generate Meta Description:
         - Natural keyword integration.
@@ -279,7 +275,6 @@ class MetaOptimizer:
             if archetype == "service_or_amenity" and hasattr(page, "archetype") and page.archetype:
                 archetype = page.archetype
 
-        kw_title = self._to_title_case(keyword_focus)
         kw_lower = keyword_focus.lower()
 
         brand = (
@@ -402,7 +397,7 @@ class MetaOptimizer:
     # -----------------------------------------------------------------------
     # 3. Main Optimization Runner
     # -----------------------------------------------------------------------
-    def optimize_all(self, pages: List[Any], assignments: List[Any]) -> List[OptimizedMetaRow]:
+    def optimize_all(self, pages: list[Any], assignments: list[Any]) -> list[OptimizedMetaRow]:
         """Convenience method to optimize given pages and assignments in memory."""
         page_lookup = {getattr(p, "path", "/"): p for p in pages}
         page_data = []
@@ -427,7 +422,7 @@ class MetaOptimizer:
         }
         return self.optimize()
 
-    def optimize(self) -> List[OptimizedMetaRow]:
+    def optimize(self) -> list[OptimizedMetaRow]:
         """Process all pages from site-keyword-map.json and generate compliant Title & Meta pairs."""
         if not self.map_data:
             self._load_or_generate_keyword_map()
@@ -437,7 +432,7 @@ class MetaOptimizer:
         city = location.split(",")[0].strip()
         pages = self.map_data.get("pages", [])
 
-        results: List[OptimizedMetaRow] = []
+        results: list[OptimizedMetaRow] = []
 
         for p in pages:
             url = p.get("url", f"{self.target_url}{p.get('path', '/')}")
@@ -748,7 +743,7 @@ class MetaOptimizer:
     # -----------------------------------------------------------------------
     # Full Orchestration Execution
     # -----------------------------------------------------------------------
-    def execute(self) -> Dict[str, Any]:
+    def execute(self) -> dict[str, Any]:
         """Execute complete Title & Meta Description generation and packaging workflow."""
         # 1. Optimize Title & Meta pairs
         self.optimize()
@@ -776,7 +771,7 @@ def run_meta_optimizer(
     domain_or_url: str,
     map_json_path: Optional[str] = None,
     output_dir: str = "output",
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Helper entry point for programmatic invocation."""
     optimizer = MetaOptimizer(
         domain_or_url=domain_or_url,
@@ -786,7 +781,7 @@ def run_meta_optimizer(
     return optimizer.execute()
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Automated Cogwheel Title & Meta Description Generator")
     parser.add_argument("--url", default=None, help="Target website URL or domain (e.g. thenines.com)")
     parser.add_argument("--domain", default=None, help="Target domain (e.g. thenines.com)")
@@ -797,7 +792,7 @@ def main():
     target = args.url or args.domain
     if not target:
         if args.map_json and os.path.exists(args.map_json):
-            with open(args.map_json, "r", encoding="utf-8") as f:
+            with open(args.map_json, encoding="utf-8") as f:
                 data = json.load(f)
                 target = data.get("domain") or data.get("target_url")
         if not target:

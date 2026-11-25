@@ -19,10 +19,9 @@ import datetime
 import json
 import logging
 import os
-import sys
 import urllib.parse
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from python.generators.heading_optimizer import HeadingOptimizer
 from python.generators.image_optimizer import ImageOptimizer
@@ -56,7 +55,7 @@ class CogwheelAutoRunner:
         self.domain_output_dir = Path(self.output_base_dir) / self.domain
         self.domain_output_dir.mkdir(parents=True, exist_ok=True)
 
-    def run_all(self) -> Dict[str, Any]:
+    def run_all(self) -> dict[str, Any]:
         """Execute all four generators and produce the final Chrome Extension bundle."""
         start_time = datetime.datetime.now()
         logger.info("============================================================")
@@ -123,9 +122,9 @@ class CogwheelAutoRunner:
         logger.info("\n>>> STEP 5: Consolidating Unified Chrome Extension Bundle...")
         bundle_path = self.build_extension_bundle(
             kw_map_path=kw_map_path,
-            meta_json_path=meta_json_path,
-            heading_json_path=heading_json_path,
-            image_json_path=image_json_path,
+            meta_json_path=Path(meta_json_path),
+            heading_json_path=Path(heading_json_path),
+            image_json_path=Path(image_json_path),
         )
 
         elapsed = (datetime.datetime.now() - start_time).total_seconds()
@@ -167,36 +166,36 @@ class CogwheelAutoRunner:
         # Load sub-deliverable JSONs
         kw_data = {}
         if os.path.exists(kw_map_path):
-            with open(kw_map_path, "r", encoding="utf-8") as f:
+            with open(kw_map_path, encoding="utf-8") as f:
                 kw_data = json.load(f)
 
         meta_data = {}
         if os.path.exists(meta_json_path):
-            with open(meta_json_path, "r", encoding="utf-8") as f:
+            with open(meta_json_path, encoding="utf-8") as f:
                 meta_data = json.load(f)
 
         heading_data = {}
         if os.path.exists(heading_json_path):
-            with open(heading_json_path, "r", encoding="utf-8") as f:
+            with open(heading_json_path, encoding="utf-8") as f:
                 heading_data = json.load(f)
 
         image_data = {}
         if os.path.exists(image_json_path):
-            with open(image_json_path, "r", encoding="utf-8") as f:
+            with open(image_json_path, encoding="utf-8") as f:
                 image_data = json.load(f)
 
         brand_name = kw_data.get("brand_name") or meta_data.get("brand_name") or self.domain.title()
         primary_location = kw_data.get("primary_location") or meta_data.get("primary_location") or "United States"
 
         # Index meta and heading records by clean URL/path
-        meta_lookup: Dict[str, Dict[str, Any]] = {}
+        meta_lookup: dict[str, dict[str, Any]] = {}
         for p in meta_data.get("pages", []):
             url_key = p.get("url", "").rstrip("/")
             path_key = urllib.parse.urlparse(p.get("url", "")).path.rstrip("/") or "/"
             meta_lookup[url_key] = p
             meta_lookup[path_key] = p
 
-        heading_lookup: Dict[str, Dict[str, Any]] = {}
+        heading_lookup: dict[str, dict[str, Any]] = {}
         for p in heading_data.get("pages", []):
             url_key = p.get("url", "").rstrip("/")
             path_key = urllib.parse.urlparse(p.get("url", "")).path.rstrip("/") or "/"
@@ -205,7 +204,7 @@ class CogwheelAutoRunner:
 
         # Index images by associated page URLs
         image_list = image_data.get("images", [])
-        page_images_map: Dict[str, List[Dict[str, Any]]] = {}
+        page_images_map: dict[str, list[dict[str, Any]]] = {}
         for img in image_list:
             for p_url in img.get("page_urls", []):
                 p_url_clean = p_url.rstrip("/")
@@ -218,7 +217,7 @@ class CogwheelAutoRunner:
                 page_images_map[p_path_clean].append(img)
 
         # Consolidate page profiles
-        consolidated_pages: List[Dict[str, Any]] = []
+        consolidated_pages: list[dict[str, Any]] = []
         kw_pages = kw_data.get("pages", [])
 
         for kp in kw_pages:
@@ -232,8 +231,8 @@ class CogwheelAutoRunner:
             page_imgs = page_images_map.get(url_key) or page_images_map.get(path_key) or []
 
             # Deduplicate images for this page
-            seen_src: Set[str] = set()
-            clean_page_imgs: List[Dict[str, Any]] = []
+            seen_src: set[str] = set()
+            clean_page_imgs: list[dict[str, Any]] = []
             for img in page_imgs:
                 src = img.get("image_url", "")
                 if src and src not in seen_src:
@@ -312,7 +311,7 @@ class CogwheelAutoRunner:
         return bundle_path
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description="Unified Cogwheel SEO Automation for Any Website URL.")
     parser.add_argument("--url", required=True, help="Target website URL or domain (e.g., https://thenines.com)")
     parser.add_argument("--keywords-csv", default=None, help="Optional CSV path containing keyword data")
