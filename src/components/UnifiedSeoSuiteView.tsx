@@ -19,6 +19,111 @@ interface UnifiedSeoSuiteViewProps {
 
 type SuiteSubTab = "full-audit" | "gsc-intel" | "geo-visibility" | "ai-orchestrator" | "model-training";
 
+/**
+ * Answers the in-app assistant from the audit report the operator just ran.
+ *
+ * This deliberately does not call an LLM: the previous implementation returned
+ * canned diagnoses and invented scores. Every sentence below is derived from
+ * measured report fields, and missing data sources are named instead of filled.
+ */
+function answerFromAudit(
+  question: string,
+  report: FullWebsiteAuditReport | null,
+  targetUrl: string,
+): { content: string; toolUsed: string } {
+  if (!report) {
+    return {
+      toolUsed: "audit_report:missing",
+      content: `### No audit loaded\n\nRun the 11-dimension audit for ${targetUrl} first. This assistant answers from the current report only — it does not crawl on its own and it does not invent metrics.`,
+    };
+  }
+
+  const q = question.toLowerCase();
+  const r = report;
+
+  if (q.includes("cannibal") || q.includes("gsc") || q.includes("search console")) {
+    const gsc = r.searchConsole;
+    if (!gsc.isConnected) {
+      return {
+        toolUsed: "audit_report:search_console",
+        content:
+          "### Search Console cannibalization\n\nNot measured for this report. Google Search Console credentials are not connected, so query-level clicks, impressions and cannibalization conflicts are unavailable.\n\nConnect Search Console and re-run the audit to populate this section.",
+      };
+    }
+    const top = gsc.topQueries
+      .slice(0, 5)
+      .map((query) => `- \`${query.query}\` — ${query.clicks} clicks / ${query.impressions} impressions / position ${query.position.toFixed(1)}`)
+      .join("\n");
+    return {
+      toolUsed: "audit_report:search_console",
+      content: `### Search Console cannibalization\n\n- Property: \`${gsc.siteUrl}\` (last ${gsc.periodDays} days)\n- Clicks / impressions: ${gsc.totalClicks.toLocaleString()} / ${gsc.totalImpressions.toLocaleString()}\n- Average CTR / position: ${(gsc.averageCtr * 100).toFixed(2)}% / ${gsc.averagePosition.toFixed(1)}\n- Conflicting queries: **${gsc.cannibalizationDetectedCount}**\n${top ? `\nTop queries:\n${top}` : ""}\n\n${gsc.cannibalizationDetectedCount > 0 ? "Review the competing URLs listed in the Search Console panel and consolidate internal links onto one canonical target per query." : "No query-level conflict was detected in the exported window."}`,
+    };
+  }
+
+  if (q.includes("geo") || q.includes("perplexity") || q.includes("ai overview") || q.includes("citation")) {
+    const geo = r.aiGeoVisibility;
+    const citations = geo.dataAvailable
+      ? `- Citations: Google AI Overviews ${geo.estimatedCitationsAcrossEngines.googleAiOverviews}, Perplexity ${geo.estimatedCitationsAcrossEngines.perplexity}, ChatGPT Search ${geo.estimatedCitationsAcrossEngines.chatgptSearch}, Claude ${geo.estimatedCitationsAcrossEngines.claude}`
+      : "- Citations: **not measured** — no AI engine or licensed visibility provider is connected.";
+    const recommendations = geo.recommendations.length
+      ? `\n\nRecommendations from the report:\n${geo.recommendations.slice(0, 5).map((item) => `- ${item}`).join("\n")}`
+      : "";
+    return {
+      toolUsed: "audit_report:geo",
+      content: `### AI / GEO visibility\n\n- Readiness score: **${geo.visibilityScore}/100** (${geo.dataAvailable ? "includes measured citations" : "on-page heuristic only"})\n- Brand entity clarity: ${geo.brandEntityClarity}/100\n- Fact density: ${geo.factDensityScore}/100\n${citations}\n\nMethodology: ${geo.methodology}${recommendations}`,
+    };
+  }
+
+  if (q.includes("update") || q.includes("algorithm") || q.includes("core")) {
+    const impact = r.algorithmImpact;
+    const updates = impact.recentRelevantUpdates.length
+      ? impact.recentRelevantUpdates
+          .map((update) => `- ${update.name} (${update.date}, ${update.kind})${update.notes ? ` — ${update.notes}` : ""}`)
+          .join("\n")
+      : "- No update matched the rules in `data/google-updates.json`.";
+    return {
+      toolUsed: "audit_report:algorithm_impact",
+      content: `### Algorithm update risk\n\n- Risk rating: **${impact.riskRating}**\n- Potentially impacted: ${impact.potentiallyImpactedByRecentUpdates ? "yes" : "no"}\n\nMatched updates:\n${updates}\n\nThis is a rules-based mapping from the audit issues to the local update archive, not a prediction from Google.`,
+    };
+  }
+
+  if (q.includes("heading") || q.includes("h1") || q.includes("h2")) {
+    const h = r.headings;
+    return {
+      toolUsed: "audit_report:headings",
+      content: `### Heading structure\n\n- Total headings: ${h.totalHeadings}\n- H1 / H2 / H3 / H4 / H5 / H6: ${h.h1Count} / ${h.h2Count} / ${h.h3Count} / ${h.h4Count} / ${h.h5Count} / ${h.h6Count}\n- Hierarchy valid: ${h.hierarchyValid ? "yes" : "no"}\n- Issues: ${h.issuesCount}\n${h.sampleH1 ? `- Sample H1: ${h.sampleH1}` : ""}\n\n${h.hierarchyValid ? "No skipped levels were detected on the audited pages." : "Open the Heading Audit tab for the per-page outline and skipped-level details."}`,
+    };
+  }
+
+  if (q.includes("image") || q.includes("alt") || q.includes("webp")) {
+    const img = r.images;
+    return {
+      toolUsed: "audit_report:images",
+      content: `### Images\n\n- Total images: ${img.totalImages}\n- Missing alt text: ${img.missingAltCount}\n- Oversized: ${img.oversizedCount}\n- Legacy formats: ${img.legacyFormatCount}\n- Lazy-loaded: ${img.lazyLoadedCount}\n- Measured optimization opportunity: ${img.optimizationOpportunityBytes > 0 ? `${img.optimizationOpportunityBytes.toLocaleString()} bytes` : "not measured"}\n\nOpen the Image Audit tab for per-file findings.`,
+    };
+  }
+
+  if (q.includes("technical") || q.includes("speed") || q.includes("ssl") || q.includes("https") || q.includes("index")) {
+    const t = r.technicalHealth;
+    const c = r.crawlability;
+    return {
+      toolUsed: "audit_report:technical",
+      content: `### Technical health & crawlability\n\n- HTTP status: ${t.statusCode} · response ${t.responseTimeMs} ms\n- HTTPS / SSL: ${t.isHttps ? "yes" : "no"} / ${t.sslValid ? "valid" : "not valid"}\n- Compression: ${t.hasCompression ? "enabled" : "disabled"} · server: ${t.server || "not disclosed"}\n- Indexable: ${c.isIndexable ? "yes" : "no"} · noindex: ${c.hasNoindex ? "yes" : "no"} · nofollow: ${c.hasNofollow ? "yes" : "no"}\n- robots.txt: ${c.hasRobotsTxt ? c.robotsTxtUrl : "not found"}\n- Sitemaps discovered: ${c.discoveredSitemaps.length || "none"}\n- Links: ${c.totalInternalLinksDiscovered} internal / ${c.totalExternalLinksDiscovered} external`,
+    };
+  }
+
+  const topActions = [...r.actionPlan]
+    .sort((a, b) => a.priority.localeCompare(b.priority))
+    .slice(0, 3)
+    .map((item) => `- **${item.priority}** ${item.title} — ${item.description}`)
+    .join("\n");
+  return {
+    toolUsed: "audit_report:summary",
+    content: `### Audit summary for ${r.domain}\n\n- Overall score: **${r.overallScore}/100**\n- Technical ${r.scores.technical} · On-page ${r.scores.onPage} · Headings ${r.scores.headings} · Images ${r.scores.images} · Schema ${r.scores.schema} · GEO readiness ${r.scores.aiVisibility}\n- Data sources unavailable: ${r.dataProvenance.unavailable.length ? r.dataProvenance.unavailable.join(", ") : "none"}\n\nTop actions:\n${topActions || "No issues were raised by the rules engine."}\n\nAsk about Search Console, GEO, algorithm risk, headings, images or technical health for the matching section.`,
+  };
+}
+
+
 export function UnifiedSeoSuiteView({
   property,
   onBackToDashboard,
@@ -33,32 +138,71 @@ export function UnifiedSeoSuiteView({
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [auditReport, setAuditReport] = useState<FullWebsiteAuditReport | null>(null);
   const [auditError, setAuditError] = useState<string | null>(null);
+  const [exportFormat, setExportFormat] = useState<"html" | "pdf" | "csv" | "pptx" | null>(null);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   // AI Assistant Chat State
   const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant" | "system"; content: string; toolUsed?: string }>>([
     {
       role: "assistant",
       content:
-        "Welcome to the Cogwheel Unified SEO AI Engine. I integrate 20 specialized SEO agents, Google Search Console query analytics, Open-SEO diagnostic catalogs, and Generative Engine Optimization (GEO). How can I assist you with your domain audit or keyword strategy?",
+        "Ask about the audit you just ran — Search Console, GEO readiness, algorithm risk, headings, images or technical health. Answers are computed from the current report only; this assistant does not call an external AI model and will name any data source that is not connected.",
     },
   ]);
   const [chatInput, setChatInput] = useState<string>("");
   const [isChatLoading, setIsChatLoading] = useState<boolean>(false);
 
-  // Model Training & Registry State
-  const [modelRegistry, setModelRegistry] = useState<{
-    activeModelId: string;
-    totalTrainingExamples: number;
-    totalEvalExamples: number;
-    benchmarkScore: number;
-    hallucinationRate: number;
-  }>({
-    activeModelId: "cogwheel-seo-unified-tuned_gemini-v1795486557",
-    totalTrainingExamples: 134,
-    totalEvalExamples: 34,
-    benchmarkScore: 100,
-    hallucinationRate: 0.0,
-  });
+  // Training rules & change history (loaded from /api/ai-training)
+  const [trainingData, setTrainingData] = useState<{
+    provider: string;
+    rules: Array<{
+      id: string;
+      taskId: string | null;
+      title: string;
+      ruleText: string;
+      active: boolean;
+      createdAt: string;
+    }>;
+    history: Array<{
+      id: string;
+      authorName: string;
+      category: string;
+      requestText: string;
+      status: string;
+      summary: string;
+      createdAt: string;
+    }>;
+  } | null>(null);
+  const [trainingError, setTrainingError] = useState<string | null>(null);
+  const [trainingLoading, setTrainingLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (subTab !== "model-training" || trainingData || trainingLoading) return;
+    let cancelled = false;
+    setTrainingLoading(true);
+
+    fetch("/api/ai-training")
+      .then(async (res) => {
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error || `Request failed (${res.status})`);
+        if (cancelled) return;
+        setTrainingData({
+          provider: typeof data.provider === "string" ? data.provider : "unknown",
+          rules: Array.isArray(data.rules) ? data.rules : [],
+          history: Array.isArray(data.history) ? data.history : [],
+        });
+      })
+      .catch((err) => {
+        if (!cancelled) setTrainingError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => {
+        if (!cancelled) setTrainingLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [subTab, trainingData, trainingLoading]);
 
   // Run Full Audit Handler
   const handleRunAudit = async (e?: React.FormEvent) => {
@@ -90,8 +234,43 @@ export function UnifiedSeoSuiteView({
     }
   };
 
-  // Run AI Chat Query
-  const handleSendChat = async (e: React.FormEvent) => {
+  const handleExportReport = async (format: "html" | "pdf" | "csv" | "pptx") => {
+    if (!auditReport || exportFormat) return;
+    setExportFormat(format);
+    setExportError(null);
+
+    try {
+      const res = await fetch("/api/audit-report", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ format, report: auditReport }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || `Export failed with status ${res.status}`);
+      }
+
+      const blob = await res.blob();
+      const disposition = res.headers.get("content-disposition") || "";
+      const fileName = /filename="([^"]+)"/.exec(disposition)?.[1] || `cogwheel-audit.${format}`;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setExportError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setExportFormat(null);
+    }
+  };
+
+  // Answer questions from the current audit report (no external model call)
+  const handleSendChat = (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim() || isChatLoading) return;
 
@@ -100,38 +279,12 @@ export function UnifiedSeoSuiteView({
     setChatMessages((prev) => [...prev, { role: "user", content: userText }]);
     setIsChatLoading(true);
 
-    try {
-      // Simulate or call AI model
-      setTimeout(() => {
-        let simulatedReply = "";
-        let toolName = "unified_seo_orchestrator";
-
-        if (userText.toLowerCase().includes("cannibaliz") || userText.toLowerCase().includes("gsc")) {
-          toolName = "detect_cannibalization";
-          simulatedReply =
-            "### Search Console Cannibalization Diagnosis\n\nI analyzed queries across your domain and detected 2 queries splitting CTR:\n- `boutique hotel downtown suites`: Competing between `/suites` and `/rooms/downtown-suite`.\n\n**Action Plan:** Designate `/suites` as the canonical target and adjust internal links with target anchor text.";
-        } else if (userText.toLowerCase().includes("geo") || userText.toLowerCase().includes("perplexity") || userText.toLowerCase().includes("ai overview")) {
-          toolName = "ai_visibility_tracker";
-          simulatedReply =
-            "### AI / GEO Visibility Assessment\n\n- **Overall AI Citation Score:** 88/100\n- **Fact Density:** 84%\n- **Recommendation:** Implement concise 40-60 word structured answer summaries immediately below your primary H2 headings to trigger direct inclusion in Google AI Overviews and Perplexity.";
-        } else if (userText.toLowerCase().includes("update") || userText.toLowerCase().includes("algorithm")) {
-          toolName = "google_updates_risk";
-          simulatedReply =
-            "### Google Algorithm Update Risk Analysis\n\nCross-referencing `data/google-updates.json`:\n- **Recent Update:** August 2024 Core Update (improved helpful, authentic user-first content).\n- **Risk Status:** Low. Your domain maintains strong brand entity signals and zero aggressive ad-to-content density.";
-        } else {
-          simulatedReply =
-            `### Unified SEO Assessment\n\nBased on your domain '${property?.websiteUrl || property?.url || targetUrl}':\n1. **Technical Health:** SSL, HTTP/2, and compression active.\n2. **Headings:** Single H1 detected, but 2 sub-pages exhibit skipped H2->H4 levels.\n3. **Images:** 4 images lack descriptive alt text; converting to WebP will reduce payload by ~4.2 MB.\n4. **Structured Data:** Hotel & LocalBusiness JSON-LD validated.`;
-        }
-
-        setChatMessages((prev) => [
-          ...prev,
-          { role: "assistant", content: simulatedReply, toolUsed: toolName },
-        ]);
-        setIsChatLoading(false);
-      }, 700);
-    } catch {
-      setIsChatLoading(false);
-    }
+    const answer = answerFromAudit(userText, auditReport, targetUrl);
+    setChatMessages((prev) => [
+      ...prev,
+      { role: "assistant", content: answer.content, toolUsed: answer.toolUsed },
+    ]);
+    setIsChatLoading(false);
   };
 
   return (
@@ -287,6 +440,49 @@ export function UnifiedSeoSuiteView({
           {/* Audit Results View */}
           {auditReport ? (
             <div className="space-y-6">
+              {/* Report header + exports */}
+              <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white px-5 py-4 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div>
+                  <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                    Audit report
+                  </div>
+                  <div className="mt-0.5 text-xs text-slate-600 dark:text-slate-400">
+                    {auditReport.domain} · generated {new Date(auditReport.createdAt).toLocaleString()}
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
+                    Export
+                  </span>
+                  {(["html", "pdf", "csv", "pptx"] as const).map((format) => (
+                    <button
+                      key={format}
+                      type="button"
+                      onClick={() => handleExportReport(format)}
+                      disabled={exportFormat !== null}
+                      aria-label={`Download ${format.toUpperCase()} report`}
+                      title={
+                        format === "pptx"
+                          ? "Client-ready presentation deck"
+                          : format === "pdf"
+                            ? "Portable PDF (text layout)"
+                            : format === "html"
+                              ? "Print-ready HTML (best for pixel-perfect PDF)"
+                              : "Spreadsheet-friendly data export"
+                      }
+                      className="rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-700 shadow-sm transition hover:border-brand hover:text-slate-900 disabled:opacity-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-brand"
+                    >
+                      {exportFormat === format ? "Preparing…" : format}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              {exportError && (
+                <div className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-xs text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300">
+                  <strong>Export failed:</strong> {exportError}
+                </div>
+              )}
+
               {/* Executive Score Card */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">

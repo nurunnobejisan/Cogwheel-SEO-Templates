@@ -106,6 +106,7 @@ const AI_ROUTES = [
 const CRAWL_ROUTES = [
   "/api/crawl-property",
   "/api/full-audit",
+  "/api/audit-report",
   "/api/property-autofill",
   "/api/sitemap-audit",
   "/api/seo-visibility-report",
