@@ -2,6 +2,7 @@ import "server-only";
 
 import { runFullWebsiteAudit } from "@/core/full-audit";
 import { loadRepoCorpus } from "./corpus";
+import { canUseLlm, recordLlmUsage } from "./usage";
 import { createRagPipeline, type RagPipeline } from "../../../ai/rag";
 import { generateClaudeText, isClaudeConfigured } from "@/core/claude";
 
@@ -83,17 +84,24 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
   let interpretation: string;
   let provider: string;
   if (isClaudeConfigured()) {
-    try {
-      interpretation = await generateClaudeText({
-        system: BRAIN_SYSTEM_PROMPT,
-        prompt,
-        maxTokens: 1200,
-        taskId: "brain-interpret",
-      });
-      provider = "llm";
-    } catch (err) {
+    const cap = await canUseLlm();
+    if (!cap.allowed) {
       interpretation = deterministicInterpretation(audit, retrieved);
-      provider = `fallback (${(err as Error).message})`;
+      provider = `deterministic (cost cap: ${cap.reason})`;
+    } else {
+      try {
+        interpretation = await generateClaudeText({
+          system: BRAIN_SYSTEM_PROMPT,
+          prompt,
+          maxTokens: 1200,
+          taskId: "brain-interpret",
+        });
+        await recordLlmUsage();
+        provider = "llm";
+      } catch (err) {
+        interpretation = deterministicInterpretation(audit, retrieved);
+        provider = `fallback (${(err as Error).message})`;
+      }
     }
   } else {
     interpretation = deterministicInterpretation(audit, retrieved);

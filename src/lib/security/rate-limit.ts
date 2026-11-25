@@ -100,6 +100,7 @@ const AI_ROUTES = [
   "/api/select-kw",
   "/api/semrush-pull",
   "/api/visibility-suite",
+  "/api/brain",
   "/api/tasks/",
 ];
 

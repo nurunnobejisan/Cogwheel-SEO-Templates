@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runBrain } from "@/core/brain";
+import { principalFromRequest, isAuthenticatedPrincipal } from "@/lib/platform/auth";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  const principal = await principalFromRequest(req);
+  if (!isAuthenticatedPrincipal(principal)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const body = await req.json().catch(() => ({}));
     const targetUrl = (body.targetUrl || "").trim();
@@ -25,6 +30,10 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET(req: NextRequest) {
+  const principal = await principalFromRequest(req);
+  if (!isAuthenticatedPrincipal(principal)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   const { searchParams } = new URL(req.url);
   const targetUrl = searchParams.get("targetUrl") || "https://example.com";
   try {
