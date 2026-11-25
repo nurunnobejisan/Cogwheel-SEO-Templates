@@ -47,7 +47,7 @@ export function toConnectorMutation(mutation: PatchMutation): ConnectorMutation 
   };
 }
 
-function render(value: PatchMutation["before"]): string {
+export function renderPatchValue(value: PatchMutation["before"]): string {
   if (value === null || value === undefined) {
     return "(empty)";
   }
@@ -60,14 +60,18 @@ export function previewPatchDiff(patch: FixPatch): PatchDiffEntry[] {
   return patch.mutations.map((mutation) => ({
     field: mutation.field,
     action: mutation.action,
-    before: render(mutation.before),
-    after: render(mutation.after),
+    before: renderPatchValue(mutation.before),
+    after: renderPatchValue(mutation.after),
     risk: mutation.risk,
     autoApply: mutation.autoApply,
   }));
 }
 
-function selectDeployable(patch: FixPatch, options: DeployOptions): PatchMutation[] {
+/** Select the mutations eligible for deployment under the given approval mode. */
+export function selectDeployableMutations(
+  patch: FixPatch,
+  options: Pick<DeployOptions, "autoPilot" | "approveAll">
+): PatchMutation[] {
   return patch.mutations.filter((mutation) => {
     if (mutation.action === "manual_review") {
       return false;
@@ -85,7 +89,7 @@ export async function deployPatch(
 ): Promise<DeploymentResult> {
   const now = options.now ?? new Date().toISOString();
   const diff = previewPatchDiff(patch);
-  const selected = selectDeployable(patch, options);
+  const selected = selectDeployableMutations(patch, options);
   const queued = patch.mutations.length - selected.length;
   const base = {
     patchId: patch.patchId,
