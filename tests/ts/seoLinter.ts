@@ -16,15 +16,15 @@
  * Exits with status code 0 on success, or code 1 on failure.
  */
 
-import { resolveTemplate, type TemplateSchema } from "../validators/variableResolver.ts";
-import { escapeHtml, sanitizeInput } from "../validators/xssProtection.ts";
-import { normalizeCanonicalUrl } from "../validators/canonicalNormalizer.ts";
-import { verifyProductionIndexable, deduplicateHeadTags } from "../validators/robotsGuardrails.ts";
-import { buildSchemaGraph, buildArticleSchema, buildLocalBusinessSchema } from "../schemas/index.ts";
-import { analyzeSerpSnippet } from "../validators/serpOptimizer.ts";
-import { auditContentUniqueness } from "../validators/uniquenessGate.ts";
-import { injectInternalLinks, type PageManifestItem } from "../validators/internalLinker.ts";
-import { exportToHtml, exportToShopifyLiquid, exportToWordPressPhp, exportToWebflowCsv } from "../exporters/index.ts";
+import { resolveTemplate, type TemplateSchema } from "../../validators/variableResolver.ts";
+import { escapeHtml, sanitizeInput } from "../../validators/xssProtection.ts";
+import { normalizeCanonicalUrl } from "../../validators/canonicalNormalizer.ts";
+import { verifyProductionIndexable, deduplicateHeadTags } from "../../validators/robotsGuardrails.ts";
+import { buildSchemaGraph, buildArticleSchema, buildLocalBusinessSchema } from "../../schemas/index.ts";
+import { analyzeSerpSnippet } from "../../validators/serpOptimizer.ts";
+import { auditContentUniqueness } from "../../validators/uniquenessGate.ts";
+import { injectInternalLinks, type PageManifestItem } from "../../validators/internalLinker.ts";
+import { exportToHtml, exportToShopifyLiquid, exportToWordPressPhp, exportToWebflowCsv } from "../../exporters/index.ts";
 
 export interface LinterGateReport {
   gate: string;
