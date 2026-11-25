@@ -1,210 +1,241 @@
-<p align="center">
-  <img src="public/razib-marketing-logo.png" alt="Cogwheel SEO" width="120" />
-</p>
+<div align="center">
 
-<h1 align="center">Cogwheel SEO — Universal Autonomous SEO & GEO Engine</h1>
+<img src="public/razib-marketing-logo.png" alt="Cogwheel SEO & GEO Studio" width="104" />
 
-<p align="center">
-  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
-  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
-  <a href="CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-orange.svg" alt="Code of Conduct" /></a>
-  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-3.0.0-purple.svg" alt="Version 3.0.0" /></a>
-</p>
+# Cogwheel SEO & GEO Studio
 
-<p align="center">
-  A Chrome extension + Next.js platform that audits any website, provides SEO, schema, performance, accessibility, and GEO recommendations, and can auto‑apply safe fixes via self‑healing CMS patches.
-</p>
+**Hospitality SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace.**
 
----
+[![CI](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions/workflows/ci.yml/badge.svg)](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions/workflows/ci.yml)
+[![Live](https://img.shields.io/badge/live-cogwheel--seo--templates.vercel.app-0f172a?logo=vercel)](https://cogwheel-seo-templates.vercel.app)
+[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-3.0.0-7c3aed.svg)](CHANGELOG.md)
+[![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776ab?logo=python&logoColor=white)](https://www.python.org)
+[![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285f4?logo=googlechrome&logoColor=white)](chrome-extension/)
 
-## 📂 Repository Structure
+[Live application](https://cogwheel-seo-templates.vercel.app) ·
+[Download extension](https://cogwheel-seo-templates.vercel.app/cogwheel-seo-studio.zip) ·
+[Documentation](docs/README.md) ·
+[Changelog](CHANGELOG.md)
 
-```
-Cogwheel-SEO-Templates/
-│
-├── 📋 Root Config & Metadata
-│   ├── package.json / package-lock.json    # Node dependencies
-│   ├── pyproject.toml / requirements.txt   # Python dependencies
-│   ├── tsconfig.json                       # TypeScript config
-│   ├── vitest.config.ts                    # Test runner config
-│   ├── tailwind.config.ts                  # Tailwind CSS config
-│   ├── postcss.config.mjs                  # PostCSS config
-│   ├── next.config.mjs                     # Next.js config
-│   ├── manifest.json                       # Chrome extension manifest (MV3)
-│   ├── README.md                           # ← You are here
-│   ├── CONTRIBUTING.md                     # Contribution guidelines
-│   ├── CODE_OF_CONDUCT.md                  # Contributor Covenant
-│   ├── CHANGELOG.md                        # Release history
-│   └── LICENSE                             # MIT License
-│
-├── 📁 src/                                 # Main TypeScript source code
-│   ├── app/                                # Next.js app router pages
-│   ├── background/                         # Chrome extension service worker
-│   ├── components/                         # React UI components
-│   ├── content/                            # Content scripts (extraction, SPA)
-│   ├── core/                               # Orchestration, templates, AI routing
-│   ├── engine/                             # Audit engine pipeline
-│   ├── generators/                         # Report generators
-│   ├── gateway/                            # CMS connectors & self-healing patches
-│   ├── tasks/                              # Task modules (keyword, meta, schema…)
-│   ├── schemas/                            # Zod schemas for task data
-│   ├── scoring/                            # SEO scoring algorithms
-│   ├── storage/                            # IndexedDB / Chrome storage layer
-│   ├── types/                              # Shared TypeScript types
-│   └── ui/                                 # Side-panel dashboard HTML
-│
-├── 📁 python/                              # Python automation & analysis
-│   ├── analyzer/                           # GEO scoring
-│   ├── crawler/                            # Site mapper
-│   ├── generators/                         # Keyword, meta, heading, image tools
-│   ├── models/                             # Pydantic data models
-│   ├── processor/                          # Template processor
-│   ├── scraper/                            # Hotel data extractor
-│   ├── scripts/                            # Batch, fine-tuning, schema validation
-│   └── cogwheel_auto.py                    # CLI entry point
-│
-├── 📁 chrome-extension/                    # Standalone Chrome extension build
-│   ├── src/                                # Extension-specific source
-│   ├── dist/                               # Built extension output
-│   └── package.json                        # Extension dependencies
-│
-├── 📁 api/                                 # Python API servers
-│   ├── content_engine.py                   # Content generation API
-│   ├── gsc_server.py                       # Google Search Console API
-│   ├── models.py                           # API data models
-│   └── seo_visibility_report.py            # SEO visibility report API
-│
-├── 📁 schemas/                             # JSON Schema & TypeScript schema defs
-│   ├── *.schema.json                       # JSON Schema files
-│   └── *.ts                                # TypeScript schema builders
-│
-├── 📁 templates/                           # SEO audit prompt templates
-│   ├── hotel-*.md / hotel-*.html           # Hotel-specific templates
-│   └── *.md                                # Universal templates
-│
-├── 📁 validators/                          # SEO validation utilities
-│   ├── canonicalNormalizer.ts
-│   ├── internalLinker.ts
-│   ├── serpOptimizer.ts
-│   └── ...
-│
-├── 📁 exporters/                           # CMS export adapters
-│   ├── wordPressExporter.ts
-│   ├── shopifyExporter.ts
-│   └── webflowExporter.ts
-│
-├── 📁 tests/                               # All test suites
-│   ├── *.test.ts                           # Vitest unit & integration tests
-│   ├── ts/                                 # TypeScript test helpers & suites
-│   ├── python/                             # Pytest suites
-│   ├── e2e/                                # End-to-end tests
-│   └── fixtures/                           # Test fixture data
-│
-├── 📁 docs/                                # All documentation
-│   ├── ARCHITECTURE.md                     # System architecture overview
-│   ├── SPEC.md                             # Technical specification
-│   ├── SECURITY.md                         # Security policy
-│   ├── GEMINI.md                           # AI agent coding rules
-│   ├── SEO_EXPERT_GUIDE.md                 # SEO workflow guide
-│   ├── PROJECT_STRUCTURE.md                # Detailed structure reference
-│   ├── INVENTORY.md                        # Feature inventory
-│   ├── PROGRESS.md                         # Development progress tracker
-│   ├── TASKS.md                            # Task backlog
-│   ├── ATTRIBUTION.md                      # Third-party attributions
-│   ├── audit/                              # Audit reports & reviews
-│   ├── assets/                             # Diagrams & images
-│   └── reports/                            # CI/fix reports
-│
-├── 📁 data/                                # Static data & training sets
-│   ├── google-updates.json                 # Algorithm update database
-│   ├── 78-keyword-strategy-matrix.json     # Keyword strategy data
-│   ├── models/                             # Model registry
-│   └── training/                           # Fine-tuning datasets
-│
-├── 📁 scripts/                             # Build & automation scripts
-│   ├── *.ts                                # TypeScript utilities
-│   ├── *.sh                                # Shell scripts
-│   └── *.py                                # Python helpers
-│
-├── 📁 examples/                            # Example configurations
-├── 📁 public/                              # Static assets & extension bundle
-├── 📁 supabase/migrations/                 # Database migration SQL
-├── 📁 output/                              # Generated audit output (per-site)
-│
-├── 📁 .github/                             # GitHub configuration
-│   ├── workflows/                          # CI/CD pipelines
-│   │   ├── ci.yml
-│   │   ├── auto-release.yml
-│   │   └── seo-integrity.yml
-│   ├── ISSUE_TEMPLATE/                     # Bug & feature request templates
-│   └── pull_request_template.md
-│
-└── 📁 .husky/                              # Git hooks (commit-msg, pre-commit)
-```
+</div>
 
 ---
 
-## 🛠️ Getting Started
+## Overview
+
+Cogwheel is a production-oriented SEO platform for hospitality portfolios. It combines a Next.js operator workspace, a Manifest V3 Chrome extension, a measured audit engine, and a Python analysis layer.
+
+The core rule is simple: **measure, label, or leave blank.** Rankings, search volumes, AI citations, and competitor positions are never invented. When a data source is not connected, the product says so instead of showing a plausible-looking number.
+
+| Studio workspace | Template library |
+| --- | --- |
+| ![Cogwheel Studio](docs/assets/app-home.jpg) | ![Hospitality templates](docs/assets/templates-catalog.jpg) |
+
+## What it does
+
+### Audit and diagnose
+
+- Crawl a property, parse the rendered page, and produce an 11-dimension audit: technical health, crawlability, on-page SEO, headings, images, Search Console, keywords, schema, GEO readiness, algorithm impact, and a prioritized action plan.
+- Parse real JSON-LD, canonical tags, heading hierarchy, metadata, and body content from the live page.
+- Track provenance per report section: **measured**, **estimated**, or **unavailable**.
+
+### Improve Generative Engine Optimization
+
+- On-page GEO readiness derived from structured data, answer coverage, entity signals, and content depth.
+- Schema-family checks for Hotel/LodgingBusiness, Restaurant, Spa, FAQPage, Organization, WebSite, and BreadcrumbList.
+- VisibilitySuite import/export for teams that have a licensed AI-visibility provider. Without one, citation metrics stay explicitly unmeasured.
+
+### Produce client deliverables
+
+- Export the exact audit the operator is viewing as **HTML, PDF, CSV, or PPTX**.
+- Generate executive memos, pitch decks, slide previews, and email drafts from supplied data only.
+- No fabricated rankings, fees, revenue estimates, or citation scores in client templates.
+
+### Operate and integrate
+
+- Operator console with signed sessions, approval queues, and a fail-closed platform API.
+- CMS connectors and reviewable self-healing patch plans for WordPress, Shopify, Webflow, and HTML.
+- Chrome side panel for live page inspection, audit overlays, training capture, and OTA rule updates.
+- Optional Supabase-backed durable storage; local-first by default.
+
+### Quality and security
+
+- DNS-aware SSRF protection with redirect re-validation.
+- Per-instance rate limits, CSRF origin checks, and security headers.
+- Signed `cw_session` cookies; platform APIs return `401` without a valid session.
+- Synthetic data is gated behind `ALLOW_SIMULATED_DATA` and **off by default**.
+- CI runs typecheck, lint, Vitest, SEO gates, integration tests, pytest, and a production build.
+
+## Architecture
+
+![Cogwheel system architecture](docs/assets/system-architecture.svg)
+
+```text
+Browser (Chrome MV3)                 Next.js operator workspace
+┌──────────────────────┐             ┌──────────────────────────────┐
+│ Side panel + content │  audit      │ /api/full-audit              │
+│ scripts              │ ──────────► │ /api/audit-report            │
+│ training vault       │             │ /api/platform/*              │
+└──────────────────────┘             └──────────────┬───────────────┘
+                                                    │
+                         ┌──────────────────────────┼──────────────────────────┐
+                         ▼                          ▼                          ▼
+                  rules/ + crawler          reporting writers          CMS / healing
+                  measured audit            HTML PDF CSV PPTX          patch plans
+                         │
+                         ▼
+                  python/ + api/  ·  analyzers, generators, batch tools
+```
+
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full component and data-flow reference.
+
+## Quick start
+
+### Prerequisites
+
+- **Node.js 20+**
+- **Python 3.11+**
+- **Chrome/Chromium** for the extension
+- Optional: Supabase, Google Search Console, Anthropic, Semrush, VisibilitySuite credentials
+
+### Run the web app
 
 ```bash
-# 1. Clone
 git clone https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates.git
 cd Cogwheel-SEO-Templates
 
-# 2. Install dependencies
-npm ci                            # Node (requires Node 20+)
-pip install -r requirements.txt   # Python (3.11+)
-
-# 3. Build
-npm run build                     # Compile TypeScript & extension
-
-# 4. Load Chrome extension
-# → chrome://extensions/ → Developer mode → Load unpacked → select project root
+npm ci
+cp .env.example .env.local     # fill only the providers you use
+npm run dev                    # http://localhost:3000
 ```
 
----
+The app starts without third-party credentials. Provider-backed sections declare themselves unavailable until configured.
 
-## 📈 CI / Release Workflow
+### Run the Python tools
 
-**GitHub Actions** (`.github/workflows/ci.yml`) runs on every push/PR:
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+pytest tests/python -q
+```
 
-1. **Lint** – Ruff + Mypy (Python), TypeScript (`tsc --noEmit`)
-2. **Test** – Vitest (TS) + Pytest (Python)
-3. **Build** – `npm run build`
-4. **Audit** – `scripts/hardcoded-audit.ts` → generates `AUDIT_SUMMARY.md`
-5. **Auto-push** – On `main`, commits generated artifacts
+### Build and load the extension
 
-**Release** – Tag with `git tag v3.x.x && git push --tags`.
+```bash
+npm install --prefix chrome-extension
+npm run build:extension
+```
 
----
+Then open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select `chrome-extension/dist`.
 
-## 🤝 Contributing
+The same build also produces `public/cogwheel-seo-studio.zip` for release uploads.
 
-Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for guidelines on forking, branching, testing, and submitting pull requests.
+### Production build
 
-## 📜 Code of Conduct
+```bash
+npm run build
+npm start
+```
 
-We follow the [Contributor Covenant](CODE_OF_CONDUCT.md).
+## Commands
 
-## 📄 License
+| Command | Purpose |
+| --- | --- |
+| `npm run dev` | Start the Next.js development server |
+| `npm run build` | Production Next.js build |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | ESLint via Next.js |
+| `npm test` | Vitest unit and integration suites |
+| `npm run lint:seo` | 10-gate SEO integrity linter |
+| `npm run test:seo` | SEO engine tests |
+| `npm run test:ts` | TypeScript integration tests |
+| `pytest tests/python -q` | Python analyzer and generator tests |
+| `npm run build:extension` | Build, verify, and package the Chrome extension |
+| `npm run export:schemas` | Regenerate `shared/schemas/*.json` from Zod contracts |
 
-[MIT License](LICENSE) — see the `LICENSE` file.
+## Configuration
 
----
+Copy [`.env.example`](.env.example) to `.env.local` and set only what you need.
 
-## 📚 Documentation
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `PLATFORM_OPERATOR_TOKEN` | Production `/platform` | Bootstrap operator sign-in token (32+ chars) |
+| `PLATFORM_SESSION_SECRET` | Production `/platform` | HMAC key for signed `cw_session` cookies (32+ chars) |
+| `CMS_VAULT_KEY` | CMS vault | Encryption key for stored CMS credentials |
+| `ANTHROPIC_API_KEY` | Optional | AI-assisted generation and analysis |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Optional | Durable platform storage |
+| `SEMRUSH_API_KEY` | Optional | Keyword and competitor data |
+| `GOOGLE_SERVICE_ACCOUNT_B64` | Optional | Search Console, Drive, and Docs integrations |
+| `ALLOW_SIMULATED_DATA` | Never in production | Enables synthetic demo data for local tests only |
+
+Secrets belong in environment variables or the platform vault — never in the repository.
+
+## Repository map
+
+```text
+.
+├── src/
+│   ├── app/                  Next.js App Router pages and API routes
+│   ├── components/           Studio, audit, reporting, and platform UI
+│   ├── core/                 Audit engine, reporting, security, training
+│   ├── lib/                  Platform session, egress guard, rate limits
+│   ├── rules/                Measured HTML audit rules
+│   └── tasks/                Task modules and generators
+├── platform/                 Operator console domain layer
+├── ai/                       Provider routing and AI helpers
+├── cms/                      CMS connectors and credential vault
+├── healing/                  Reviewable self-healing patch plans
+├── chrome-extension/         Manifest V3 extension source and build
+├── python/                   Analyzers, generators, batch tools
+├── api/                      Python HTTP bridge and Pydantic models
+├── schemas/                  Zod schema sources
+├── shared/schemas/           Exported JSON Schema contracts
+├── rules/                    Standalone audit rule engine
+├── tests/                    Vitest, node:test, pytest, e2e, fixtures
+├── docs/                     Architecture, security, reporting, roadmap
+└── scripts/                  Build, export, and release automation
+```
+
+The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md).
+
+## Documentation
 
 | Document | Description |
-|----------|-------------|
-| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System architecture & diagrams |
-| [`docs/SPEC.md`](docs/SPEC.md) | Technical specification |
-| [`docs/SECURITY.md`](docs/SECURITY.md) | Security policy & reporting |
-| [`docs/SEO_EXPERT_GUIDE.md`](docs/SEO_EXPERT_GUIDE.md) | Workflow guide for SEO specialists |
-| [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) | Detailed repo structure reference |
-| [`docs/GEMINI.md`](docs/GEMINI.md) | AI agent coding rules |
-| [`docs/audit/`](docs/audit/) | Architecture reviews & audit reports |
-| [`CHANGELOG.md`](CHANGELOG.md) | Version history |
+| --- | --- |
+| [Documentation index](docs/README.md) | Start here for the full docs map |
+| [Architecture](docs/ARCHITECTURE.md) | System topology, extension, platform, and data contracts |
+| [Technical specification](docs/SPEC.md) | Detailed behavior and interfaces |
+| [Security](docs/SECURITY.md) | Auth, SSRF, rate limits, local bridges, data integrity |
+| [Platform runtime](docs/PLATFORM_RUNTIME.md) | Operator console, durable storage, approvals |
+| [Reporting](docs/REPORTING.md) | HTML/PDF/CSV/PPTX export behavior and provenance |
+| [Universal mode](docs/UNIVERSAL_MODE.md) | Non-hospitality sites and CMS-agnostic audits |
+| [CMS integrations](docs/CMS_INTEGRATIONS.md) | WordPress, Shopify, Webflow, and HTML adapters |
+| [Self-healing pipeline](docs/SELF_HEALING_PIPELINE.md) | Patch generation, review, and application |
+| [AI SEO brain](docs/AI_SEO_BRAIN.md) | Agents, tools, and routing |
+| [SEO expert guide](docs/SEO_EXPERT_GUIDE.md) | Operator workflow |
+| [Repository audit](docs/REPOSITORY_AUDIT.md) | Findings, remediation status, and known limitations |
+| [Roadmap](docs/ROADMAP_UNIVERSAL_AUDIT_AND_CMS_AUTOFIX.md) | Phases and remaining work |
+| [Changelog](CHANGELOG.md) | Release history |
 
----
+## Deployment
 
-<p align="center"><em>Happy auditing!</em> 🚀</p>
+- **Web app:** Vercel production at [cogwheel-seo-templates.vercel.app](https://cogwheel-seo-templates.vercel.app).
+- **CI:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request.
+- **Extension releases:** [`.github/workflows/auto-release.yml`](.github/workflows/auto-release.yml) builds and attaches `cogwheel-seo-studio.zip` when the manifest version changes.
+- **Updates:** `updates.xml` and the packaged ZIP are served from `public/`.
+
+## Contributing
+
+Contributions are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) and the [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md) before opening a pull request.
+
+## Security
+
+Do not report vulnerabilities in public issues. See [`SECURITY.md`](SECURITY.md) for the private reporting process and supported versions.
+
+## License
+
+[MIT](LICENSE) © Razib Marketing.
