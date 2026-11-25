@@ -29,6 +29,24 @@ export interface PageContext {
   brand?: string | null;
 }
 
+type BaseMutation = {
+  field: string;
+  before: PatchMutation["before"];
+  risk: PatchMutation["risk"];
+};
+
+function mutation(
+  base: BaseMutation,
+  action: MutationAction,
+  after: PatchMutation["after"]
+): PatchMutation {
+  return { field: base.field, action, before: base.before, after, risk: base.risk, autoApply: false };
+}
+
+function review(base: BaseMutation): PatchMutation {
+  return mutation(base, "manual_review", null);
+}
+
 /**
  * Produce a mutation for an issue. Returns null when the issue cannot be
  * safely auto-synthesized (the caller defers it for human review).
@@ -41,121 +59,118 @@ export function synthesizeMutation(input: SynthesizeInput): PatchMutation | null
     return null;
   }
 
-  const risk = riskForField(field);
-  const base = { field, before: issue.context.currentValue, risk } as const;
+  const base: BaseMutation = {
+    field,
+    before: normalizeValue(issue.context.currentValue),
+    risk: riskForField(field),
+  };
 
   switch (issue.issueId) {
     case "iss_title_missing":
     case "iss_title_too_short":
-    case "iss_title_too_long": {
-      const after = buildTitle(pageContext, report);
-      return withAutoApply({ ...base, action: "replace", after: truncate(after, TITLE_MAX_CHARS) }, "replace");
-    }
+    case "iss_title_too_long":
+      return mutation(base, "replace", truncate(buildTitle(pageContext, report), TITLE_MAX_CHARS));
+
     case "iss_meta_desc_missing":
     case "iss_meta_desc_too_short":
-    case "iss_meta_desc_too_long": {
-      const after = buildMetaDescription(pageContext, report);
-      return withAutoApply(
-        { ...base, action: "replace", after: truncate(after, META_DESCRIPTION_MAX_CHARS) },
-        "replace"
+    case "iss_meta_desc_too_long":
+      return mutation(
+        base,
+        "replace",
+        truncate(buildMetaDescription(pageContext, report), META_DESCRIPTION_MAX_CHARS)
       );
-    }
+
     case "iss_h1_missing":
-    case "iss_h1_multiple": {
-      const after = pageContext.h1?.trim() || pageContext.title?.trim() || buildTitle(pageContext, report);
-      return withAutoApply({ ...base, action: issue.issueId === "iss_h1_missing" ? "inject" : "replace", after }, issue.issueId === "iss_h1_missing" ? "inject" : "replace");
-    }
+      return mutation(
+        base,
+        "inject",
+        pageContext.h1?.trim() || pageContext.title?.trim() || buildTitle(pageContext, report)
+      );
+
+    case "iss_h1_multiple":
+      return mutation(
+        base,
+        "replace",
+        pageContext.h1?.trim() || pageContext.title?.trim() || buildTitle(pageContext, report)
+      );
+
     case "iss_heading_empty":
-      return manualReview(base, "Empty heading requires editorial copy that cannot be auto-derived.");
+      return review(base);
+
     case "iss_canonical_missing":
-      return withAutoApply({ ...base, action: "inject", after: report.pageUrl }, "inject");
+      return mutation(base, "inject", report.pageUrl);
+
     case "iss_canonical_mismatch":
-      return withAutoApply({ ...base, action: "replace", after: report.pageUrl }, "replace");
+      return mutation(base, "replace", report.pageUrl);
+
     case "iss_viewport_missing":
-      return withAutoApply(
-        { ...base, action: "inject", after: "width=device-width, initial-scale=1" },
-        "inject"
-      );
+      return mutation(base, "inject", "width=device-width, initial-scale=1");
+
     case "iss_og_title_missing":
-      return withAutoApply(
-        { ...base, action: "inject", after: truncate(buildTitle(pageContext, report), TITLE_MAX_CHARS) },
-        "inject"
-      );
+      return mutation(base, "inject", truncate(buildTitle(pageContext, report), TITLE_MAX_CHARS));
+
     case "iss_og_description_missing":
-      return withAutoApply(
-        { ...base, action: "inject", after: truncate(buildMetaDescription(pageContext, report), META_DESCRIPTION_MAX_CHARS) },
-        "inject"
+      return mutation(
+        base,
+        "inject",
+        truncate(buildMetaDescription(pageContext, report), META_DESCRIPTION_MAX_CHARS)
       );
+
     case "iss_og_image_missing": {
       const image = pageContext.images?.find((entry) => entry.src)?.src;
       if (!image) {
-        return manualReview(base, "No on-page image is available to reuse as the social preview.");
+        return review(base);
       }
-      return withAutoApply({ ...base, action: "inject", after: absoluteUrl(image, report.pageUrl) }, "inject");
+      return mutation(base, "inject", absoluteUrl(image, report.pageUrl));
     }
+
     case "iss_twitter_card_missing":
-      return withAutoApply({ ...base, action: "inject", after: "summary_large_image" }, "inject");
+      return mutation(base, "inject", "summary_large_image");
+
     case "iss_noindex":
-      return manualReview(base, "Indexability change is high-risk and always requires human approval.");
+      return review(base);
+
     case "iss_img_alt_missing": {
       const after = buildAltText(issue, pageContext);
-      if (!after) {
-        return manualReview(base, "Could not derive meaningful alt text without image understanding.");
-      }
-      return withAutoApply({ ...base, action: "replace", after }, "replace");
+      return after ? mutation(base, "replace", after) : review(base);
     }
+
     case "iss_hotel_schema_missing":
     case "iss_structured_data_missing":
-      return withAutoApply(
-        { ...base, action: "inject", after: buildStructuredData(report, pageContext) },
-        "inject"
-      );
+      return mutation(base, "inject", buildStructuredData(report, pageContext));
+
     case "iss_hotel_schema_property_missing":
     case "iss_hotel_schema_property_recommended_missing":
-      return manualReview(base, "Enriching an existing schema node requires business facts that must be reviewed.");
     case "iss_broken_internal_link":
     case "iss_redirect_chain":
-      return manualReview(base, "Link replacement needs a verified destination and a redirect decision.");
-    case "iss_external_link_rel":
-      return withAutoApply({ ...base, action: "replace", after: "noopener noreferrer" }, "replace");
     case "iss_img_legacy_format":
     case "iss_img_oversized":
     case "iss_img_missing_dimensions":
-      return manualReview(base, "Asset transformation must run through the media pipeline, not a CMS field write.");
     case "iss_thin_content":
     case "iss_readability_low":
     case "iss_keyword_stuffing":
-      return manualReview(base, "Body-copy remediation is high-risk and requires editorial authoring.");
     case "iss_heading_hierarchy_skip":
     case "iss_heading_structure":
-      return manualReview(base, "Heading restructure affects the rendered document outline and needs review.");
+      return review(base);
+
+    case "iss_external_link_rel":
+      return mutation(base, "replace", "noopener noreferrer");
+
     default:
-      return manualReview(base, "No deterministic generator is registered for this issue.");
+      return review(base);
   }
 }
 
-type BaseMutation = {
-  field: string;
-  before: PatchMutation["before"];
-  risk: PatchMutation["risk"];
-};
-
-function withAutoApply(
-  mutation: BaseMutation & { action: MutationAction; after: PatchMutation["after"] },
-  action: MutationAction
-): PatchMutation {
-  return {
-    field: mutation.field,
-    action,
-    before: mutation.before,
-    after: mutation.after,
-    risk: mutation.risk,
-    autoApply: false, // the orchestrator applies the auto-pilot gate
-  };
-}
-
-function manualReview(base: BaseMutation, _reason: string): PatchMutation {
-  return { field: base.field, action: "manual_review", before: base.before, after: null, risk: base.risk, autoApply: false };
+function normalizeValue(
+  value: string | number | boolean | Record<string, unknown> | null
+): PatchMutation["before"] {
+  if (value === null || value === undefined) {
+    return null;
+  }
+  if (typeof value === "string" || typeof value === "object") {
+    return value;
+  }
+  return String(value);
 }
 
 function buildTitle(context: PageContext, report: Pick<AuditReport, "domain">): string {

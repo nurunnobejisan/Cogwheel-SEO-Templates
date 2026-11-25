@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "FixPatch",
+  "description": "Standardized machine-applicable fix patch emitted by the Cogwheel AI SEO Brain (ai/orchestrator.ts). Freeform text is rejected by the validation layer.",
+  "type": "object",
+  "properties": {
+    "patchId": { "type": "string", "minLength": 1 },
+    "auditId": { "type": "string", "minLength": 1 },
+    "targetUrl": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["universal", "hotel"] },
+    "createdAt": { "type": "string", "minLength": 1 },
+    "mutations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string",
+            "enum": [
+              "title",
+              "meta_description",
+              "h1",
+              "heading_text",
+              "heading_structure",
+              "image_alt_text",
+              "image_url",
+              "image_dimensions",
+              "canonical_url",
+              "meta_robots",
+              "viewport_meta",
+              "internal_link_url",
+              "link_rel",
+              "og_title",
+              "og_description",
+              "og_image",
+              "twitter_card",
+              "json_ld_schema",
+              "body_content"
+            ]
+          },
+          "action": { "type": "string", "enum": ["replace", "inject", "remove", "manual_review"] },
+          "before": { "type": ["string", "object", "null"] },
+          "after": { "type": ["string", "object", "null"] },
+          "risk": { "type": "string", "enum": ["low", "medium", "high"] },
+          "autoApply": { "type": "boolean" }
+        },
+        "required": ["field", "action", "before", "after", "risk", "autoApply"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["patchId", "auditId", "targetUrl", "mode", "createdAt", "mutations"],
+  "additionalProperties": false
+}
