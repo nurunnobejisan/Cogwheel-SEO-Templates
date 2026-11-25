@@ -7,65 +7,33 @@ export async function POST(req: NextRequest) {
       action = "export_payload", // "export_payload" | "sync_api" | "import_report"
       apiKey = "",
       workspaceId = "",
-      property = {
-        name: "Renaissance Shoals Resort & Spa",
-        brand: "Marriott",
-        city: "Florence",
-        state: "AL",
-        url: "https://www.marriott.com/en-us/hotels/mslbr-renaissance-shoals-resort-and-spa/overview/",
-      },
+      property = {},
       prompts = [],
       competitors = [],
       rawReport = null,
     } = payload;
 
-    // Default conversational AI prompts if none passed
-    const defaultPrompts = [
-      {
-        prompt: `Best boutique hotel with river view and spa in ${property.city || "Florence"} ${property.state || "AL"}`,
-        category: "Discovery",
-        targetEngines: ["ChatGPT", "Perplexity", "Google AI Overviews"],
-      },
-      {
-        prompt: `Does ${property.name || "the hotel"} allow pets and what are the fees?`,
-        category: "Amenities",
-        targetEngines: ["Google AI Overviews", "ChatGPT"],
-      },
-      {
-        prompt: `Spa packages and treatment pricing at ${property.name || "the resort"}`,
-        category: "Spa & Wellness",
-        targetEngines: ["Perplexity", "ChatGPT"],
-      },
-      {
-        prompt: `Where to stay near downtown ${property.city || "Florence"} with fine dining`,
-        category: "Dining",
-        targetEngines: ["ChatGPT", "Google AI Overviews"],
-      },
-      {
-        prompt: `Corporate meeting and wedding venues at ${property.name || "the hotel"}`,
-        category: "Groups & Events",
-        targetEngines: ["Copilot", "Perplexity"],
-      },
-    ];
-
-    const defaultCompetitors = [
-      { name: "GunRunner Boutique Hotel", domain: "gunrunnerhotel.com" },
-      { name: "Courtyard Florence", domain: "marriott.com" },
-      { name: "Hampton Inn Downtown", domain: "hilton.com" },
-    ];
-
-    const activePrompts = prompts.length > 0 ? prompts : defaultPrompts;
-    const activeCompetitors = competitors.length > 0 ? competitors : defaultCompetitors;
+    // No default property, competitor or prompt is injected. The browser sends
+    // the operator-supplied batch; an empty batch stays empty.
+    const activePrompts = Array.isArray(prompts) ? prompts : [];
+    const activeCompetitors = Array.isArray(competitors) ? competitors : [];
 
     // 1. Export Batch Payload for VisibilitySuite
     if (action === "export_payload") {
+      if (!property.name || !property.url) {
+        return NextResponse.json(
+          { error: "A property name and URL are required before exporting a prompt batch." },
+          { status: 400 }
+        );
+      }
+
       const visibilitySuiteBatch = {
         organization: {
           brandName: property.name,
           domain: property.url,
-          city: property.city,
-          state: property.state,
-          source: "Cogwheel SEO Templates v2.4",
+          city: property.city || "",
+          state: property.state || "",
+          source: "Cogwheel SEO Templates",
         },
         promptsBatch: activePrompts.map((p: { prompt?: string; text?: string; category?: string; targetEngines?: string[] }) => ({
           text: p.prompt || p.text || "",
@@ -94,6 +62,12 @@ export async function POST(req: NextRequest) {
 
     // 2. Direct API Sync to VisibilitySuite API v1
     if (action === "sync_api") {
+      if (!property.name || !property.url) {
+        return NextResponse.json(
+          { error: "A property name and URL are required before syncing." },
+          { status: 400 }
+        );
+      }
       if (!apiKey) {
         return NextResponse.json(
           { error: "VisibilitySuite API Key is required for direct sync. You can find this in your VisibilitySuite Dashboard Settings." },

@@ -27,12 +27,12 @@ export function VisibilitySuiteModal({
   onImportScore,
   onImportBatch,
 }: VisibilitySuiteModalProps) {
-  const propertyName = property?.name || "Renaissance Shoals Resort & Spa";
-  const propertyUrl =
-    property?.url ||
-    "https://www.marriott.com/en-us/hotels/mslbr-renaissance-shoals-resort-and-spa/overview/";
-  const propertyCity = property?.city || "Florence";
-  const propertyState = property?.state || "AL";
+  const propertyName = property?.name?.trim() || "";
+  const propertyUrl = property?.url?.trim() || "";
+  const propertyCity = property?.city?.trim() || "";
+  const propertyState = property?.state?.trim() || "";
+  const displayName = propertyName || "[property name]";
+  const locationLabel = [propertyCity, propertyState].filter(Boolean).join(", ") || "[city, state]";
 
   const [activeTab, setActiveTab] = useState<"export" | "ingest" | "api" | "import">("ingest");
   const [apiKey, setApiKey] = useState("");
@@ -49,18 +49,18 @@ export function VisibilitySuiteModal({
     prompts: Array<{ prompt: string; category: string; targetEngines: string[] }>;
   } | null>(null);
 
-  const isFlorence = propertyCity.toLowerCase().includes("florence");
-  const localCompetitors = isFlorence
-    ? [
-        { name: "GunRunner Boutique Hotel", domain: "gunrunnerhotel.com" },
-        { name: "Courtyard Florence", domain: "marriott.com" },
-        { name: "Hampton Inn Downtown", domain: "hilton.com" },
-      ]
-    : [
-        { name: `${propertyCity} Boutique Hotel`, domain: `${propertyCity.toLowerCase().replace(/\s+/g, "")}boutiquehotel.com` },
-        { name: `Courtyard by Marriott ${propertyCity}`, domain: "marriott.com" },
-        { name: `Hilton ${propertyCity} Downtown`, domain: "hilton.com" },
-      ];
+  // Competitors are operator-supplied: one `Name, domain` pair per line.
+  // The modal never guesses comp-set names or domains.
+  const [competitorsText, setCompetitorsText] = useState("");
+  const competitors = competitorsText
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .map((line) => {
+      const [name, domain] = line.split(",").map((part) => part.trim());
+      return { name: name || domain || "", domain: domain || "" };
+    })
+    .filter((competitor) => competitor.name && competitor.domain);
 
   const batchPayload = {
     organization: {
@@ -68,36 +68,36 @@ export function VisibilitySuiteModal({
       domain: propertyUrl,
       city: propertyCity,
       state: propertyState,
-      source: "Cogwheel SEO Templates v2.4",
+      source: "Cogwheel SEO Templates",
     },
     promptsBatch: [
       {
-        prompt: `Best boutique hotel with river view and spa in ${propertyCity} ${propertyState}`,
+        prompt: `Best boutique hotel with river view and spa in ${locationLabel}`,
         category: "Discovery",
         targetEngines: ["ChatGPT", "Perplexity", "Google AI Overviews"],
       },
       {
-        prompt: `Does ${propertyName} allow pets and what are the pet fees?`,
+        prompt: `Does ${displayName} allow pets and what are the pet fees?`,
         category: "Amenities",
         targetEngines: ["Google AI Overviews", "ChatGPT"],
       },
       {
-        prompt: `Spa packages and treatment pricing at ${propertyName}`,
+        prompt: `Spa packages and treatment pricing at ${displayName}`,
         category: "Spa & Wellness",
         targetEngines: ["Perplexity", "ChatGPT"],
       },
       {
-        prompt: `Where to stay near downtown ${propertyCity} with riverfront fine dining`,
+        prompt: `Where to stay near downtown ${propertyCity || "[city]"} with riverfront fine dining`,
         category: "Dining",
         targetEngines: ["ChatGPT", "Google AI Overviews"],
       },
       {
-        prompt: `Corporate meeting and wedding venues at ${propertyName}`,
+        prompt: `Corporate meeting and wedding venues at ${displayName}`,
         category: "Groups & Events",
         targetEngines: ["Copilot", "Perplexity"],
       },
     ],
-    competitors: localCompetitors,
+    competitors,
   };
 
   const jsonString = JSON.stringify(batchPayload, null, 2);
@@ -166,8 +166,10 @@ export function VisibilitySuiteModal({
           msg: `Batch file ingested! Active hotel updated to ${newProperty.name}.`,
         });
         return true;
-      } else if (parsed.score || parsed.citationScore || parsed.geoScore) {
-        const score = parsed.score || parsed.citationScore || parsed.geoScore || 82;
+      } else if (
+        typeof (parsed.score ?? parsed.citationScore ?? parsed.geoScore) === "number"
+      ) {
+        const score = Number(parsed.score ?? parsed.citationScore ?? parsed.geoScore);
         onImportScore?.(score);
         setSyncStatus({
           type: "success",
@@ -238,7 +240,7 @@ export function VisibilitySuiteModal({
           apiKey: apiKey.trim(),
           workspaceId: workspaceId.trim(),
           property: {
-            name: propertyName,
+            name: displayName,
             url: propertyUrl,
             city: propertyCity,
             state: propertyState,
@@ -286,7 +288,7 @@ export function VisibilitySuiteModal({
             Connect with VisibilitySuite.ai
           </h2>
           <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-            Sync <span className="font-semibold text-slate-800 dark:text-slate-200">{propertyName}</span> data, AI prompts, and comp-set tracking with your VisibilitySuite dashboard.
+            Sync <span className="font-semibold text-slate-800 dark:text-slate-200">{displayName}</span> data, AI prompts, and comp-set tracking with your VisibilitySuite dashboard.
           </p>
         </div>
 
@@ -472,7 +474,7 @@ export function VisibilitySuiteModal({
             <span className="font-semibold text-slate-900 dark:text-white">What gets auto-filled:</span>
             <ul className="mt-1 list-disc pl-4 space-y-0.5 text-[11px]">
               <li>Hotel name, brand, official URL, and city/state location</li>
-              <li>Local comp-set competitor domains &amp; names</li>
+              <li>Comp-set competitor domains &amp; names that you enter (never guessed)</li>
               <li>GEO AI prompts calibrated for ChatGPT Search, Google AI Overviews &amp; Perplexity</li>
             </ul>
           </div>
@@ -489,6 +491,20 @@ export function VisibilitySuiteModal({
             <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
               Download this prepared JSON configuration to upload directly into VisibilitySuite.ai batch processor.
             </p>
+
+            <div className="mt-3">
+              <label className="label">Competitors (one per line: Name, domain)</label>
+              <textarea
+                value={competitorsText}
+                onChange={(e) => setCompetitorsText(e.target.value)}
+                rows={3}
+                placeholder={"GunRunner Boutique Hotel, gunrunnerhotel.com\nCourtyard Florence, marriott.com"}
+                className="input font-mono text-xs resize-y"
+              />
+              <p className="mt-1 text-[10px] text-slate-400">
+                Leave blank to export prompts without a comp-set. Domains are not generated.
+              </p>
+            </div>
 
             <div className="mt-3">
               <pre className="max-h-48 overflow-auto rounded-xl bg-slate-900 p-3 font-mono text-[11px] text-emerald-400">
