@@ -13,7 +13,8 @@
  */
 
 import { forbidden, unauthorized } from "./errors.ts";
-import type { Permission, Principal, RiskTier, Role } from "./types.ts";
+import type { Permission, Principal, Role } from "./types.ts";
+import type { RiskTier } from "../healing/types.ts";
 
 const VIEWER: Permission[] = [
   "audit:read",
