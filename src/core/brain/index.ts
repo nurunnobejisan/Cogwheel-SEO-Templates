@@ -65,7 +65,15 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
     `SEO audit findings for ${targetUrl}: ${audit.actionPlan?.map((i) => i.title).join(" ") ?? ""}`;
   const retrieved = pipeline.knowledgeBase.search(query, { topK: 6 });
 
-  const auditJson = JSON.stringify(audit, null, 2).slice(0, 12000);
+  const compactAudit = {
+    targetUrl: audit.targetUrl,
+    domain: audit.domain,
+    overallScore: audit.overallScore,
+    scores: audit.scores,
+    provenance: audit.dataProvenance,
+    topActions: (audit.actionPlan ?? []).slice(0, 15).map((a) => ({ priority: a.priority, title: a.title, category: a.category })),
+  };
+  const auditJson = JSON.stringify(compactAudit, null, 2);
   const contextText = retrieved
     .map((c) => `[${c.id}] ${c.title} (${c.source}, score ${c.score})\n${c.text}`)
     .join("\n\n");
