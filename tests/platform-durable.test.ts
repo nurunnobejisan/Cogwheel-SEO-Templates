@@ -126,7 +126,7 @@ describe("Phase 5.1 — persistence adapters", () => {
     const first = createJsonFileAdapter({ dir });
     await first.append(COLLECTIONS.auditLog, { id: "a1", sequence: 1 });
     await first.put(COLLECTIONS.deployments, "d1", { id: "d1", status: "deployed" });
-    await first.close();
+    await first.close?.();
 
     const second = createJsonFileAdapter({ dir });
     expect(await second.readAll(COLLECTIONS.auditLog)).toEqual([{ id: "a1", sequence: 1 }]);

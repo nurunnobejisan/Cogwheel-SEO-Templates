@@ -21,6 +21,8 @@ export interface RuntimePatchConfig {
   title?: string;
   metaDescription?: string;
   canonical?: string;
+  robots?: string;
+  viewport?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   og?: Record<string, string>;
   twitter?: Record<string, string>;
@@ -64,6 +66,8 @@ export function buildSeoAutofixScript(options: SeoAutofixScriptOptions): string 
     `if(p.title)document.title=p.title;` +
     `if(p.metaDescription)setMeta('name="description"',p.metaDescription);` +
     `if(p.canonical)setLink('canonical',p.canonical);` +
+    `if(p.robots)setMeta('name="robots"',p.robots);` +
+    `if(p.viewport)setMeta('name="viewport"',p.viewport);` +
     `if(p.og)Object.keys(p.og).forEach(function(k){setMeta('property="'+k+'"',p.og[k]);});` +
     `if(p.twitter)Object.keys(p.twitter).forEach(function(k){setMeta('name="'+k+'"',p.twitter[k]);});` +
     `if(p.jsonLd)setJsonLd(p.jsonLd);}` +

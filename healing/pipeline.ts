@@ -14,7 +14,7 @@
 import { generateFixPatch } from "../ai/orchestrator.ts";
 import type { FixPatch, PatchMutation } from "../ai/types.ts";
 import { previewPatchDiff, toConnectorMutation } from "../cms/deploy.ts";
-import type { DeploymentResult } from "../cms/types.ts";
+import type { DeploymentResult, CmsConnector } from "../cms/types.ts";
 import {
   DEFAULT_AUTOPILOT_POLICY,
   createApprovalQueue,
@@ -87,7 +87,12 @@ export async function runHealingPipeline(options: HealingRunOptions): Promise<He
   }
 
   /* Step 3 — staging & approval gate --------------------------------------- */
-  const selected = selectAutoDeployableMutations(patch, triage, policy, approveAll);
+  // Respect connector capabilities: a field the connector cannot express (e.g.
+  // alt text on the universal runtime) is deferred instead of failing the run.
+  const requested = selectAutoDeployableMutations(patch, triage, policy, approveAll);
+  const selected = connector.supportsField
+    ? requested.filter((mutation) => connector.supportsField!(mutation.field))
+    : requested;
   if (approval.status === "pending" || selected.length === 0) {
     return finalize("queued", {
       runId: makeRunId(startedAt),
@@ -163,15 +168,24 @@ export async function runHealingPipeline(options: HealingRunOptions): Promise<He
   }
 
   const expected = buildExpectations(selected);
-  const verification = await verifyDeployment({
-    url: targetUrl,
-    expectations: expected.expectations,
-    expectJsonLd: expected.expectJsonLd,
-    fetchImpl: options.fetchImpl,
-    now,
-  });
+  const connectorMode = connector.verificationMode === "connector";
+  const verification = connectorMode
+    ? await verifyViaConnector(connector, targetUrl, now)
+    : await verifyDeployment({
+        url: targetUrl,
+        expectations: expected.expectations,
+        expectJsonLd: expected.expectJsonLd,
+        fetchImpl: options.fetchImpl,
+        now,
+      });
 
-  if (!verification.httpOk || !verification.domMatches || (expected.expectJsonLd && !verification.jsonLdValid)) {
+  const verified = connectorMode
+    ? verification.httpOk
+    : verification.httpOk &&
+      verification.domMatches &&
+      !(expected.expectJsonLd && !verification.jsonLdValid);
+
+  if (!verified) {
     await safeRestore(connector, snapshot);
     const result = rollbackResult(events, eventStart, rollbackStore, patch, connector.platform, verification.errors, approval, record.id, now, startedAt, targetUrl, verification);
     return result;
@@ -205,6 +219,56 @@ export async function runHealingPipeline(options: HealingRunOptions): Promise<He
 }
 
 /* ----------------------------------------------------------------- helpers -- */
+
+/**
+ * Verification for connectors that apply fixes client-side (the universal
+ * runtime). The server HTML never changes, so a live DOM comparison would
+ * always fail; the connector's own `verify()` is authoritative instead.
+ */
+async function verifyViaConnector(
+  connector: CmsConnector,
+  url: string,
+  now: () => string
+): Promise<VerificationReport> {
+  const base: VerificationReport = {
+    url,
+    status: null,
+    httpOk: false,
+    domMatches: false,
+    jsonLdValid: true,
+    checks: [],
+    jsonLd: null,
+    errors: [],
+    verifiedAt: now(),
+  };
+
+  if (!connector.verify) {
+    // No verification hook — trust a successful apply.
+    return {
+      ...base,
+      httpOk: true,
+      domMatches: true,
+      checks: [{ field: "connector", passed: true, actual: "applied", detail: "no connector verification hook" }],
+    };
+  }
+
+  const result = await connector.verify();
+  return {
+    ...base,
+    status: result.status ?? null,
+    httpOk: result.ok,
+    domMatches: result.ok,
+    checks: [
+      {
+        field: "connector",
+        passed: result.ok,
+        actual: result.details ?? null,
+        detail: result.details ?? "connector verification",
+      },
+    ],
+    errors: result.ok ? [] : [result.details ?? "connector verification failed"],
+  };
+}
 
 function buildDeployment(
   patch: FixPatch,

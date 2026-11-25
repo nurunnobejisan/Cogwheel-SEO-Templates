@@ -47,6 +47,20 @@ export interface CustomConnectorConfig {
   now?: () => string;
 }
 
+/** Fields the universal runtime connector can express. */
+export const RUNTIME_SUPPORTED_FIELDS = new Set([
+  "title",
+  "meta_description",
+  "canonical_url",
+  "meta_robots",
+  "viewport_meta",
+  "json_ld_schema",
+  "og_title",
+  "og_description",
+  "og_image",
+  "twitter_card",
+]);
+
 /** Translate connector mutations into a runtime patch config. */
 export function buildRuntimePatch(
   mutations: ConnectorMutation[],
@@ -73,6 +87,14 @@ export function buildRuntimePatch(
         break;
       case "canonical_url":
         config.canonical = asString(mutation.after);
+        applied += 1;
+        break;
+      case "meta_robots":
+        config.robots = asString(mutation.after);
+        applied += 1;
+        break;
+      case "viewport_meta":
+        config.viewport = asString(mutation.after);
         applied += 1;
         break;
       case "json_ld_schema":
@@ -124,6 +146,11 @@ export function createCustomConnector(config: CustomConnectorConfig): CmsConnect
   return {
     platform: "custom",
     target: config.target,
+    // The runtime patches the DOM client-side; the server HTML is unchanged.
+    verificationMode: "connector",
+    supportsField(field: string): boolean {
+      return RUNTIME_SUPPORTED_FIELDS.has(field);
+    },
 
     async readSnapshot(): Promise<Record<string, unknown>> {
       return { config: config.registry.get(config.target.url) };

@@ -22,6 +22,7 @@ import {
   triagePatch,
   verifyDeployment,
 } from "../healing/index.ts";
+import { createCustomConnector, createMemoryPatchRegistry } from "../cms/index.ts";
 
 const NOW = "2026-03-01T12:00:00.000Z";
 const TARGET_URL = "https://example.com/blog/widgets";
@@ -601,5 +602,87 @@ describe("Phase 4 — Self-healing pipeline", () => {
     expect(events.byType("deployed")).toHaveLength(1);
     expect(rollbackStore.history(TARGET_URL)).toHaveLength(1);
     expect(rollbackStore.latest(TARGET_URL)?.patchId).toBeTruthy();
+  });
+});
+
+/* --------------------------------------------- connector-aware verification -- */
+
+const IMAGE_ALT_ISSUE = makeIssue({
+  issueId: "iss_image_alt_missing",
+  category: "media",
+  severity: "medium",
+  cmsTargetField: "image_alt_text",
+});
+
+describe("Phase 4 — connector-aware deployment", () => {
+  const liveHtml =
+    "<!doctype html><html><head><title>Widgets</title></head><body><h1>Widgets</h1></body></html>";
+  const liveFetch: FetchLike = async () =>
+    ({
+      ok: true,
+      status: 200,
+      json: async () => ({}),
+      text: async () => liveHtml,
+    }) as unknown as Response;
+
+  it("advises connector-mode verification for the universal runtime", () => {
+    const connector = createCustomConnector({
+      clientId: "org_1",
+      target: { url: TARGET_URL, resourceId: TARGET_URL },
+      registry: createMemoryPatchRegistry(),
+      fetchImpl: liveFetch,
+      now: () => NOW,
+    });
+    expect(connector.verificationMode).toBe("connector");
+    expect(connector.supportsField?.("meta_description")).toBe(true);
+    expect(connector.supportsField?.("viewport_meta")).toBe(true);
+    expect(connector.supportsField?.("image_alt_text")).toBe(false);
+  });
+
+  it("deploys and verifies a runtime patch through the connector, not the live DOM", async () => {
+    const registry = createMemoryPatchRegistry();
+    const connector = createCustomConnector({
+      clientId: "org_1",
+      target: { url: TARGET_URL, resourceId: TARGET_URL },
+      registry,
+      fetchImpl: liveFetch,
+      now: () => NOW,
+    });
+
+    const result = await runHealingPipeline({
+      report: makeReport([META_ISSUE]),
+      connector,
+      policy: { enabled: true, maxRisk: "low" },
+      fetchImpl: liveFetch,
+      now: () => NOW,
+    });
+
+    expect(result.status).toBe("deployed");
+    expect(result.deployment?.applied).toBeGreaterThan(0);
+    expect(result.verification?.checks[0]?.field).toBe("connector");
+    expect(result.verification?.httpOk).toBe(true);
+    expect(registry.get(TARGET_URL)?.metaDescription).toBeTruthy();
+  });
+
+  it("defers fields the connector cannot express instead of failing", async () => {
+    const registry = createMemoryPatchRegistry();
+    const connector = createCustomConnector({
+      clientId: "org_1",
+      target: { url: TARGET_URL, resourceId: TARGET_URL },
+      registry,
+      fetchImpl: liveFetch,
+      now: () => NOW,
+    });
+
+    const result = await runHealingPipeline({
+      report: makeReport([IMAGE_ALT_ISSUE]),
+      connector,
+      policy: { enabled: true, maxRisk: "low" },
+      fetchImpl: liveFetch,
+      now: () => NOW,
+    });
+
+    expect(result.status).toBe("queued");
+    expect(registry.get(TARGET_URL)).toBeNull();
   });
 });
