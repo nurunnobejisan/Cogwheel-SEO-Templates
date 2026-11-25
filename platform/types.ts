@@ -134,6 +134,8 @@ export interface ErrorBody {
 export interface PlatformErrorOptions {
   status: number;
   code: string;
+  /** Human-readable message; defaults to the code. */
+  message?: string;
   details?: unknown;
   retryAfterMs?: number;
 }

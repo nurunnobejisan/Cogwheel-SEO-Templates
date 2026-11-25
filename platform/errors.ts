@@ -14,7 +14,7 @@ export class PlatformError extends Error {
   readonly retryAfterMs?: number;
 
   constructor(options: PlatformErrorOptions) {
-    super(options.code);
+    super(options.message ?? options.code);
     this.name = "PlatformError";
     this.status = options.status;
     this.code = options.code;
@@ -24,24 +24,24 @@ export class PlatformError extends Error {
 }
 
 export const badRequest = (message: string, details?: unknown): PlatformError =>
-  new PlatformError({ status: 400, code: "bad_request", details: details ?? message });
+  new PlatformError({ status: 400, code: "bad_request", message, details });
 
 export const unauthorized = (message = "authentication required"): PlatformError =>
-  new PlatformError({ status: 401, code: "unauthorized", details: message });
+  new PlatformError({ status: 401, code: "unauthorized", message });
 
 export const forbidden = (message = "insufficient permissions"): PlatformError =>
-  new PlatformError({ status: 403, code: "forbidden", details: message });
+  new PlatformError({ status: 403, code: "forbidden", message });
 
 export const notFound = (message = "resource not found"): PlatformError =>
-  new PlatformError({ status: 404, code: "not_found", details: message });
+  new PlatformError({ status: 404, code: "not_found", message });
 
 export const conflict = (message: string): PlatformError =>
-  new PlatformError({ status: 409, code: "conflict", details: message });
+  new PlatformError({ status: 409, code: "conflict", message });
 
 export const tooManyRequests = (retryAfterMs: number): PlatformError =>
   new PlatformError({
     status: 429,
     code: "rate_limited",
-    details: "rate limit exceeded",
+    message: "rate limit exceeded",
     retryAfterMs,
   });

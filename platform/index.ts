@@ -19,3 +19,7 @@ export * from "./credential-store.ts";
 export * from "./gateway.ts";
 export * from "./worker.ts";
 export * from "./http.ts";
+
+// Re-exported so the runtime layer is a single entry point for callers.
+export { createScanScheduler } from "../healing/scheduler.ts";
+export type { ScanScheduler } from "../healing/scheduler.ts";

@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PlatformRuntime",
+  "description": "Contracts for the Phase 5 platform runtime (platform/): the immutable audit-log entry, the deployment-history entry and the normalized gateway request/response envelope.",
+  "definitions": {
+    "Role": {
+      "type": "string",
+      "enum": ["viewer", "specialist", "admin"]
+    },
+    "AuditLogEntry": {
+      "type": "object",
+      "properties": {
+        "sequence": { "type": "integer", "minimum": 1 },
+        "id": { "type": "string", "minLength": 1 },
+        "at": { "type": "string", "minLength": 1 },
+        "actor": { "type": "string", "minLength": 1 },
+        "role": { "$ref": "#/definitions/Role" },
+        "action": { "type": "string", "minLength": 1 },
+        "organizationId": { "type": "string" },
+        "targetUrl": { "type": "string" },
+        "patchId": { "type": "string" },
+        "before": {},
+        "after": {},
+        "metadata": { "type": "object" },
+        "previousHash": { "type": "string" },
+        "hash": { "type": "string", "pattern": "^[0-9a-f]{64}$" }
+      },
+      "required": [
+        "sequence",
+        "id",
+        "at",
+        "actor",
+        "role",
+        "action",
+        "previousHash",
+        "hash"
+      ],
+      "additionalProperties": false
+    },
+    "DeploymentHistoryEntry": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "runId": { "type": "string", "minLength": 1 },
+        "patchId": { "type": "string", "minLength": 1 },
+        "targetUrl": { "type": "string", "minLength": 1 },
+        "platform": {
+          "type": "string",
+          "enum": ["wordpress", "shopify", "webflow", "custom"]
+        },
+        "status": {
+          "type": "string",
+          "enum": ["deployed", "rolled_back", "queued", "rejected", "failed"]
+        },
+        "actor": { "type": "string", "minLength": 1 },
+        "at": { "type": "string", "minLength": 1 },
+        "snapshotId": { "type": ["string", "null"] },
+        "diff": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "field": { "type": "string" },
+              "action": { "type": "string", "enum": ["replace", "inject", "remove", "manual_review"] },
+              "before": { "type": "string" },
+              "after": { "type": "string" },
+              "risk": { "type": "string", "enum": ["low", "medium", "high"] },
+              "autoApply": { "type": "boolean" }
+            },
+            "required": ["field", "action", "before", "after", "risk", "autoApply"],
+            "additionalProperties": false
+          }
+        },
+        "applied": { "type": "integer", "minimum": 0 },
+        "rolledBack": { "type": "boolean" },
+        "undone": { "type": "boolean" },
+        "undoneAt": { "type": "string" },
+        "undoneBy": { "type": "string" }
+      },
+      "required": [
+        "id",
+        "runId",
+        "patchId",
+        "targetUrl",
+        "platform",
+        "status",
+        "actor",
+        "at",
+        "snapshotId",
+        "diff",
+        "applied",
+        "rolledBack",
+        "undone"
+      ],
+      "additionalProperties": false
+    },
+    "Principal": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "role": { "$ref": "#/definitions/Role" },
+        "organizationId": { "type": "string" }
+      },
+      "required": ["id", "role"],
+      "additionalProperties": false
+    },
+    "PlatformRequest": {
+      "type": "object",
+      "properties": {
+        "method": { "type": "string", "enum": ["GET", "POST", "PATCH", "DELETE"] },
+        "path": { "type": "string", "minLength": 1 },
+        "body": {},
+        "principal": { "$ref": "#/definitions/Principal" },
+        "headers": { "type": "object", "additionalProperties": { "type": "string" } }
+      },
+      "required": ["method", "path", "principal"],
+      "additionalProperties": false
+    },
+    "PlatformResponse": {
+      "type": "object",
+      "properties": {
+        "status": { "type": "integer", "minimum": 100, "maximum": 599 },
+        "body": {},
+        "headers": { "type": "object", "additionalProperties": { "type": "string" } }
+      },
+      "required": ["status", "body"],
+      "additionalProperties": false
+    }
+  }
+}

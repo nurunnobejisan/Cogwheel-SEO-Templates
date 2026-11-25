@@ -243,7 +243,7 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
       throw new PlatformError({
         status: 429,
         code: "rate_limited",
-        details: `rate limit exceeded for ${key}`,
+        message: `rate limit exceeded for ${key}`,
         retryAfterMs: decision.retryAfterMs,
       });
     }
@@ -259,7 +259,7 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
 
     if (mode.dryRun) {
       const result = await deployPatch(patch, { connector, dryRun: true, now: now() });
-      return { status: 200, body: result };
+      return { status: 200, body: { deployment: result, historyId: null, snapshotId: null } };
     }
 
     let preSnapshot: Record<string, unknown> | null = null;
@@ -691,7 +691,7 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
           body: {
             error: {
               code: error.code,
-              message: typeof error.details === "string" ? error.details : error.code,
+              message: error.message,
               retryAfterMs: error.retryAfterMs,
               details: error.details,
             },
