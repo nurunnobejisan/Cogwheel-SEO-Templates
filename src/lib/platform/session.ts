@@ -55,6 +55,13 @@ function base64UrlDecode(value: string): Uint8Array {
   return bytes;
 }
 
+/** Copies bytes into a plain ArrayBuffer for Web Crypto (TS lib.dom typing). */
+function toArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  const copy = new ArrayBuffer(bytes.byteLength);
+  new Uint8Array(copy).set(bytes);
+  return copy;
+}
+
 async function hmacKey(secret: string): Promise<CryptoKey> {
   return crypto.subtle.importKey(
     "raw",
@@ -127,8 +134,8 @@ export async function verifySessionToken(token: string | null | undefined): Prom
     valid = await crypto.subtle.verify(
       "HMAC",
       await hmacKey(secret),
-      base64UrlDecode(signature),
-      new TextEncoder().encode(encoded),
+      toArrayBuffer(base64UrlDecode(signature)),
+      toArrayBuffer(new TextEncoder().encode(encoded)),
     );
   } catch {
     return null;

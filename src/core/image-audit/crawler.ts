@@ -5,6 +5,7 @@ import type {
   ImageAuditSummary,
   ImageIssueCode,
 } from "./types.ts";
+import { assertEgressAllowed, readTextCapped, safeFetch } from "../../lib/security/egress.ts";
 
 const CRAWLER_USER_AGENT =
   "Mozilla/5.0 (compatible; CogwheelImageAudit/2.7; +https://cogwheel-seo-templates.vercel.app)";
@@ -495,12 +496,13 @@ async function discoverSitemapUrls(origin: string, timeoutMs: number): Promise<{
 
   // Try robots.txt first for declared Sitemaps
   try {
-    const robotsRes = await fetch(`${origin}/robots.txt`, {
-      headers: { "User-Agent": CRAWLER_USER_AGENT },
-      signal: AbortSignal.timeout(timeoutMs),
-    });
+    const { response: robotsRes } = await safeFetch(
+      `${origin}/robots.txt`,
+      { headers: { "User-Agent": CRAWLER_USER_AGENT } },
+      { timeoutMs, maxRedirects: 3 },
+    );
     if (robotsRes.ok) {
-      const text = await robotsRes.text();
+      const text = await readTextCapped(robotsRes);
       const sitemapMatches = text.matchAll(/^Sitemap:\s*(https?:\/\/[^\s]+)/gim);
       for (const sm of sitemapMatches) {
         if (sm[1]) candidateSitemaps.unshift(sm[1].trim());
@@ -517,13 +519,14 @@ async function discoverSitemapUrls(origin: string, timeoutMs: number): Promise<{
     visitedSitemaps.add(sitemapUrl);
 
     try {
-      const res = await fetch(sitemapUrl, {
-        headers: { "User-Agent": CRAWLER_USER_AGENT },
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+      const { response: res } = await safeFetch(
+        sitemapUrl,
+        { headers: { "User-Agent": CRAWLER_USER_AGENT } },
+        { timeoutMs, maxRedirects: 3 },
+      );
       if (!res.ok) return;
 
-      const xml = await res.text();
+      const xml = await readTextCapped(res);
 
       // Check if it's a sitemap index (<sitemap><loc>...</loc></sitemap>)
       const subSitemaps = [...xml.matchAll(/<sitemap>\s*<loc>([^<]+)<\/loc>/gi)].map((m) => m[1].trim());
@@ -564,10 +567,11 @@ async function discoverSitemapUrls(origin: string, timeoutMs: number): Promise<{
 async function discoverWordPressMedia(origin: string, timeoutMs: number): Promise<Array<{ url: string; title: string; alt: string }>> {
   const mediaList: Array<{ url: string; title: string; alt: string }> = [];
   try {
-    const res = await fetch(`${origin}/wp-json/wp/v2/media?per_page=100`, {
-      headers: { "User-Agent": CRAWLER_USER_AGENT },
-      signal: AbortSignal.timeout(timeoutMs),
-    });
+    const { response: res } = await safeFetch(
+      `${origin}/wp-json/wp/v2/media?per_page=100`,
+      { headers: { "User-Agent": CRAWLER_USER_AGENT } },
+      { timeoutMs, maxRedirects: 3 },
+    );
     if (!res.ok) return [];
 
     const json = await res.json();
@@ -605,11 +609,11 @@ interface HeaderInfo {
 
 async function inspectImageHeaders(url: string, timeoutMs: number): Promise<HeaderInfo> {
   try {
-    const headRes = await fetch(url, {
-      method: "HEAD",
-      headers: { "User-Agent": CRAWLER_USER_AGENT },
-      signal: AbortSignal.timeout(timeoutMs),
-    });
+    const { response: headRes } = await safeFetch(
+      url,
+      { method: "HEAD", headers: { "User-Agent": CRAWLER_USER_AGENT } },
+      { timeoutMs, maxRedirects: 3 },
+    );
 
     if (headRes.ok || headRes.status === 304) {
       const ct = headRes.headers.get("content-type");
@@ -623,14 +627,17 @@ async function inspectImageHeaders(url: string, timeoutMs: number): Promise<Head
     }
 
     if (headRes.status === 405 || headRes.status === 403 || headRes.status === 400) {
-      const rangeRes = await fetch(url, {
-        method: "GET",
-        headers: {
-          "User-Agent": CRAWLER_USER_AGENT,
-          Range: "bytes=0-1024",
+      const { response: rangeRes } = await safeFetch(
+        url,
+        {
+          method: "GET",
+          headers: {
+            "User-Agent": CRAWLER_USER_AGENT,
+            Range: "bytes=0-1024",
+          },
         },
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+        { timeoutMs, maxRedirects: 3 },
+      );
 
       const ct = rangeRes.headers.get("content-type");
       const cl = rangeRes.headers.get("content-length");
@@ -679,7 +686,7 @@ export async function crawlWebsiteImages(
   const includeSubdomains = Boolean(options.includeSubdomains);
   const sizeThresholdKb = options.sizeThresholdKb ?? 100;
 
-  const validStart = normalizeUrl(startUrl);
+  const validStart = await assertEgressAllowed(normalizeUrl(startUrl) ?? "");
   if (!validStart) {
     throw new Error(`Invalid target website URL provided: "${startUrl}". Must be a valid http/https address.`);
   }
@@ -757,13 +764,16 @@ export async function crawlWebsiteImages(
 
     const pageStartTime = Date.now();
     try {
-      const pageRes = await fetch(currentUrl, {
-        headers: {
-          "User-Agent": CRAWLER_USER_AGENT,
-          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      const { response: pageRes } = await safeFetch(
+        currentUrl,
+        {
+          headers: {
+            "User-Agent": CRAWLER_USER_AGENT,
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          },
         },
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+        { timeoutMs },
+      );
 
       const responseTimeMs = Date.now() - pageStartTime;
       const status = pageRes.status;

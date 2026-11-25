@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { runFullWebsiteAudit } from "@/core/full-audit";
+import { UrlValidationError } from "@/core/crawler";
 
 export const dynamic = "force-dynamic";
 
@@ -29,9 +30,10 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     const errorMsg = err instanceof Error ? err.message : String(err);
+    const status = err instanceof UrlValidationError ? 400 : 500;
     return NextResponse.json(
       { error: "Failed to execute full website audit", details: errorMsg },
-      { status: 500 }
+      { status }
     );
   }
 }

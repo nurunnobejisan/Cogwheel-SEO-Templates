@@ -272,13 +272,16 @@ export async function crawlWebsiteHeadings(
     });
 
     try {
-      const pageRes = await fetch(currentUrl, {
-        headers: {
-          "User-Agent": CRAWLER_USER_AGENT,
-          Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+      const { response: pageRes } = await safeFetch(
+        currentUrl,
+        {
+          headers: {
+            "User-Agent": CRAWLER_USER_AGENT,
+            Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          },
         },
-        signal: AbortSignal.timeout(timeoutMs),
-      });
+        { timeoutMs },
+      );
 
       if (!pageRes.ok) {
         errors.push(`${currentUrl} (HTTP ${pageRes.status})`);
@@ -290,7 +293,7 @@ export async function crawlWebsiteHeadings(
         continue;
       }
 
-      const html = await pageRes.text();
+      const html = await readTextCapped(pageRes, 1_500_000);
       const pageTitle = extractPageTitle(html) || currentUrl;
 
       // Extract raw headings

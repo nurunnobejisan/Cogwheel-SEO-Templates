@@ -21,6 +21,7 @@ import { runAudit } from "../../../rules/index.ts";
 import type { AuditIssue } from "../../../rules/types.ts";
 import { buildSnapshotFromHtml } from "../../../rules/html-snapshot.ts";
 import { calculatePixelWidth } from "../../../validators/serpOptimizer.ts";
+import { assertEgressAllowed, readTextCapped, safeFetch as egressFetch } from "../../lib/security/egress.ts";
 import { validateTargetUrl } from "../crawler/url.ts";
 import { isGoogleConfigured, UnifiedGscClient } from "../gsc/client.ts";
 import { checkAlgorithmImpact } from "../claude-seo/index.ts";
@@ -57,23 +58,6 @@ export interface AuditRunnerOptions {
   enableSubdomains?: boolean;
   includeGsc?: boolean;
   includeGeo?: boolean;
-}
-
-async function safeFetch(url: string, timeoutMs = FETCH_TIMEOUT_MS): Promise<Response | null> {
-  const controller = new AbortController();
-  const timer = setTimeout(() => controller.abort(), timeoutMs);
-  try {
-    return await fetch(url, {
-      method: "GET",
-      redirect: "follow",
-      signal: controller.signal,
-      headers: { "User-Agent": USER_AGENT },
-    });
-  } catch {
-    return null;
-  } finally {
-    clearTimeout(timer);
-  }
 }
 
 function collectSchemaTypes(jsonLd: Array<{ "@type"?: string | string[] }>): string[] {
@@ -229,8 +213,18 @@ export async function runFullWebsiteAudit(
 ): Promise<FullWebsiteAuditReport> {
   const startTime = Date.now();
 
-  // 0. SSRF-safe URL normalization (rejects localhost / private ranges, etc.).
-  const targetUrl = validateTargetUrl(options.targetUrl);
+  // 0. SSRF-safe URL normalization (rejects localhost / private ranges and
+  //    hostnames that resolve to internal addresses). Offline/test runs skip the
+  //    DNS lookup so the suite does not depend on network access.
+  const skipDns =
+    process.env.NODE_ENV === "test" ||
+    Boolean(process.env.NODE_TEST_CONTEXT) ||
+    Boolean(process.env.VITEST) ||
+    Boolean(process.env.CI) ||
+    Boolean(process.env.OFFLINE_AUDIT);
+  const targetUrl = skipDns
+    ? validateTargetUrl(options.targetUrl)
+    : await assertEgressAllowed(options.targetUrl);
   if (!targetUrl) {
     throw new Error("A valid target URL is required (e.g. https://example.com)");
   }
@@ -256,7 +250,12 @@ export async function runFullWebsiteAudit(
 
   if (!offline) {
     const fetchStart = Date.now();
-    const res = await safeFetch(targetUrl);
+    const fetched = await egressFetch(
+      targetUrl,
+      { method: "GET", headers: { "User-Agent": USER_AGENT } },
+      { timeoutMs: FETCH_TIMEOUT_MS, maxRedirects: 5 },
+    ).catch(() => null);
+    const res = fetched?.response ?? null;
     if (res) {
       responseTimeMs = Date.now() - fetchStart;
       statusCode = res.status;
@@ -271,7 +270,7 @@ export async function runFullWebsiteAudit(
         hasXContentTypeOptions: Boolean(res.headers.get("x-content-type-options")),
       };
       try {
-        html = await res.text();
+        html = await readTextCapped(res, 1_500_000);
       } catch {
         html = "";
       }
@@ -289,10 +288,15 @@ export async function runFullWebsiteAudit(
   let hasRobotsTxt = false;
   const discoveredSitemaps: string[] = [];
   if (!offline) {
-    const robotsRes = await safeFetch(`${urlObj.origin}/robots.txt`, 10000);
+    const robotsProbe = await egressFetch(
+      `${urlObj.origin}/robots.txt`,
+      { method: "GET", headers: { "User-Agent": USER_AGENT } },
+      { timeoutMs: 10_000, maxRedirects: 3 },
+    ).catch(() => null);
+    const robotsRes = robotsProbe?.response ?? null;
     if (robotsRes && robotsRes.ok) {
       hasRobotsTxt = true;
-      const txt = await robotsRes.text().catch(() => "");
+      const txt = await readTextCapped(robotsRes, 500_000).catch(() => "");
       for (const line of txt.split(/\r?\n/)) {
         const m = /^\s*sitemap:\s*(\S+)/i.exec(line);
         if (m) discoveredSitemaps.push(m[1]);
@@ -300,8 +304,12 @@ export async function runFullWebsiteAudit(
     }
     if (discoveredSitemaps.length === 0) {
       for (const candidate of [`${urlObj.origin}/sitemap.xml`, `${urlObj.origin}/sitemap_index.xml`]) {
-        const sRes = await safeFetch(candidate, 8000);
-        if (sRes && sRes.ok) discoveredSitemaps.push(candidate);
+        const probe = await egressFetch(
+          candidate,
+          { method: "GET", headers: { "User-Agent": USER_AGENT } },
+          { timeoutMs: 8000, maxRedirects: 3 },
+        ).catch(() => null);
+        if (probe?.response.ok) discoveredSitemaps.push(candidate);
       }
     }
   }
