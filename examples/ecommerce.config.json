@@ -1,0 +1,10 @@
+{
+  "siteType": "ecommerce",
+  "brandName": "Example Store",
+  "domain": "store.example.com",
+  "locale": "en-US",
+  "targetAudience": "Online shoppers",
+  "primaryKeywords": ["running shoes", "sportswear"],
+  "competitors": ["competitor-a.example"],
+  "mode": "universal"
+}

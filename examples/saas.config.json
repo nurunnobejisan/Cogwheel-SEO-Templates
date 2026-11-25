@@ -1,0 +1,10 @@
+{
+  "siteType": "saas",
+  "brandName": "Example Cloud",
+  "domain": "cloud.example.com",
+  "locale": "en-US",
+  "targetAudience": "Business owners and IT teams",
+  "primaryKeywords": ["workflow automation", "business software"],
+  "competitors": ["competitor-b.example"],
+  "mode": "universal"
+}

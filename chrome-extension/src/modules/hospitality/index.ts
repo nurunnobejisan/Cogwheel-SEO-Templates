@@ -1,0 +1,12 @@
+/**
+ * Hospitality Engine (Preserved 100%)
+ *
+ * Re-exports all existing Hotel/Hospitality templates, client profiles,
+ * scoring rules, and optimal audit data untouched for complete backward compatibility.
+ */
+export {
+  COGWHEEL_TEMPLATES,
+  PRESET_CLIENT_PROFILES,
+  COGWHEEL_OPTIMAL_AUDIT_DATA,
+  calculateSeoScores,
+} from "../../data/cogwheelTemplates";
