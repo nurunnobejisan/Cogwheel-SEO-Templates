@@ -1,131 +1,210 @@
-# Cogwheel SEO — Universal Autonomous SEO & GEO Engine
+<p align="center">
+  <img src="public/razib-marketing-logo.png" alt="Cogwheel SEO" width="120" />
+</p>
 
-> **A Chrome extension that audits any website (hospitality or universal), provides SEO, schema, performance, accessibility, and GEO recommendations, and can auto‑apply safe fixes via self‑healing CMS patches.**
+<h1 align="center">Cogwheel SEO — Universal Autonomous SEO & GEO Engine</h1>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="CONTRIBUTING.md"><img src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg" alt="PRs Welcome" /></a>
+  <a href="CODE_OF_CONDUCT.md"><img src="https://img.shields.io/badge/Code%20of%20Conduct-Contributor%20Covenant-orange.svg" alt="Code of Conduct" /></a>
+  <a href="CHANGELOG.md"><img src="https://img.shields.io/badge/version-3.0.0-purple.svg" alt="Version 3.0.0" /></a>
+</p>
+
+<p align="center">
+  A Chrome extension + Next.js platform that audits any website, provides SEO, schema, performance, accessibility, and GEO recommendations, and can auto‑apply safe fixes via self‑healing CMS patches.
+</p>
 
 ---
 
-## 📦 Repository Overview
+## 📂 Repository Structure
 
 ```
 Cogwheel-SEO-Templates/
-├─ .github/
-│  ├─ workflows/ci.yml                 # CI pipeline (lint, test, build, auto‑push)
-│  └─ ISSUE_TEMPLATE/
-│     ├─ bug_report.md                # Template for bug reports
-│     └─ feature_request.md           # Template for feature requests
-├─ src/
-│  ├─ background/
-│  │   ├─ lifecycle-controller.ts     # Tab lock & state machine
-│  │   └─ service-worker.ts           # MV3 service worker entry point
-│  ├─ content/
-│  │   ├─ auto-scroll.ts              # Controlled lazy‑load scrolling
-│  │   ├─ spa-observer.ts              # SPA navigation detection
-│  │   ├─ context-extractor.ts         # PageContext extraction
-│  │   └─ content.ts                   # Content‑script bootstrap
-│  ├─ core/
-│  │   ├─ config/site-config.ts       # SiteConfig & EngineMode types
-│  │   ├─ detection/site-detector.ts   # (to be added) – auto mode detection
-│  │   ├─ templates/template-engine.ts # Mustache‑like rendering with fallbacks
-│  │   ├─ orchestration/
-│  │   │   ├─ central-audit-orchestrator.ts # Orchestrates audit tools
-│  │   │   └─ audit-pipeline.ts        # (bootstrap for running the orchestrator)
-│  │   └─ ai/patch-generator.ts        # LLM routing for patch generation
-│  ├─ modules/
-│  │   ├─ hospitality/                # Preserved hotel‑specific logic
-│  │   └─ universal/
-│  │       ├─ adapters/                # ecommerce, saas, local‑business, editorial
-│  │       └─ templates/universal-presets.ts
-│  ├─ tools/
-│  │   ├─ seo-audit.ts
-│  │   ├─ schema-audit.ts
-│  │   ├─ content-audit.ts
-│  │   ├─ performance-audit.ts
-│  │   └─ geo-audit.ts
-│  └─ ui/dashboard.html               # Side‑panel UI (Tailwind, dark‑mode, semantic HTML5)
-├─ gateway/
-│  ├─ cms-connectors/                # WordPress, Shopify, etc. (implement `CmsConnector`)
-│  └─ self-healing-patch.ts          # Deploys patches with snapshot & rollback
-├─ scripts/
-│  ├─ hardcoded-audit.ts              # Scans repo for hospitality‑specific strings
-│  ├─ generate-audit-summary.ts       # Generates `AUDIT_SUMMARY.md`
-│  └─ git-auto-push.ts                # Auto‑commit & push utility for CI
-├─ tests/                              # Vitest & Pytest suites (to be expanded)
-├─ .github/workflows/ci.yml            # CI definition (lint, test, build, auto‑push)
-├─ manifest.json                       # MV3 manifest (permissions, side‑panel, content script)
-├─ package.json
-├─ tsconfig.json
-├─ pyproject.toml
-├─ requirements.txt                    # Python deps for NLP helpers
-├─ SEO_EXPERT_GUIDE.md                 # SEO‑expert documentation (created earlier)
-└─ README.md                           # **You are here**
+│
+├── 📋 Root Config & Metadata
+│   ├── package.json / package-lock.json    # Node dependencies
+│   ├── pyproject.toml / requirements.txt   # Python dependencies
+│   ├── tsconfig.json                       # TypeScript config
+│   ├── vitest.config.ts                    # Test runner config
+│   ├── tailwind.config.ts                  # Tailwind CSS config
+│   ├── postcss.config.mjs                  # PostCSS config
+│   ├── next.config.mjs                     # Next.js config
+│   ├── manifest.json                       # Chrome extension manifest (MV3)
+│   ├── README.md                           # ← You are here
+│   ├── CONTRIBUTING.md                     # Contribution guidelines
+│   ├── CODE_OF_CONDUCT.md                  # Contributor Covenant
+│   ├── CHANGELOG.md                        # Release history
+│   └── LICENSE                             # MIT License
+│
+├── 📁 src/                                 # Main TypeScript source code
+│   ├── app/                                # Next.js app router pages
+│   ├── background/                         # Chrome extension service worker
+│   ├── components/                         # React UI components
+│   ├── content/                            # Content scripts (extraction, SPA)
+│   ├── core/                               # Orchestration, templates, AI routing
+│   ├── engine/                             # Audit engine pipeline
+│   ├── generators/                         # Report generators
+│   ├── gateway/                            # CMS connectors & self-healing patches
+│   ├── tasks/                              # Task modules (keyword, meta, schema…)
+│   ├── schemas/                            # Zod schemas for task data
+│   ├── scoring/                            # SEO scoring algorithms
+│   ├── storage/                            # IndexedDB / Chrome storage layer
+│   ├── types/                              # Shared TypeScript types
+│   └── ui/                                 # Side-panel dashboard HTML
+│
+├── 📁 python/                              # Python automation & analysis
+│   ├── analyzer/                           # GEO scoring
+│   ├── crawler/                            # Site mapper
+│   ├── generators/                         # Keyword, meta, heading, image tools
+│   ├── models/                             # Pydantic data models
+│   ├── processor/                          # Template processor
+│   ├── scraper/                            # Hotel data extractor
+│   ├── scripts/                            # Batch, fine-tuning, schema validation
+│   └── cogwheel_auto.py                    # CLI entry point
+│
+├── 📁 chrome-extension/                    # Standalone Chrome extension build
+│   ├── src/                                # Extension-specific source
+│   ├── dist/                               # Built extension output
+│   └── package.json                        # Extension dependencies
+│
+├── 📁 api/                                 # Python API servers
+│   ├── content_engine.py                   # Content generation API
+│   ├── gsc_server.py                       # Google Search Console API
+│   ├── models.py                           # API data models
+│   └── seo_visibility_report.py            # SEO visibility report API
+│
+├── 📁 schemas/                             # JSON Schema & TypeScript schema defs
+│   ├── *.schema.json                       # JSON Schema files
+│   └── *.ts                                # TypeScript schema builders
+│
+├── 📁 templates/                           # SEO audit prompt templates
+│   ├── hotel-*.md / hotel-*.html           # Hotel-specific templates
+│   └── *.md                                # Universal templates
+│
+├── 📁 validators/                          # SEO validation utilities
+│   ├── canonicalNormalizer.ts
+│   ├── internalLinker.ts
+│   ├── serpOptimizer.ts
+│   └── ...
+│
+├── 📁 exporters/                           # CMS export adapters
+│   ├── wordPressExporter.ts
+│   ├── shopifyExporter.ts
+│   └── webflowExporter.ts
+│
+├── 📁 tests/                               # All test suites
+│   ├── *.test.ts                           # Vitest unit & integration tests
+│   ├── ts/                                 # TypeScript test helpers & suites
+│   ├── python/                             # Pytest suites
+│   ├── e2e/                                # End-to-end tests
+│   └── fixtures/                           # Test fixture data
+│
+├── 📁 docs/                                # All documentation
+│   ├── ARCHITECTURE.md                     # System architecture overview
+│   ├── SPEC.md                             # Technical specification
+│   ├── SECURITY.md                         # Security policy
+│   ├── GEMINI.md                           # AI agent coding rules
+│   ├── SEO_EXPERT_GUIDE.md                 # SEO workflow guide
+│   ├── PROJECT_STRUCTURE.md                # Detailed structure reference
+│   ├── INVENTORY.md                        # Feature inventory
+│   ├── PROGRESS.md                         # Development progress tracker
+│   ├── TASKS.md                            # Task backlog
+│   ├── ATTRIBUTION.md                      # Third-party attributions
+│   ├── audit/                              # Audit reports & reviews
+│   ├── assets/                             # Diagrams & images
+│   └── reports/                            # CI/fix reports
+│
+├── 📁 data/                                # Static data & training sets
+│   ├── google-updates.json                 # Algorithm update database
+│   ├── 78-keyword-strategy-matrix.json     # Keyword strategy data
+│   ├── models/                             # Model registry
+│   └── training/                           # Fine-tuning datasets
+│
+├── 📁 scripts/                             # Build & automation scripts
+│   ├── *.ts                                # TypeScript utilities
+│   ├── *.sh                                # Shell scripts
+│   └── *.py                                # Python helpers
+│
+├── 📁 examples/                            # Example configurations
+├── 📁 public/                              # Static assets & extension bundle
+├── 📁 supabase/migrations/                 # Database migration SQL
+├── 📁 output/                              # Generated audit output (per-site)
+│
+├── 📁 .github/                             # GitHub configuration
+│   ├── workflows/                          # CI/CD pipelines
+│   │   ├── ci.yml
+│   │   ├── auto-release.yml
+│   │   └── seo-integrity.yml
+│   ├── ISSUE_TEMPLATE/                     # Bug & feature request templates
+│   └── pull_request_template.md
+│
+└── 📁 .husky/                              # Git hooks (commit-msg, pre-commit)
 ```
 
 ---
 
 ## 🛠️ Getting Started
 
-1. **Clone the repository**
-   ```bash
-   git clone <YOUR_GITHUB_URL>
-   cd Cogwheel-SEO-Templates
-   ```
-2. **Install dependencies**
-   ```bash
-   npm ci                     # Node dependencies (Node 20)
-   pip install -r requirements.txt   # Python dependencies for generators
-   ```
-3. **Build the extension**
-   ```bash
-   npm run build   # Emits compiled assets to `dist/`
-   ```
-4. **Load the unpacked extension** in Chrome:
-   - Open `chrome://extensions/`
-   - Enable **Developer mode**
-   - Click **Load unpacked** → select the project root
-5. Open the side‑panel via the extension icon and click **Run Audit**.
+```bash
+# 1. Clone
+git clone https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates.git
+cd Cogwheel-SEO-Templates
+
+# 2. Install dependencies
+npm ci                            # Node (requires Node 20+)
+pip install -r requirements.txt   # Python (3.11+)
+
+# 3. Build
+npm run build                     # Compile TypeScript & extension
+
+# 4. Load Chrome extension
+# → chrome://extensions/ → Developer mode → Load unpacked → select project root
+```
 
 ---
 
 ## 📈 CI / Release Workflow
 
-- **GitHub Actions** (`.github/workflows/ci.yml`) runs on every push/PR:
-  1. Lint – Ruff (Python), Mypy, TypeScript (`tsc --noEmit`).
-  2. Test – Vitest (TS) + Pytest (Python).
-  3. Build – `npm run build`.
-  4. Run `scripts/hardcoded-audit.ts` → produces `AUDIT_SUMMARY.md` (artifact).
-  5. If on `main`, `scripts/git-auto-push.ts` auto‑commits generated artifacts.
-- **Release** – Tag a new version (`git tag v2.0.0 && git push --tags`).  Extend the workflow to publish to the Chrome Web Store if needed.
+**GitHub Actions** (`.github/workflows/ci.yml`) runs on every push/PR:
+
+1. **Lint** – Ruff + Mypy (Python), TypeScript (`tsc --noEmit`)
+2. **Test** – Vitest (TS) + Pytest (Python)
+3. **Build** – `npm run build`
+4. **Audit** – `scripts/hardcoded-audit.ts` → generates `AUDIT_SUMMARY.md`
+5. **Auto-push** – On `main`, commits generated artifacts
+
+**Release** – Tag with `git tag v3.x.x && git push --tags`.
 
 ---
 
 ## 🤝 Contributing
 
-Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for detailed guidelines on how to:
-- Fork the repo and create a feature branch.
-- Run the development environment (`npm run dev`).
-- Add new audit tools or universal adapters.
-- Write unit tests and keep TypeScript coverage high.
-- Submit a pull request that passes CI.
-
----
+Please see [`CONTRIBUTING.md`](CONTRIBUTING.md) for guidelines on forking, branching, testing, and submitting pull requests.
 
 ## 📜 Code of Conduct
 
-We follow the Contributor Covenant Code of Conduct. See [`CODE_OF_CONDUCT.md`](CODE_OF_CONDUCT.md).
+We follow the [Contributor Covenant](CODE_OF_CONDUCT.md).
+
+## 📄 License
+
+[MIT License](LICENSE) — see the `LICENSE` file.
 
 ---
 
-## 📜 License
+## 📚 Documentation
 
-This project is licensed under the **MIT License** – see the `LICENSE` file.
+| Document | Description |
+|----------|-------------|
+| [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | System architecture & diagrams |
+| [`docs/SPEC.md`](docs/SPEC.md) | Technical specification |
+| [`docs/SECURITY.md`](docs/SECURITY.md) | Security policy & reporting |
+| [`docs/SEO_EXPERT_GUIDE.md`](docs/SEO_EXPERT_GUIDE.md) | Workflow guide for SEO specialists |
+| [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT_STRUCTURE.md) | Detailed repo structure reference |
+| [`docs/GEMINI.md`](docs/GEMINI.md) | AI agent coding rules |
+| [`docs/audit/`](docs/audit/) | Architecture reviews & audit reports |
+| [`CHANGELOG.md`](CHANGELOG.md) | Version history |
 
 ---
 
-## 📚 Additional Resources
-- **SEO Expert Guide** – detailed workflow for SEO specialists: [`SEO_EXPERT_GUIDE.md`](SEO_EXPERT_GUIDE.md)
-- **Template Engine Docs** – see `src/core/templates/template-engine.ts`.
-- **Self‑Healing Patch Docs** – see `src/gateway/self-healing-patch.ts`.
-
----
-
-*Happy auditing!* 🚀
+<p align="center"><em>Happy auditing!</em> 🚀</p>
