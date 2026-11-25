@@ -98,7 +98,7 @@ export async function runHealingPipeline(options: HealingRunOptions): Promise<He
       snapshotId: null,
       events: events.all().slice(eventStart),
       startedAt,
-    });
+    }, now());
   }
 
   /* Step 4 — atomic deploy + snapshot backup -------------------------------- */
@@ -123,7 +123,7 @@ export async function runHealingPipeline(options: HealingRunOptions): Promise<He
       snapshotId: null,
       events: events.all().slice(eventStart),
       startedAt,
-    });
+    }, now());
   }
 
   const record = rollbackStore.record({
@@ -200,7 +200,7 @@ export async function runHealingPipeline(options: HealingRunOptions): Promise<He
     snapshotId: record.id,
     events: events.all().slice(eventStart),
     startedAt,
-  });
+  }, now());
 }
 
 /* ----------------------------------------------------------------- helpers -- */
@@ -267,14 +267,15 @@ function rollbackResult(
     snapshotId,
     events: events.all().slice(eventStart),
     startedAt,
-  });
+  }, now());
 }
 
 function finalize(
   status: HealingRunStatus,
-  partial: Omit<HealingRunResult, "status" | "finishedAt">
+  partial: Omit<HealingRunResult, "status" | "finishedAt">,
+  at: string
 ): HealingRunResult {
-  return { ...partial, status, finishedAt: new Date().toISOString() };
+  return { ...partial, status, finishedAt: at };
 }
 
 async function safeRestore(

@@ -1,0 +1,117 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "HealingRunResult",
+  "description": "Outcome of one Phase 4 self-healing run (healing/pipeline.ts): audit → triage → approval → deploy → verify → rollback.",
+  "type": "object",
+  "properties": {
+    "runId": { "type": "string", "minLength": 1 },
+    "targetUrl": { "type": "string", "minLength": 1 },
+    "patchId": { "type": "string", "minLength": 1 },
+    "status": {
+      "type": "string",
+      "enum": ["deployed", "rolled_back", "queued", "rejected", "failed"]
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "patchId": { "type": "string" },
+        "targetUrl": { "type": "string" },
+        "status": { "type": "string", "enum": ["pending", "approved", "rejected", "auto_approved"] },
+        "reason": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "decidedAt": { "type": "string" },
+        "note": { "type": "string" },
+        "triage": {
+          "type": "object",
+          "properties": {
+            "overallRisk": { "type": "string", "enum": ["low", "medium", "high"] },
+            "autoDeployable": { "type": "boolean" },
+            "requiresApproval": { "type": "boolean" },
+            "mutations": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "field": { "type": "string" },
+                  "risk": { "type": "string", "enum": ["low", "medium", "high"] },
+                  "action": { "type": "string", "enum": ["replace", "inject", "remove", "manual_review"] }
+                },
+                "required": ["field", "risk", "action"],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": ["overallRisk", "autoDeployable", "requiresApproval", "mutations"],
+          "additionalProperties": true
+        }
+      },
+      "required": ["id", "patchId", "targetUrl", "status", "reason", "createdAt", "triage"],
+      "additionalProperties": true
+    },
+    "deployment": {
+      "type": ["object", "null"],
+      "description": "See cms-deployment.schema.json."
+    },
+    "verification": {
+      "type": ["object", "null"],
+      "properties": {
+        "url": { "type": "string" },
+        "status": { "type": ["integer", "null"] },
+        "httpOk": { "type": "boolean" },
+        "domMatches": { "type": "boolean" },
+        "jsonLdValid": { "type": "boolean" },
+        "errors": { "type": "array", "items": { "type": "string" } },
+        "verifiedAt": { "type": "string" }
+      },
+      "required": ["url", "httpOk", "domMatches", "jsonLdValid", "errors", "verifiedAt"],
+      "additionalProperties": true
+    },
+    "snapshotId": { "type": ["string", "null"] },
+    "events": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "string" },
+          "type": {
+            "type": "string",
+            "enum": [
+              "scan_started",
+              "patch_synthesized",
+              "awaiting_approval",
+              "auto_approved",
+              "rejected",
+              "deployment_started",
+              "deployed",
+              "verified",
+              "rolled_back",
+              "alert"
+            ]
+          },
+          "level": { "type": "string", "enum": ["info", "warning", "error"] },
+          "message": { "type": "string" },
+          "at": { "type": "string" }
+        },
+        "required": ["id", "type", "level", "message", "at"],
+        "additionalProperties": true
+      }
+    },
+    "startedAt": { "type": "string", "minLength": 1 },
+    "finishedAt": { "type": "string", "minLength": 1 }
+  },
+  "required": [
+    "runId",
+    "targetUrl",
+    "patchId",
+    "status",
+    "approval",
+    "deployment",
+    "verification",
+    "snapshotId",
+    "events",
+    "startedAt",
+    "finishedAt"
+  ],
+  "additionalProperties": false
+}
