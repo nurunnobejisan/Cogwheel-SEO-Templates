@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Globe,
   RotateCw,
@@ -19,6 +19,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PageAuditData } from "../types/extension";
+import { OtaConfigPayload } from "../types/updater.types";
 import { calculatePixelWidth, TITLE_PIXEL_LIMIT, META_DESC_PIXEL_LIMIT } from "../utils/pixelCalculator";
 import { UniversalHeadingAuditCard } from "./UniversalHeadingAuditCard";
 
@@ -31,6 +32,17 @@ interface Props {
 
 export function LivePageAuditCard({ pageData, activeTabId, onRefresh, isLoading = false }: Props) {
   const [deviceMode, setDeviceMode] = useState<"desktop" | "mobile">("desktop");
+  const [otaConfig, setOtaConfig] = useState<OtaConfigPayload | null>(null);
+
+  useEffect(() => {
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get(["cogwheel_ota_config"], (res) => {
+        if (res && res["cogwheel_ota_config"]) {
+          setOtaConfig(res["cogwheel_ota_config"] as OtaConfigPayload);
+        }
+      });
+    }
+  }, []);
   const [copiedSchemaIndex, setCopiedSchemaIndex] = useState<number | null>(null);
   const [expandedSchemaIndex, setExpandedSchemaIndex] = useState<number | null>(null);
 
@@ -38,7 +50,8 @@ export function LivePageAuditCard({ pageData, activeTabId, onRefresh, isLoading 
   const titlePx = pageData.titlePixelWidth || calculatePixelWidth(pageData.title || "");
   const metaDescPx = pageData.metaDescPixelWidth || calculatePixelWidth(pageData.metaDesc || "");
 
-  const titleMaxPx = deviceMode === "desktop" ? TITLE_PIXEL_LIMIT : 920;
+  const otaTitleLimit = otaConfig?.pixelLimits?.titleMaxPx ?? TITLE_PIXEL_LIMIT;
+  const titleMaxPx = deviceMode === "desktop" ? otaTitleLimit : 920;
   const metaMaxPx = deviceMode === "desktop" ? 960 : 850;
 
   const isTitleOverBudget = titlePx > titleMaxPx || (pageData.title || "").length > 60;

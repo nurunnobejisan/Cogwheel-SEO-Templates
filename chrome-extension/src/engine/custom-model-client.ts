@@ -30,6 +30,8 @@ export const DEFAULT_CUSTOM_MODEL_CONFIG: CustomModelConfig = {
   fallbackToDefault: true,
 };
 
+import { encryptSecret, decryptSecret } from "../utils/secureStorage";
+
 export const STORAGE_KEY_CUSTOM_MODEL = "cogwheel_custom_model_config";
 
 // In-memory fallback for headless or test environments
@@ -48,10 +50,9 @@ export async function getCustomModelConfig(): Promise<CustomModelConfig> {
         });
       });
       if (res[STORAGE_KEY_CUSTOM_MODEL]) {
-        return {
-          ...DEFAULT_CUSTOM_MODEL_CONFIG,
-          ...(res[STORAGE_KEY_CUSTOM_MODEL] as Partial<CustomModelConfig>),
-        };
+        const stored = { ...DEFAULT_CUSTOM_MODEL_CONFIG, ...(res[STORAGE_KEY_CUSTOM_MODEL] as Partial<CustomModelConfig>) };
+        if (stored.apiKey) stored.apiKey = await decryptSecret(stored.apiKey);
+        return stored;
       }
     } catch {
       // Fall through to localStorage
@@ -63,10 +64,9 @@ export async function getCustomModelConfig(): Promise<CustomModelConfig> {
     try {
       const stored = localStorage.getItem(STORAGE_KEY_CUSTOM_MODEL);
       if (stored) {
-        return {
-          ...DEFAULT_CUSTOM_MODEL_CONFIG,
-          ...JSON.parse(stored),
-        };
+        const parsed = { ...DEFAULT_CUSTOM_MODEL_CONFIG, ...JSON.parse(stored) };
+        if (parsed.apiKey) parsed.apiKey = await decryptSecret(parsed.apiKey);
+        return parsed;
       }
     } catch {
       // Fall through to in-memory
@@ -85,8 +85,9 @@ export async function saveCustomModelConfig(config: CustomModelConfig): Promise<
 
   if (typeof chrome !== "undefined" && chrome.storage?.local?.set) {
     try {
+      const toStore = { ...config, apiKey: await encryptSecret(config.apiKey) };
       await new Promise<void>((resolve) => {
-        chrome.storage.local.set({ [STORAGE_KEY_CUSTOM_MODEL]: config }, () => {
+        chrome.storage.local.set({ [STORAGE_KEY_CUSTOM_MODEL]: toStore }, () => {
           resolve();
         });
       });
@@ -97,7 +98,8 @@ export async function saveCustomModelConfig(config: CustomModelConfig): Promise<
 
   if (typeof localStorage !== "undefined") {
     try {
-      localStorage.setItem(STORAGE_KEY_CUSTOM_MODEL, JSON.stringify(config));
+      const toStore = { ...config, apiKey: await encryptSecret(config.apiKey) };
+      localStorage.setItem(STORAGE_KEY_CUSTOM_MODEL, JSON.stringify(toStore));
     } catch {
       // Storage quota or disabled
     }

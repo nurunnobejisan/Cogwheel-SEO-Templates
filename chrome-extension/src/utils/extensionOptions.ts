@@ -53,14 +53,18 @@ export const DEFAULT_OPTIONS: ExtensionOptions = {
   apiToken: "",
 };
 
+import { encryptSecret, decryptSecret } from "./secureStorage";
+
 const STORAGE_KEY = "cogwheel_extension_options_v1";
 
 export async function loadExtensionOptions(): Promise<ExtensionOptions> {
   if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {
     return new Promise((resolve) => {
-      chrome.storage.sync.get(STORAGE_KEY, (res) => {
+      chrome.storage.sync.get(STORAGE_KEY, async (res) => {
         if (!chrome.runtime.lastError && res && res[STORAGE_KEY]) {
-          resolve({ ...DEFAULT_OPTIONS, ...res[STORAGE_KEY] });
+          const merged = { ...DEFAULT_OPTIONS, ...res[STORAGE_KEY] };
+          if (merged.apiToken) merged.apiToken = await decryptSecret(merged.apiToken);
+          resolve(merged);
         } else {
           resolve(DEFAULT_OPTIONS);
         }
@@ -71,7 +75,11 @@ export async function loadExtensionOptions(): Promise<ExtensionOptions> {
   if (typeof localStorage !== "undefined") {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
-      if (raw) return { ...DEFAULT_OPTIONS, ...JSON.parse(raw) };
+      if (raw) {
+        const merged = { ...DEFAULT_OPTIONS, ...JSON.parse(raw) };
+        if (merged.apiToken) merged.apiToken = await decryptSecret(merged.apiToken);
+        return merged;
+      }
     } catch {}
   }
 
@@ -80,8 +88,9 @@ export async function loadExtensionOptions(): Promise<ExtensionOptions> {
 
 export async function saveExtensionOptions(options: ExtensionOptions): Promise<void> {
   if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {
+    const toStore = { ...options, apiToken: await encryptSecret(options.apiToken) };
     return new Promise((resolve, reject) => {
-      chrome.storage.sync.set({ [STORAGE_KEY]: options }, () => {
+      chrome.storage.sync.set({ [STORAGE_KEY]: toStore }, () => {
         if (chrome.runtime.lastError) reject(chrome.runtime.lastError);
         else resolve();
       });
@@ -89,7 +98,8 @@ export async function saveExtensionOptions(options: ExtensionOptions): Promise<v
   }
 
   if (typeof localStorage !== "undefined") {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(options));
+    const toStore = { ...options, apiToken: await encryptSecret(options.apiToken) };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(toStore));
   }
 }
 

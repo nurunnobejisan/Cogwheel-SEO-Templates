@@ -16,15 +16,15 @@
     "tabs",
     "scripting",
     "storage",
-    "unlimitedStorage",
     "webNavigation",
     "alarms",
     "contextMenus"
   ],
   "host_permissions": [
     "https://raw.githubusercontent.com/*",
-    "https://api.github.com/*",
-    "<all_urls>"
+    "https://github.com/*",
+    "http://*/*",
+    "https://*/*"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -49,8 +49,13 @@
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
       "run_at": "document_idle"
     }
   ]

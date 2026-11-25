@@ -12,7 +12,9 @@ function isTopLevelWindow(): boolean {
 }
 
 // Listen for messages from Side Panel, Popup, or Background Worker
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
+if (!(window as any).__COGWHEEL_MESSAGE_LISTENER__) {
+  (window as any).__COGWHEEL_MESSAGE_LISTENER__ = true;
+  chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (!isTopLevelWindow()) {
     return false;
   }
@@ -86,7 +88,8 @@ chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
     sendResponse({ success: true });
     return true;
   }
-});
+  });
+}
 
 // ---------------------------------------------------------------------------
 // Universal Classification & Extraction Helpers
@@ -1468,8 +1471,9 @@ function checkAndDispatchSpaChange(): void {
   }, 800);
 }
 
-// 1. Patch history API
-if (isTopLevelWindow()) {
+// 1. Patch history API (idempotent across duplicate injections)
+if (isTopLevelWindow() && !(window as any).__COGWHEEL_SPA_HOOKS__) {
+  (window as any).__COGWHEEL_SPA_HOOKS__ = true;
   (function patchHistoryApi() {
     const originalPush = history.pushState;
     const originalReplace = history.replaceState;

@@ -45,6 +45,31 @@ export function SidePanelApp() {
   >("dashboard");
 
   const [isDarkMode, setIsDarkMode] = useState(true);
+
+  useEffect(() => {
+    try {
+      if (isDarkMode) {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.remove("dark");
+      }
+      if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ cogwheel_theme_dark: isDarkMode });
+      }
+    } catch {
+      // ignore
+    }
+  }, [isDarkMode]);
+
+  useEffect(() => {
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.get(["cogwheel_theme_dark"], (res) => {
+        if (typeof res?.cogwheel_theme_dark === "boolean") {
+          setIsDarkMode(res.cogwheel_theme_dark);
+        }
+      });
+    }
+  }, []);
   const [targetTemplateId, setTargetTemplateId] = useState<string | undefined>();
   const [activeProfile, setActiveProfile] = useState<ClientProfile>(PRESET_CLIENT_PROFILES[0]);
   const [activeTabId, setActiveTabId] = useState<number | undefined>();
