@@ -1,22 +1,55 @@
 /**
  * Cogwheel Unified SEO Platform - Full Website Audit Runner
  *
- * Orchestrates all 11 audit dimensions and synthesizes data into a single
- * executive FullWebsiteAuditReport.
+ * Orchestrates the audit dimensions and synthesizes a single
+ * FullWebsiteAuditReport.
+ *
+ * Integrity contract (see docs/REPOSITORY_AUDIT.md, C1/H1):
+ *   - Every on-page / heading / image / schema / crawlability field is derived
+ *     from a live fetch + parse of the target URL (or reported as unavailable).
+ *   - Dimensions that need a data source that is not connected (Search Console,
+ *     keyword volume, AI-engine citations) are reported as unavailable rather
+ *     than populated with plausible-looking constants.
+ *   - The GEO score is an explicitly-labelled on-page readiness heuristic; no
+ *     AI engine is claimed to have been queried.
+ *
+ * This is a single-URL audit: `maxPages` is accepted for API compatibility but
+ * a multi-page crawl is not performed (noted in `dataProvenance`).
  */
 
+import { runAudit } from "../../../rules/index.ts";
+import type { AuditIssue } from "../../../rules/types.ts";
+import { buildSnapshotFromHtml } from "../../../rules/html-snapshot.ts";
+import { calculatePixelWidth } from "../../../validators/serpOptimizer.ts";
+import { validateTargetUrl } from "../crawler/url.ts";
+import { isGoogleConfigured, UnifiedGscClient } from "../gsc/client.ts";
 import { checkAlgorithmImpact } from "../claude-seo/index.ts";
-import { UnifiedGscClient } from "../gsc/client.ts";
+import { isSimulatedDataAllowed } from "../data-policy.ts";
 import {
-  generateAiVisibilityReport,
-  evaluateAuditIssues,
   analyzeContentGaps,
+  generateAiVisibilityReport,
   generateKeywordSuggestions,
 } from "../open-seo/index.ts";
 import type {
   ActionItem,
+  DataProvenanceReport,
   FullWebsiteAuditReport,
+  SeverityLevel,
 } from "./types.ts";
+
+const USER_AGENT = "CogwheelSeoBot/3.0 (+https://cogwheel.ai/bot)";
+const FETCH_TIMEOUT_MS = 15000;
+
+/** Issue categories from rules/ → report dimension. */
+type Dim = "technical" | "onPage" | "headings" | "images" | "schema";
+
+const SEVERITY_PENALTY: Record<SeverityLevel, number> = {
+  critical: 20,
+  high: 12,
+  medium: 6,
+  low: 3,
+  info: 1,
+};
 
 export interface AuditRunnerOptions {
   targetUrl: string;
@@ -26,173 +59,450 @@ export interface AuditRunnerOptions {
   includeGeo?: boolean;
 }
 
+async function safeFetch(url: string, timeoutMs = FETCH_TIMEOUT_MS): Promise<Response | null> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, {
+      method: "GET",
+      redirect: "follow",
+      signal: controller.signal,
+      headers: { "User-Agent": USER_AGENT },
+    });
+  } catch {
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+function collectSchemaTypes(jsonLd: Array<{ "@type"?: string | string[] }>): string[] {
+  const types = new Set<string>();
+  for (const node of jsonLd) {
+    const t = node["@type"];
+    if (typeof t === "string") types.add(t);
+    else if (Array.isArray(t)) for (const entry of t) if (typeof entry === "string") types.add(entry);
+  }
+  return [...types];
+}
+
+function countMalformedJsonLd(html: string): number {
+  const pattern = /<script[^>]+type\s*=\s*["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi;
+  let match: RegExpExecArray | null;
+  let malformed = 0;
+  while ((match = pattern.exec(html)) !== null) {
+    const raw = (match[1] ?? "").trim();
+    if (!raw) continue;
+    try {
+      JSON.parse(raw);
+    } catch {
+      malformed += 1;
+    }
+  }
+  return malformed;
+}
+
+/** 100 minus severity-weighted penalties for issues in the given categories. */
+function scoreFromIssues(
+  issues: AuditIssue[],
+  match: (issue: AuditIssue) => boolean
+): number {
+  let penalty = 0;
+  let matched = 0;
+  for (const issue of issues) {
+    if (!match(issue)) continue;
+    matched += 1;
+    penalty += SEVERITY_PENALTY[issue.severity] ?? 6;
+  }
+  if (matched === 0) return 100;
+  return Math.max(0, Math.min(100, 100 - penalty));
+}
+
+function priorityFor(severity: SeverityLevel): ActionItem["priority"] {
+  if (severity === "critical") return "P0";
+  if (severity === "high") return "P1";
+  if (severity === "medium") return "P2";
+  return "P3";
+}
+
+function categoryFor(issue: AuditIssue): ActionItem["category"] {
+  switch (issue.category) {
+    case "metadata":
+      return "headings";
+    case "media":
+      return "images";
+    case "schema":
+      return "schema";
+    case "content":
+    case "hospitality":
+      return "keywords";
+    case "technical":
+    case "accessibility":
+    default:
+      return "technical";
+  }
+}
+
+const EFFORT_BY_CATEGORY: Record<ActionItem["category"], ActionItem["effort"]> = {
+  headings: "low",
+  schema: "low",
+  images: "medium",
+  technical: "medium",
+  keywords: "medium",
+  gsc: "medium",
+  geo: "low",
+};
+
+function buildActionPlan(issues: AuditIssue[], totalUrls: number): ActionItem[] {
+  const seen = new Set<string>();
+  const plan: ActionItem[] = [];
+  for (const issue of issues) {
+    if (seen.has(issue.issueId)) continue;
+    seen.add(issue.issueId);
+    const category = categoryFor(issue);
+    plan.push({
+      id: issue.issueId,
+      priority: priorityFor(issue.severity),
+      category,
+      title: issue.context.recommendedAction,
+      description: `Detected on ${issue.context.selector}${
+        issue.context.currentValue !== null && issue.context.currentValue !== ""
+          ? ` (current: ${String(issue.context.currentValue)})`
+          : ""
+      }.`,
+      impact:
+        issue.severity === "critical"
+          ? "Critical — blocks indexing or core visibility"
+          : issue.severity === "high"
+          ? "High — materially affects how this page is understood"
+          : issue.severity === "medium"
+          ? "Medium — quality improvement"
+          : "Low — polish",
+      effort: EFFORT_BY_CATEGORY[category],
+      affectedUrlsCount: totalUrls,
+      remediationGuide: issue.context.recommendedAction,
+    });
+  }
+  return plan;
+}
+
+/** Transparent on-page GEO readiness heuristic (not an AI-citation measurement). */
+function computeGeoReadiness(input: {
+  schemaTypes: string[];
+  hasCanonical: boolean;
+  hasMetaDescription: boolean;
+  hasOpenGraph: boolean;
+  hasViewport: boolean;
+  headingsValid: boolean;
+  wordCount: number;
+}): { score: number; strengths: string[] } {
+  const checks: Array<{ label: string; pass: boolean; weight: number }> = [
+    { label: "Structured data present", pass: input.schemaTypes.length > 0, weight: 18 },
+    {
+      label: "Question/answer schema (FAQPage)",
+      pass: input.schemaTypes.includes("FAQPage"),
+      weight: 12,
+    },
+    {
+      label: "Organization / LodgingBusiness entity",
+      pass: input.schemaTypes.some((t) =>
+        ["Organization", "LocalBusiness", "Hotel", "LodgingBusiness", "Restaurant"].includes(t)
+      ),
+      weight: 16,
+    },
+    { label: "Self-referencing canonical", pass: input.hasCanonical, weight: 12 },
+    { label: "Meta description present", pass: input.hasMetaDescription, weight: 10 },
+    { label: "Open Graph tags present", pass: input.hasOpenGraph, weight: 8 },
+    { label: "Mobile viewport declared", pass: input.hasViewport, weight: 8 },
+    { label: "Heading hierarchy valid", pass: input.headingsValid, weight: 8 },
+    { label: "Substantive body copy (≥300 words)", pass: input.wordCount >= 300, weight: 8 },
+  ];
+  const totalWeight = checks.reduce((sum, c) => sum + c.weight, 0);
+  const earned = checks.reduce((sum, c) => sum + (c.pass ? c.weight : 0), 0);
+  const score = Math.round((earned / totalWeight) * 100);
+  const strengths = checks.filter((c) => c.pass).map((c) => c.label);
+  return { score, strengths };
+}
+
 export async function runFullWebsiteAudit(
   options: AuditRunnerOptions
 ): Promise<FullWebsiteAuditReport> {
   const startTime = Date.now();
-  let urlObj: URL;
-  try {
-    urlObj = new URL(options.targetUrl);
-  } catch {
-    urlObj = new URL(`https://${options.targetUrl}`);
+
+  // 0. SSRF-safe URL normalization (rejects localhost / private ranges, etc.).
+  const targetUrl = validateTargetUrl(options.targetUrl);
+  if (!targetUrl) {
+    throw new Error("A valid target URL is required (e.g. https://example.com)");
   }
-
+  const urlObj = new URL(targetUrl);
   const domain = urlObj.hostname;
-  const targetUrl = urlObj.toString();
 
-  // 1. Technical Health Check (Simulated or Real network fetch)
-  let statusCode = 200;
-  let responseTimeMs = 240;
-  let hasCompression = true;
-  let server = "cloudflare";
-
+  const simulated = isSimulatedDataAllowed();
   const isTestEnv =
     process.env.NODE_ENV === "test" ||
     Boolean(process.env.NODE_TEST_CONTEXT) ||
     Boolean(process.env.VITEST) ||
     Boolean(process.env.CI);
+  const offline = isTestEnv || Boolean(process.env.OFFLINE_AUDIT);
 
-  if (!isTestEnv && !process.env.OFFLINE_AUDIT) {
-    try {
-      const fetchStart = Date.now();
-      const res = await fetch(targetUrl, {
-        method: "GET",
-        headers: { "User-Agent": "CogwheelSeoBot/3.0 (+https://cogwheel.ai/bot)" },
-        redirect: "follow",
-      });
+  // 1. Live fetch — real technical measurements only.
+  let html = "";
+  let statusCode = 0;
+  let responseTimeMs = 0;
+  let server = "";
+  let hasCompression = false;
+  let fetchOk = false;
+  let securityHeaders = { hasHsts: false, hasCsp: false, hasXFrameOptions: false, hasXContentTypeOptions: false };
+
+  if (!offline) {
+    const fetchStart = Date.now();
+    const res = await safeFetch(targetUrl);
+    if (res) {
       responseTimeMs = Date.now() - fetchStart;
       statusCode = res.status;
-      server = res.headers.get("server") || "nginx";
+      fetchOk = true;
+      server = res.headers.get("server") || "";
       const encoding = res.headers.get("content-encoding") || "";
-      hasCompression = encoding.includes("gzip") || encoding.includes("br");
-    } catch {
-      // Graceful fallback for local development or restricted sandbox network
-      statusCode = 200;
-      responseTimeMs = 185;
-      hasCompression = true;
+      hasCompression = /gzip|br|deflate/i.test(encoding);
+      securityHeaders = {
+        hasHsts: Boolean(res.headers.get("strict-transport-security")),
+        hasCsp: Boolean(res.headers.get("content-security-policy")),
+        hasXFrameOptions: Boolean(res.headers.get("x-frame-options")),
+        hasXContentTypeOptions: Boolean(res.headers.get("x-content-type-options")),
+      };
+      try {
+        html = await res.text();
+      } catch {
+        html = "";
+      }
     }
   }
 
-  // 2. Google Search Console & Cannibalization
+  // 2. Normalized snapshot + real rules engine.
+  const snapshot = buildSnapshotFromHtml(html, targetUrl, {
+    overrides: { fetchStatus: fetchOk ? statusCode : null },
+  });
+  const audit = runAudit(snapshot);
+  const issues = audit.issues;
+
+  // 3. robots.txt + sitemap discovery (probed, not assumed).
+  let hasRobotsTxt = false;
+  const discoveredSitemaps: string[] = [];
+  if (!offline) {
+    const robotsRes = await safeFetch(`${urlObj.origin}/robots.txt`, 10000);
+    if (robotsRes && robotsRes.ok) {
+      hasRobotsTxt = true;
+      const txt = await robotsRes.text().catch(() => "");
+      for (const line of txt.split(/\r?\n/)) {
+        const m = /^\s*sitemap:\s*(\S+)/i.exec(line);
+        if (m) discoveredSitemaps.push(m[1]);
+      }
+    }
+    if (discoveredSitemaps.length === 0) {
+      for (const candidate of [`${urlObj.origin}/sitemap.xml`, `${urlObj.origin}/sitemap_index.xml`]) {
+        const sRes = await safeFetch(candidate, 8000);
+        if (sRes && sRes.ok) discoveredSitemaps.push(candidate);
+      }
+    }
+  }
+
+  // 4. Search Console — real only when credentials exist.
   const gscClient = new UnifiedGscClient();
-  const gscAnalytics = await gscClient.searchAnalyticsQuery({
-    siteUrl: `sc-domain:${domain}`,
-    startDate: "2026-10-01",
-    endDate: "2026-11-20",
-    dimensions: ["query", "page"],
+  const gscConnected = isGoogleConfigured();
+  const includeGsc = options.includeGsc !== false;
+  let gscData = {
+    totalClicks: 0,
+    totalImpressions: 0,
+    averageCtr: 0,
+    averagePosition: 0,
+    rows: [] as Array<{ query: string; page?: string; clicks: number; impressions: number; ctr: number; position: number }>,
+  };
+  let cannibalization = { totalCannibalizedQueries: 0, details: [] as Array<unknown> };
+  if (includeGsc && gscConnected) {
+    const end = new Date();
+    const start = new Date();
+    start.setDate(start.getDate() - 28);
+    const iso = (d: Date) => d.toISOString().split("T")[0];
+    gscData = await gscClient.searchAnalyticsQuery({
+      siteUrl: `sc-domain:${domain}`,
+      startDate: iso(start),
+      endDate: iso(end),
+      dimensions: ["query", "page"],
+    });
+    cannibalization = await gscClient.detectCannibalization({ siteUrl: `sc-domain:${domain}` });
+  }
+
+  // 5. Keyword + GEO dimensions.
+  const includeGeo = options.includeGeo !== false;
+  let keywordSummary = {
+    totalTargetKeywords: 0,
+    top10KeywordsCount: 0,
+    top3KeywordsCount: 0,
+    averageKeywordDifficulty: 0,
+    contentGapsIdentified: 0,
+    topOpportunities: [] as Array<{
+      keyword: string;
+      searchVolume: number;
+      difficulty: number;
+      cpc: number;
+      intent: string;
+      opportunityScore: number;
+    }>,
+  };
+  let geo = {
+    visibilityScore: 0,
+    brandEntityClarity: 0,
+    factDensityScore: 0,
+    dataAvailable: false,
+    methodology:
+      "No AI visibility data source is connected. This value is not a measurement of AI-engine citations.",
+    engineBreakdown: {} as Record<string, number>,
+    estimatedCitationsAcrossEngines: { googleAiOverviews: 0, perplexity: 0, chatgptSearch: 0, claude: 0 },
+    keyEntityStrengths: [] as string[],
+    recommendations: [] as string[],
+  };
+
+  // Measured facts used for the readiness heuristic and schema summary.
+  const schemaTypes = collectSchemaTypes(snapshot.jsonLd);
+  const malformedJsonLd = countMalformedJsonLd(html);
+  const hasCanonical = Boolean(snapshot.canonical);
+  let headingsValid = true;
+  {
+    let prev = 0;
+    const h1 = snapshot.headings.filter((h) => h.level === 1).length;
+    for (const h of snapshot.headings) {
+      if (prev !== 0 && h.level > prev + 1) headingsValid = false;
+      prev = h.level;
+    }
+    if (h1 !== 1) headingsValid = false;
+  }
+  const readiness = computeGeoReadiness({
+    schemaTypes,
+    hasCanonical,
+    hasMetaDescription: snapshot.metaDescription.trim().length > 0,
+    hasOpenGraph: Boolean(snapshot.openGraph.title || snapshot.openGraph.image),
+    hasViewport: snapshot.hasViewport,
+    headingsValid,
+    wordCount: snapshot.wordCount,
   });
 
-  const cannibalization = await gscClient.detectCannibalization({
-    siteUrl: `sc-domain:${domain}`,
-  });
+  if (includeGeo) {
+    if (simulated) {
+      const geoReport = await generateAiVisibilityReport({
+        brandName: domain.split(".")[0].toUpperCase(),
+        domain,
+        targetQueries: [`best boutique hotel ${domain}`, `official site ${domain}`],
+      });
+      geo = {
+        visibilityScore: geoReport.overallVisibilityScore,
+        brandEntityClarity: geoReport.entityClarityScore,
+        factDensityScore: 0,
+        dataAvailable: false,
+        methodology: "SIMULATED DATA (ALLOW_SIMULATED_DATA=1). Not a real AI-citation measurement.",
+        engineBreakdown: geoReport.engineBreakdown,
+        estimatedCitationsAcrossEngines: { googleAiOverviews: 0, perplexity: 0, chatgptSearch: 0, claude: 0 },
+        keyEntityStrengths: readiness.strengths,
+        recommendations: geoReport.recommendations,
+      };
+    } else {
+      geo = {
+        ...geo,
+        visibilityScore: readiness.score,
+        brandEntityClarity: readiness.score,
+        methodology:
+          "On-page GEO readiness heuristic derived from the page's own structured data and " +
+          "metadata (schema, canonical, headings, content depth). No AI engine was queried, so " +
+          "this is NOT a measurement of citations in ChatGPT, Perplexity, Claude or Google AI Overviews.",
+        keyEntityStrengths: readiness.strengths,
+        recommendations: [
+          "Publish concise 40–60 word factual answer blocks under primary H2 headings.",
+          "Add FAQPage and Organization/LodgingBusiness JSON-LD with consistent NAP data.",
+          "Keep the brand entity consistent across Wikidata, Google Business Profile and the site.",
+        ],
+      };
+    }
+  }
 
-  // 3. Keyword Research & Competitor Gaps
-  const brandKeywords = await generateKeywordSuggestions({
-    seedKeyword: domain.replace(/\.(com|org|net|io)$/i, ""),
-    targetCountry: "US",
-  });
+  if (simulated) {
+    const brandKeywords = await generateKeywordSuggestions({
+      seedKeyword: domain.replace(/\.(com|org|net|io)$/i, ""),
+      targetCountry: "US",
+    });
+    const contentGaps = await analyzeContentGaps({ primaryUrl: targetUrl, competitorUrls: [] });
+    keywordSummary = {
+      totalTargetKeywords: brandKeywords.length,
+      top10KeywordsCount: 0,
+      top3KeywordsCount: 0,
+      averageKeywordDifficulty: 0,
+      contentGapsIdentified: contentGaps.gapCount,
+      topOpportunities: contentGaps.gaps.slice(0, 5),
+    };
+  }
 
-  const contentGaps = await analyzeContentGaps({
-    primaryUrl: targetUrl,
-    competitorUrls: [`https://competitor-${domain}`, `https://ota-travel.com/${domain}`],
-  });
-
-  // 4. AI & GEO Visibility
-  const geoReport = await generateAiVisibilityReport({
-    brandName: domain.split(".")[0].toUpperCase(),
-    domain: domain,
-    targetQueries: [
-      `best boutique hotel ${domain}`,
-      `official site ${domain}`,
-      `reviews and amenities ${domain}`,
-    ],
-  });
-
-  // 5. Algorithm Impact Risk
+  // 6. Algorithm impact (curated data/google-updates.json).
   const algoImpact = checkAlgorithmImpact(domain);
 
-  // 6. Action Items Generation (P0-P3)
-  const actionPlan: ActionItem[] = [];
-
-  if (cannibalization.totalCannibalizedQueries > 0) {
-    actionPlan.push({
-      id: "act-gsc-01",
-      priority: "P0",
-      category: "gsc",
-      title: "Resolve Organic Query Cannibalization",
-      description: `${cannibalization.totalCannibalizedQueries} high-volume queries are split across multiple competing landing pages.`,
-      impact: "High (+18-35% CTR recovery on cannibalized terms)",
-      effort: "medium",
-      affectedUrlsCount: cannibalization.details.length * 2,
-      remediationGuide: "Designate one canonical target URL per intent; add internal contextual link with target anchor text from secondary pages.",
-    });
-  }
-
-  actionPlan.push(
-    {
-      id: "act-heading-01",
-      priority: "P1",
-      category: "headings",
-      title: "Standardize H1-H6 Hierarchy & Remove Skipped Levels",
-      description: "Ensure exactly one prominent H1 on primary templates and prevent H2 to H4 jumps.",
-      impact: "Medium (+8% structural semantic indexing)",
-      effort: "low",
-      affectedUrlsCount: 14,
-      remediationGuide: "Audit template heading tags in layout component; convert decorative widgets to styled spans.",
-    },
-    {
-      id: "act-img-01",
-      priority: "P1",
-      category: "images",
-      title: "Convert Legacy JPEG/PNG Assets to Next-Gen WebP/AVIF",
-      description: "Discovered oversized image assets slowing LCP (Largest Contentful Paint) times.",
-      impact: "High (Reduces page weight by ~65%, improving CWV metrics)",
-      effort: "medium",
-      affectedUrlsCount: 28,
-      remediationGuide: "Run automated WebP compression pipeline and configure responsive srcset attributes.",
-    },
-    {
-      id: "act-geo-01",
-      priority: "P2",
-      category: "geo",
-      title: "Implement Structured Direct Answers for LLM Search Engines",
-      description: "Add 40-60 word concise factual definition blocks under primary H2 headings.",
-      impact: "Medium (+24% citation rate in Perplexity & Google AI Overviews)",
-      effort: "low",
-      affectedUrlsCount: 8,
-      remediationGuide: "Draft structured FAQ & entity fact sheets directly mapping to Schema.org properties.",
-    },
-    {
-      id: "act-schema-01",
-      priority: "P2",
-      category: "schema",
-      title: "Deploy Valid Schema.org LocalBusiness & Hotel JSON-LD Graphs",
-      description: "Enrich structured data with direct booking actions, check-in policies, and amenity lists.",
-      impact: "Medium (Enables rich SERP badges and carousel eligibility)",
-      effort: "low",
-      affectedUrlsCount: 1,
-      remediationGuide: "Inject JSON-LD script tag into document head validating against Schema.org specification.",
-    }
+  // 7. Dimension scores — measured, with transparent weights.
+  const technicalScore = fetchOk && statusCode > 0 && statusCode < 400
+    ? scoreFromIssues(issues, (i) => i.category === "technical" || i.category === "accessibility")
+    : 0;
+  const onPageScore = scoreFromIssues(issues, (i) => i.category === "metadata" || i.category === "content");
+  const headingsScore = scoreFromIssues(
+    issues,
+    (i) => i.category === "metadata" && /heading|h1/i.test(i.issueId)
   );
+  const imagesScore = scoreFromIssues(issues, (i) => i.category === "media");
+  const schemaScore =
+    schemaTypes.length === 0
+      ? malformedJsonLd > 0 ? 15 : 30
+      : malformedJsonLd > 0
+      ? 55
+      : schemaTypes.length >= 3
+      ? 100
+      : 85;
+  const gscScore = gscConnected && includeGsc ? (cannibalization.totalCannibalizedQueries > 0 ? 70 : 100) : 0;
+  const aiVisibilityScore = includeGeo ? geo.visibilityScore : 0;
 
-  // 7. Calculate Dimension Scores (0-100)
-  const technicalScore = statusCode === 200 ? 94 : 60;
-  const onPageScore = 88;
-  const headingsScore = 85;
-  const imagesScore = 82;
-  const schemaScore = 90;
-  const gscScore = cannibalization.totalCannibalizedQueries > 0 ? 78 : 95;
-  const aiVisibilityScore = geoReport.overallVisibilityScore;
-
+  const weighted: Array<{ weight: number; value: number }> = [
+    { weight: 0.2, value: technicalScore },
+    { weight: 0.2, value: onPageScore },
+    { weight: 0.15, value: headingsScore },
+    { weight: 0.15, value: imagesScore },
+    { weight: 0.15, value: schemaScore },
+  ];
+  if (gscConnected && includeGsc) weighted.push({ weight: 0.15, value: gscScore });
+  if (includeGeo) weighted.push({ weight: 0.1, value: aiVisibilityScore });
+  const totalWeight = weighted.reduce((sum, w) => sum + w.weight, 0);
   const overallScore = Math.round(
-    (technicalScore * 0.15 +
-      onPageScore * 0.15 +
-      headingsScore * 0.15 +
-      imagesScore * 0.15 +
-      schemaScore * 0.15 +
-      gscScore * 0.15 +
-      aiVisibilityScore * 0.1)
+    weighted.reduce((sum, w) => sum + w.weight * w.value, 0) / (totalWeight || 1)
   );
+
+  // 8. Provenance.
+  const provenance: DataProvenanceReport = {
+    measured: [
+      "technicalHealth (status, response time, server, compression, security headers)",
+      "crawlability (robots.txt, sitemaps, canonical, indexability signals, link counts)",
+      "onPage (title, meta description, word count, viewport)",
+      "headings",
+      "images (counts, alt text, formats, lazy-loading)",
+      "schemaValidation (JSON-LD types parsed from the page)",
+    ],
+    estimated: includeGeo
+      ? ["aiGeoVisibility.visibilityScore (on-page GEO readiness heuristic)"]
+      : [],
+    unavailable: [
+      ...(gscConnected && includeGsc ? [] : ["searchConsole (Google Search Console not connected)"]),
+      "keywordsAndGaps (no keyword-volume provider connected)",
+      ...(includeGeo ? ["aiGeoVisibility.engineBreakdown / estimatedCitations (no AI engine queried)"] : []),
+      "images.optimizationOpportunityBytes (per-image byte size not fetched)",
+    ],
+    simulated,
+    notes: [
+      "Single-URL audit: the target page only; a multi-page crawl is not performed.",
+      ...(gscConnected ? [] : ["Set GOOGLE_SERVICE_ACCOUNT_B64/JSON to enable Search Console sections."]),
+      ...(simulated ? ["ALLOW_SIMULATED_DATA is enabled — synthetic values are present and labelled."] : []),
+    ],
+  };
 
   const durationMs = Date.now() - startTime;
 
@@ -215,72 +525,74 @@ export async function runFullWebsiteAudit(
     technicalHealth: {
       statusCode,
       isHttps: targetUrl.startsWith("https://"),
-      sslValid: true,
+      sslValid: targetUrl.startsWith("https://") && fetchOk,
       responseTimeMs,
       server,
       hasCompression,
-      securityHeaders: {
-        hasHsts: true,
-        hasCsp: true,
-        hasXFrameOptions: true,
-        hasXContentTypeOptions: true,
-      },
+      securityHeaders,
     },
     crawlability: {
-      hasRobotsTxt: true,
+      hasRobotsTxt,
       robotsTxtUrl: `${urlObj.origin}/robots.txt`,
-      isIndexable: true,
-      hasNoindex: false,
-      hasNofollow: false,
-      canonicalUrl: targetUrl,
-      isCanonicalSelfReferencing: true,
-      discoveredSitemaps: [`${urlObj.origin}/sitemap.xml`],
-      totalInternalLinksDiscovered: 48,
-      totalExternalLinksDiscovered: 12,
+      isIndexable: fetchOk && !/noindex/i.test(snapshot.metaRobots || ""),
+      hasNoindex: /noindex/i.test(snapshot.metaRobots || ""),
+      hasNofollow: /nofollow/i.test(snapshot.metaRobots || ""),
+      canonicalUrl: snapshot.canonical,
+      isCanonicalSelfReferencing: Boolean(
+        snapshot.canonical &&
+          snapshot.canonical.replace(/\/$/, "") === targetUrl.replace(/\/$/, "")
+      ),
+      discoveredSitemaps,
+      totalInternalLinksDiscovered: snapshot.links.filter((l) => !l.external).length,
+      totalExternalLinksDiscovered: snapshot.links.filter((l) => l.external).length,
     },
     onPage: {
-      title: `${domain.toUpperCase()} | Official Luxury Hotel & Direct Booking`,
-      titleLength: 56,
-      titlePixelWidth: 512,
-      isTitleBudgetCompliant: true,
-      metaDescription: `Book direct at ${domain} for best rate guarantee, boutique accommodations, and luxury amenities.`,
-      metaDescriptionLength: 104,
-      isMetaBudgetCompliant: true,
-      wordCount: 1420,
-      readingTimeMinutes: 5,
-      primaryLanguage: "en-US",
-      hasViewportTag: true,
+      title: snapshot.title,
+      titleLength: snapshot.title.length,
+      titlePixelWidth: calculatePixelWidth(snapshot.title),
+      isTitleBudgetCompliant:
+        snapshot.title.length >= 40 && snapshot.title.length <= 60 && calculatePixelWidth(snapshot.title) <= 580,
+      metaDescription: snapshot.metaDescription,
+      metaDescriptionLength: snapshot.metaDescription.length,
+      isMetaBudgetCompliant:
+        snapshot.metaDescription.length >= 120 && snapshot.metaDescription.length <= 160,
+      wordCount: snapshot.wordCount,
+      readingTimeMinutes: Math.max(1, Math.round(snapshot.wordCount / 200)),
+      primaryLanguage: snapshot.language || "unknown",
+      hasViewportTag: snapshot.hasViewport,
     },
     headings: {
-      totalHeadings: 18,
-      h1Count: 1,
-      h2Count: 6,
-      h3Count: 8,
-      h4Count: 3,
-      h5Count: 0,
-      h6Count: 0,
-      hierarchyValid: true,
-      issuesCount: 2,
-      sampleH1: `Welcome to ${domain.toUpperCase()}`,
+      totalHeadings: snapshot.headings.length,
+      h1Count: snapshot.headings.filter((h) => h.level === 1).length,
+      h2Count: snapshot.headings.filter((h) => h.level === 2).length,
+      h3Count: snapshot.headings.filter((h) => h.level === 3).length,
+      h4Count: snapshot.headings.filter((h) => h.level === 4).length,
+      h5Count: snapshot.headings.filter((h) => h.level === 5).length,
+      h6Count: snapshot.headings.filter((h) => h.level === 6).length,
+      hierarchyValid: headingsValid,
+      issuesCount: issues.filter((i) => /heading|h1/i.test(i.issueId)).length,
+      sampleH1: snapshot.headings.find((h) => h.level === 1)?.text ?? "",
     },
     images: {
-      totalImages: 34,
-      missingAltCount: 4,
-      oversizedCount: 8,
-      legacyFormatCount: 12,
-      lazyLoadedCount: 26,
-      optimizationOpportunityBytes: 4200000, // ~4.2 MB savings
+      totalImages: snapshot.images.length,
+      missingAltCount: snapshot.images.filter((img) => !img.alt || !img.alt.trim()).length,
+      oversizedCount: 0, // requires per-image byte size (not fetched)
+      legacyFormatCount: snapshot.images.filter((img) =>
+        ["jpg", "jpeg", "png", "gif"].includes((img.format || "").toLowerCase())
+      ).length,
+      lazyLoadedCount: snapshot.images.filter((img) => (img.loading || "").toLowerCase() === "lazy").length,
+      optimizationOpportunityBytes: 0, // unmeasured
     },
     searchConsole: {
-      isConnected: true,
+      isConnected: gscConnected && includeGsc,
       siteUrl: `sc-domain:${domain}`,
-      periodDays: 28,
-      totalClicks: gscAnalytics.totalClicks,
-      totalImpressions: gscAnalytics.totalImpressions,
-      averageCtr: gscAnalytics.averageCtr,
-      averagePosition: gscAnalytics.averagePosition,
+      periodDays: 0,
+      totalClicks: gscData.totalClicks,
+      totalImpressions: gscData.totalImpressions,
+      averageCtr: gscData.averageCtr,
+      averagePosition: gscData.averagePosition,
       cannibalizationDetectedCount: cannibalization.totalCannibalizedQueries,
-      topQueries: gscAnalytics.rows.slice(0, 5).map((r: { query: string; clicks: number; impressions: number; ctr: number; position: number }) => ({
+      topQueries: gscData.rows.slice(0, 5).map((r) => ({
         query: r.query,
         clicks: r.clicks,
         impressions: r.impressions,
@@ -288,55 +600,32 @@ export async function runFullWebsiteAudit(
         position: r.position,
       })),
     },
-    keywordsAndGaps: {
-      totalTargetKeywords: brandKeywords.length,
-      top10KeywordsCount: 14,
-      top3KeywordsCount: 6,
-      averageKeywordDifficulty: 38,
-      contentGapsIdentified: contentGaps.gapCount,
-      topOpportunities: contentGaps.gaps.slice(0, 5).map((g: { keyword: string; searchVolume: number; difficulty: number; cpc: number; intent: string; opportunityScore: number }) => ({
-        keyword: g.keyword,
-        searchVolume: g.searchVolume,
-        difficulty: g.difficulty,
-        cpc: g.cpc,
-        intent: g.intent,
-        opportunityScore: g.opportunityScore,
-      })),
-    },
+    keywordsAndGaps: keywordSummary,
     schemaValidation: {
-      schemasDetected: ["Hotel", "Organization", "WebSite", "BreadcrumbList"],
-      isValidJsonLd: true,
-      validationErrorsCount: 0,
-      missingRecommendedSchemas: ["FAQPage", "Event"],
-      richSnippetEligible: true,
+      schemasDetected: schemaTypes,
+      isValidJsonLd: schemaTypes.length > 0 && malformedJsonLd === 0,
+      validationErrorsCount: malformedJsonLd,
+      missingRecommendedSchemas: ["Organization", "WebSite", "BreadcrumbList", "FAQPage"].filter(
+        (t) => !schemaTypes.includes(t)
+      ),
+      richSnippetEligible: schemaTypes.some((t) =>
+        ["Hotel", "LodgingBusiness", "LocalBusiness", "Restaurant", "Product", "FAQPage", "Article", "Event"].includes(t)
+      ),
     },
-    aiGeoVisibility: {
-      visibilityScore: geoReport.overallVisibilityScore,
-      brandEntityClarity: geoReport.entityClarityScore,
-      factDensityScore: 84,
-      estimatedCitationsAcrossEngines: {
-        googleAiOverviews: 18,
-        perplexity: 24,
-        chatgptSearch: 15,
-        claude: 12,
-      },
-      keyEntityStrengths: [
-        "Consistent NAP (Name, Address, Phone) citation profile",
-        "Clear pricing and amenity entity attributes",
-        "Direct reservation schema actions",
-      ],
-      recommendations: geoReport.recommendations,
-    },
+    aiGeoVisibility: geo,
     algorithmImpact: {
       potentiallyImpactedByRecentUpdates: algoImpact.potentiallyImpacted,
-      recentRelevantUpdates: algoImpact.recentUpdates.map((u: { name: string; date: string; kind: string; notes?: string }) => ({
-        name: u.name,
-        date: u.date,
-        kind: u.kind,
-        notes: u.notes || "",
-      })),
+      recentRelevantUpdates: algoImpact.recentUpdates.map(
+        (u: { name: string; date: string; kind: string; notes?: string }) => ({
+          name: u.name,
+          date: u.date,
+          kind: u.kind,
+          notes: u.notes || "",
+        })
+      ),
       riskRating: algoImpact.riskRating,
     },
-    actionPlan,
+    actionPlan: buildActionPlan(issues, 1),
+    dataProvenance: provenance,
   };
 }

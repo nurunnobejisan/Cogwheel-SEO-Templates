@@ -1,7 +1,15 @@
 /**
  * Backlink Profile & Domain Authority Engine
  * Adapted from open-seo (every-app/open-seo) under MIT License
+ *
+ * Integrity note (see docs/REPOSITORY_AUDIT.md, C2):
+ * Domain rating, referring domains, anchors and toxic-link counts require a
+ * backlink-provider API. Without one, this module reports an empty profile with
+ * `dataAvailable: false` rather than presenting invented authority metrics.
+ * Synthetic values appear only when `ALLOW_SIMULATED_DATA` is enabled.
  */
+
+import { isSimulatedDataAllowed } from "../data-policy.ts";
 
 export interface BacklinkAnchor {
   anchorText: string;
@@ -34,10 +42,30 @@ export interface BacklinkProfileSummary {
     gapDomains: string[];
     actionablePitch: string;
   }>;
+  /** True only when a backlink provider actually returned this profile. */
+  dataAvailable: boolean;
 }
 
 export function analyzeBacklinkProfile(targetUrlOrDomain: string): BacklinkProfileSummary {
   const domain = targetUrlOrDomain.replace(/^https?:\/\//, "").replace(/\/+$/, "").toLowerCase();
+
+  // Honest default: no backlink provider is connected.
+  if (!isSimulatedDataAllowed()) {
+    return {
+      targetDomain: domain,
+      domainRating: 0,
+      urlRating: 0,
+      totalBacklinks: 0,
+      totalReferringDomains: 0,
+      dofollowPercentage: 0,
+      toxicLinksCount: 0,
+      toxicityRiskLevel: "low",
+      topReferringDomains: [],
+      topAnchors: [],
+      linkIntersectionOpportunities: [],
+      dataAvailable: false,
+    };
+  }
 
   return {
     targetDomain: domain,
@@ -68,14 +96,17 @@ export function analyzeBacklinkProfile(targetUrlOrDomain: string): BacklinkProfi
         competitorDomain: "ritzcarltonportland.com",
         sharedReferringDomains: 180,
         gapDomains: ["forbes.com/travel", "robbreport.com", "michelin.com"],
-        actionablePitch: "Pitch architectural heritage feature and culinary residency to luxury travel press covering Pacific Northwest luxury.",
+        actionablePitch:
+          "Pitch architectural heritage feature and culinary residency to luxury travel press covering Pacific Northwest luxury.",
       },
       {
         competitorDomain: "heathmanhotel.com",
         sharedReferringDomains: 220,
         gapDomains: ["literarytraveler.com", "nwtravelmag.com", "portlandmonthly.com"],
-        actionablePitch: "Feature local art collection tours and rooftop seasonal tasting menus for cultural travel roundups.",
+        actionablePitch:
+          "Feature local art collection tours and rooftop seasonal tasting menus for cultural travel roundups.",
       },
     ],
+    dataAvailable: false,
   };
 }

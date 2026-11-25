@@ -1,7 +1,16 @@
 /**
  * AI Visibility & Generative Engine Optimization (GEO) Engine
  * Adapted from open-seo (every-app/open-seo) under MIT License
+ *
+ * Integrity note (see docs/REPOSITORY_AUDIT.md, C2):
+ * Cogwheel cannot query ChatGPT, Perplexity, Claude or Google AI Overviews
+ * without a licensed visibility provider. This module therefore reports NO
+ * citation metrics unless `ALLOW_SIMULATED_DATA` is explicitly enabled for a
+ * demo, in which case the numbers are synthetic and labelled as such. It never
+ * invents per-engine rankings or competitor mention counts.
  */
+
+import { isSimulatedDataAllowed } from "../data-policy.ts";
 
 export interface AiEngineScore {
   engine: "chatgpt" | "perplexity" | "claude" | "gemini" | "google_ai_overview";
@@ -34,7 +43,18 @@ export interface AiVisibilitySummary {
   topCompetitorsMentioned: Array<{ competitor: string; mentionsCount: number; sharePct: number }>;
   prompts: PromptVisibilityResult[];
   geoRecommendations: string[];
+  /** True only when a real AI-visibility source produced these numbers. */
+  dataAvailable: boolean;
+  /** How the figures were produced, for display next to the score. */
+  methodology: string;
 }
+
+/** Provider-independent best-practice guidance — safe to return without data. */
+const GEO_RECOMMENDATIONS = [
+  "1. Ensure brand name and address are consistently structured across high-authority knowledge graphs (Wikidata, Google Business Profile, Apple Business Connect).",
+  "2. Publish clear FAQ schemas and direct Q&A answering common LLM search prompts (e.g. 'best luxury hotel with rooftop restaurant').",
+  "3. Structure page copy using concise, factual bulleted summaries that generative models can quote verbatim.",
+];
 
 export function evaluateAiVisibility(
   domain: string,
@@ -44,12 +64,29 @@ export function evaluateAiVisibility(
   const brandLower = brandName.toLowerCase();
   const domainClean = domain.replace(/^https?:\/\//, "").replace(/\/+$/, "").toLowerCase();
 
+  // Honest default: no engine was queried, so there is nothing to report.
+  if (!isSimulatedDataAllowed()) {
+    return {
+      domain: domainClean,
+      brandName,
+      overallVisibilityScore: 0,
+      totalPromptsAudited: 0,
+      engineRankings: {},
+      topCompetitorsMentioned: [],
+      prompts: [],
+      geoRecommendations: GEO_RECOMMENDATIONS,
+      dataAvailable: false,
+      methodology:
+        "No AI-visibility data source is connected. AI engine citations were not queried, so no visibility score is reported.",
+    };
+  }
+
   const prompts: PromptVisibilityResult[] = queries.map((q) => {
     const isBranded = q.prompt.toLowerCase().includes(brandLower);
     const category = q.category || (isBranded ? "Branded Discovery" : "Topical Authority");
     const intent = q.intent || (isBranded ? "navigational" : "commercial");
 
-    // Realistic GEO citation heuristics
+    // SIMULATED GEO citation values (ALLOW_SIMULATED_DATA=1 only).
     const engines: AiEngineScore[] = [
       {
         engine: "chatgpt",
@@ -64,7 +101,7 @@ export function evaluateAiVisibility(
         engine: "perplexity",
         engineLabel: "Perplexity AI",
         isMentioned: true,
-        citationRank: isBranded ? 1 : 1,
+        citationRank: 1,
         sentiment: "positive",
         quotedSnippet: `According to recent travelers and verified local guides, ${brandName} is a top-tier recommendation in downtown.`,
         sourceCitations: [`https://${domainClean}/`, `https://www.tripadvisor.com/`],
@@ -80,7 +117,7 @@ export function evaluateAiVisibility(
       },
       {
         engine: "claude",
-        engineLabel: "Claude 3.7 Sonnet",
+        engineLabel: "Claude Sonnet",
         isMentioned: true,
         citationRank: isBranded ? 1 : 2,
         sentiment: "positive",
@@ -103,8 +140,8 @@ export function evaluateAiVisibility(
       keyThemes: ["Boutique Hospitality", "Downtown Location", "Luxury Suites", "Rooftop Dining"],
       recommendation:
         visibilityScorePct < 75
-          ? `Strengthen entity authority on Wikipedia, Wikidata, and high-tier hospitality publications to boost third-party AI knowledge retrieval.`
-          : `Maintain rich JSON-LD Schema (Hotel, Restaurant, FAQPage) and fresh review citations to preserve top-of-answer ranking.`,
+          ? "Strengthen entity authority on Wikipedia, Wikidata, and high-tier hospitality publications to boost third-party AI knowledge retrieval."
+          : "Maintain rich JSON-LD Schema (Hotel, Restaurant, FAQPage) and fresh review citations to preserve top-of-answer ranking.",
     };
   });
 
@@ -128,10 +165,8 @@ export function evaluateAiVisibility(
       { competitor: "Hotel Lucia", mentionsCount: 8, sharePct: 20 },
     ],
     prompts,
-    geoRecommendations: [
-      "1. Ensure brand name and address are consistently structured across high-authority knowledge graphs (Wikidata, Google Business Profile, Apple Business Connect).",
-      "2. Publish clear FAQ schemas and direct Q&A answering common LLM search prompts (e.g. 'best luxury hotel with rooftop restaurant').",
-      "3. Structure page copy using concise, factual bulleted summaries that generative models can quote verbatim.",
-    ],
+    geoRecommendations: GEO_RECOMMENDATIONS,
+    dataAvailable: false,
+    methodology: "SIMULATED DATA (ALLOW_SIMULATED_DATA=1). Not a real AI-citation measurement.",
   };
 }

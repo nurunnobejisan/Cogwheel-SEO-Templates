@@ -152,14 +152,11 @@ export async function POST(req: NextRequest) {
         );
       }
 
-      // Parse citation score and findings
-      const score = rawReport.score ?? rawReport.citationScore ?? 82;
+      // Parse citation score and findings. Never invent a score: if the report
+      // does not carry one, return null so the UI shows "not reported".
+      const score = rawReport.score ?? rawReport.citationScore ?? null;
       const citations = rawReport.citations ?? rawReport.mentions ?? [];
-      const engineBreakdown = rawReport.engineBreakdown ?? {
-        chatgpt: 85,
-        google_ai_overviews: 88,
-        perplexity: 74,
-      };
+      const engineBreakdown = rawReport.engineBreakdown ?? null;
 
       return NextResponse.json({
         ok: true,

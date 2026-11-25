@@ -23,97 +23,60 @@ interface Competitor {
 
 interface KeywordBattle {
   keyword: string;
-  searchVolume: number;
-  yourRank: number;
-  compRanks: Record<string, number>; // compId -> rank
+  /** null = not measured/entered yet (never invented). */
+  searchVolume: number | null;
+  yourRank: number | null;
+  compRanks: Record<string, number | null>; // compId -> rank
 }
 
+/**
+ * Local comp-set ranking matrix.
+ *
+ * Integrity note (see docs/REPOSITORY_AUDIT.md, C2/H1): ranks and volumes are
+ * NOT fetched or estimated — no rank-tracking provider is connected — so the
+ * matrix starts empty and every value is entered by the operator. Values that
+ * have not been entered display as "—" rather than a plausible-looking number.
+ */
 export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
   const propertyName = property?.name || "Renaissance Shoals Resort & Spa";
   const propertyCity = property?.city || "Florence";
   const propertyState = property?.state || "AL";
 
-  const [competitors, setCompetitors] = useState<Competitor[]>([
-    {
-      id: "c1",
-      name: "GunRunner Boutique Hotel",
-      shortName: "GunRunner",
-      distance: "1.8 miles",
-      color: "#8b5cf6",
-    },
-    {
-      id: "c2",
-      name: "Courtyard Florence",
-      shortName: "Courtyard",
-      distance: "2.4 miles",
-      color: "#3b82f6",
-    },
-    {
-      id: "c3",
-      name: "Hampton Inn Downtown Florence",
-      shortName: "Hampton Inn",
-      distance: "2.1 miles",
-      color: "#f59e0b",
-    },
+  const [competitors] = useState<Competitor[]>([
+    { id: "c1", name: "GunRunner Boutique Hotel", shortName: "GunRunner", distance: "1.8 miles", color: "#8b5cf6" },
+    { id: "c2", name: "Courtyard Florence", shortName: "Courtyard", distance: "2.4 miles", color: "#3b82f6" },
+    { id: "c3", name: "Hampton Inn Downtown Florence", shortName: "Hampton Inn", distance: "2.1 miles", color: "#f59e0b" },
   ]);
 
-  const [keywords, setKeywords] = useState<KeywordBattle[]>([
-    {
-      keyword: `hotels in ${propertyCity.toLowerCase()} ${propertyState.toLowerCase()}`,
-      searchVolume: 1600,
-      yourRank: 2,
-      compRanks: { c1: 4, c2: 3, c3: 5 },
-    },
-    {
-      keyword: `${propertyCity.toLowerCase()} alabama resort`,
-      searchVolume: 880,
-      yourRank: 1,
-      compRanks: { c1: 8, c2: 12, c3: 15 },
-    },
-    {
-      keyword: "downtown boutique hotel with spa",
-      searchVolume: 420,
-      yourRank: 3,
-      compRanks: { c1: 1, c2: 9, c3: 7 },
-    },
-    {
-      keyword: "tennessee river luxury resort",
-      searchVolume: 590,
-      yourRank: 1,
-      compRanks: { c1: 6, c2: 11, c3: 14 },
-    },
-    {
-      keyword: `${propertyCity.toLowerCase()} wedding event venue hotel`,
-      searchVolume: 320,
-      yourRank: 2,
-      compRanks: { c1: 3, c2: 5, c3: 8 },
-    },
-  ]);
+  // No fabricated seed rows — the operator supplies the benchmark data.
+  const [keywords, setKeywords] = useState<KeywordBattle[]>([]);
 
   const [newKeyword, setNewKeyword] = useState("");
-  const [newSv, setNewSv] = useState(200);
+  const [newSv, setNewSv] = useState<string>("");
+  const [newRank, setNewRank] = useState<string>("");
 
-  // Calculate Share of Voice (Top 3 rank percentage)
-  const yourTop3 = keywords.filter((k) => k.yourRank <= 3).length;
-  const yourShareOfVoice = Math.round((yourTop3 / keywords.length) * 100);
+  // Share of Voice counts only keywords whose rank has actually been entered.
+  const ranked = keywords.filter((k) => typeof k.yourRank === "number");
+  const yourTop3 = ranked.filter((k) => (k.yourRank as number) <= 3).length;
+  const yourShareOfVoice = ranked.length > 0 ? Math.round((yourTop3 / ranked.length) * 100) : null;
 
   const handleAddKeyword = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newKeyword.trim()) return;
+    const sv = newSv.trim() === "" ? null : Number(newSv);
+    const rank = newRank.trim() === "" ? null : Number(newRank);
     setKeywords((prev) => [
       ...prev,
       {
         keyword: newKeyword.trim().toLowerCase(),
-        searchVolume: Number(newSv) || 100,
-        yourRank: Math.floor(Math.random() * 5) + 1,
-        compRanks: {
-          c1: Math.floor(Math.random() * 8) + 1,
-          c2: Math.floor(Math.random() * 10) + 1,
-          c3: Math.floor(Math.random() * 12) + 1,
-        },
+        searchVolume: sv !== null && Number.isFinite(sv) ? sv : null,
+        yourRank: rank !== null && Number.isFinite(rank) ? rank : null,
+        compRanks: { c1: null, c2: null, c3: null },
       },
     ]);
     setNewKeyword("");
+    setNewSv("");
+    setNewRank("");
   };
 
   return (
@@ -128,8 +91,9 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
             Local Comp-Set Ranking Matrix
           </h2>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
-            Benchmarking <span className="font-semibold text-slate-800 dark:text-white">{propertyName}</span> against
-            the top 3 local properties in the {propertyCity} market.
+            Benchmark <span className="font-semibold text-slate-800 dark:text-white">{propertyName}</span> against
+            local properties in the {propertyCity} market. Ranks are operator-entered — no rank-tracking
+            provider is connected.
           </p>
         </div>
 
@@ -141,12 +105,11 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
             </div>
             <div className="flex items-baseline gap-2">
               <span className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
-                {yourShareOfVoice}%
+                {yourShareOfVoice === null ? "—" : `${yourShareOfVoice}%`}
               </span>
-              <span className="text-xs font-semibold text-emerald-600">Leader</span>
             </div>
             <p className="text-[11px] text-slate-500 dark:text-slate-400">
-              {yourTop3} of {keywords.length} terms in top 3
+              {ranked.length > 0 ? `${yourTop3} of ${ranked.length} ranked terms in top 3` : "Add a ranked keyword to calculate"}
             </p>
           </div>
           {onExportMemo && (
@@ -197,10 +160,11 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="border-b border-slate-100 p-4 dark:border-slate-800">
           <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">
-            High-Impact Keyword Battleground
+            Keyword Battleground
           </h3>
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Real-time organic search position comparison on primary booking intent terms.
+            Organic search position comparison on primary booking-intent terms. Enter positions you have verified;
+            blank positions are shown as unmeasured.
           </p>
         </div>
 
@@ -222,12 +186,20 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-xs dark:divide-slate-800">
+              {keywords.length === 0 && (
+                <tr>
+                  <td colSpan={competitors.length + 4} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
+                    No keywords benchmarked yet. Add a keyword and its verified rank below to build the matrix.
+                  </td>
+                </tr>
+              )}
               {keywords.map((kw, i) => {
                 const numericRanks = Object.values(kw.compRanks).filter((r): r is number => typeof r === "number" && !isNaN(r));
                 const bestCompRank = numericRanks.length > 0 ? Math.min(...numericRanks) : null;
-                const isWinning = bestCompRank !== null ? kw.yourRank < bestCompRank : true;
-                const isTied = bestCompRank !== null ? kw.yourRank === bestCompRank : false;
-                const gap = bestCompRank !== null ? Math.abs(bestCompRank - kw.yourRank) : 0;
+                const hasRank = typeof kw.yourRank === "number";
+                const isWinning = hasRank && bestCompRank !== null ? (kw.yourRank as number) < bestCompRank : false;
+                const isTied = hasRank && bestCompRank !== null ? kw.yourRank === bestCompRank : false;
+                const gap = hasRank && bestCompRank !== null ? Math.abs(bestCompRank - (kw.yourRank as number)) : 0;
 
                 return (
                   <tr key={i} className="hover:bg-slate-50/60 dark:hover:bg-slate-800/40">
@@ -235,20 +207,24 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
                       {kw.keyword}
                     </td>
                     <td className="py-3.5 px-3 text-right font-mono text-slate-600 dark:text-slate-300">
-                      {kw.searchVolume.toLocaleString()}
+                      {kw.searchVolume === null ? "—" : kw.searchVolume.toLocaleString()}
                     </td>
                     <td className="py-3.5 px-3 text-center bg-brand-50/40 dark:bg-brand-950/20 font-bold">
-                      <span
-                        className={`inline-flex h-7 w-7 items-center justify-center rounded-lg font-mono text-xs ${
-                          kw.yourRank === 1
-                            ? "bg-brand text-slate-900 font-extrabold shadow-sm"
-                            : kw.yourRank <= 3
-                            ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
-                            : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300"
-                        }`}
-                      >
-                        #{kw.yourRank}
-                      </span>
+                      {hasRank ? (
+                        <span
+                          className={`inline-flex h-7 w-7 items-center justify-center rounded-lg font-mono text-xs ${
+                            kw.yourRank === 1
+                              ? "bg-brand text-slate-900 font-extrabold shadow-sm"
+                              : (kw.yourRank as number) <= 3
+                              ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300"
+                              : "bg-slate-100 text-slate-800 dark:bg-slate-800 dark:text-slate-300"
+                          }`}
+                        >
+                          #{kw.yourRank}
+                        </span>
+                      ) : (
+                        <span className="font-mono text-slate-400">—</span>
+                      )}
                     </td>
                     {competitors.map((c) => {
                       const rank = kw.compRanks[c.id];
@@ -261,7 +237,11 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
                       );
                     })}
                     <td className="py-3.5 px-4 text-center">
-                      {isWinning ? (
+                      {!hasRank || bestCompRank === null ? (
+                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                          Unmeasured
+                        </span>
+                      ) : isWinning ? (
                         <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2.5 py-0.5 text-[11px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-400">
                           Leading {bestCompRank !== null ? `(+${gap})` : ""}
                         </span>
@@ -300,12 +280,19 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
           <input
             type="number"
             value={newSv}
-            onChange={(e) => setNewSv(Number(e.target.value))}
-            placeholder="SV"
-            className="w-20 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 shadow-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+            onChange={(e) => setNewSv(e.target.value)}
+            placeholder="SV (optional)"
+            className="w-28 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 shadow-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+          />
+          <input
+            type="number"
+            value={newRank}
+            onChange={(e) => setNewRank(e.target.value)}
+            placeholder="Your rank"
+            className="w-24 rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 shadow-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
           />
           <Button type="submit" variant="secondary" className="text-xs py-1.5">
-            Add to Radar
+            Add to Matrix
           </Button>
         </form>
       </div>

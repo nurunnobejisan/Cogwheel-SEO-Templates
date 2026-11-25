@@ -297,8 +297,10 @@ export function UnifiedSeoSuiteView({
                     </span>
                     <span className="text-xs text-slate-500">/ 100</span>
                   </div>
-                  <p className="mt-2 text-xs text-emerald-600 dark:text-emerald-400">
-                    High optimization standard achieved
+                  <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                    {auditReport.dataProvenance?.simulated
+                      ? "Contains simulated data (ALLOW_SIMULATED_DATA is on)"
+                      : `${auditReport.dataProvenance?.measured.length ?? 0} dimensions measured from the live page`}
                   </p>
                 </div>
 
@@ -324,7 +326,9 @@ export function UnifiedSeoSuiteView({
                     <span className="text-xs text-slate-500">conflicts detected</span>
                   </div>
                   <p className="mt-2 text-xs text-slate-500">
-                    Total impressions: {auditReport.searchConsole.totalImpressions.toLocaleString()}
+                    {auditReport.searchConsole.isConnected
+                      ? `Total impressions: ${auditReport.searchConsole.totalImpressions.toLocaleString()}`
+                      : "Google Search Console not connected"}
                   </p>
                 </div>
 
@@ -337,10 +341,53 @@ export function UnifiedSeoSuiteView({
                     <span className="text-xs text-slate-500">/ 100</span>
                   </div>
                   <p className="mt-2 text-xs text-slate-500">
-                    Citations tracked across 4 LLM engines
+                    {auditReport.aiGeoVisibility.dataAvailable
+                      ? "Measured from a connected AI-visibility source"
+                      : "Estimated on-page readiness — no AI engine queried"}
                   </p>
                 </div>
               </div>
+
+              {/* Data provenance banner */}
+              {auditReport.dataProvenance && (
+                <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-5 text-xs dark:border-slate-800 dark:bg-slate-800/30">
+                  <div className="font-display text-sm font-bold text-slate-900 dark:text-white">
+                    Data provenance
+                  </div>
+                  <p className="mt-1 text-slate-600 dark:text-slate-400">
+                    {auditReport.dataProvenance.simulated
+                      ? "This report contains simulated data and must not be treated as a measurement."
+                      : "Measured values come from a live fetch of the target page. Dimensions without a data source are shown as unavailable and are not included in the overall score."}
+                  </p>
+                  <div className="mt-3 grid grid-cols-1 gap-3 md:grid-cols-2">
+                    <div>
+                      <span className="font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                        Measured
+                      </span>
+                      <ul className="mt-1 list-disc space-y-0.5 pl-5 text-slate-600 dark:text-slate-400">
+                        {auditReport.dataProvenance.measured.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <span className="font-bold uppercase tracking-wider text-amber-700 dark:text-amber-400">
+                        Unavailable (not connected)
+                      </span>
+                      <ul className="mt-1 list-disc space-y-0.5 pl-5 text-slate-600 dark:text-slate-400">
+                        {auditReport.dataProvenance.unavailable.map((item) => (
+                          <li key={item}>{item}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                  {auditReport.dataProvenance.notes.length > 0 && (
+                    <p className="mt-3 text-[11px] text-slate-500 dark:text-slate-500">
+                      {auditReport.dataProvenance.notes.join(" ")}
+                    </p>
+                  )}
+                </div>
+              )}
 
               {/* Action Plan (P0 - P3) */}
               <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -453,23 +500,16 @@ export function UnifiedSeoSuiteView({
             Powered by the integrated `mcp-gsc` protocol engine: Search Analytics, Period Comparison, URL Inspection, and Cannibalization Detection.
           </p>
 
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-4">
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[11px] font-bold uppercase text-slate-500">Clicks (28d)</span>
-              <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">3,420</div>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[11px] font-bold uppercase text-slate-500">Impressions</span>
-              <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">68,400</div>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[11px] font-bold uppercase text-slate-500">Average CTR</span>
-              <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">5.0%</div>
-            </div>
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <span className="text-[11px] font-bold uppercase text-slate-500">Average Position</span>
-              <div className="mt-1 font-display text-2xl font-bold text-slate-900 dark:text-white">9.8</div>
-            </div>
+          <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-6 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-400">
+            <p className="font-semibold text-slate-800 dark:text-slate-200">
+              No Search Console data available
+            </p>
+            <p className="mt-1 text-xs">
+              Set <code className="rounded bg-slate-200 px-1 py-0.5 dark:bg-slate-700">GOOGLE_SERVICE_ACCOUNT_B64</code>{" "}
+              (or <code className="rounded bg-slate-200 px-1 py-0.5 dark:bg-slate-700">GOOGLE_SERVICE_ACCOUNT_JSON</code>)
+              and grant the service account access to the property. Until then, clicks, impressions, CTR and
+              position cannot be shown — they are never simulated.
+            </p>
           </div>
         </div>
       )}
@@ -481,26 +521,19 @@ export function UnifiedSeoSuiteView({
             Generative Engine Optimization (GEO) &amp; AI Citation Monitor
           </h2>
           <p className="mt-1 text-xs text-slate-500">
-            Powered by Open-SEO contracts: Tracks domain entity prominence across Perplexity, ChatGPT Search, Claude, and Google AI Overviews.
+            On-page readiness signals for generative engines. AI citation counts require a live engine
+            data source, which is not connected — no citation rates are shown or invented.
           </p>
 
-          <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4 dark:border-purple-900/60 dark:bg-purple-950/20">
-              <span className="text-xs font-bold text-purple-700 dark:text-purple-300">Google AI Overviews</span>
-              <div className="mt-1 font-display text-2xl font-bold text-purple-900 dark:text-white">82% Citation Rate</div>
-            </div>
-            <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4 dark:border-purple-900/60 dark:bg-purple-950/20">
-              <span className="text-xs font-bold text-purple-700 dark:text-purple-300">Perplexity Pro</span>
-              <div className="mt-1 font-display text-2xl font-bold text-purple-900 dark:text-white">91% Citation Rate</div>
-            </div>
-            <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4 dark:border-purple-900/60 dark:bg-purple-950/20">
-              <span className="text-xs font-bold text-purple-700 dark:text-purple-300">ChatGPT Search</span>
-              <div className="mt-1 font-display text-2xl font-bold text-purple-900 dark:text-white">76% Citation Rate</div>
-            </div>
-            <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-4 dark:border-purple-900/60 dark:bg-purple-950/20">
-              <span className="text-xs font-bold text-purple-700 dark:text-purple-300">Claude Web</span>
-              <div className="mt-1 font-display text-2xl font-bold text-purple-900 dark:text-white">84% Citation Rate</div>
-            </div>
+          <div className="mt-6 rounded-xl border border-dashed border-purple-300 bg-purple-50/40 p-6 text-sm text-slate-600 dark:border-purple-900/60 dark:bg-purple-950/20 dark:text-slate-400">
+            <p className="font-semibold text-slate-800 dark:text-slate-200">
+              AI citation rates are not measured
+            </p>
+            <p className="mt-1 text-xs">
+              Reporting per-engine citation share (ChatGPT, Perplexity, Claude, Google AI Overviews)
+              requires querying those engines or a licensed visibility provider. Neither is connected,
+              so this panel intentionally shows no scores rather than estimated ones.
+            </p>
           </div>
         </div>
       )}

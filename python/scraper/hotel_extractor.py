@@ -346,11 +346,8 @@ class HotelExtractor:
                 if len(rooms) >= 6:
                     break
 
-        if not rooms:
-            rooms.append(RoomFact(name="Standard King Guest Room", sq_ft=350, starting_rate="$189"))
-            rooms.append(RoomFact(name="Deluxe Double Queen Room", sq_ft=420, starting_rate="$219"))
-            rooms.append(RoomFact(name="Executive King Suite", sq_ft=650, starting_rate="$329"))
-
+        # No fabricated fallback rooms: if nothing on the page names a room type,
+        # the extractor reports none rather than inventing plausible inventory.
         return rooms
 
     def _extract_dining_facts(self, soup: BeautifulSoup, json_ld: list[dict[str, Any]]) -> list[DiningFact]:
@@ -382,15 +379,7 @@ class HotelExtractor:
                 if len(dining) >= 4:
                     break
 
-        if not dining:
-            # Check for general breakfast / restaurant mentions
-            if "breakfast" in text.lower():
-                dining.append(DiningFact(name="The Morning Bistro", meal_types=["Breakfast"], cuisine="Artisanal Buffet"))
-            if "rooftop" in text.lower():
-                dining.append(DiningFact(name="Skyline Lounge & Rooftop", meal_types=["Dinner", "Cocktails"], cuisine="Craft Cocktails & Small Plates"))
-            if not dining:
-                dining.append(DiningFact(name="Signature On-Site Restaurant", cuisine="Locally Sourced Contemporary"))
-
+        # No fabricated fallback dining venues. Return only what was found.
         return dining
 
     def _extract_meeting_space_facts(self, soup: BeautifulSoup, _json_ld: list[dict[str, Any]]) -> MeetingSpaceFact:

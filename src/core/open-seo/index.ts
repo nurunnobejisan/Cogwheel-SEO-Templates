@@ -73,6 +73,7 @@ export async function generateAiVisibilityReport(options: {
   entityClarityScore: number;
   engineBreakdown: Record<string, number>;
   recommendations: string[];
+  dataAvailable: boolean;
 }> {
   const queryStrings = options.targetQueries && options.targetQueries.length > 0
     ? options.targetQueries
@@ -86,18 +87,21 @@ export async function generateAiVisibilityReport(options: {
 
   const res = evaluateAiVisibility(options.domain, options.brandName, prompts);
 
+  // Only surface engine figures that were actually produced. No fabricated
+  // fallback numbers — an unconnected source yields zeroes and dataAvailable:false.
   return {
     brandName: options.brandName,
     domain: options.domain,
     overallVisibilityScore: res.overallVisibilityScore,
-    entityClarityScore: 86,
+    entityClarityScore: res.dataAvailable ? res.overallVisibilityScore : 0,
     engineBreakdown: {
-      googleAiOverviews: res.engineRankings["google_ai_overview"]?.shareOfVoicePct || 80,
-      perplexity: res.engineRankings["perplexity"]?.shareOfVoicePct || 88,
-      chatgptSearch: res.engineRankings["chatgpt"]?.shareOfVoicePct || 75,
-      claude: res.engineRankings["claude"]?.shareOfVoicePct || 82,
+      googleAiOverviews: res.engineRankings["google_ai_overview"]?.shareOfVoicePct ?? 0,
+      perplexity: res.engineRankings["perplexity"]?.shareOfVoicePct ?? 0,
+      chatgptSearch: res.engineRankings["chatgpt"]?.shareOfVoicePct ?? 0,
+      claude: res.engineRankings["claude"]?.shareOfVoicePct ?? 0,
     },
     recommendations: res.geoRecommendations,
+    dataAvailable: res.dataAvailable,
   };
 }
 

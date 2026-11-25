@@ -250,6 +250,20 @@ export function LabsView({
   // --- 6. GEO AI Search Overview State ---
   const [aiEngine, setAiEngine] = useState<"ChatGPT" | "Gemini" | "Perplexity">("Gemini");
 
+  // Deterministic, schema-derived readiness check (NOT an AI-citation score).
+  // No AI engine is queried here; we only evaluate the JSON-LD we generated.
+  const geoReadiness = useMemo(() => {
+    const checks = [
+      { label: "Schema.org @context declared", pass: /"@context"\s*:/.test(generatedSchema) },
+      { label: "@graph container present", pass: /"@graph"\s*:/.test(generatedSchema) },
+      { label: "Entity name present", pass: /"name"\s*:/.test(generatedSchema) },
+      { label: "URL/identifier present", pass: /"url"\s*:/.test(generatedSchema) || /"@id"\s*:/.test(generatedSchema) },
+      { label: "Rich-result eligible type (Hotel/FAQPage/BreadcrumbList)", pass: /"@type"\s*:\s*"(Hotel|FAQPage|BreadcrumbList)"/.test(generatedSchema) },
+    ];
+    const passed = checks.filter((c) => c.pass).length;
+    return { checks, passed, total: checks.length, pct: Math.round((passed / checks.length) * 100) };
+  }, [generatedSchema]);
+
   // --- 7. Content Duplicate & Thin-Content Scanner State ---
   const [docA, setDocA] = useState(
     property?.name
@@ -512,14 +526,14 @@ export function LabsView({
                 {serpDevice === "desktop" && isTitleDesktopOver ? smartTrimTitle(serpTitle, 580) : serpTitle}
               </div>
 
-              {/* Rich Snippet Elements: Stars, Price, Reviews */}
+              {/* Rich Snippet Elements: Stars, Price, Reviews (example placeholders) */}
               {showRichSnippet && (
                 <div className="flex items-center gap-2 mt-1 text-xs">
-                  <span className="rounded bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400">Score 4.9</span>
+                  <span className="rounded bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400">Example</span>
                   <span className="font-bold text-slate-700 dark:text-slate-200 text-[11px]">4.9</span>
-                  <span className="text-slate-400 text-[11px]">(342 reviews)</span>
+                  <span className="text-slate-400 text-[11px]">(reviews)</span>
                   <span className="text-slate-300 dark:text-slate-600">•</span>
-                  <span className="font-semibold text-emerald-700 dark:text-emerald-400 text-[11px]">From $219/night</span>
+                  <span className="font-semibold text-emerald-700 dark:text-emerald-400 text-[11px]">From $000/night</span>
                   <span className="rounded bg-sky-100 dark:bg-sky-950 px-1.5 py-0.2 text-[10px] text-sky-700 dark:text-sky-300 font-semibold">Free WiFi</span>
                 </div>
               )}
@@ -686,24 +700,28 @@ export function LabsView({
             </div>
 
             <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
-              Preview how Generative AI engines cite and summarize {property?.name || "your hotel"} from JSON-LD schemas:
+              Illustrative example of how a generative engine might summarise{" "}
+              {property?.name || "your hotel"} from JSON-LD schemas. This is a static example, not a live AI output.
             </p>
 
             <div className="rounded-xl border border-purple-200/80 bg-purple-50/50 p-3.5 dark:border-purple-900/60 dark:bg-purple-950/30">
               <div className="flex items-center gap-2 text-[11px] font-bold text-purple-800 dark:text-purple-300 mb-2">
-                <span className="flex h-2 w-2 rounded-full bg-purple-600 animate-pulse"></span>
-                <span>{aiEngine} AI Overview Synthesis:</span>
+                <span className="rounded bg-purple-200/70 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-purple-900 dark:bg-purple-900/60 dark:text-purple-200">
+                  Example
+                </span>
+                <span>{aiEngine} summary shape:</span>
               </div>
               <p className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed">
-                &ldquo;{property?.name || "The Curtis Denver"} is a top-rated boutique hotel in downtown {property?.city || "Denver"}. Key amenities include high-speed Wi-Fi, pet-friendly accommodations, valet parking, and on-site dining. Best rates are available via direct reservation.&rdquo;
+                &ldquo;{property?.name || "The Curtis Denver"} is a boutique hotel in downtown {property?.city || "Denver"}.
+                Key amenities include high-speed Wi-Fi, pet-friendly accommodations, valet parking, and on-site dining.&rdquo;
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2 pt-2 border-t border-purple-200/60 dark:border-purple-900/40">
-                <span className="text-[10px] font-semibold text-slate-500">Cited Sources:</span>
+                <span className="text-[10px] font-semibold text-slate-500">Sources an engine would cite:</span>
                 <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700 shadow-xs dark:bg-slate-800 dark:text-slate-200">
-                  {property?.name || "The Curtis"} Official Site [1]
+                  {property?.name || "The Curtis"} Official Site
                 </span>
                 <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700 shadow-xs dark:bg-slate-800 dark:text-slate-200">
-                  Schema.org Hotel Graph [2]
+                  Schema.org Hotel Graph
                 </span>
               </div>
             </div>
@@ -711,9 +729,9 @@ export function LabsView({
 
           <div className="mt-3 flex items-center justify-between">
             <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-              94% Citation Readiness Score
+              {geoReadiness.pct}% Schema readiness ({geoReadiness.passed}/{geoReadiness.total} checks)
             </span>
-            <span className="text-[10px] text-slate-400">Schema-backed authority</span>
+            <span className="text-[10px] text-slate-400">Derived from the JSON-LD above — not an AI-citation score</span>
           </div>
         </div>
 

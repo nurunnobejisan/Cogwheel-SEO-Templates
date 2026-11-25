@@ -1,7 +1,15 @@
 /**
  * SEO Keyword Research & Content Gap Engine
  * Adapted from open-seo (every-app/open-seo) under MIT License
+ *
+ * Integrity note (see docs/REPOSITORY_AUDIT.md, C2):
+ * Search volume, CPC, keyword difficulty and trending rates require a paid
+ * keyword-data provider. Without one, this module returns an empty result set
+ * with `dataSource: "unavailable"` rather than inventing plausible numbers.
+ * Synthetic values appear only when `ALLOW_SIMULATED_DATA` is enabled.
  */
+
+import { isSimulatedDataAllowed } from "../data-policy.ts";
 
 export interface KeywordMetrics {
   keyword: string;
@@ -28,12 +36,27 @@ export interface KeywordResearchSummary {
     potentialTrafficLiftMonthly: number;
     recommendedAction: string;
   }>;
+  /** Where the metrics came from — never claim a provider that isn't connected. */
+  dataSource: "provider" | "simulated" | "unavailable";
 }
 
 export function performKeywordResearch(
   seedTerm: string,
   propertyContext?: { brand?: string; city?: string; state?: string }
 ): KeywordResearchSummary {
+  // Honest default: no keyword-volume provider is connected.
+  if (!isSimulatedDataAllowed()) {
+    return {
+      seedTerm,
+      totalKeywordsFound: 0,
+      totalSearchVolume: 0,
+      averageCpc: 0,
+      keywords: [],
+      contentGaps: [],
+      dataSource: "unavailable",
+    };
+  }
+
   const city = propertyContext?.city || "Portland";
   const brand = propertyContext?.brand || "The Nines";
 
@@ -53,7 +76,7 @@ export function performKeywordResearch(
     {
       keyword: `downtown ${city.toLowerCase()} luxury hotels`,
       searchVolume: 2900,
-      cpcUsd: 3.40,
+      cpcUsd: 3.4,
       competition: "high",
       keywordDifficulty: 54,
       searchIntent: "commercial",
@@ -77,7 +100,7 @@ export function performKeywordResearch(
     {
       keyword: `rooftop restaurant ${city.toLowerCase()} departure`,
       searchVolume: 3600,
-      cpcUsd: 1.20,
+      cpcUsd: 1.2,
       competition: "medium",
       keywordDifficulty: 29,
       searchIntent: "transactional",
@@ -101,7 +124,7 @@ export function performKeywordResearch(
     {
       keyword: `pet friendly luxury hotels ${city.toLowerCase()}`,
       searchVolume: 1200,
-      cpcUsd: 2.10,
+      cpcUsd: 2.1,
       competition: "medium",
       keywordDifficulty: 35,
       searchIntent: "commercial",
@@ -113,7 +136,7 @@ export function performKeywordResearch(
     {
       keyword: `downtown ${city.toLowerCase()} meeting event venues`,
       searchVolume: 720,
-      cpcUsd: 4.80,
+      cpcUsd: 4.8,
       competition: "high",
       keywordDifficulty: 46,
       searchIntent: "transactional",
@@ -141,14 +164,17 @@ export function performKeywordResearch(
         theme: "Pet-Friendly Luxury Travel",
         missingKeywordKeywords: [`pet friendly luxury hotels ${city.toLowerCase()}`, "dog friendly hotel downtown"],
         potentialTrafficLiftMonthly: 650,
-        recommendedAction: "Build a dedicated pet amenities landing page with pet policies, local dog park map, and JSON-LD Hotel schema.",
+        recommendedAction:
+          "Build a dedicated pet amenities landing page with pet policies, local dog park map, and JSON-LD Hotel schema.",
       },
       {
         theme: "Historic Architecture & Art Tourism",
         missingKeywordKeywords: [`historic meier frank building ${city.toLowerCase()}`, "curated hotel art collection"],
         potentialTrafficLiftMonthly: 420,
-        recommendedAction: "Publish an architectural guide highlighting the historic department store restoration and contemporary art gallery floor.",
+        recommendedAction:
+          "Publish an architectural guide highlighting the historic department store restoration and contemporary art gallery floor.",
       },
     ],
+    dataSource: "simulated",
   };
 }

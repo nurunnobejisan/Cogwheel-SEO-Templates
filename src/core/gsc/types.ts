@@ -75,10 +75,15 @@ export interface GscUrlInspectionResult {
   indexStatusResult: {
     verdict: "PASS" | "PARTIAL" | "FAIL" | "NEUTRAL";
     coverageState: string;
-    crawledAs: string;
+    crawledAs?: string;
     googleCanonical: string;
     userCanonical: string;
-    indexingState: "INDEXING_ALLOWED" | "BLOCKED_BY_META_TAG" | "BLOCKED_BY_ROBOTS_TXT" | "NOT_INDEXED";
+    indexingState:
+      | "INDEXING_ALLOWED"
+      | "BLOCKED_BY_META_TAG"
+      | "BLOCKED_BY_ROBOTS_TXT"
+      | "NOT_INDEXED"
+      | "INDEXING_STATE_UNSPECIFIED";
     lastCrawlTime?: string;
     pageFetchState?: string;
     robotsTxtState?: string;
