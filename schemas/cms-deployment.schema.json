@@ -1,0 +1,50 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "CmsDeploymentResult",
+  "description": "Outcome of deploying a Phase 2 FixPatch through the Cogwheel CMS integration layer (cms/deploy.ts).",
+  "type": "object",
+  "properties": {
+    "patchId": { "type": "string", "minLength": 1 },
+    "targetUrl": { "type": "string", "minLength": 1 },
+    "platform": { "type": "string", "enum": ["wordpress", "shopify", "webflow", "custom"] },
+    "status": {
+      "type": "string",
+      "enum": ["deployed", "queued", "dry_run", "failed", "rolled_back"]
+    },
+    "applied": { "type": "integer", "minimum": 0 },
+    "queued": { "type": "integer", "minimum": 0 },
+    "rolledBack": { "type": "boolean" },
+    "reason": { "type": "string" },
+    "errors": { "type": "array", "items": { "type": "string" } },
+    "diff": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": { "type": "string" },
+          "action": { "type": "string", "enum": ["replace", "inject", "remove", "manual_review"] },
+          "before": { "type": "string" },
+          "after": { "type": "string" },
+          "risk": { "type": "string", "enum": ["low", "medium", "high"] },
+          "autoApply": { "type": "boolean" }
+        },
+        "required": ["field", "action", "before", "after", "risk", "autoApply"],
+        "additionalProperties": false
+      }
+    },
+    "timestamp": { "type": "string", "minLength": 1 }
+  },
+  "required": [
+    "patchId",
+    "targetUrl",
+    "platform",
+    "status",
+    "applied",
+    "queued",
+    "rolledBack",
+    "errors",
+    "diff",
+    "timestamp"
+  ],
+  "additionalProperties": false
+}
