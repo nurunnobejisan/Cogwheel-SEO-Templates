@@ -1,0 +1,7 @@
+[
+  {
+    "url": "https://example.com",
+    "expectedActionTitles": [],
+    "forbiddenTokens": ["ranking", "search volume", "citation score", "competitor"]
+  }
+]
