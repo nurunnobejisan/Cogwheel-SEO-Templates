@@ -166,7 +166,8 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 - Synthetic GSC rows, keyword volumes, backlink profiles and AI citations are gated behind `ALLOW_SIMULATED_DATA` (default off) in `src/core/{gsc,open-seo}`.
 - Reports carry `dataProvenance` (measured / unavailable / methodology); UI shows a provenance banner.
 - Python: `hotel_extractor.py` no longer invents rooms, venues, meeting-space numbers, policies, airports, convention centres or landmarks; `template_processor.py` emits `Not provided` / `Not measured` gaps instead of defaults; `batch_portfolio_audit.py` audits real fetched pages; `train_unified_model.py` no longer inflates benchmark adherence.
-- `CompsetRankingMatrix` requires operator-entered ranks (no random seeds); Labs GEO simulator and rich-snippet mockup are labelled illustrative instead of presenting invented scores.
+- `CompsetRankingMatrix` requires operator-entered competitors and ranks (no random seeds, no assumed comp-set). `GeoReadinessRadar` now reads measured JSON-LD/heading/canonical findings from `/api/full-audit`; it no longer simulates AI answers, engine percentages or search volumes. Client deliverables (memo, pitch deck, slide preview, email draft) contain no invented rankings, fees, citations or revenue figures.
+- `src/app/api/visibility-suite` no longer injects a default property, competitor set or prompt batch.
 
 ### Completed — security (C3, C4, H2, H10, M4)
 
@@ -191,7 +192,7 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 ### Remaining
 
 - M11 extension hardening: content-script idempotency guard, tighter permissions, encrypted storage for keys, OTA config consumption, theme toggle.
-- `shared/schemas/` materialization and a TS↔Python parity test.
+- A TS↔Python parity test for the materialized `shared/schemas/` contracts (schemas themselves are exported via `npm run export:schemas`).
 - Duplicate SEO engines (`rules/` vs `validators/`, three GEO scorers).
 
 ---
