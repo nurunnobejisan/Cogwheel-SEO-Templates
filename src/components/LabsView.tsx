@@ -1145,7 +1145,7 @@ export function LabsView({
             <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3 text-xs text-slate-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-slate-300 space-y-1.5">
               <div className="flex items-center justify-between text-[11px]">
                 <span className="font-semibold text-emerald-900 dark:text-emerald-300">Audited Target:</span>
-                <span className="font-mono text-slate-600 dark:text-slate-400">{property?.url || "https://thenines.com/"}</span>
+                <span className="font-mono text-slate-600 dark:text-slate-400">{property?.url || "No property URL set"}</span>
               </div>
               <div className="text-[11px] text-slate-500 dark:text-slate-400">
                 • Matches &ldquo;Heading Structure Optimization- thenines&rdquo; template<br/>

@@ -177,7 +177,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
               type="url"
               value={url}
               onChange={(e) => setUrl(e.target.value)}
-              placeholder="https://thenines.com/"
+              placeholder="https://your-property.com/"
               className="input"
             />
           </label>

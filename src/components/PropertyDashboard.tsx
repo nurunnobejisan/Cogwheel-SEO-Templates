@@ -189,8 +189,8 @@ export default function PropertyDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterMode, setFilterMode] = useState<"all" | "ready" | "upcoming">("ready");
   const [aiStatus, setAiStatus] = useState<{ provider: string; activeRules: number }>({
-    provider: "Online AI",
-    activeRules: 5,
+    provider: "Checking…",
+    activeRules: 0,
   });
 
   useEffect(() => {
@@ -317,7 +317,7 @@ export default function PropertyDashboard() {
           rules?: Array<{ active: boolean }>;
         };
         setAiStatus({
-          provider: tData.provider || "Online AI",
+          provider: tData.provider || "Provider not configured",
           activeRules: (tData.rules ?? []).filter((r) => r.active).length,
         });
       }
@@ -870,25 +870,19 @@ export default function PropertyDashboard() {
                       <span className="rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
                         AI Citation Engine
                       </span>
-                      <span className="font-mono text-xs font-bold text-purple-700 dark:text-purple-400">
-                        78% Ready
+                      <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                        Not measured
                       </span>
                     </div>
                     <h3 className="mt-2.5 font-display text-sm font-bold text-slate-900 dark:text-white">
                       AI &amp; GEO Readiness Radar
                     </h3>
                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                      Audit ChatGPT Search, Google AI Overviews &amp; Perplexity citations across 5 schema pillars.
+                      Parse JSON-LD, answer coverage and entity signals. AI citations appear only
+                      when a visibility provider is connected.
                     </p>
-                    {/* Visual mini progress bars */}
-                    <div className="mt-3.5 space-y-1.5">
-                      <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
-                        <span>Citation Pillar Density</span>
-                        <span className="font-mono font-bold text-purple-600 dark:text-purple-400">78%</span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                        <div className="h-full rounded-full bg-gradient-to-r from-purple-500 to-indigo-500" style={{ width: "78%" }} />
-                      </div>
+                    <div className="mt-3.5 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-[11px] text-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">
+                      No GEO measurement yet — run the audit in Labs.
                     </div>
                   </div>
                   <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -911,25 +905,18 @@ export default function PropertyDashboard() {
                       <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
                         Local Comp-Set
                       </span>
-                      <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                        84% Win
+                      <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                        No data
                       </span>
                     </div>
                     <h3 className="mt-2.5 font-display text-sm font-bold text-slate-900 dark:text-white">
                       Local Comp-Set Intelligence
                     </h3>
                     <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                      Benchmark organic positions against top 3 local properties with keyword battleground metrics.
+                      Compare verified organic positions against the competitors you enter.
                     </p>
-                    {/* Visual comp-set comparison bar */}
-                    <div className="mt-3.5 space-y-1.5">
-                      <div className="flex items-center justify-between text-[10px] text-slate-500 dark:text-slate-400">
-                        <span>Battleground Advantage</span>
-                        <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">+16% Spread</span>
-                      </div>
-                      <div className="h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                        <div className="h-full rounded-full bg-gradient-to-r from-blue-500 to-emerald-500" style={{ width: "84%" }} />
-                      </div>
+                    <div className="mt-3.5 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-[11px] text-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">
+                      Add competitors and ranked keywords to calculate share of voice.
                     </div>
                   </div>
                   <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
@@ -1727,7 +1714,7 @@ export default function PropertyDashboard() {
         >
           <div className="w-full max-w-6xl">
             <HeadingStructureAuditModal
-              defaultUrl={activeProperty.url || "https://thenines.com/"}
+              defaultUrl={activeProperty.url}
               onClose={() => setShowHeadingAudit(false)}
             />
           </div>

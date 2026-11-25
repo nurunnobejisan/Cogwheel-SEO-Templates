@@ -37,16 +37,18 @@ interface KeywordBattle {
  * matrix starts empty and every value is entered by the operator. Values that
  * have not been entered display as "—" rather than a plausible-looking number.
  */
-export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
-  const propertyName = property?.name || "Renaissance Shoals Resort & Spa";
-  const propertyCity = property?.city || "Florence";
-  const propertyState = property?.state || "AL";
+const COMP_COLORS = ["#8b5cf6", "#3b82f6", "#f59e0b", "#10b981", "#ef4444", "#6366f1"];
 
-  const [competitors] = useState<Competitor[]>([
-    { id: "c1", name: "GunRunner Boutique Hotel", shortName: "GunRunner", distance: "1.8 miles", color: "#8b5cf6" },
-    { id: "c2", name: "Courtyard Florence", shortName: "Courtyard", distance: "2.4 miles", color: "#3b82f6" },
-    { id: "c3", name: "Hampton Inn Downtown Florence", shortName: "Hampton Inn", distance: "2.1 miles", color: "#f59e0b" },
-  ]);
+export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
+  const propertyName = property?.name?.trim() || "";
+  const propertyCity = property?.city?.trim() || "";
+  const propertyState = property?.state?.trim() || "";
+  const displayName = propertyName || "Target property";
+  const marketLabel = [propertyCity, propertyState].filter(Boolean).join(", ") || "the local market";
+
+  // Competitors are operator-entered. No competitor name, distance or domain is
+  // guessed from the property location.
+  const [competitors, setCompetitors] = useState<Competitor[]>([]);
 
   // No fabricated seed rows — the operator supplies the benchmark data.
   const [keywords, setKeywords] = useState<KeywordBattle[]>([]);
@@ -54,6 +56,9 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
   const [newKeyword, setNewKeyword] = useState("");
   const [newSv, setNewSv] = useState<string>("");
   const [newRank, setNewRank] = useState<string>("");
+  const [newCompName, setNewCompName] = useState("");
+  const [newCompShort, setNewCompShort] = useState("");
+  const [newCompDistance, setNewCompDistance] = useState("");
 
   // Share of Voice counts only keywords whose rank has actually been entered.
   const ranked = keywords.filter((k) => typeof k.yourRank === "number");
@@ -71,12 +76,44 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
         keyword: newKeyword.trim().toLowerCase(),
         searchVolume: sv !== null && Number.isFinite(sv) ? sv : null,
         yourRank: rank !== null && Number.isFinite(rank) ? rank : null,
-        compRanks: { c1: null, c2: null, c3: null },
+        compRanks: Object.fromEntries(competitors.map((c) => [c.id, null])),
       },
     ]);
     setNewKeyword("");
     setNewSv("");
     setNewRank("");
+  };
+
+  const handleAddCompetitor = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCompName.trim()) return;
+    const id = `c${Date.now().toString(36)}`;
+    const name = newCompName.trim();
+    const competitor: Competitor = {
+      id,
+      name,
+      shortName: newCompShort.trim() || name.split(" ").slice(0, 2).join(" "),
+      distance: newCompDistance.trim(),
+      color: COMP_COLORS[competitors.length % COMP_COLORS.length],
+    };
+    setCompetitors((prev) => [...prev, competitor]);
+    setKeywords((prev) =>
+      prev.map((kw) => ({ ...kw, compRanks: { ...kw.compRanks, [id]: null } }))
+    );
+    setNewCompName("");
+    setNewCompShort("");
+    setNewCompDistance("");
+  };
+
+  const handleRemoveCompetitor = (id: string) => {
+    setCompetitors((prev) => prev.filter((c) => c.id !== id));
+    setKeywords((prev) =>
+      prev.map((kw) => {
+        const compRanks = { ...kw.compRanks };
+        delete compRanks[id];
+        return { ...kw, compRanks };
+      })
+    );
   };
 
   return (
@@ -91,8 +128,8 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
             Local Comp-Set Ranking Matrix
           </h2>
           <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
-            Benchmark <span className="font-semibold text-slate-800 dark:text-white">{propertyName}</span> against
-            local properties in the {propertyCity} market. Ranks are operator-entered — no rank-tracking
+            Benchmark <span className="font-semibold text-slate-800 dark:text-white">{displayName}</span> against
+            properties you select in {marketLabel}. Ranks are operator-entered — no rank-tracking
             provider is connected.
           </p>
         </div>
@@ -132,29 +169,73 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
             </span>
           </div>
           <div className="mt-1.5 font-bold text-sm text-slate-900 dark:text-white truncate">
-            {propertyName}
+            {displayName}
           </div>
           <div className="text-xs text-slate-500 dark:text-slate-400">Primary Domain</div>
         </div>
 
-        {competitors.map((comp) => (
+        {competitors.map((comp, index) => (
           <div
             key={comp.id}
             className="rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900"
           >
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
-                Comp {comp.id.replace("c", "")}
+                Comp {index + 1}
               </span>
-              <span className="text-[11px] font-semibold text-slate-500">{comp.distance}</span>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] font-semibold text-slate-500">
+                  {comp.distance || "Distance not set"}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => handleRemoveCompetitor(comp.id)}
+                  className="text-[11px] font-bold text-slate-400 hover:text-rose-600"
+                  aria-label={`Remove ${comp.name}`}
+                >
+                  ×
+                </button>
+              </div>
             </div>
             <div className="mt-1.5 font-bold text-sm text-slate-900 dark:text-white truncate">
               {comp.name}
             </div>
-            <div className="text-xs text-slate-500 dark:text-slate-400">Local Comp-Set</div>
+            <div className="text-xs text-slate-500 dark:text-slate-400">Operator-entered comp</div>
           </div>
         ))}
       </div>
+
+      {/* Add competitor */}
+      <form
+        onSubmit={handleAddCompetitor}
+        className="flex flex-wrap items-center gap-3 rounded-2xl border border-dashed border-slate-300 bg-white p-3.5 dark:border-slate-700 dark:bg-slate-900"
+      >
+        <span className="text-xs font-bold text-slate-600 dark:text-slate-400">+ Add competitor:</span>
+        <input
+          type="text"
+          value={newCompName}
+          onChange={(e) => setNewCompName(e.target.value)}
+          placeholder="Competitor name"
+          className="min-w-[180px] flex-1 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 shadow-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+        />
+        <input
+          type="text"
+          value={newCompShort}
+          onChange={(e) => setNewCompShort(e.target.value)}
+          placeholder="Short name (optional)"
+          className="w-40 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 shadow-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+        />
+        <input
+          type="text"
+          value={newCompDistance}
+          onChange={(e) => setNewCompDistance(e.target.value)}
+          placeholder="Distance (optional)"
+          className="w-36 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 shadow-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+        />
+        <Button type="submit" variant="secondary" className="text-xs py-1.5">
+          Add Competitor
+        </Button>
+      </form>
 
       {/* Matrix Table */}
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
@@ -190,6 +271,7 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
                 <tr>
                   <td colSpan={competitors.length + 4} className="px-4 py-8 text-center text-slate-500 dark:text-slate-400">
                     No keywords benchmarked yet. Add a keyword and its verified rank below to build the matrix.
+                    {competitors.length === 0 && " Add at least one competitor to compare positions."}
                   </td>
                 </tr>
               )}
@@ -274,7 +356,7 @@ export function CompsetRankingMatrix({ property, onExportMemo }: CompsetProps) {
             type="text"
             value={newKeyword}
             onChange={(e) => setNewKeyword(e.target.value)}
-            placeholder="e.g. florence riverfront suites"
+            placeholder="e.g. riverfront suites"
             className="flex-1 min-w-[200px] rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-900 shadow-sm focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-white"
           />
           <input

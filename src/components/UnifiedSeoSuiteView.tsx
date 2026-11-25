@@ -131,7 +131,7 @@ export function UnifiedSeoSuiteView({
   onOpenHeadingAudit,
 }: UnifiedSeoSuiteViewProps) {
   const [subTab, setSubTab] = useState<SuiteSubTab>("full-audit");
-  const [targetUrl, setTargetUrl] = useState<string>(property?.websiteUrl || property?.url || "https://thenines.com");
+  const [targetUrl, setTargetUrl] = useState<string>(property?.websiteUrl || property?.url || "");
   const [maxPages, setMaxPages] = useState<number>(25);
   const [includeGsc, setIncludeGsc] = useState<boolean>(true);
   const [includeGeo, setIncludeGeo] = useState<boolean>(true);

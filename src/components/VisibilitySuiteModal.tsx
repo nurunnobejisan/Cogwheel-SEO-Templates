@@ -498,7 +498,7 @@ export function VisibilitySuiteModal({
                 value={competitorsText}
                 onChange={(e) => setCompetitorsText(e.target.value)}
                 rows={3}
-                placeholder={"GunRunner Boutique Hotel, gunrunnerhotel.com\nCourtyard Florence, marriott.com"}
+                placeholder={"Competitor A, competitor-a.com\nCompetitor B, competitor-b.com"}
                 className="input font-mono text-xs resize-y"
               />
               <p className="mt-1 text-[10px] text-slate-400">

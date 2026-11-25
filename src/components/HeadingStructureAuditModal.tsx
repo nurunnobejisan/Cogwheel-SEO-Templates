@@ -22,7 +22,7 @@ interface HeadingAuditApiResponse {
 }
 
 export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) {
-  const [urlInput, setUrlInput] = useState(defaultUrl || "https://thenines.com/");
+  const [urlInput, setUrlInput] = useState(defaultUrl || "");
   const [maxPages, setMaxPages] = useState(50);
   const [delayMs, setDelayMs] = useState(100);
   const [includeSubdomains, setIncludeSubdomains] = useState(false);
@@ -179,7 +179,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                   type="url"
                   value={urlInput}
                   onChange={(e) => setUrlInput(e.target.value)}
-                  placeholder="https://thenines.com/"
+                  placeholder="https://your-property.com/"
                   disabled={loading}
                   className="flex-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                 />
