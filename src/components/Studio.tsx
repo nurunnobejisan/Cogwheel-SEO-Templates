@@ -86,6 +86,8 @@ export default function Studio({
   const [summary, setSummary] = useState<BucketSummary[]>([]);
   const [state, setState] = useState<MatrixState | null>(null);
   const [builtFor, setBuiltFor] = useState<{ template: TemplateId; pagesKey: string } | null>(null);
+  // The allocator's original proposal, kept so operator edits are detectable at capture time.
+  const [originalMatrix, setOriginalMatrix] = useState<MatrixRow[] | null>(null);
 
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -204,6 +206,7 @@ export default function Studio({
     const matrix = autoApprove ? s.matrix.map((r) => ({ ...r, status: "approved" as const })) : s.matrix;
     const nextState: MatrixState = { matrix, allocation: s.allocation };
     setState(nextState);
+    setOriginalMatrix(s.matrix);
     setBuiltFor({ template, pagesKey });
     setSavedRunId(null);
     return nextState;
