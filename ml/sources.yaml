@@ -1,0 +1,221 @@
+# SEO Studio ML — licence registry
+#
+# Single source of truth for every dataset that may enter a build.
+# `use` is one of: train | train_attribution | eval_only | avoid
+#
+#   train             may enter a train split
+#   train_attribution may enter a train split but MUST be attributed in
+#                     THIRD_PARTY_NOTICES.md and docs/ATTRIBUTION.md, and is
+#                     limited to the `feeds` described (validation, synthetic
+#                     templates, RAG corpus, seed URLs) — never bulk text
+#   eval_only         evaluation only, never training (GEO-bench is derived
+#                     from MS MARCO/ORCAS; HTTP Archive terms not yet confirmed)
+#   avoid             forbidden: non-commercial / research-only licences
+#
+# scripts/validate-training-data.mjs reads this file and FAILS a train file
+# that references a source whose `use` is `avoid` or `eval_only`.
+#
+# Rule 3 (licence-clean training only): only `train` and `train_attribution`
+# sources enter a train split. Never use MS MARCO, ORCAS, HotelRec, or anything
+# derived from them — including GEO-bench as training data.
+
+version: 1
+updated: "2026-11-27"
+
+sources:
+  # ---------------------------------------------------------------- collect --
+  - id: wdc-2024
+    name: "Web Data Commons JSON-LD / Microdata corpus 2024 (Oct 2024 Common Crawl)"
+    url: "https://webdatacommons.org/"
+    licence: "Common Crawl Terms of Use"
+    use: train
+    feeds:
+      - schema_generation
+      - page_classification
+    attribution_required: false
+    notes: >-
+      Restricted to the Hotel, LodgingBusiness, Restaurant, FAQPage and
+      BreadcrumbList subsets. Streamed per record; never loaded whole.
+
+  - id: wdc-tables-2023
+    name: "WDC Schema.org Table Corpus 2023"
+    url: "https://webdatacommons.org/schemaorgtables/"
+    licence: "Common Crawl Terms of Use"
+    use: train
+    feeds:
+      - schema_generation
+    attribution_required: false
+    notes: "Table-shaped structured data; used for schema field coverage only."
+
+  - id: commoncrawl
+    name: "Common Crawl WARC / WET via cdx_toolkit"
+    url: "https://commoncrawl.org/"
+    licence: "Common Crawl Terms of Use; page text remains the owners' copyright"
+    use: train
+    feeds:
+      - page_classification
+      - rag_synthesis
+    attribution_required: false
+    notes: >-
+      Structure + labels only (structure of the markup, page-type labels).
+      Body prose is never copied into a target. Prefer archived captures over
+      live crawling.
+
+  - id: lighthouse-labels
+    name: "Lighthouse run on your own crawl"
+    url: "https://github.com/GoogleChrome/lighthouse"
+    licence: "Apache-2.0"
+    use: train
+    feeds:
+      - technical_seo_labels
+    attribution_required: false
+    notes: "Labels produced from our own crawl, cross-checked against the rules engine."
+
+  # ----------------------------------------------------------------- label ---
+  - id: wikidata
+    name: "Wikidata hotel entities"
+    url: "https://www.wikidata.org/"
+    licence: "CC0"
+    use: train
+    feeds:
+      - entity_gap_analysis
+    attribution_required: false
+    notes: "Entity grounding for GEO (name, location, brand, amenities as facts)."
+
+  - id: schemaorg
+    name: "schema.org vocabulary repository (data/)"
+    url: "https://github.com/schemaorg/schemaorg"
+    licence: "CC BY-SA 3.0"
+    use: train_attribution
+    feeds:
+      - validators
+    attribution_required: true
+    notes: >-
+      Validation and synthetic templates only, not bulk text. Attribution
+      required in THIRD_PARTY_NOTICES.md and docs/ATTRIBUTION.md.
+
+  - id: google-search-central
+    name: "Google Search Central documentation"
+    url: "https://developers.google.com/search"
+    licence: "CC BY 4.0 text, Apache-2.0 code"
+    use: train_attribution
+    feeds:
+      - rag_synthesis
+    attribution_required: true
+    notes: >-
+      RAG corpus for the audit explainer. Every retrieved chunk keeps its
+      source URL so recommendations can cite it. Attribution required.
+
+  - id: osm-hotels
+    name: "OpenStreetMap tourism=hotel"
+    url: "https://www.openstreetmap.org/"
+    licence: "ODbL"
+    use: train_attribution
+    feeds:
+      - crawl_seeds
+    attribution_required: true
+    notes: >-
+      Seed URL list only, kept as a separate database (ODbL share-alike must
+      not be absorbed into the training corpus). Attribution required.
+
+  - id: httparchive
+    name: "HTTP Archive on BigQuery (free tier 1 TB/month)"
+    url: "https://httparchive.org/"
+    licence: "Terms not yet confirmed"
+    use: eval_only
+    feeds:
+      - page_classification
+    attribution_required: false
+    notes: "Classifier eval only until the terms are confirmed. Flip to train after review."
+
+  # ------------------------------------------------------------------ eval ---
+  - id: geo-bench
+    name: "GEO-bench (Hugging Face GEO-Optim/geo-bench)"
+    url: "https://huggingface.co/datasets/GEO-Optim/geo-bench"
+    licence: "CC BY-SA 4.0, derived from MS MARCO / ORCAS"
+    use: eval_only
+    feeds:
+      - entity_gap_analysis
+    attribution_required: true
+    notes: >-
+      EVALUATION ONLY. Derived from MS MARCO/ORCAS (non-commercial research
+      only), so it must never enter a train split — this includes using it as
+      a source of training examples or distillation targets.
+
+  # ----------------------------------------------------------------- avoid ---
+  - id: ms-marco
+    name: "MS MARCO (Microsoft)"
+    url: "https://microsoft.github.io/msmarco/"
+    licence: "Non-commercial research only"
+    use: avoid
+    feeds: []
+    attribution_required: false
+    notes: "Forbidden as training data. Do not derive, remix or distil from it."
+
+  - id: orcas
+    name: "ORCAS (Microsoft)"
+    url: "https://microsoft.github.io/msmarceval/"
+    licence: "Non-commercial research only"
+    use: avoid
+    feeds: []
+    attribution_required: false
+    notes: "Forbidden as training data. Also blocks GEO-bench from training."
+
+  - id: hotelrec
+    name: "HotelRec (TripAdvisor reviews)"
+    url: ""
+    licence: "Academic research only"
+    use: avoid
+    feeds: []
+    attribution_required: false
+    notes: "Forbidden as training data. URL omitted on purpose — verify before any use."
+
+  # --------------------------------------------------------- own / first party
+  - id: vault
+    name: "Chrome extension training vault (approved records)"
+    url: ""
+    licence: "Own data + consent"
+    use: train
+    feeds:
+      - page_classification
+      - schema_generation
+      - metadata_generation
+    attribution_required: false
+    notes: "Only records with consent: true. stripPii before storage and before export."
+
+  - id: patches
+    name: "healing/ approved and rejected patches"
+    url: ""
+    licence: "Own data + consent"
+    use: train
+    feeds:
+      - schema_generation
+      - metadata_generation
+    attribution_required: false
+    notes: "Approved -> chosen, rejected -> rejected for DPO pairs."
+
+  - id: triples
+    name: "Reviewed / gold TrainingTriples"
+    url: ""
+    licence: "Own data + consent"
+    use: train
+    feeds:
+      - schema_generation
+      - metadata_generation
+      - rag_synthesis
+      - page_classification
+      - entity_gap_analysis
+    attribution_required: false
+    notes: >-
+      TRAINING_ELIGIBLE_TIERS only (reviewed, gold). Subject to
+      MIN_REVIEWED_PAIRS_FOR_TRAINING = 2000 for client-derived rows.
+
+  - id: repo-synthetic
+    name: "Existing data/training/unified_seo_*.jsonl"
+    url: ""
+    licence: "Own"
+    use: train
+    feeds:
+      - rag_synthesis
+    attribution_required: false
+    notes: "Train only after re-validation through the extended validator."
