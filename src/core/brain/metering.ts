@@ -2,8 +2,7 @@ import "server-only";
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-
-const FILE = path.join(process.cwd(), "data", "usage-meter.json");
+import { cogwheelDataFile } from "@/lib/platform/data-dir";
 
 interface ClientUsage {
   calls: number;
@@ -13,9 +12,13 @@ interface ClientUsage {
 
 type Meter = Record<string, ClientUsage>;
 
+function meterFile(): string {
+  return cogwheelDataFile("usage-meter.json");
+}
+
 async function readMeter(): Promise<Meter> {
   try {
-    return JSON.parse(await fs.readFile(FILE, "utf8")) as Meter;
+    return JSON.parse(await fs.readFile(meterFile(), "utf8")) as Meter;
   } catch {
     return {};
   }
@@ -23,14 +26,20 @@ async function readMeter(): Promise<Meter> {
 
 export async function recordClientUsage(clientId: string): Promise<void> {
   if (!clientId) return;
-  const meter = await readMeter();
-  const prev = meter[clientId] ?? { calls: 0, estimatedCostUsd: 0, lastUsedAt: new Date().toISOString() };
-  prev.calls += 1;
-  prev.estimatedCostUsd = Number((prev.estimatedCostUsd + 0.003).toFixed(4));
-  prev.lastUsedAt = new Date().toISOString();
-  meter[clientId] = prev;
-  await fs.mkdir(path.dirname(FILE), { recursive: true });
-  await fs.writeFile(FILE, JSON.stringify(meter, null, 2), "utf8");
+  try {
+    const meter = await readMeter();
+    const prev = meter[clientId] ?? { calls: 0, estimatedCostUsd: 0, lastUsedAt: new Date().toISOString() };
+    prev.calls += 1;
+    prev.estimatedCostUsd = Number((prev.estimatedCostUsd + 0.003).toFixed(4));
+    prev.lastUsedAt = new Date().toISOString();
+    meter[clientId] = prev;
+    const file = meterFile();
+    await fs.mkdir(file.slice(0, file.lastIndexOf("/")) || ".", { recursive: true });
+    await fs.writeFile(file, JSON.stringify(meter, null, 2), "utf8");
+  } catch (err) {
+    // Metering is best-effort and must never fail the measured request.
+    console.warn("[brain:metering] usage write skipped:", err instanceof Error ? err.message : String(err));
+  }
 }
 
 export async function getClientUsage(clientId: string): Promise<ClientUsage | null> {
