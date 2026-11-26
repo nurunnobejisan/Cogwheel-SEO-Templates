@@ -8,6 +8,7 @@ import {
   PageAuditDataSchema,
   OtaConfigSchema,
 } from "../src/schemas/validation.ts";
+import { MlExampleSchema, MlGoldenCaseSchema } from "../schemas/ml-example.ts";
 
 const SCHEMAS_DIR = path.resolve(process.cwd(), "schemas");
 
@@ -52,6 +53,18 @@ const EXPORT_TARGETS: SchemaExportTarget[] = [
     schema: OtaConfigSchema,
     name: "OtaConfig",
     description: "Standard JSON Schema for Over-the-Air (OTA) live sync rules, pixel thresholds, and scoring weights.",
+  },
+  {
+    fileName: "ml-example.schema.json",
+    schema: MlExampleSchema,
+    name: "MlExample",
+    description: "Unified ML training/eval example record (task, input, measured provenance, licence, split) used by ml/build and ml/eval.",
+  },
+  {
+    fileName: "ml-golden-case.schema.json",
+    schema: MlGoldenCaseSchema,
+    name: "MlGoldenCase",
+    description: "Hand-checked golden evaluation case: an MlExample with the section-9 checks to apply and an operator note.",
   },
 ];
 

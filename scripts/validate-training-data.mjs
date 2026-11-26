@@ -11,27 +11,84 @@
  *   - lacks a recognised `meta.category` or `meta.provenance`
  *   - duplicates another row's content (user + assistant) within or across files
  *
+ * Phase 0 additions (licence / synthetic governance):
+ *   - references a `meta.source` that is not in ml/sources.yaml
+ *   - is an ML-task row (see ML_TASK_CATEGORIES) without `meta.source`,
+ *     `meta.licence` and `meta.synthetic`
+ *   - sits in a TRAIN file while its source's `use` is `avoid` or `eval_only`
+ *   - carries a `meta.licence` that disagrees with ml/sources.yaml
+ *   - is `synthetic: true` inside a TRAIN file, or is synthetic yet marked
+ *     `provenance: "measured"` (rule 6)
+ *
  * Usage: node scripts/validate-training-data.mjs [file ...]
  * Default files: data/training/unified_seo_train.jsonl, data/training/unified_seo_eval.jsonl
+ *
+ * Golden evaluation cases live in a different shape; they are validated against
+ * the Zod single source of truth by scripts/validate-ml-examples.ts, which is
+ * chained onto `npm run train:validate`.
  */
 
 import { promises as fs } from "node:fs";
+import { fileURLToPath } from "node:url";
 import path from "node:path";
 import crypto from "node:crypto";
+import yaml from "js-yaml";
 
 const DEFAULT_FILES = [
   "data/training/unified_seo_train.jsonl",
   "data/training/unified_seo_eval.jsonl",
 ];
 
+const ML_TASK_CATEGORIES = new Set([
+  "schema_generation",
+  "metadata_generation",
+  "rag_synthesis",
+  "page_classification",
+  "entity_gap_analysis",
+]);
+
 const ALLOWED_CATEGORIES = new Set([
   "Google Algorithm Updates",
   "20 Claude-SEO Agents",
   "78-Keyword Strategy & Intent",
   "Search Console Cannibalization & GEO",
+  ...ML_TASK_CATEGORIES,
 ]);
 
 const ALLOWED_PROVENANCE = new Set(["measured", "estimated", "unavailable"]);
+
+/** `use` values that may enter a train split. */
+const TRAINABLE_USES = new Set(["train", "train_attribution"]);
+
+/** Resolved from this file's location so the registry is found from any cwd. */
+const SOURCES_YAML = fileURLToPath(new URL("../ml/sources.yaml", import.meta.url));
+
+/** id -> { use, licence, attribution_required, feeds } */
+async function loadSourceRegistry() {
+  const raw = await fs.readFile(SOURCES_YAML, "utf8");
+  const doc = yaml.load(raw);
+  const entries = Array.isArray(doc?.sources) ? doc.sources : [];
+  if (!entries.length) {
+    throw new Error(`ml/sources.yaml declares no \`sources\` entries`);
+  }
+  const byId = new Map();
+  for (const entry of entries) {
+    if (!entry || typeof entry.id !== "string" || typeof entry.use !== "string") {
+      throw new Error("ml/sources.yaml: every entry needs a string `id` and `use`");
+    }
+    if (byId.has(entry.id)) throw new Error(`ml/sources.yaml: duplicate id ${entry.id}`);
+    byId.set(entry.id, entry);
+  }
+  return byId;
+}
+
+/**
+ * A file is a train file when its name carries `train` (unified_seo_train.jsonl,
+ * .../train/*.jsonl). Eval/test files never are.
+ */
+function isTrainFile(rel) {
+  return /(^|[/\\_.-])train([/\\_.-]|$)/i.test(rel);
+}
 
 // Unambiguously bad regardless of who wrote them, anywhere in the row.
 const HARD_PATTERNS = [
@@ -86,6 +143,61 @@ function scanAssistantForInventedMetrics(assistant, supplied) {
   return hits;
 }
 
+/**
+ * Licence / synthetic governance for one row (rules 3 and 6).
+ *
+ * Legacy rows (the four original categories) predate the licence registry and
+ * carry no `meta.source`; they are left alone so this stays backward
+ * compatible. ML-task rows must be fully attributed.
+ */
+function scanMetaGovernance({ meta, trainFile, registry }) {
+  const hits = [];
+  const isMlTask = ML_TASK_CATEGORIES.has(meta.category);
+  const source = typeof meta.source === "string" ? meta.source : null;
+  const entry = source ? registry.get(source) : null;
+
+  if (isMlTask) {
+    if (!source) hits.push("licence: meta.source is required for ML-task rows");
+    if (typeof meta.licence !== "string" || !meta.licence.trim()) {
+      hits.push("licence: meta.licence is required for ML-task rows");
+    }
+    if (typeof meta.synthetic !== "boolean") {
+      hits.push("synthetic: meta.synthetic (true/false) is required for ML-task rows");
+    }
+  }
+
+  if (source && !entry) {
+    hits.push(`licence: meta.source "${source}" is not declared in ml/sources.yaml`);
+  }
+
+  if (entry) {
+    if (!TRAINABLE_USES.has(entry.use) && trainFile) {
+      hits.push(
+        `licence: source "${source}" has use=${entry.use}, which may not enter a train file`,
+      );
+    }
+    if (
+      typeof meta.licence === "string" &&
+      meta.licence.trim() &&
+      entry.licence &&
+      meta.licence.trim() !== String(entry.licence).trim()
+    ) {
+      hits.push(
+        `licence: meta.licence "${meta.licence}" disagrees with ml/sources.yaml ("${entry.licence}")`,
+      );
+    }
+  }
+
+  if (meta.synthetic === true) {
+    if (trainFile) hits.push("synthetic: synthetic rows may not enter a train file (rule 6)");
+    if (meta.provenance === "measured") {
+      hits.push("synthetic: a synthetic row cannot claim provenance=measured (rule 6)");
+    }
+  }
+
+  return hits;
+}
+
 async function main() {
   const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
   const files = args.length ? args : DEFAULT_FILES;
@@ -93,7 +205,17 @@ async function main() {
   const seenKeys = new Map();
   let total = 0;
 
+  let registry;
+  try {
+    registry = await loadSourceRegistry();
+    console.log(`licence registry: ml/sources.yaml (${registry.size} sources)`);
+  } catch (err) {
+    console.error(`❌ cannot load ml/sources.yaml: ${err.message}`);
+    process.exit(1);
+  }
+
   for (const rel of files) {
+    const trainFile = isTrainFile(rel);
     const abs = path.isAbsolute(rel) ? rel : path.join(process.cwd(), rel);
     let lines;
     try {
@@ -144,6 +266,9 @@ async function main() {
       }
       if (!ALLOWED_PROVENANCE.has(meta.provenance)) {
         errors.push(`${where}: meta.provenance missing or unrecognised (${meta.provenance ?? "none"})`);
+      }
+      for (const hit of scanMetaGovernance({ meta, trainFile, registry })) {
+        errors.push(`${where}: ${hit}`);
       }
 
       const key = contentKey(msgs);

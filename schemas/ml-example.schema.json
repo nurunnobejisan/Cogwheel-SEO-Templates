@@ -1,0 +1,224 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MlExample",
+  "description": "Unified ML training/eval example record (task, input, measured provenance, licence, split) used by ml/build and ml/eval.",
+  "$ref": "#/definitions/MlExample",
+  "definitions": {
+    "MlExample": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$"
+        },
+        "task": {
+          "type": "string",
+          "enum": [
+            "schema_generation",
+            "metadata_generation",
+            "rag_synthesis",
+            "page_classification",
+            "entity_gap_analysis"
+          ]
+        },
+        "input": {
+          "type": "object",
+          "properties": {
+            "url": {
+              "type": "string",
+              "format": "uri"
+            },
+            "domainHash": {
+              "type": "string",
+              "minLength": 1
+            },
+            "pageType": {
+              "type": "string",
+              "enum": [
+                "hotel_homepage",
+                "room_details",
+                "amenities",
+                "booking",
+                "location",
+                "article",
+                "landing_page",
+                "other",
+                "dining",
+                "spa",
+                "offers",
+                "meetings_events",
+                "faq",
+                "gallery",
+                "contact"
+              ]
+            },
+            "text": {
+              "type": "string"
+            },
+            "measured": {
+              "type": "object",
+              "additionalProperties": {}
+            },
+            "findings": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "issueId": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "category": {
+                    "type": "string",
+                    "enum": [
+                      "metadata",
+                      "content",
+                      "media",
+                      "technical",
+                      "accessibility",
+                      "schema",
+                      "hospitality"
+                    ]
+                  },
+                  "severity": {
+                    "type": "string",
+                    "enum": [
+                      "critical",
+                      "high",
+                      "medium",
+                      "low",
+                      "info"
+                    ]
+                  },
+                  "fixable": {
+                    "type": "boolean"
+                  },
+                  "cmsTargetField": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "context": {
+                    "type": "object",
+                    "properties": {
+                      "currentValue": {
+                        "type": [
+                          "string",
+                          "number",
+                          "boolean",
+                          "null"
+                        ]
+                      },
+                      "selector": {
+                        "type": "string"
+                      },
+                      "imageSrc": {
+                        "type": "string"
+                      },
+                      "recommendedAction": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "currentValue",
+                      "selector",
+                      "recommendedAction"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "issueId",
+                  "category",
+                  "severity",
+                  "fixable",
+                  "cmsTargetField",
+                  "context"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "retrieved": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "passage": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "url",
+                  "passage"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "domainHash",
+            "measured"
+          ],
+          "additionalProperties": false
+        },
+        "output": {},
+        "provenance": {
+          "type": "string",
+          "enum": [
+            "measured",
+            "estimated",
+            "unavailable"
+          ]
+        },
+        "source": {
+          "type": "string",
+          "minLength": 1
+        },
+        "licence": {
+          "type": "string",
+          "minLength": 1
+        },
+        "synthetic": {
+          "type": "boolean"
+        },
+        "tenantId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "consent": {
+          "type": "boolean",
+          "const": true
+        },
+        "split": {
+          "type": "string",
+          "enum": [
+            "train",
+            "eval",
+            "test"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "id",
+        "task",
+        "input",
+        "provenance",
+        "source",
+        "licence",
+        "synthetic",
+        "split",
+        "createdAt"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
