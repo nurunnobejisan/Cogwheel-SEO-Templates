@@ -136,7 +136,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
               href="/"
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              CW
+              SJ
             </Link>
             <div>
               <Link

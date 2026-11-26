@@ -203,7 +203,7 @@ export function OperatorConsole() {
               href="/"
               className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              CW
+              SJ
             </Link>
             <div>
               <div className="flex items-center gap-2">

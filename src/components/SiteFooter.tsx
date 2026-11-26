@@ -8,7 +8,7 @@ export function SiteFooter() {
           <div>
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950">
-                CW
+                SJ
               </span>
               <span className="font-display text-body font-bold text-slate-900 dark:text-white">
                 SEO &amp; GEO Studio

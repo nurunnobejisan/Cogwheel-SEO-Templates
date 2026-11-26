@@ -19,7 +19,7 @@ export default function TemplatesPage() {
               href="/"
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              CW
+              SJ
             </Link>
             <div>
               <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">

@@ -270,11 +270,10 @@ export function UnifiedSeoSuiteView({
   };
 
   // Answer questions from the current audit report (no external model call)
-  const handleSendChat = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!chatInput.trim() || isChatLoading) return;
+  const sendQuestion = (raw: string) => {
+    const userText = raw.trim();
+    if (!userText || isChatLoading) return;
 
-    const userText = chatInput.trim();
     setChatInput("");
     setChatMessages((prev) => [...prev, { role: "user", content: userText }]);
     setIsChatLoading(true);
@@ -285,6 +284,11 @@ export function UnifiedSeoSuiteView({
       { role: "assistant", content: answer.content, toolUsed: answer.toolUsed },
     ]);
     setIsChatLoading(false);
+  };
+
+  const handleSendChat = (e: React.FormEvent) => {
+    e.preventDefault();
+    sendQuestion(chatInput);
   };
 
   return (
@@ -785,7 +789,7 @@ export function UnifiedSeoSuiteView({
                 <button
                   key={promptText}
                   type="button"
-                  onClick={() => setChatInput(promptText)}
+                  onClick={() => sendQuestion(promptText)}
                   className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-tiny font-medium text-slate-700 transition hover:border-brand hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-brand dark:hover:text-white"
                 >
                   {promptText}
