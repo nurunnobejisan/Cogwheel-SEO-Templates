@@ -770,17 +770,72 @@ export function UnifiedSeoSuiteView({
             Powered by the integrated `mcp-gsc` protocol engine: Search Analytics, Period Comparison, URL Inspection, and Cannibalization Detection.
           </p>
 
-          <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-6 text-body text-slate-600 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-400">
-            <p className="font-semibold text-slate-800 dark:text-slate-200">
-              No Search Console data available
-            </p>
-            <p className="mt-1 text-caption">
-              Set <code className="rounded bg-slate-200 px-1 py-0.5 dark:bg-slate-700">GOOGLE_SERVICE_ACCOUNT_B64</code>{" "}
-              (or <code className="rounded bg-slate-200 px-1 py-0.5 dark:bg-slate-700">GOOGLE_SERVICE_ACCOUNT_JSON</code>)
-              and grant the service account access to the property. Until then, clicks, impressions, CTR and
-              position cannot be shown — they are never simulated.
-            </p>
-          </div>
+          {auditReport?.searchConsole?.isConnected ? (
+            <div className="mt-6 space-y-4">
+              <p className="text-caption text-slate-500">
+                {auditReport.searchConsole.siteUrl} · last {auditReport.searchConsole.periodDays} days
+              </p>
+              <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                {[
+                  { label: "Clicks", value: auditReport.searchConsole.totalClicks.toLocaleString() },
+                  { label: "Impressions", value: auditReport.searchConsole.totalImpressions.toLocaleString() },
+                  { label: "Average CTR", value: `${(auditReport.searchConsole.averageCtr * 100).toFixed(2)}%` },
+                  { label: "Average position", value: auditReport.searchConsole.averagePosition.toFixed(1) },
+                ].map((metric) => (
+                  <div key={metric.label} className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+                    <div className="text-tiny font-bold uppercase tracking-wider text-slate-500">{metric.label}</div>
+                    <div className="mt-1 font-display text-lg font-extrabold text-slate-900 dark:text-white">{metric.value}</div>
+                  </div>
+                ))}
+              </div>
+              <div className={`rounded-xl border p-4 ${auditReport.searchConsole.cannibalizationDetectedCount > 0 ? "border-amber-300 bg-amber-50/60 dark:border-amber-900/60 dark:bg-amber-950/20" : "border-emerald-200 bg-emerald-50/50 dark:border-emerald-900/50 dark:bg-emerald-950/20"}`}>
+                <p className="font-semibold text-slate-800 dark:text-slate-200">
+                  {auditReport.searchConsole.cannibalizationDetectedCount} cannibalization conflict{auditReport.searchConsole.cannibalizationDetectedCount === 1 ? "" : "s"} detected
+                </p>
+                <p className="mt-1 text-caption text-slate-600 dark:text-slate-400">
+                  {auditReport.searchConsole.cannibalizationDetectedCount > 0
+                    ? "Two or more URLs compete for the same query. Consolidate internal links onto one canonical target per query."
+                    : "No query-level conflict was detected in the selected window."}
+                </p>
+              </div>
+              {auditReport.searchConsole.topQueries.length > 0 && (
+                <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                  <table className="w-full text-left text-caption">
+                    <thead className="bg-slate-50 text-tiny font-bold uppercase tracking-wider text-slate-500 dark:bg-slate-800/50">
+                      <tr>
+                        <th className="px-3 py-2">Query</th>
+                        <th className="px-3 py-2 text-right">Clicks</th>
+                        <th className="px-3 py-2 text-right">Impressions</th>
+                        <th className="px-3 py-2 text-right">Position</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {auditReport.searchConsole.topQueries.slice(0, 10).map((query) => (
+                        <tr key={query.query} className="border-t border-slate-100 dark:border-slate-800">
+                          <td className="px-3 py-2 text-slate-800 dark:text-slate-200">{query.query}</td>
+                          <td className="px-3 py-2 text-right text-slate-500">{query.clicks}</td>
+                          <td className="px-3 py-2 text-right text-slate-500">{query.impressions}</td>
+                          <td className="px-3 py-2 text-right text-slate-500">{query.position.toFixed(1)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-6 text-body text-slate-600 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-400">
+              <p className="font-semibold text-slate-800 dark:text-slate-200">
+                No Search Console data available
+              </p>
+              <p className="mt-1 text-caption">
+                Set <code className="rounded bg-slate-200 px-1 py-0.5 dark:bg-slate-700">GOOGLE_SERVICE_ACCOUNT_B64</code>{" "}
+                (or <code className="rounded bg-slate-200 px-1 py-0.5 dark:bg-slate-700">GOOGLE_SERVICE_ACCOUNT_JSON</code>)
+                and grant the service account access to the property{auditReport ? ", then run the audit again" : ", then run the audit"}.
+                Until then, clicks, impressions, CTR and position cannot be shown — they are never simulated.
+              </p>
+            </div>
+          )}
         </div>
       )}
 
@@ -791,19 +846,117 @@ export function UnifiedSeoSuiteView({
             Generative Engine Optimization (GEO) &amp; AI Citation Monitor
           </h2>
           <p className="mt-1 text-caption text-slate-500">
-            On-page readiness signals for generative engines. AI citation counts require a live engine
-            data source, which is not connected — no citation rates are shown or invented.
+            On-page readiness is computed from the audited page. Live citation counts require querying an
+            AI engine; run the check below to measure how often the brand is mentioned.
           </p>
 
-          <div className="mt-6 rounded-xl border border-dashed border-purple-300 bg-purple-50/40 p-6 text-body text-slate-600 dark:border-purple-900/60 dark:bg-purple-950/20 dark:text-slate-400">
-            <p className="font-semibold text-slate-800 dark:text-slate-200">
-              AI citation rates are not measured
-            </p>
-            <p className="mt-1 text-caption">
-              Reporting per-engine citation share (ChatGPT, Perplexity, Claude, Google AI Overviews)
-              requires querying those engines or a licensed visibility provider. Neither is connected,
-              so this panel intentionally shows no scores rather than estimated ones.
-            </p>
+          {auditReport ? (
+            <div className="mt-6 space-y-4">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                {[
+                  { label: "GEO readiness", value: auditReport.aiGeoVisibility.visibilityScore, hint: auditReport.aiGeoVisibility.dataAvailable ? "includes measured citations" : "on-page heuristic" },
+                  { label: "Brand entity clarity", value: auditReport.aiGeoVisibility.brandEntityClarity, hint: "structured-data & entity signals" },
+                  { label: "Fact density", value: auditReport.aiGeoVisibility.factDensityScore, hint: "quotable facts on the page" },
+                ].map((metric) => (
+                  <div key={metric.label} className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
+                    <div className="text-tiny font-bold uppercase tracking-wider text-slate-500">{metric.label}</div>
+                    <div className="mt-1 flex items-baseline gap-1">
+                      <span className="font-display text-2xl font-extrabold text-brand">{metric.value}</span>
+                      <span className="text-caption text-slate-500">/ 100</span>
+                    </div>
+                    <div className="mt-1 text-micro text-slate-500">{metric.hint}</div>
+                  </div>
+                ))}
+              </div>
+              {auditReport.aiGeoVisibility.keyEntityStrengths.length > 0 && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50/50 p-4 dark:border-emerald-900/50 dark:bg-emerald-950/20">
+                  <p className="text-tiny font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300">Strengths measured on the page</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-caption text-slate-700 dark:text-slate-300">
+                    {auditReport.aiGeoVisibility.keyEntityStrengths.slice(0, 6).map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {auditReport.aiGeoVisibility.recommendations.length > 0 && (
+                <div className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+                  <p className="text-tiny font-bold uppercase tracking-wider text-slate-500">Recommendations</p>
+                  <ul className="mt-2 list-disc space-y-1 pl-5 text-caption text-slate-700 dark:text-slate-300">
+                    {auditReport.aiGeoVisibility.recommendations.slice(0, 6).map((item) => (
+                      <li key={item}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              <p className="text-micro text-slate-500">Methodology: {auditReport.aiGeoVisibility.methodology}</p>
+            </div>
+          ) : (
+            <div className="mt-6 rounded-2xl border border-dashed border-slate-300 p-6 text-center dark:border-slate-700">
+              <p className="text-caption text-slate-500 dark:text-slate-400">
+                Run the unified audit to compute on-page GEO readiness for the target URL.
+              </p>
+            </div>
+          )}
+
+          <div className="mt-6 rounded-xl border border-purple-200 bg-purple-50/40 p-5 dark:border-purple-900/60 dark:bg-purple-950/20">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="font-semibold text-slate-800 dark:text-slate-200">Live AI-citation check</p>
+                <p className="mt-1 text-caption text-slate-600 dark:text-slate-400">
+                  Asks the configured engines (ChatGPT, Claude, Perplexity, Gemini) whether they mention the
+                  brand. Requires an AI provider key; no engine result is invented.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={handleRunVisibilityCheck}
+                disabled={visLoading || !(targetUrl || auditReport?.targetUrl)}
+                className="shrink-0 rounded-xl bg-purple-600 px-4 py-2 text-caption font-bold text-white shadow-sm transition hover:bg-purple-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {visLoading ? "Querying engines…" : "Run AI visibility check"}
+              </button>
+            </div>
+
+            {visError && (
+              <div className="mt-3 rounded-lg border border-amber-300 bg-amber-50/70 p-3 text-caption text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/30 dark:text-amber-200">
+                {visError}
+                {visError.includes("/platform") && (
+                  <button
+                    type="button"
+                    onClick={handleOpenPlatformConsole}
+                    className="ml-2 font-semibold underline underline-offset-2"
+                  >
+                    Open operator console
+                  </button>
+                )}
+              </div>
+            )}
+
+            {visRun && (
+              <div className="mt-4 space-y-3">
+                <p className="text-caption text-slate-600 dark:text-slate-400">
+                  {visRun.summary.availableAnswers} of {visRun.summary.totalPrompts} prompts answered across{" "}
+                  {visRun.summary.byProvider.filter((provider) => provider.available).length} engine(s).
+                </p>
+                <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                  {visRun.summary.byProvider.map((provider) => (
+                    <div key={provider.provider} className="rounded-xl border border-slate-200 bg-white p-4 dark:border-slate-800 dark:bg-slate-900">
+                      <div className="flex items-center justify-between">
+                        <span className="text-caption font-bold capitalize text-slate-800 dark:text-slate-200">{provider.provider}</span>
+                        <span className={`rounded-full px-2 py-0.5 text-micro font-bold ${provider.available ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300" : "bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400"}`}>
+                          {provider.available ? "connected" : "not connected"}
+                        </span>
+                      </div>
+                      <p className="mt-2 text-caption text-slate-600 dark:text-slate-400">
+                        {provider.available
+                          ? `${provider.mentionedPrompts}/${provider.answeredPrompts} prompts mention the brand (${provider.mentionRate !== null ? Math.round(provider.mentionRate * 100) : 0}%), ${provider.ownCitations ?? 0} own citations.`
+                          : provider.reason || "No API key configured for this engine."}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
