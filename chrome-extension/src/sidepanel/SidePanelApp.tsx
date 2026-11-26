@@ -32,6 +32,7 @@ import { ExportAuditDropdown } from "../components/ExportAuditDropdown";
 import { UniversalImageAuditCard } from "../components/UniversalImageAuditCard";
 import { UniversalHeadingAuditCard } from "../components/UniversalHeadingAuditCard";
 import { LivePageAuditCard } from "../components/LivePageAuditCard";
+import { GeoVisibilityCard } from "../components/GeoVisibilityCard";
 import { CompetitorCompareTab } from "../components/CompetitorCompareTab";
 import { SiteBundleModal } from "../components/SiteBundleModal";
 import { ExtensionSiteBundle } from "../types/extension";
@@ -785,6 +786,9 @@ export function SidePanelApp() {
 
         {/* Tab Body */}
         <main className="flex-1 p-3.5 space-y-4">
+          {/* GEO / AI visibility, measured with provenance labels */}
+          {activeTab === "dashboard" && <GeoVisibilityCard url={pageData.url} />}
+
           {/* Ask the brain */}
           {activeTab === "dashboard" && (
             <div className="rounded-xl border border-[#27272A] bg-[#111113] p-4 text-[#FAFAFA]">

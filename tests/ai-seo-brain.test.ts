@@ -18,6 +18,7 @@ import {
   riskForField,
   routeTask,
   SEED_KNOWLEDGE,
+  GEO_KNOWLEDGE,
   synthesizeMutation,
   validateFixPatch,
   validateMutation,
@@ -108,7 +109,7 @@ describe("Phase 2 — RAG knowledge base", () => {
 
   it("loads the curated corpus and retrieves relevant, ordered chunks", () => {
     const pipeline = createRagPipeline();
-    expect(pipeline.size()).toBe(SEED_KNOWLEDGE.length);
+    expect(pipeline.size()).toBe(SEED_KNOWLEDGE.length + GEO_KNOWLEDGE.length);
 
     const results = pipeline.knowledgeBase.search("title tag characters truncation", {
       topK: 3,

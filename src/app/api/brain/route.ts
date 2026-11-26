@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { runBrain } from "@/core/brain";
+import { BrainProvenanceError, runBrain } from "@/core/brain";
 import { recordClientUsage } from "@/core/brain/metering";
 import { principalFromRequest, isAuthenticatedPrincipal } from "@/lib/platform/auth";
 
@@ -24,6 +24,12 @@ export async function POST(req: NextRequest) {
     await recordClientUsage(principal.id);
     return NextResponse.json({ success: true, ...result });
   } catch (err) {
+    if (err instanceof BrainProvenanceError) {
+      return NextResponse.json(
+        { error: "Claim provenance check failed", details: err.message, provenanceCheck: err.check },
+        { status: 422 }
+      );
+    }
     return NextResponse.json(
       { error: "Brain run failed", details: err instanceof Error ? err.message : String(err) },
       { status: 500 }
@@ -42,6 +48,12 @@ export async function GET(req: NextRequest) {
     const result = await runBrain({ targetUrl, maxPages: 5 });
     return NextResponse.json({ success: true, ...result });
   } catch (err) {
+    if (err instanceof BrainProvenanceError) {
+      return NextResponse.json(
+        { error: "Claim provenance check failed", details: err.message, provenanceCheck: err.check },
+        { status: 422 }
+      );
+    }
     return NextResponse.json(
       { error: "Brain run failed", details: err instanceof Error ? err.message : String(err) },
       { status: 500 }

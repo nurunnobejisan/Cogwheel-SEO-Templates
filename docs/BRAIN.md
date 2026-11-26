@@ -4,24 +4,64 @@ The brain is a thin interpretation layer over the **measured** audit engine.
 
 ## Architecture
 - **Audit engine** (`/api/full-audit`, `src/core/full-audit`) produces measured facts + provenance.
-- **RAG** (`src/core/brain`, `ai/rag`) indexes `docs/`, `templates/`, `rules/`, `data/`, `schemas/`, `shared/` and the curated seed corpus.
-- **LLM interpretation** (`src/core/claude.ts`) is optional; when no provider is configured the brain returns a deterministic, measured-only summary.
+- **GEO engine** (`rules/geo`, `src/rules/geo`, `/api/geo/check`) measures llms.txt, AI-crawler rules, citability and drift.
+- **Visibility tracker** (`src/core/visibility`, `/api/visibility`) asks BYOK provider adapters a fixed buyer-prompt set and records mentions/citations over time.
+- **RAG** (`src/core/brain`, `ai/rag`) indexes `docs/`, `templates/`, `rules/`, `data/`, `schemas/`, `shared/` plus curated seed + GEO knowledge chunks.
+- **LLM interpretation** (`src/core/claude.ts`) is optional; when no provider is configured, or a provider fails, the brain returns a deterministic, measured-only summary.
 - **Hard constraint**: the system prompt forbids inventing rankings, volumes, citations, competitor names, fees, or revenue. Unavailable dimensions are reported as unavailable.
 
+## Tool registry
+`src/core/brain/tools.ts` exposes:
+
+| Tool | Provenance | Notes |
+| --- | --- | --- |
+| `full_audit` | measured | Full website audit, including the optional GEO report |
+| `schema_check` | measured | Schema validation from the audit |
+| `keyword_research` | measured / unavailable | Only measured when a keyword provider is configured |
+| `search_console` | measured / unavailable | Requires a connected GSC property |
+| `serp_data` | measured | Title/pixel budget only; no live SERP provider |
+| `llms_check` | measured / unavailable | Live llms.txt status, score, failed checks |
+| `citability` | estimated | 0–100 documented weighted heuristic with inputs |
+| `drift` | measured / unavailable | Snapshot diff; unavailable until a baseline exists |
+| `visibility_tracker` | measured / unavailable | Latest stored prompt × provider run |
+| `gap_detector` | measured / unavailable | Prompts with a measured answer but no brand mention |
+
 ## Endpoints
-- `POST /api/brain` `{ targetUrl, question?, maxPages? }` → measured audit + retrieved chunks + interpretation.
-- `POST /api/training-triples` `{ url, audit, expertFix }` → append a training triple (JSONL).
-- `GET /api/training-triples` → count.
+- `POST /api/brain` `{ targetUrl, question?, maxPages? }` → measured audit + retrieved chunks + interpretation + `provenanceCheck`.
+- `GET /api/brain?targetUrl=...` → same, without a question.
+- `POST /api/geo/check` `{ targetUrl, persist? }` → llms.txt, AI-crawler, citability, drift.
+- `GET /api/geo/check?url=...` → same via query string.
+- `POST /api/visibility` `{ targetUrl, brand?, mode, city?, category?, competitorDomains?, maxPrompts?, providers? }` → run + gaps + reviewable `pending_approval` patch plans.
+- `GET /api/visibility?targetUrl=...` → adapter status and recent runs.
+- `GET/POST /api/visibility/gaps` `{ targetUrl }` → gaps and patch plans for the latest run.
+- `POST /api/training-triples` `{ url, audit, expertFix, consent, tosAccepted }` → append a raw training triple (JSONL).
+- `GET /api/training-triples` → counts and triples; `?eligible=true` returns only reviewed/gold.
+- `POST /api/training-triples/review` `{ id, quality }` → operator tier change.
+
+All endpoints require a signed operator session and use the shared rate-limit classes.
+
+## Claim-to-field provenance
+Every sentence in the interpretation must either:
+
+1. cite a retrieved chunk id that was actually returned to the model (`[kc-title-tag]`), or
+2. share enough content words with the measured audit/tool data or a retrieved chunk, with every number appearing in that source material.
+
+Sentences that explicitly declare a dimension unavailable are allowed (they are honesty statements). If an LLM answer fails the gate, the brain replaces it with the deterministic measured summary and re-checks. If that also fails, the API returns **422** with the failing claims rather than serving an unsupported answer.
 
 ## Training data
-Triples are `{ url, audit (measured), expertFix }`. The extension training vault remains the client-side store for page + audit + expert fix; this endpoint is the server-side collection point for evaluation and future fine-tuning.
+Triples are `{ url, audit (measured), expertFix }` plus consent and a robots/ToS gate. Tiers are `raw`, `reviewed`, `gold`; only `reviewed` and `gold` are training-eligible. Raw captures are PII-stripped and deduplicated by URL and content hash. The extension training vault sets new captures to `tier: "raw"` and requires consent.
 
 ## Evals
 Gold set format: `data/brain-gold.example.json`. Each entry:
 ```json
-{ "url": "https://example.com", "expectedActionIds": ["..."], "forbiddenTokens": ["ranking", "volume"] }
+{ "url": "https://example.com", "expectedActionTitles": ["..."], "forbiddenTokens": ["ranking", "volume"], "verifiedBy": "operator" }
 ```
-Run `npm run brain:eval` (requires network + optional LLM key). Fabrication rate must be 0.
+Run `npm run brain:eval -- data/brain-gold.json` (requires network + optional LLM key). It reports:
+- **finding accuracy** vs hand-supplied `expectedActionTitles`
+- **fix quality** (an estimated completeness heuristic, labelled as such)
+- **fabrication rate** from untraced numbers/claims and forbidden tokens
 
-## Fine-tuning (later)
-Only after ~2-5k clean audit-to-recommendation pairs. Use LoRA on a small open model for cheap tasks (meta/heading rewrites); keep a frontier model for complex audits.
+Fabrication rate > 0 exits non-zero and blocks CI. The example file stays small until the user fills `data/brain-gold.json` and `data/brain-gold-prompts.template.json` by hand. Labels are never generated by a model.
+
+## Fine-tuning (gated)
+`npm run brain:export-lora` writes ChatML JSONL from reviewed/gold pairs only, with a manifest. Training is **not** started by the export. The script reports `BLOCKED` until at least 2,000 reviewed/gold pairs exist, and `--require-ready` turns that into a CI failure. Training data is our own audit → expert-fix pairs; no third-party repository code is used.

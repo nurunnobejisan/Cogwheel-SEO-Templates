@@ -46,6 +46,14 @@ export interface BrainRequest {
   maxPages?: number;
 }
 
+/** Thrown when even the deterministic fallback cannot trace a claim. */
+export class BrainProvenanceError extends Error {
+  constructor(public readonly check: ClaimProvenanceResult) {
+    super("Brain output failed claim-to-field provenance after deterministic fallback.");
+    this.name = "BrainProvenanceError";
+  }
+}
+
 export interface BrainResult {
   targetUrl: string;
   audit: Awaited<ReturnType<typeof runFullWebsiteAudit>>;
@@ -186,6 +194,14 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
     interpretation = deterministicInterpretation(audit, retrieved);
     provider = "deterministic (claim provenance gate)";
     provenance = verifyClaimProvenance(interpretation, audit, retrieved);
+  }
+  if (!provenance.ok) {
+    // Last resort: emit only measured headline facts, then fail if still untraced.
+    interpretation = `Measured overall score: ${audit.overallScore}/100.`;
+    provenance = verifyClaimProvenance(interpretation, audit, retrieved);
+  }
+  if (!provenance.ok) {
+    throw new BrainProvenanceError(provenance);
   }
 
   return {

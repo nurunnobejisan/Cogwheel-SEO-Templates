@@ -18,7 +18,7 @@
     "build:extension": "node scripts/build-extension.js",
     "extension:build": "cd chrome-extension && npm run build",
     "extension:pack": "cd chrome-extension && npm run build && cd dist && rm -f ../../public/cogwheel-seo-studio.zip && zip -r ../../public/cogwheel-seo-studio.zip . -x '*.DS_Store'",
-    "brain:eval": "tsx scripts/brain-eval.ts",
+    "brain:eval": "tsx --conditions=react-server scripts/brain-eval.ts",
     "brain:export-lora": "tsx scripts/export-lora-dataset.ts",
     "geo:drift": "tsx scripts/geo-drift.ts"
   },

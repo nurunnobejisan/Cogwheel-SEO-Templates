@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **GEO audit engine** (`rules/geo/`, `src/rules/geo/`): measured llms.txt presence/validity, AI-crawler rules in `robots.txt` (longest-match/Allow-wins), a documented 0–100 citability heuristic with formula and inputs, local-first drift snapshots, and a CI-friendly 5-point fail threshold. Every check carries `measured`, `estimated`, or `unavailable` provenance.
+- **AI visibility tracker** (`src/core/visibility/`): hotel and universal buyer-prompt generation; BYOK adapters for ChatGPT, Claude, Perplexity and Gemini; Google AI Overviews always `unavailable` (no official API, no scraping); deterministic mention/citation analysis; local JSONL run history; per-provider daily call/cost caps.
+- **Gap detector and healing plans**: prompts with a measured answer but no brand mention become prioritized gaps, then `healing/` patch plans with `status: "pending_approval"` and `autoApply: false`. Human approval is required.
+- **GEO tools in the SEO brain**: `llms_check`, `citability`, `drift`, `visibility_tracker` and `gap_detector` are registered in `src/core/brain/tools.ts` and included in every brain run.
+- **Claim-to-field provenance gate**: every brain sentence must trace to a measured audit/tool field or a retrieved chunk. LLM output that fails is replaced by the deterministic summary; if that also fails, `/api/brain` returns 422 instead of serving an unsupported claim.
+- **GEO knowledge for RAG** (`ai/rag/geo-knowledge.ts`, `docs/geo/`): GEO paper findings, tool-review notes and playbooks with source citations; hybrid retrieval recall@6 test with 40 questions (currently 97.5%).
+- **Training-data tiers and LoRA export**: `raw`/`reviewed`/`gold` tiers, consent + robots/ToS gates, PII stripping, URL/content-hash dedupe, operator review endpoint, and `npm run brain:export-lora` JSONL export gated at 2,000 reviewed/gold pairs. Training is not started automatically.
+- **Upgraded brain eval** (`npm run brain:eval`): fabrication rate (blocks CI when > 0), finding accuracy against hand-verified action titles, and an estimated fix-quality heuristic. Added `data/brain-gold-prompts.template.json` for hand-labelled GEO-bench-style prompts.
+- **Extension GEO card**: the side panel now shows citability, llms.txt, AI-crawler and drift status for the live page, each with a provenance badge, plus the existing “Ask the brain” flow. New training captures are tagged `tier: "raw"` and remain consent-gated and PII-stripped.
 - **Custom Fine-Tuned Model Inference Engine & Fallback Router** (`src/engine/custom-model-client.ts`):
   - Multi-provider inference support for Tuned Google Gemini (Vertex AI / Google AI Studio), custom REST API endpoints (vLLM / HuggingFace TGI), and local open-weight instances (Ollama / LoRA).
   - Zero-latency 3-tier automatic fallback to Cogwheel's local deterministic rules engine on network failure or rate limits.

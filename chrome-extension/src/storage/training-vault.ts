@@ -52,6 +52,8 @@ export type PageTypeLabel =
 export interface TrainingPairRecord {
   id: string; // Unique primary key derived from canonical URL hash
   schemaVersion: "3.0.0";
+  /** Captures always start in the raw tier; reviewed/gold is set server-side. */
+  tier: "raw";
   canonicalUrlHash: string;
   contentHash: string; // Content fingerprint hash for versioning & deduplication
   version: number;
@@ -273,6 +275,7 @@ function migrateRecordToV3(rawRecord: unknown): TrainingPairRecord {
   return {
     id: (r.id as string) || canonicalUrlHash,
     schemaVersion: "3.0.0",
+    tier: "raw",
     canonicalUrlHash,
     contentHash: (r.contentHash as string) || canonicalUrlHash,
     version: typeof r.version === "number" ? r.version : 1,
@@ -395,6 +398,7 @@ export async function saveTrainingPair(params: {
         const record: TrainingPairRecord = {
           id: canonicalHash,
           schemaVersion: "3.0.0",
+          tier: "raw",
           canonicalUrlHash: canonicalHash,
           contentHash,
           version,
@@ -434,6 +438,7 @@ export async function saveTrainingPair(params: {
   const record: TrainingPairRecord = {
     id: canonicalHash,
     schemaVersion: "3.0.0",
+    tier: "raw",
     canonicalUrlHash: canonicalHash,
     contentHash,
     version,
