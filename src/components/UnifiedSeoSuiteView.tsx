@@ -19,6 +19,32 @@ interface UnifiedSeoSuiteViewProps {
 
 type SuiteSubTab = "full-audit" | "gsc-intel" | "geo-visibility" | "ai-orchestrator" | "model-training";
 
+/** Subset of the /api/visibility run payload the suite renders. */
+interface VisibilityProviderSummary {
+  provider: string;
+  available: boolean;
+  reason?: string;
+  answeredPrompts: number;
+  mentionedPrompts: number;
+  mentionRate: number | null;
+  ownCitations: number | null;
+}
+
+interface VisibilityRunResult {
+  targetUrl: string;
+  brand?: string;
+  mode?: string;
+  finishedAt: string;
+  summary: {
+    totalPrompts: number;
+    availableAnswers: number;
+    unavailableAnswers: number;
+    mentionRate: number | null;
+    ownCitationCount: number | null;
+    byProvider: VisibilityProviderSummary[];
+  };
+}
+
 /**
  * Answers the in-app assistant from the audit report the operator just ran.
  *
@@ -140,6 +166,11 @@ export function UnifiedSeoSuiteView({
   const [auditError, setAuditError] = useState<string | null>(null);
   const [exportFormat, setExportFormat] = useState<"html" | "pdf" | "csv" | "pptx" | null>(null);
   const [exportError, setExportError] = useState<string | null>(null);
+
+  // Live AI-visibility measurement (POST /api/visibility) — real citations only.
+  const [visRun, setVisRun] = useState<VisibilityRunResult | null>(null);
+  const [visLoading, setVisLoading] = useState<boolean>(false);
+  const [visError, setVisError] = useState<string | null>(null);
 
   // AI Assistant Chat State
   const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant" | "system"; content: string; toolUsed?: string }>>([
@@ -289,6 +320,45 @@ export function UnifiedSeoSuiteView({
   const handleSendChat = (e: React.FormEvent) => {
     e.preventDefault();
     sendQuestion(chatInput);
+  };
+
+  // Query the configured AI engines for real mention/citation coverage.
+  const handleRunVisibilityCheck = async () => {
+    const url = (targetUrl || auditReport?.targetUrl || "").trim();
+    if (!url || visLoading) return;
+    setVisLoading(true);
+    setVisError(null);
+
+    try {
+      const res = await fetch("/api/visibility", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          targetUrl: url,
+          brand: property?.name || undefined,
+          city: property?.city || undefined,
+          state: property?.state || undefined,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.status === 401) {
+        throw new Error(
+          "Live AI-citation checks require an operator session. Sign in at /platform, then run the check again.",
+        );
+      }
+      if (!res.ok || data.error) {
+        throw new Error(data.error || `Visibility check failed (${res.status})`);
+      }
+      setVisRun(data.run as VisibilityRunResult);
+    } catch (err) {
+      setVisError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setVisLoading(false);
+    }
+  };
+
+  const handleOpenPlatformConsole = () => {
+    window.open("/platform", "_blank", "noopener,noreferrer");
   };
 
   return (
