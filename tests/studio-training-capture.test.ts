@@ -1,7 +1,9 @@
 import { describe, expect, it, vi } from "vitest";
 import {
+  buildMatrixCapture,
   buildStudioCapture,
   captureTrainingTriple,
+  type MatrixCaptureRow,
   type StudioCaptureSection,
 } from "../src/lib/training-capture";
 
@@ -78,6 +80,67 @@ describe("buildStudioCapture", () => {
     expect(finding.violations).toHaveLength(1);
     expect(payload!.audit.drafts["home-headline"]).toBe("Stay at the Grand Downtown");
     expect(payload!.audit.source).toBe("content-studio");
+  });
+});
+
+function matrixRow(overrides: Partial<MatrixCaptureRow> = {}): MatrixCaptureRow {
+  return {
+    pageId: "home",
+    path: "/",
+    title: "Home",
+    approved: true,
+    primary: { keyword: "boutique hotel downtown", volume: 1200, kd: 41 },
+    secondary: null,
+    proposedPrimary: "boutique hotel downtown",
+    proposedSecondary: null,
+    alternatives: [{ keyword: "downtown hotel", volume: 800, kd: 38 }],
+    flags: [],
+    ...overrides,
+  };
+}
+
+describe("buildMatrixCapture", () => {
+  it("returns null when no page is approved with an assignment", () => {
+    expect(buildMatrixCapture({ property: PROPERTY, template: "A", rows: [matrixRow({ approved: false })] })).toBeNull();
+    expect(
+      buildMatrixCapture({ property: PROPERTY, template: "A", rows: [matrixRow({ primary: null, secondary: null })] }),
+    ).toBeNull();
+  });
+
+  it("keeps every page in the audit but only approved pages in the fix", () => {
+    const payload = buildMatrixCapture({
+      property: PROPERTY,
+      template: "B",
+      rows: [matrixRow({ pageId: "home" }), matrixRow({ pageId: "rooms", approved: false })],
+    });
+    expect(payload!.audit.proposals.map((p) => p.pageId)).toEqual(["home", "rooms"]);
+    expect(payload!.expertFix.accepted).toEqual(["home"]);
+    expect(Object.keys(payload!.expertFix.assignments)).toEqual(["home"]);
+  });
+
+  it("flags pages whose assignment differs from the allocator proposal", () => {
+    const payload = buildMatrixCapture({
+      property: PROPERTY,
+      template: "A",
+      rows: [
+        matrixRow({ pageId: "home" }),
+        matrixRow({ pageId: "rooms", proposedPrimary: "old keyword", primary: { keyword: "new keyword", volume: 300, kd: 20 } }),
+      ],
+    });
+    expect(payload!.expertFix.edited).toEqual(["rooms"]);
+  });
+
+  it("carries the proposal, alternatives and flags into the audit", () => {
+    const payload = buildMatrixCapture({
+      property: PROPERTY,
+      template: "A",
+      rows: [matrixRow({ flags: ["kd-exception"] })],
+    });
+    const proposal = payload!.audit.proposals[0]!;
+    expect(proposal.proposedPrimary).toBe("boutique hotel downtown");
+    expect(proposal.alternatives[0]!.keyword).toBe("downtown hotel");
+    expect(proposal.flags).toEqual(["kd-exception"]);
+    expect(payload!.audit.template).toBe("A");
   });
 });
 

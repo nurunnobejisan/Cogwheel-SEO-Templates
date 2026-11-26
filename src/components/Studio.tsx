@@ -326,6 +326,63 @@ export default function Studio({
     }
   }
 
+  const matrixCaptureRows = useMemo<MatrixCaptureRow[]>(() => {
+    if (!state) return [];
+    const original = new Map((originalMatrix ?? []).map((row) => [row.pageId, row]));
+    const toAssignment = (ref: MatrixRow["primary"]) =>
+      ref ? { keyword: ref.keyword, volume: ref.volume, kd: ref.kd } : null;
+    return state.matrix.map((row) => {
+      const before = original.get(row.pageId);
+      return {
+        pageId: row.pageId,
+        path: row.path,
+        title: row.title,
+        approved: row.status === "approved",
+        primary: toAssignment(row.primary),
+        secondary: toAssignment(row.secondary),
+        proposedPrimary: before?.primary?.keyword ?? null,
+        proposedSecondary: before?.secondary?.keyword ?? null,
+        alternatives: row.alternatives.map((a) => ({ keyword: a.keyword, volume: a.volume, kd: a.kd })),
+        flags: row.flags,
+      };
+    });
+  }, [state, originalMatrix]);
+
+  const matrixCapturePayload = useMemo(
+    () =>
+      buildMatrixCapture({
+        property: {
+          name: property.name,
+          url: property.url ?? "",
+          brand: property.brand,
+          city: property.city,
+          state: property.state,
+        },
+        template: builtFor?.template ?? template,
+        rows: matrixCaptureRows,
+      }),
+    [matrixCaptureRows, property.name, property.url, property.brand, property.city, property.state, builtFor?.template, template],
+  );
+
+  const approvedCount = matrixCapturePayload?.expertFix.accepted.length ?? 0;
+  const matrixEditedCount = matrixCapturePayload?.expertFix.edited.length ?? 0;
+
+  async function captureMatrix() {
+    const url = property.url?.trim() ?? "";
+    if (!matrixCapturePayload || !url) {
+      throw new Error("Nothing to capture yet — add the property URL and approve at least one page.");
+    }
+    return captureTrainingTriple({
+      url,
+      audit: matrixCapturePayload.audit,
+      expertFix: matrixCapturePayload.expertFix,
+      consent: true,
+      tosAccepted: true,
+      // Derived from the operator's own keyword exports, not a live crawl.
+      provenance: "estimated",
+    });
+  }
+
   const slug = (property.name || "property").toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
   function resetAll() {
@@ -338,6 +395,7 @@ export default function Studio({
     setSummary([]);
     setState(null);
     setBuiltFor(null);
+    setOriginalMatrix(null);
     setSavedRunId(null);
     setReportDoc(null);
     setError(null);
@@ -440,6 +498,7 @@ export default function Studio({
                     setFiles(next);
                     setIngest(null);
                     setState(null);
+                    setOriginalMatrix(null);
                     setSavedRunId(null);
                     setReportDoc(null);
                   }}
@@ -544,6 +603,20 @@ export default function Studio({
               onAssign={(pageId, slot, id) => mutate((s) => assignKeyword(s, pageId, slot, id))}
               onInlineEdit={(pageId, slot, patch) => mutate((s) => inlineEditMatrixKeyword(s, pageId, slot, patch))}
               onApprove={(pageId, ok) => mutate((s) => setRowStatus(s, pageId, ok))}
+            />
+
+            <TrainingCaptureCard
+              title="Training capture — page-to-keyword map"
+              subtitle="Contribute the approved keyword assignments (and your edits to the allocator's proposal) to the Cogwheel SEO/GEO training set. Nothing is captured automatically."
+              stats={[
+                { label: "Pages approved", value: `${approvedCount}/${state.matrix.length}` },
+                { label: "Edited vs proposal", value: matrixEditedCount },
+                { label: "Property URL", value: property.url?.trim() || "not set" },
+              ]}
+              note="The audit carries the allocator's proposal, alternatives and flags for every page; the expert fix is your approved map. Volumes and KD are the values from your own exports — nothing is invented."
+              disabledReason={property.url?.trim() ? null : "Add the property URL in step 1 to enable capture."}
+              disabled={approvedCount === 0}
+              onCapture={captureMatrix}
             />
 
             <KeywordPool

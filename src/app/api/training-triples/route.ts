@@ -6,6 +6,7 @@ import { isAuthenticatedPrincipal, principalFromRequest } from "@/lib/platform/a
 import { assertEgressAllowed, readTextCapped, safeFetch } from "@/lib/security/egress";
 import {
   contentHash,
+  hasDuplicateContent,
   isTrainingEligible,
   stripPii,
   type TrainingTriple,
@@ -89,10 +90,10 @@ export async function POST(req: NextRequest) {
     const cleanFix = stripPii(body.expertFix ?? null);
     const hash = contentHash(cleanAudit, cleanFix);
     const all = await readAll();
-    if (all.some((triple) => triple.url === url)) {
-      return NextResponse.json({ error: "duplicate url" }, { status: 409 });
-    }
-    if (all.some((triple) => triple.contentHash === hash)) {
+    // Dedupe on the audit+fix content: the same page may be re-captured with a
+    // different reviewed fix (iterative expert edits), but identical content is
+    // still rejected.
+    if (hasDuplicateContent(all, hash)) {
       return NextResponse.json({ error: "duplicate content" }, { status: 409 });
     }
 

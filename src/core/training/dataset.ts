@@ -66,6 +66,18 @@ export function contentHash(audit: unknown, expertFix: unknown): string {
   return crypto.createHash("sha256").update(canonical({ audit, expertFix })).digest("hex");
 }
 
+/**
+ * A triple is a duplicate only when its audit + expert fix content is
+ * byte-identical (same `contentHash`). The same URL may be captured again with
+ * a different reviewed fix, so URL alone is deliberately not a duplicate key.
+ */
+export function hasDuplicateContent(
+  existing: ReadonlyArray<Pick<TrainingTriple, "contentHash">>,
+  hash: string,
+): boolean {
+  return existing.some((triple) => triple.contentHash === hash);
+}
+
 export function isTrainingEligible(quality: TripleTier): boolean {
   return TRAINING_ELIGIBLE_TIERS.includes(quality);
 }

@@ -3,6 +3,7 @@ import {
   MIN_REVIEWED_PAIRS_FOR_TRAINING,
   buildLoraExample,
   contentHash,
+  hasDuplicateContent,
   isTrainingEligible,
   stripPii,
   type TrainingTriple,
@@ -48,6 +49,13 @@ describe("training dataset gates", () => {
     const b = contentHash({ a: 1, b: 2 }, { fix: "x" });
     expect(a).toBe(b);
     expect(contentHash({ a: 1 }, { fix: "x" })).not.toBe(a);
+  });
+
+  it("treats only identical audit+fix content as a duplicate (the same URL may repeat)", () => {
+    const existing = [{ contentHash: "a" }, { contentHash: "b" }];
+    expect(hasDuplicateContent(existing, "b")).toBe(true);
+    expect(hasDuplicateContent(existing, "c")).toBe(false);
+    expect(hasDuplicateContent([], "a")).toBe(false);
   });
 
   it("builds ChatML-style LoRA examples with the measured-fix guardrail", () => {
