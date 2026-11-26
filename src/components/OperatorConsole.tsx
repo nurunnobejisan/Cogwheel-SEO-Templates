@@ -193,7 +193,7 @@ export function OperatorConsole() {
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-xs font-bold text-brand-light dark:bg-brand dark:text-slate-950"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
               CW
             </Link>
@@ -202,12 +202,12 @@ export function OperatorConsole() {
                 <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">Operator Console</h1>
                 <Badge variant="brand" size="sm">Phase 5</Badge>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">Governance · approvals · history · audit</p>
+              <p className="text-tiny text-slate-500 dark:text-slate-400">Governance · approvals · history · audit</p>
             </div>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <span className="flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+            <span className="flex items-center gap-1.5 rounded-full bg-slate-100 px-2.5 py-1 text-tiny font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
               <span className={`h-1.5 w-1.5 rounded-full ${data.health?.ok ? "bg-emerald-500" : "bg-rose-500"}`} />
               {data.health?.ok ? "online" : "offline"}
             </span>
@@ -216,7 +216,7 @@ export function OperatorConsole() {
                 aria-label="Acting role"
                 value={actor.id}
                 onChange={(event) => switchActor(event.target.value)}
-                className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 focus:border-brand focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
+                className="rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-caption font-semibold text-slate-700 focus:border-brand focus:outline-none dark:border-slate-800 dark:bg-slate-900 dark:text-slate-200"
               >
                 {DEMO_ACTORS.map((candidate) => (
                   <option key={candidate.id} value={candidate.id}>
@@ -226,7 +226,7 @@ export function OperatorConsole() {
               </select>
             ) : session?.authenticated && session.principal ? (
               <>
-                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-[11px] font-semibold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                <span className="rounded-full bg-emerald-100 px-2.5 py-1 text-tiny font-semibold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                   {session.principal.role} · {session.principal.id}
                 </span>
                 <Button size="sm" variant="secondary" onClick={() => void signOut()} disabled={signingIn}>
@@ -237,7 +237,7 @@ export function OperatorConsole() {
             <Button size="sm" variant="secondary" onClick={() => void load()} disabled={loading}>
               {loading ? "Loading…" : "Refresh"}
             </Button>
-            <Link href="/" className="rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
+            <Link href="/" className="rounded-lg px-2.5 py-1.5 text-caption font-semibold text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white">
               Back to studio
             </Link>
           </div>
@@ -252,7 +252,7 @@ export function OperatorConsole() {
                 key={item.id}
                 type="button"
                 onClick={() => setTab(item.id)}
-                className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition ${
+                className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-caption font-semibold transition ${
                   active
                     ? "bg-slate-900 text-white dark:bg-brand dark:text-slate-950"
                     : "text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
@@ -260,7 +260,7 @@ export function OperatorConsole() {
               >
                 {item.label}
                 {pending > 0 && (
-                  <span className={`rounded-full px-1.5 text-[10px] ${active ? "bg-white/20" : "bg-amber-100 text-amber-800"}`}>{pending}</span>
+                  <span className={`rounded-full px-1.5 text-micro ${active ? "bg-white/20" : "bg-amber-100 text-amber-800"}`}>{pending}</span>
                 )}
               </button>
             );
@@ -270,7 +270,7 @@ export function OperatorConsole() {
 
       <main className="mx-auto max-w-7xl space-y-5 px-4 py-6 sm:px-6">
         {!session?.authenticated && !session?.devAuth ? (
-          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+          <div className="rounded-2xl border border-slate-200 bg-white px-4 py-3 text-caption text-slate-600 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
             {session?.signInConfigured ? (
               <form onSubmit={signIn} className="flex flex-wrap items-center gap-2">
                 <label htmlFor="operator-token" className="font-semibold text-slate-700 dark:text-slate-200">
@@ -283,7 +283,7 @@ export function OperatorConsole() {
                   onChange={(event) => setTokenInput(event.target.value)}
                   autoComplete="current-password"
                   placeholder="PLATFORM_OPERATOR_TOKEN"
-                  className="min-w-[16rem] flex-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-mono text-xs text-slate-800 focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
+                  className="min-w-[16rem] flex-1 rounded-lg border border-slate-200 bg-white px-3 py-1.5 font-mono text-caption text-slate-800 focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100"
                 />
                 <Button size="sm" type="submit" disabled={signingIn || !tokenInput.trim()}>
                   {signingIn ? "Signing in…" : "Sign in"}
@@ -297,7 +297,7 @@ export function OperatorConsole() {
             )}
           </div>
         ) : session?.devAuth ? (
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-caption text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
             <span>
               <strong>Development auth.</strong> The acting identity is chosen in the header and is refused when{" "}
               <code className="font-mono">NODE_ENV=production</code>.
@@ -305,7 +305,7 @@ export function OperatorConsole() {
             <span className="font-mono">role: {role}</span>
           </div>
         ) : (
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-xs text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-2.5 text-caption text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300">
             <span>
               <strong>Signed session.</strong> Requests carry an HMAC-verified <code className="font-mono">cw_session</code> cookie.
             </span>
@@ -314,16 +314,16 @@ export function OperatorConsole() {
         )}
 
         {error && (
-          <div className="flex items-start justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300">
+          <div className="flex items-start justify-between gap-3 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-body text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300">
             <span className="font-medium">{error}</span>
-            <button type="button" className="text-xs font-bold uppercase tracking-wide opacity-70 hover:opacity-100" onClick={() => setError(null)}>
+            <button type="button" className="text-caption font-bold uppercase tracking-wide opacity-70 hover:opacity-100" onClick={() => setError(null)}>
               Dismiss
             </button>
           </div>
         )}
 
         {loading && !data.health ? (
-          <div className="flex items-center justify-center gap-3 py-24 text-sm text-slate-400">
+          <div className="flex items-center justify-center gap-3 py-24 text-body text-slate-400">
             <Spinner /> Loading platform runtime…
           </div>
         ) : (
@@ -399,7 +399,7 @@ export function OperatorConsole() {
           </>
         )}
 
-        <p className="pb-4 text-center text-[11px] text-slate-400">
+        <p className="pb-4 text-center text-tiny text-slate-400">
           Every action is recorded in the hash-chained audit log. High-risk changes require an admin.
           {role === "specialist" && " Your specialist role can approve up to medium risk."}
           {role === "viewer" && " Your viewer role is read-only."}

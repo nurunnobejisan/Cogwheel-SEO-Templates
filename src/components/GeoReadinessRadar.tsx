@@ -158,7 +158,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
       <div className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-6 shadow-card transition-all dark:border-slate-800 dark:bg-slate-900">
         <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
           <div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-700 dark:border-purple-800/40 dark:bg-purple-950/40 dark:text-purple-300">
+            <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3 py-1 text-caption font-semibold text-purple-700 dark:border-purple-800/40 dark:bg-purple-950/40 dark:text-purple-300">
               <span className="relative flex h-2 w-2">
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-purple-600 dark:bg-purple-400" />
               </span>
@@ -167,17 +167,17 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <h2 className="mt-3 font-display text-2xl font-bold tracking-tight text-slate-900 dark:text-white md:text-3xl">
               Generative Engine Optimization (GEO) Radar
             </h2>
-            <p className="mt-1.5 max-w-xl text-xs text-slate-500 dark:text-slate-400 sm:text-sm">
+            <p className="mt-1.5 max-w-xl text-caption text-slate-500 dark:text-slate-400 sm:text-body">
               Shows which on-page signals generative engines need to extract and quote{" "}
               <span className="font-semibold text-slate-800 dark:text-slate-200">{displayName}</span>.
               AI citation percentages appear only after a visibility provider is connected — this
               radar never invents them.
             </p>
-            <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
-              <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[11px] text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+            <div className="mt-3 flex flex-wrap items-center gap-2 text-caption">
+              <span className="rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-tiny text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 {locationLabel}
               </span>
-              <span className="max-w-xs truncate rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-[11px] text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+              <span className="max-w-xs truncate rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 font-mono text-tiny text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                 {propertyUrl || "Property URL not set"}
               </span>
             </div>
@@ -208,16 +208,16 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                 <span className="font-display text-xl font-extrabold text-slate-900 dark:text-white">
                   {headlineScore !== null ? `${headlineScore}%` : "—"}
                 </span>
-                <span className="text-[9px] uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                <span className="text-micro uppercase tracking-wider text-slate-400 dark:text-slate-500">
                   Score
                 </span>
               </div>
             </div>
             <div>
-              <div className="inline-block rounded-md border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-[11px] font-bold text-purple-700 dark:border-purple-800/50 dark:bg-purple-950/60 dark:text-purple-300">
+              <div className="inline-block rounded-md border border-purple-200 bg-purple-50 px-2.5 py-0.5 text-tiny font-bold text-purple-700 dark:border-purple-800/50 dark:bg-purple-950/60 dark:text-purple-300">
                 {headlineSource}
               </div>
-              <p className="mt-1 max-w-[15rem] text-xs text-slate-500 dark:text-slate-400">
+              <p className="mt-1 max-w-[15rem] text-caption text-slate-500 dark:text-slate-400">
                 {importedScore
                   ? `Imported ${new Date(importedScore.importedAt).toLocaleDateString()} from ${importedScore.source}.`
                   : report
@@ -228,7 +228,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                 type="button"
                 onClick={handleRescan}
                 disabled={isScanning || !propertyUrl}
-                className="mt-2 inline-flex items-center gap-1 text-xs font-semibold text-purple-700 hover:text-purple-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-brand-light dark:hover:underline"
+                className="mt-2 inline-flex items-center gap-1 text-caption font-semibold text-purple-700 hover:text-purple-900 disabled:cursor-not-allowed disabled:opacity-50 dark:text-brand-light dark:hover:underline"
               >
                 <svg className={`h-3 w-3 ${isScanning ? "animate-spin" : ""}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -236,7 +236,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                 {isScanning ? "Auditing pages…" : "Run GEO Audit"}
               </button>
               {scanError && (
-                <p className="mt-1 max-w-[16rem] text-[11px] text-rose-600 dark:text-rose-400">{scanError}</p>
+                <p className="mt-1 max-w-[16rem] text-tiny text-rose-600 dark:text-rose-400">{scanError}</p>
               )}
             </div>
           </div>
@@ -248,7 +248,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <button
               type="button"
               onClick={() => setActiveTab("overview")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+              className={`rounded-xl px-3.5 py-1.5 text-caption font-semibold transition ${
                 activeTab === "overview"
                   ? "bg-slate-900 text-white shadow-sm dark:bg-brand dark:text-slate-950"
                   : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
@@ -259,7 +259,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <button
               type="button"
               onClick={() => setActiveTab("schema")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+              className={`rounded-xl px-3.5 py-1.5 text-caption font-semibold transition ${
                 activeTab === "schema"
                   ? "bg-slate-900 text-white shadow-sm dark:bg-brand dark:text-slate-950"
                   : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
@@ -270,7 +270,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <button
               type="button"
               onClick={() => setActiveTab("queries")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+              className={`rounded-xl px-3.5 py-1.5 text-caption font-semibold transition ${
                 activeTab === "queries"
                   ? "bg-slate-900 text-white shadow-sm dark:bg-brand dark:text-slate-950"
                   : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
@@ -281,7 +281,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <button
               type="button"
               onClick={() => setActiveTab("engines")}
-              className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+              className={`rounded-xl px-3.5 py-1.5 text-caption font-semibold transition ${
                 activeTab === "engines"
                   ? "bg-slate-900 text-white shadow-sm dark:bg-brand dark:text-slate-950"
                   : "border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
@@ -294,7 +294,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
           <button
             type="button"
             onClick={() => setShowVisibilitySuite(true)}
-            className="inline-flex items-center gap-1.5 rounded-xl border border-purple-200 bg-purple-50 px-3.5 py-1.5 text-xs font-semibold text-purple-700 transition hover:bg-purple-100 dark:border-purple-800/60 dark:bg-purple-950/40 dark:text-purple-300 dark:hover:bg-purple-900/40"
+            className="inline-flex items-center gap-1.5 rounded-xl border border-purple-200 bg-purple-50 px-3.5 py-1.5 text-caption font-semibold text-purple-700 transition hover:bg-purple-100 dark:border-purple-800/60 dark:bg-purple-950/40 dark:text-purple-300 dark:hover:bg-purple-900/40"
           >
             <span className="h-1.5 w-1.5 rounded-full bg-purple-600 dark:bg-purple-400" />
             Connect VisibilitySuite Data
@@ -307,15 +307,15 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
         <div className="space-y-4">
           {!report ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="font-display text-sm font-bold text-slate-900 dark:text-white">
+              <p className="font-display text-body font-bold text-slate-900 dark:text-white">
                 No audit results loaded
               </p>
-              <p className="mx-auto mt-1 max-w-lg text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+              <p className="mx-auto mt-1 max-w-lg text-caption leading-relaxed text-slate-500 dark:text-slate-400">
                 Run the GEO audit to parse this property&apos;s JSON-LD, headings, canonical and
                 answer coverage. The radar shows measured findings only — there is no sample site
                 score.
               </p>
-              <Button variant="primary" onClick={handleRescan} disabled={isScanning || !propertyUrl} className="mt-4 text-xs">
+              <Button variant="primary" onClick={handleRescan} disabled={isScanning || !propertyUrl} className="mt-4 text-caption">
                 {isScanning ? "Auditing pages…" : "Run GEO Audit"}
               </Button>
             </div>
@@ -325,35 +325,35 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
               <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 border-t-2 border-t-emerald-500 bg-white p-5 shadow-card dark:border-slate-800 dark:border-t-emerald-500 dark:bg-slate-900">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    <span className="text-micro font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                       Pillar 01
                     </span>
-                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-tiny font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                       {schemasDetected.length} types detected
                     </span>
                   </div>
                   <h3 className="mt-2.5 font-display text-base font-bold text-slate-900 dark:text-white">
                     Structured Schema Architecture
                   </h3>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
                     JSON-LD types parsed from the audited pages.
                   </p>
                 </div>
                 <div className="mt-4 space-y-2.5 border-t border-slate-100 pt-3 dark:border-slate-800">
                   {schemasDetected.length === 0 ? (
-                    <p className="text-xs text-slate-500 dark:text-slate-400">No JSON-LD detected.</p>
+                    <p className="text-caption text-slate-500 dark:text-slate-400">No JSON-LD detected.</p>
                   ) : (
                     schemasDetected.slice(0, 4).map((schema) => (
-                      <div key={schema} className="flex items-center justify-between text-xs">
+                      <div key={schema} className="flex items-center justify-between text-caption">
                         <span className="font-medium text-slate-600 dark:text-slate-300">{schema}</span>
-                        <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
+                        <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2 py-0.5 text-micro font-bold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300">
                           Detected
                         </span>
                       </div>
                     ))
                   )}
                   {report.schemaValidation.missingRecommendedSchemas.length > 0 && (
-                    <p className="pt-1 text-[11px] text-amber-700 dark:text-amber-400">
+                    <p className="pt-1 text-tiny text-amber-700 dark:text-amber-400">
                       Missing recommended: {report.schemaValidation.missingRecommendedSchemas.join(", ")}
                     </p>
                   )}
@@ -364,25 +364,25 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
               <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 border-t-2 border-t-sky-500 bg-white p-5 shadow-card dark:border-slate-800 dark:border-t-sky-500 dark:bg-slate-900">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    <span className="text-micro font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                       Pillar 02
                     </span>
-                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-tiny font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                       {report.onPage.wordCount.toLocaleString()} words
                     </span>
                   </div>
                   <h3 className="mt-2.5 font-display text-base font-bold text-slate-900 dark:text-white">
                     Question &amp; Answer Coverage
                   </h3>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
                     Whether the page can answer policy and amenity questions directly.
                   </p>
                 </div>
                 <div className="mt-4 space-y-2.5 border-t border-slate-100 pt-3 dark:border-slate-800">
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-caption">
                     <span className="font-medium text-slate-600 dark:text-slate-300">FAQPage schema</span>
                     <span
-                      className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                      className={`rounded-md border px-2 py-0.5 text-micro font-bold ${
                         schemasDetected.includes("FAQPage")
                           ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300"
                           : "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/60 dark:text-rose-300"
@@ -391,10 +391,10 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                       {schemasDetected.includes("FAQPage") ? "Detected" : "Not found"}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-caption">
                     <span className="font-medium text-slate-600 dark:text-slate-300">Heading hierarchy</span>
                     <span
-                      className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                      className={`rounded-md border px-2 py-0.5 text-micro font-bold ${
                         report.headings.hierarchyValid
                           ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300"
                           : "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/60 dark:text-rose-300"
@@ -403,10 +403,10 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                       {report.headings.hierarchyValid ? "Valid" : "Has issues"}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-caption">
                     <span className="font-medium text-slate-600 dark:text-slate-300">Body copy ≥ 300 words</span>
                     <span
-                      className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                      className={`rounded-md border px-2 py-0.5 text-micro font-bold ${
                         report.onPage.wordCount >= 300
                           ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300"
                           : "border-amber-200 bg-amber-50 text-amber-700 dark:border-amber-800/50 dark:bg-amber-950/60 dark:text-amber-300"
@@ -422,25 +422,25 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
               <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 border-t-2 border-t-purple-500 bg-white p-5 shadow-card dark:border-slate-800 dark:border-t-purple-500 dark:bg-slate-900">
                 <div>
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    <span className="text-micro font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
                       Pillar 03
                     </span>
-                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-[11px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                    <span className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-0.5 text-tiny font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
                       {report.crawlability.isCanonicalSelfReferencing ? "Canonical OK" : "Check canonical"}
                     </span>
                   </div>
                   <h3 className="mt-2.5 font-display text-base font-bold text-slate-900 dark:text-white">
                     Brand Entity Signals
                   </h3>
-                  <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
                     Machine-readable entity and site structure signals found on the page.
                   </p>
                 </div>
                 <div className="mt-4 space-y-2.5 border-t border-slate-100 pt-3 dark:border-slate-800">
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-caption">
                     <span className="font-medium text-slate-600 dark:text-slate-300">Organization / WebSite</span>
                     <span
-                      className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                      className={`rounded-md border px-2 py-0.5 text-micro font-bold ${
                         ["Organization", "WebSite", "LocalBusiness"].some((t) => schemasDetected.includes(t))
                           ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300"
                           : "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/60 dark:text-rose-300"
@@ -451,10 +451,10 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                         : "Not found"}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-caption">
                     <span className="font-medium text-slate-600 dark:text-slate-300">Self-referencing canonical</span>
                     <span
-                      className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                      className={`rounded-md border px-2 py-0.5 text-micro font-bold ${
                         report.crawlability.isCanonicalSelfReferencing
                           ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300"
                           : "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/60 dark:text-rose-300"
@@ -463,10 +463,10 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                       {report.crawlability.isCanonicalSelfReferencing ? "Yes" : "No"}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between text-xs">
+                  <div className="flex items-center justify-between text-caption">
                     <span className="font-medium text-slate-600 dark:text-slate-300">Indexable</span>
                     <span
-                      className={`rounded-md border px-2 py-0.5 text-[10px] font-bold ${
+                      className={`rounded-md border px-2 py-0.5 text-micro font-bold ${
                         report.crawlability.isIndexable
                           ? "border-emerald-200 bg-emerald-50 text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/60 dark:text-emerald-300"
                           : "border-rose-200 bg-rose-50 text-rose-700 dark:border-rose-800/50 dark:bg-rose-950/60 dark:text-rose-300"
@@ -481,7 +481,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
           )}
 
           {report && (
-            <div className="rounded-2xl border border-slate-200 bg-white p-4 text-[11px] leading-relaxed text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+            <div className="rounded-2xl border border-slate-200 bg-white p-4 text-tiny leading-relaxed text-slate-500 shadow-sm dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
               <strong className="text-slate-700 dark:text-slate-200">Method:</strong>{" "}
               {report.aiGeoVisibility.methodology} AI engines were not queried by this scan.
               {report.dataProvenance.unavailable.length > 0 && (
@@ -497,14 +497,14 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
         <div className="space-y-4">
           {!report ? (
             <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-8 text-center shadow-sm dark:border-slate-700 dark:bg-slate-900">
-              <p className="font-display text-sm font-bold text-slate-900 dark:text-white">
+              <p className="font-display text-body font-bold text-slate-900 dark:text-white">
                 No schema audit yet
               </p>
-              <p className="mx-auto mt-1 max-w-lg text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+              <p className="mx-auto mt-1 max-w-lg text-caption leading-relaxed text-slate-500 dark:text-slate-400">
                 Run the GEO audit to parse JSON-LD from this property. Nothing is assumed about which
                 schema types exist.
               </p>
-              <Button variant="primary" onClick={handleRescan} disabled={isScanning || !propertyUrl} className="mt-4 text-xs">
+              <Button variant="primary" onClick={handleRescan} disabled={isScanning || !propertyUrl} className="mt-4 text-caption">
                 {isScanning ? "Auditing pages…" : "Run GEO Audit"}
               </Button>
             </div>
@@ -515,12 +515,12 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                   <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
                     Hospitality Schema Markup Audit
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400">
+                  <p className="text-caption text-slate-500 dark:text-slate-400">
                     Parsed from {report.targetUrl}. JSON-LD validity:{" "}
                     {report.schemaValidation.isValidJsonLd ? "valid" : "issues found"}.
                   </p>
                 </div>
-                <span className="rounded-full border border-brand/30 bg-brand-50 px-3 py-1 text-xs font-bold text-slate-900">
+                <span className="rounded-full border border-brand/30 bg-brand-50 px-3 py-1 text-caption font-bold text-slate-900">
                   {schemasDetected.length} types detected
                 </span>
               </div>
@@ -534,7 +534,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2.5">
                           <span
-                            className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold ${
+                            className={`inline-flex h-6 w-6 items-center justify-center rounded-full text-caption font-bold ${
                               state === "detected"
                                 ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-400"
                                 : "bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-400"
@@ -542,25 +542,25 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                           >
                             {state === "detected" ? "✓" : "×"}
                           </span>
-                          <span className="font-semibold text-sm text-slate-900 dark:text-white">
+                          <span className="font-semibold text-body text-slate-900 dark:text-white">
                             {family.label}
                           </span>
                         </div>
                         <span
-                          className={`text-xs font-bold uppercase tracking-wider ${
+                          className={`text-caption font-bold uppercase tracking-wider ${
                             state === "detected" ? "text-emerald-600" : "text-rose-600"
                           }`}
                         >
                           {state === "detected" ? "Detected" : "Not found"}
                         </span>
                       </div>
-                      <p className="mt-1 pl-8.5 text-xs text-slate-600 dark:text-slate-300">
+                      <p className="mt-1 pl-8.5 text-caption text-slate-600 dark:text-slate-300">
                         {detected.length > 0
                           ? `Detected types: ${detected.join(", ")}.`
                           : "No matching type in the JSON-LD parsed from the audited pages."}
                       </p>
                       {state === "missing" && (
-                        <div className="mt-2 rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-xs text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
+                        <div className="mt-2 rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-caption text-slate-700 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300">
                           <span className="font-bold text-slate-900 dark:text-white">Fix: </span>
                           {family.recommendation}
                         </div>
@@ -571,7 +571,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
               </div>
 
               {report.schemaValidation.validationErrorsCount > 0 && (
-                <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+                <p className="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-3 text-caption text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
                   {report.schemaValidation.validationErrorsCount} malformed JSON-LD block(s) were
                   skipped. Fix parse errors before adding new schema types.
                 </p>
@@ -588,13 +588,13 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
               Prompt Set for External Measurement
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-caption text-slate-500 dark:text-slate-400">
               These are prompts to send to a visibility provider. No AI engine was queried here, so
               there are no simulated answers, search volumes or citation-confidence labels.
             </p>
 
             {importedScore && (
-              <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
+              <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-caption text-emerald-900 dark:border-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
                 Imported {importedScore.source} score: <strong>{importedScore.score}%</strong>. Imported{" "}
                 {new Date(importedScore.importedAt).toLocaleString()}. Per-engine and per-prompt
                 detail is only shown when the provider export includes it.
@@ -607,13 +607,13 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                   key={item.category}
                   className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-800/40"
                 >
-                  <span className="rounded-md bg-slate-200 px-2 py-0.5 text-[10px] font-semibold text-slate-700 dark:bg-slate-700 dark:text-slate-200">
+                  <span className="rounded-md bg-slate-200 px-2 py-0.5 text-micro font-semibold text-slate-700 dark:bg-slate-700 dark:text-slate-200">
                     {item.category}
                   </span>
-                  <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-white">
+                  <p className="mt-2 text-body font-semibold text-slate-900 dark:text-white">
                     &ldquo;{item.prompt(propertyName, propertyCity, propertyState)}&rdquo;
                   </p>
-                  <p className="mt-1 text-[11px] text-slate-500 dark:text-slate-400">
+                  <p className="mt-1 text-tiny text-slate-500 dark:text-slate-400">
                     Not yet measured. Export the prompt set below and import the provider&apos;s score.
                   </p>
                 </div>
@@ -623,7 +623,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <Button
               variant="secondary"
               onClick={() => setShowVisibilitySuite(true)}
-              className="mt-4 text-xs"
+              className="mt-4 text-caption"
             >
               Export / Sync Prompt Set
             </Button>
@@ -638,7 +638,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
               AI Engine Presence
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-caption text-slate-500 dark:text-slate-400">
               Per-engine share of voice requires asking each engine the prompt set. This app cannot
               query ChatGPT, Perplexity, Gemini or Google AI Overviews without a provider, so no
               percentage is shown.
@@ -651,12 +651,12 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
                     className="rounded-2xl border border-slate-200/80 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-800/40"
                   >
                     <div className="flex items-center justify-between gap-2">
-                      <span className="text-sm font-bold text-slate-900 dark:text-white">{engine}</span>
-                      <span className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-[10px] font-bold text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+                      <span className="text-body font-bold text-slate-900 dark:text-white">{engine}</span>
+                      <span className="rounded-full border border-slate-200 bg-white px-2 py-0.5 text-micro font-bold text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
                         Not measured
                       </span>
                     </div>
-                    <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-2 text-caption text-slate-500 dark:text-slate-400">
                       Connect a visibility provider to import citations for this engine.
                     </p>
                   </div>
@@ -666,7 +666,7 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
             <Button
               variant="secondary"
               onClick={() => setShowVisibilitySuite(true)}
-              className="mt-4 text-xs"
+              className="mt-4 text-caption"
             >
               Connect VisibilitySuite Data
             </Button>
@@ -677,10 +677,10 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
       {/* Action Footer */}
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card dark:border-slate-800 dark:bg-slate-900">
         <div>
-          <span className="font-display text-sm font-bold text-slate-900 dark:text-white">
+          <span className="font-display text-body font-bold text-slate-900 dark:text-white">
             Export GEO Readiness into Client Deliverables
           </span>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-caption text-slate-500 dark:text-slate-400">
             The deck carries the measured on-page readiness score. Connect VisibilitySuite to add
             citation data, or leave it out.
           </p>
@@ -689,12 +689,12 @@ export function GeoReadinessRadar({ property, onRunDeckGeneration }: GeoProps) {
           <Button
             variant="secondary"
             onClick={() => setShowVisibilitySuite(true)}
-            className="text-xs"
+            className="text-caption"
           >
             Connect VisibilitySuite Data
           </Button>
           {onRunDeckGeneration && (
-            <Button onClick={onRunDeckGeneration} variant="primary" className="text-xs">
+            <Button onClick={onRunDeckGeneration} variant="primary" className="text-caption">
               Generate Visibility Deck with GEO Insights
             </Button>
           )}

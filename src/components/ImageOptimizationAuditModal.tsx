@@ -153,7 +153,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
             <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               Website Image Optimization Audit &amp; Google Sheet Exporter
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-caption text-slate-500 dark:text-slate-400">
               Discovers every image placement, audits alt text &amp; layout shifts, and creates spreadsheets matching the 6-column reference layout.
             </p>
           </div>
@@ -180,7 +180,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                 onChange={(e) => setUrlInput(e.target.value)}
                 placeholder="https://example.com"
                 disabled={loading}
-                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm text-slate-900 placeholder-slate-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-body text-slate-900 placeholder-slate-400 shadow-sm focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
               />
             </div>
             <Button
@@ -204,7 +204,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
           </div>
 
           {/* Config options row */}
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 pt-1 border-t border-slate-200/60 dark:border-slate-700/60 text-xs">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 pt-1 border-t border-slate-200/60 dark:border-slate-700/60 text-caption">
             <div>
               <label className="font-semibold text-slate-600 dark:text-slate-300">Max Pages</label>
               <input
@@ -265,11 +265,11 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
         {/* Loading status */}
         {loading && (
           <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 text-center dark:border-amber-900/40 dark:bg-amber-950/20">
-            <div className="flex items-center justify-center gap-2 text-sm font-semibold text-amber-800 dark:text-amber-300">
+            <div className="flex items-center justify-center gap-2 text-body font-semibold text-amber-800 dark:text-amber-300">
               <span className="h-2 w-2 animate-ping rounded-full bg-amber-500" />
               {progressMsg || "Crawling website pages and extracting media attributes..."}
             </div>
-            <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+            <p className="mt-1 text-caption text-amber-600 dark:text-amber-400">
               Inspecting internal links, sitemaps, &lt;img&gt;, &lt;picture&gt;, CSS background images, and header responses.
             </p>
           </div>
@@ -277,7 +277,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
 
         {/* Error message */}
         {error && (
-          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-body text-red-700 dark:border-red-900/50 dark:bg-red-950/20 dark:text-red-300">
             <span className="font-bold">Error:</span> {error}
           </div>
         )}
@@ -288,51 +288,51 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
             {/* KPI Summary Cards */}
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
               <div className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Pages Scanned</div>
-                <div className="mt-1 text-2xl font-black text-slate-800 dark:text-white">
+                <div className="text-tiny font-bold uppercase tracking-wider text-slate-400">Pages Scanned</div>
+                <div className="mt-1 text-2xl font-extrabold text-slate-800 dark:text-white">
                   {result.summary.pagesScanned}
                 </div>
-                <div className="text-[10px] text-slate-500">{result.summary.pagesDiscovered} discovered / {result.summary.pagesFailed} failed</div>
+                <div className="text-micro text-slate-500">{result.summary.pagesDiscovered} discovered / {result.summary.pagesFailed} failed</div>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Total Placements</div>
-                <div className="mt-1 text-2xl font-black text-blue-600 dark:text-blue-400">
+                <div className="text-tiny font-bold uppercase tracking-wider text-slate-400">Total Placements</div>
+                <div className="mt-1 text-2xl font-extrabold text-blue-600 dark:text-blue-400">
                   {result.summary.totalPlacementsCount}
                 </div>
-                <div className="text-[10px] text-slate-500">{result.summary.uniqueImagesCount} unique assets</div>
+                <div className="text-micro text-slate-500">{result.summary.uniqueImagesCount} unique assets</div>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Missing Alt</div>
-                <div className="mt-1 text-2xl font-black text-amber-600 dark:text-amber-400">
+                <div className="text-tiny font-bold uppercase tracking-wider text-slate-400">Missing Alt</div>
+                <div className="mt-1 text-2xl font-extrabold text-amber-600 dark:text-amber-400">
                   {result.summary.missingAltCount}
                 </div>
-                <div className="text-[10px] text-slate-500">{result.summary.decorativeEmptyAltCount} decorative (alt=&quot;&quot;)</div>
+                <div className="text-micro text-slate-500">{result.summary.decorativeEmptyAltCount} decorative (alt=&quot;&quot;)</div>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Oversized (&gt;{sizeThresholdKb}K)</div>
-                <div className="mt-1 text-2xl font-black text-rose-600 dark:text-rose-400">
+                <div className="text-tiny font-bold uppercase tracking-wider text-slate-400">Oversized (&gt;{sizeThresholdKb}K)</div>
+                <div className="mt-1 text-2xl font-extrabold text-rose-600 dark:text-rose-400">
                   {result.summary.oversizedImagesCount}
                 </div>
-                <div className="text-[10px] text-slate-500">Exceeds threshold</div>
+                <div className="text-micro text-slate-500">Exceeds threshold</div>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Legacy Format</div>
-                <div className="mt-1 text-2xl font-black text-indigo-600 dark:text-indigo-400">
+                <div className="text-tiny font-bold uppercase tracking-wider text-slate-400">Legacy Format</div>
+                <div className="mt-1 text-2xl font-extrabold text-indigo-600 dark:text-indigo-400">
                   {result.summary.legacyFormatCount}
                 </div>
-                <div className="text-[10px] text-slate-500">PNG/JPG (non-WebP)</div>
+                <div className="text-micro text-slate-500">PNG/JPG (non-WebP)</div>
               </div>
 
               <div className="rounded-2xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-800/60">
-                <div className="text-[11px] font-bold uppercase tracking-wider text-slate-400">Broken Images</div>
-                <div className="mt-1 text-2xl font-black text-red-600 dark:text-red-400">
+                <div className="text-tiny font-bold uppercase tracking-wider text-slate-400">Broken Images</div>
+                <div className="mt-1 text-2xl font-extrabold text-red-600 dark:text-red-400">
                   {result.summary.brokenImagesCount}
                 </div>
-                <div className="text-[10px] text-slate-500">HTTP 4xx / 5xx</div>
+                <div className="text-micro text-slate-500">HTTP 4xx / 5xx</div>
               </div>
             </div>
 
@@ -340,14 +340,14 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-amber-200 bg-amber-50/50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
               <div className="space-y-0.5">
                 <div className="flex items-center gap-2">
-                  <span className="rounded-md bg-amber-200/80 px-2 py-0.5 text-[11px] font-bold text-amber-900 dark:bg-amber-900 dark:text-amber-200">
+                  <span className="rounded-md bg-amber-200/80 px-2 py-0.5 text-tiny font-bold text-amber-900 dark:bg-amber-900 dark:text-amber-200">
                     Exact Reference Layout
                   </span>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                  <h3 className="text-body font-bold text-slate-900 dark:text-white">
                     6 Columns with Yellow Header &amp; Image Previews
                   </h3>
                 </div>
-                <p className="text-xs text-slate-600 dark:text-slate-400">
+                <p className="text-caption text-slate-600 dark:text-slate-400">
                   Includes <strong>Image</strong>, <strong>URL</strong>, <strong>Title</strong>, <strong>Length</strong>, <strong>Optimized ALT Text</strong>, <strong>Length</strong> with <code>=IMAGE(B2)</code> &amp; <code>=LEN(...)</code>. Diagnostic details in separate <strong>Audit Summary</strong> tab.
                 </p>
               </div>
@@ -356,7 +356,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                 <button
                   type="button"
                   onClick={handleDownloadXlsx}
-                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-emerald-700 transition"
+                  className="inline-flex items-center gap-2 rounded-xl bg-emerald-600 px-4 py-2 text-caption font-bold text-white shadow-md hover:bg-emerald-700 transition"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path
@@ -374,7 +374,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                     href={result.googleSheetUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-blue-700 transition"
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-caption font-bold text-white shadow-md hover:bg-blue-700 transition"
                   >
                     <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
@@ -382,7 +382,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                     Open Google Sheet ↗
                   </a>
                 ) : result.googleSheetError ? (
-                  <span className="text-[11px] text-amber-700 dark:text-amber-400" title={result.googleSheetError}>
+                  <span className="text-tiny text-amber-700 dark:text-amber-400" title={result.googleSheetError}>
                     Google Sheet credentials required (XLSX downloaded above)
                   </span>
                 ) : null}
@@ -390,7 +390,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
             </div>
 
             {/* Coverage Boundary & WCAG Note */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400 space-y-1">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-caption text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400 space-y-1">
               <div>
                 <span className="font-semibold text-slate-800 dark:text-slate-200">Coverage Statement:</span> {result.summary.coverageStatement}
               </div>
@@ -406,7 +406,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                   <button
                     type="button"
                     onClick={() => setFilterType("all")}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-medium ${
+                    className={`rounded-lg px-2.5 py-1 text-caption font-medium ${
                       filterType === "all"
                         ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -417,7 +417,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                   <button
                     type="button"
                     onClick={() => setFilterType("missing-alt")}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-medium ${
+                    className={`rounded-lg px-2.5 py-1 text-caption font-medium ${
                       filterType === "missing-alt"
                         ? "bg-amber-600 text-white"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -428,7 +428,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                   <button
                     type="button"
                     onClick={() => setFilterType("oversized")}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-medium ${
+                    className={`rounded-lg px-2.5 py-1 text-caption font-medium ${
                       filterType === "oversized"
                         ? "bg-rose-600 text-white"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -439,7 +439,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                   <button
                     type="button"
                     onClick={() => setFilterType("high-priority")}
-                    className={`rounded-lg px-2.5 py-1 text-xs font-medium ${
+                    className={`rounded-lg px-2.5 py-1 text-caption font-medium ${
                       filterType === "high-priority"
                         ? "bg-purple-600 text-white"
                         : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -455,16 +455,16 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
                     placeholder="Search by URL, title or alt..."
-                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 placeholder-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                    className="w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-caption text-slate-800 placeholder-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                   />
                 </div>
               </div>
 
               {/* Exact 6-Column Table */}
               <div className="overflow-x-auto rounded-2xl border border-slate-200 dark:border-slate-800">
-                <table className="w-full text-left text-xs">
+                <table className="w-full text-left text-caption">
                   {/* Yellow Header Row matching reference */}
-                  <thead className="border-b border-amber-300 bg-amber-200 text-[11px] font-bold text-amber-950 uppercase tracking-wider dark:bg-amber-300 dark:text-slate-900">
+                  <thead className="border-b border-amber-300 bg-amber-200 text-tiny font-bold text-amber-950 uppercase tracking-wider dark:bg-amber-300 dark:text-slate-900">
                     <tr>
                       <th className="p-3 w-28 text-center">Image</th>
                       <th className="p-3 min-w-[200px]">URL</th>
@@ -504,19 +504,19 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                             target="_blank"
                             rel="noreferrer"
                             onClick={(e) => e.stopPropagation()}
-                            className="font-mono text-blue-600 hover:underline dark:text-blue-400 break-all text-[11px]"
+                            className="font-mono text-blue-600 hover:underline dark:text-blue-400 break-all text-tiny"
                             title={item.imageUrl}
                           >
                             {item.imageUrl}
                           </a>
-                          <span className="block text-[10px] text-slate-400 truncate mt-0.5">
+                          <span className="block text-micro text-slate-400 truncate mt-0.5">
                             Page: {item.pageTitle || new URL(item.pageUrl).pathname}
                           </span>
                         </td>
 
                         {/* 3. Title (Original Decoded Filename) */}
                         <td className="p-3 max-w-[180px]">
-                          <span className="font-mono text-slate-800 dark:text-slate-200 break-all font-medium text-[11px]">
+                          <span className="font-mono text-slate-800 dark:text-slate-200 break-all font-medium text-tiny">
                             {item.filename}
                           </span>
                         </td>
@@ -529,16 +529,16 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
                         {/* 5. Optimized ALT Text */}
                         <td className="p-3 max-w-[240px]">
                           {item.isDecorative ? (
-                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                            <span className="rounded bg-slate-100 px-1.5 py-0.5 text-micro font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-400">
                               alt=&quot;&quot; (Decorative)
                             </span>
                           ) : (
-                            <span className="text-emerald-800 dark:text-emerald-300 font-medium text-[11px]">
+                            <span className="text-emerald-800 dark:text-emerald-300 font-medium text-tiny">
                               {item.proposedAlt}
                             </span>
                           )}
                           {item.currentAlt && item.currentAlt !== item.proposedAlt && (
-                            <span className="block text-[10px] text-slate-400 line-through mt-0.5 truncate">
+                            <span className="block text-micro text-slate-400 line-through mt-0.5 truncate">
                               Was: &quot;{item.currentAlt}&quot;
                             </span>
                           )}
@@ -555,7 +555,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
               </div>
 
               {filteredItems.length > 50 && (
-                <p className="text-center text-xs text-slate-400">
+                <p className="text-center text-caption text-slate-400">
                   Showing first 50 of {filteredItems.length} placements. All records are exported into the downloadable spreadsheet.
                 </p>
               )}
@@ -566,7 +566,7 @@ export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props)
 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-6 py-3 dark:border-slate-800 dark:bg-slate-900/50">
-        <span className="text-xs text-slate-500">
+        <span className="text-caption text-slate-500">
           Main tab matches reference spreadsheet with yellow header, 6 exact columns, and <code>=IMAGE(B2)</code> / <code>=LEN()</code> formulas.
         </span>
         <Button variant="secondary" onClick={onClose}>

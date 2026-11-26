@@ -281,13 +281,13 @@ export function VisibilitySuiteModal({
       {/* Header Banner */}
       <div className="flex flex-col justify-between gap-4 border-b border-slate-100 pb-5 dark:border-slate-800 sm:flex-row sm:items-center">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-purple-300 bg-purple-50 px-3 py-1 text-xs font-semibold text-purple-800 dark:border-purple-800 dark:bg-purple-950/40 dark:text-purple-300">
+          <div className="inline-flex items-center gap-2 rounded-full border border-purple-300 bg-purple-50 px-3 py-1 text-caption font-semibold text-purple-800 dark:border-purple-800 dark:bg-purple-950/40 dark:text-purple-300">
             Integration Connector
           </div>
           <h2 className="mt-2 font-display text-xl font-bold text-slate-900 dark:text-white">
             Connect with VisibilitySuite.ai
           </h2>
-          <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-0.5 text-caption text-slate-500 dark:text-slate-400">
             Sync <span className="font-semibold text-slate-800 dark:text-slate-200">{displayName}</span> data, AI prompts, and comp-set tracking with your VisibilitySuite dashboard.
           </p>
         </div>
@@ -297,11 +297,11 @@ export function VisibilitySuiteModal({
             href="https://app.visibilitysuite.ai/sign-in?redirectUrl=%2Fdashboard"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-3.5 py-2 text-xs font-bold text-white shadow-sm transition hover:bg-purple-700"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-purple-600 px-3.5 py-2 text-caption font-bold text-white shadow-sm transition hover:bg-purple-700"
           >
             Sign In to VisibilitySuite
           </a>
-          <Button variant="ghost" onClick={onClose} className="text-xs">
+          <Button variant="ghost" onClick={onClose} className="text-caption">
             Close
           </Button>
         </div>
@@ -312,7 +312,7 @@ export function VisibilitySuiteModal({
         <button
           type="button"
           onClick={() => setActiveTab("ingest")}
-          className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+          className={`rounded-xl px-3.5 py-1.5 text-caption font-semibold transition ${
             activeTab === "ingest"
               ? "bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-300"
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
@@ -323,7 +323,7 @@ export function VisibilitySuiteModal({
         <button
           type="button"
           onClick={() => setActiveTab("export")}
-          className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+          className={`rounded-xl px-3.5 py-1.5 text-caption font-semibold transition ${
             activeTab === "export"
               ? "bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-300"
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
@@ -334,7 +334,7 @@ export function VisibilitySuiteModal({
         <button
           type="button"
           onClick={() => setActiveTab("api")}
-          className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+          className={`rounded-xl px-3.5 py-1.5 text-caption font-semibold transition ${
             activeTab === "api"
               ? "bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-300"
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
@@ -345,7 +345,7 @@ export function VisibilitySuiteModal({
         <button
           type="button"
           onClick={() => setActiveTab("import")}
-          className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition ${
+          className={`rounded-xl px-3.5 py-1.5 text-caption font-semibold transition ${
             activeTab === "import"
               ? "bg-purple-100 text-purple-900 dark:bg-purple-950 dark:text-purple-300"
               : "text-slate-600 hover:text-slate-900 dark:text-slate-400"
@@ -357,7 +357,7 @@ export function VisibilitySuiteModal({
 
       {syncStatus && (
         <div
-          className={`rounded-xl border p-3.5 text-xs font-medium ${
+          className={`rounded-xl border p-3.5 text-caption font-medium ${
             syncStatus.type === "success"
               ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300"
               : "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"
@@ -388,15 +388,15 @@ export function VisibilitySuiteModal({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
               </svg>
             </div>
-            <h3 className="mt-3 font-display text-sm font-bold text-slate-900 dark:text-white">
+            <h3 className="mt-3 font-display text-body font-bold text-slate-900 dark:text-white">
               Drop VisibilitySuite Batch File Here
             </h3>
-            <p className="mt-1 max-w-sm text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-1 max-w-sm text-caption text-slate-500 dark:text-slate-400">
               Drag and drop any <code className="rounded bg-slate-200 px-1 py-0.5 text-slate-800 dark:bg-slate-700 dark:text-slate-200">*__VisibilitySuite_Batch.json</code> file to auto-configure this property.
             </p>
 
             <div className="mt-4">
-              <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-purple-700">
+              <label className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-purple-600 px-4 py-2 text-caption font-semibold text-white shadow-sm transition hover:bg-purple-700">
                 Browse Files
                 <input
                   type="file"
@@ -412,33 +412,33 @@ export function VisibilitySuiteModal({
             <div className="space-y-3 rounded-2xl border border-purple-200 bg-purple-50/60 p-4 dark:border-purple-900/60 dark:bg-purple-950/30">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <div>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
+                  <span className="text-micro font-bold uppercase tracking-wider text-purple-700 dark:text-purple-300">
                     Ingested Batch Property
                   </span>
                   <h4 className="font-display text-base font-bold text-slate-900 dark:text-white">
                     {loadedBatch.property.name}
                   </h4>
-                  <p className="text-xs text-slate-600 dark:text-slate-300">
-                    {loadedBatch.property.city}, {loadedBatch.property.state} &bull; <span className="font-mono text-[11px] text-purple-700 dark:text-purple-400">{loadedBatch.property.url}</span>
+                  <p className="text-caption text-slate-600 dark:text-slate-300">
+                    {loadedBatch.property.city}, {loadedBatch.property.state} &bull; <span className="font-mono text-tiny text-purple-700 dark:text-purple-400">{loadedBatch.property.url}</span>
                   </p>
                 </div>
-                <Button variant="primary" onClick={onClose} className="text-xs">
+                <Button variant="primary" onClick={onClose} className="text-caption">
                   Apply &amp; Return to Dashboard
                 </Button>
               </div>
 
               {loadedBatch.competitors.length > 0 && (
                 <div className="pt-2 border-t border-purple-200/60 dark:border-purple-900/40">
-                  <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                  <span className="text-tiny font-semibold text-slate-700 dark:text-slate-300">
                     Comp-Set Competitors Ingested ({loadedBatch.competitors.length}):
                   </span>
                   <div className="mt-1.5 flex flex-wrap gap-2">
                     {loadedBatch.competitors.map((comp, i) => (
                       <span
                         key={i}
-                        className="rounded-lg border border-purple-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-800 dark:border-purple-800 dark:bg-slate-900 dark:text-slate-200"
+                        className="rounded-lg border border-purple-200 bg-white px-2.5 py-1 text-caption font-medium text-slate-800 dark:border-purple-800 dark:bg-slate-900 dark:text-slate-200"
                       >
-                        {comp.name} <span className="font-mono text-[10px] text-purple-600 dark:text-purple-400">({comp.domain})</span>
+                        {comp.name} <span className="font-mono text-micro text-purple-600 dark:text-purple-400">({comp.domain})</span>
                       </span>
                     ))}
                   </div>
@@ -447,14 +447,14 @@ export function VisibilitySuiteModal({
 
               {loadedBatch.prompts.length > 0 && (
                 <div className="pt-2 border-t border-purple-200/60 dark:border-purple-900/40">
-                  <span className="text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                  <span className="text-tiny font-semibold text-slate-700 dark:text-slate-300">
                     GEO Search Prompts Ingested ({loadedBatch.prompts.length}):
                   </span>
                   <div className="mt-1.5 flex flex-wrap gap-1.5">
                     {loadedBatch.prompts.map((p, i) => (
                       <span
                         key={i}
-                        className="rounded-md bg-purple-100/80 px-2 py-0.5 text-[10px] font-semibold text-purple-800 dark:bg-purple-900/50 dark:text-purple-200"
+                        className="rounded-md bg-purple-100/80 px-2 py-0.5 text-micro font-semibold text-purple-800 dark:bg-purple-900/50 dark:text-purple-200"
                       >
                         {p.category}
                       </span>
@@ -464,15 +464,15 @@ export function VisibilitySuiteModal({
               )}
             </div>
           ) : importedSummary ? (
-            <div className="rounded-xl border border-purple-200 bg-purple-50/80 p-3.5 text-xs text-purple-900 dark:border-purple-900/60 dark:bg-purple-950/40 dark:text-purple-300">
+            <div className="rounded-xl border border-purple-200 bg-purple-50/80 p-3.5 text-caption text-purple-900 dark:border-purple-900/60 dark:bg-purple-950/40 dark:text-purple-300">
               <div className="font-bold">Active Property Configured:</div>
-              <div className="mt-0.5 text-[11px]">{importedSummary}</div>
+              <div className="mt-0.5 text-tiny">{importedSummary}</div>
             </div>
           ) : null}
 
-          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-300">
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-3.5 text-caption text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-300">
             <span className="font-semibold text-slate-900 dark:text-white">What gets auto-filled:</span>
-            <ul className="mt-1 list-disc pl-4 space-y-0.5 text-[11px]">
+            <ul className="mt-1 list-disc pl-4 space-y-0.5 text-tiny">
               <li>Hotel name, brand, official URL, and city/state location</li>
               <li>Comp-set competitor domains &amp; names that you enter (never guessed)</li>
               <li>GEO AI prompts calibrated for ChatGPT Search, Google AI Overviews &amp; Perplexity</li>
@@ -485,10 +485,10 @@ export function VisibilitySuiteModal({
       {activeTab === "export" && (
         <div className="space-y-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">
-            <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">
+            <h3 className="font-display text-body font-bold text-slate-900 dark:text-white">
               Export AI Prompts &amp; Comp-Set Batch
             </h3>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+            <p className="mt-1 text-caption text-slate-600 dark:text-slate-300">
               Download this prepared JSON configuration to upload directly into VisibilitySuite.ai batch processor.
             </p>
 
@@ -499,15 +499,15 @@ export function VisibilitySuiteModal({
                 onChange={(e) => setCompetitorsText(e.target.value)}
                 rows={3}
                 placeholder={"Competitor A, competitor-a.com\nCompetitor B, competitor-b.com"}
-                className="input font-mono text-xs resize-y"
+                className="input font-mono text-caption resize-y"
               />
-              <p className="mt-1 text-[10px] text-slate-400">
+              <p className="mt-1 text-micro text-slate-400">
                 Leave blank to export prompts without a comp-set. Domains are not generated.
               </p>
             </div>
 
             <div className="mt-3">
-              <pre className="max-h-48 overflow-auto rounded-xl bg-slate-900 p-3 font-mono text-[11px] text-emerald-400">
+              <pre className="max-h-48 overflow-auto rounded-xl bg-slate-900 p-3 font-mono text-tiny text-emerald-400">
                 {jsonString}
               </pre>
             </div>
@@ -515,15 +515,15 @@ export function VisibilitySuiteModal({
 
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <Button variant="ghost" onClick={handleCopyJson} className="text-xs">
+              <Button variant="ghost" onClick={handleCopyJson} className="text-caption">
                 {copied ? "Copied JSON" : "Copy Payload"}
               </Button>
-              <Button variant="secondary" onClick={handleDownloadCsv} className="text-xs">
+              <Button variant="secondary" onClick={handleDownloadCsv} className="text-caption">
                 Download Prompts CSV
               </Button>
             </div>
 
-            <Button variant="primary" onClick={handleDownloadJson} className="text-xs">
+            <Button variant="primary" onClick={handleDownloadJson} className="text-caption">
               Download VisibilitySuite Batch File (.json)
             </Button>
           </div>
@@ -534,10 +534,10 @@ export function VisibilitySuiteModal({
       {activeTab === "api" && (
         <div className="space-y-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">
-            <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">
+            <h3 className="font-display text-body font-bold text-slate-900 dark:text-white">
               Direct VisibilitySuite API v1 Sync
             </h3>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+            <p className="mt-1 text-caption text-slate-600 dark:text-slate-300">
               Push your property prompts and compset radar directly into your VisibilitySuite account without manual file uploads.
             </p>
 
@@ -549,9 +549,9 @@ export function VisibilitySuiteModal({
                   value={apiKey}
                   onChange={(e) => setApiKey(e.target.value)}
                   placeholder="Paste vs_live_... or Clerk Bearer token"
-                  className="input font-mono text-xs"
+                  className="input font-mono text-caption"
                 />
-                <span className="mt-1 block text-[10px] text-slate-400">
+                <span className="mt-1 block text-micro text-slate-400">
                   Found under VisibilitySuite &gt; Settings &gt; Developer / API Keys.
                 </span>
               </div>
@@ -563,7 +563,7 @@ export function VisibilitySuiteModal({
                   value={workspaceId}
                   onChange={(e) => setWorkspaceId(e.target.value)}
                   placeholder="e.g. ws_948274"
-                  className="input font-mono text-xs"
+                  className="input font-mono text-caption"
                 />
               </div>
             </div>
@@ -574,7 +574,7 @@ export function VisibilitySuiteModal({
               variant="primary"
               disabled={syncBusy}
               onClick={handleDirectSync}
-              className="text-xs"
+              className="text-caption"
             >
               {syncBusy ? "Syncing..." : "Push Data to VisibilitySuite.ai"}
             </Button>
@@ -586,10 +586,10 @@ export function VisibilitySuiteModal({
       {activeTab === "import" && (
         <div className="space-y-4">
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/50">
-            <h3 className="font-display text-sm font-bold text-slate-900 dark:text-white">
+            <h3 className="font-display text-body font-bold text-slate-900 dark:text-white">
               Import VisibilitySuite Citation Report
             </h3>
-            <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+            <p className="mt-1 text-caption text-slate-600 dark:text-slate-300">
               Paste the snapshot JSON report or citation percentage from VisibilitySuite to calibrate your active GEO Readiness Radar.
             </p>
 
@@ -599,13 +599,13 @@ export function VisibilitySuiteModal({
                 onChange={(e) => setPasteJson(e.target.value)}
                 placeholder='Paste VisibilitySuite report JSON or citation score (e.g. { "score": 84, "citations": [...] })'
                 rows={5}
-                className="input font-mono text-xs resize-y"
+                className="input font-mono text-caption resize-y"
               />
             </div>
           </div>
 
           <div className="flex justify-end">
-            <Button variant="primary" onClick={handleImportReport} className="text-xs">
+            <Button variant="primary" onClick={handleImportReport} className="text-caption">
               Calibrate GEO Radar with Report
             </Button>
           </div>

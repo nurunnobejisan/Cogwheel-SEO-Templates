@@ -211,7 +211,7 @@ export function AiTrainingModal({
       className="animate-fade-in mb-6 border-slate-200"
       title={
         <div className="flex items-center gap-2.5">
-          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-micro font-bold uppercase tracking-wider text-brand-light">
             Train AI
           </span>
           <span>Feedback, Auto-Apply &amp; Change History</span>
@@ -234,7 +234,7 @@ export function AiTrainingModal({
     >
       <div className="space-y-5">
         <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
-          <div className="inline-flex rounded-xl bg-slate-100 p-1 text-xs font-semibold">
+          <div className="inline-flex rounded-xl bg-slate-100 p-1 text-caption font-semibold">
             <button
               type="button"
               onClick={() => setTab("feedback")}
@@ -263,13 +263,13 @@ export function AiTrainingModal({
               Change History ({history.length})
             </button>
           </div>
-          <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-[11px] font-medium text-amber-800">
+          <span className="rounded-full border border-amber-200 bg-amber-50 px-2.5 py-1 text-tiny font-medium text-amber-800">
             Guardrail: SEO feedback &amp; safe Design/UI only
           </span>
         </div>
 
         {error && (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-xs font-medium text-rose-700">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-3.5 py-2 text-caption font-medium text-rose-700">
             {error}
           </div>
         )}
@@ -278,7 +278,7 @@ export function AiTrainingModal({
           <div className="space-y-4">
             <div className="grid gap-3 sm:grid-cols-3">
               <div>
-                <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <label className="mb-1 block text-tiny font-bold uppercase tracking-wider text-slate-500">
                   Your Name *
                 </label>
                 <input
@@ -286,19 +286,19 @@ export function AiTrainingModal({
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
                   placeholder="e.g. Razib or Michael"
-                  className="input text-xs"
+                  className="input text-caption"
                 />
               </div>
 
               <div>
-                <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                <label className="mb-1 block text-tiny font-bold uppercase tracking-wider text-slate-500">
                   Change Type *
                 </label>
                 <div className="grid grid-cols-2 gap-1.5 rounded-xl border border-slate-200 bg-slate-50 p-1">
                   <button
                     type="button"
                     onClick={() => setCategory("seo")}
-                    className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+                    className={`rounded-lg px-2.5 py-1.5 text-caption font-semibold transition ${
                       category === "seo" ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
@@ -307,7 +307,7 @@ export function AiTrainingModal({
                   <button
                     type="button"
                     onClick={() => setCategory("design")}
-                    className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition ${
+                    className={`rounded-lg px-2.5 py-1.5 text-caption font-semibold transition ${
                       category === "design" ? "bg-slate-900 text-white" : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
@@ -318,13 +318,13 @@ export function AiTrainingModal({
 
               {category === "seo" ? (
                 <div>
-                  <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  <label className="mb-1 block text-tiny font-bold uppercase tracking-wider text-slate-500">
                     Task Scope (Optional)
                   </label>
                   <select
                     value={taskId}
                     onChange={(e) => setTaskId(e.target.value)}
-                    className="input text-xs"
+                    className="input text-caption"
                   >
                     <option value="">Auto-Detect / All Tasks</option>
                     {TASKS_CONFIG.map((t) => (
@@ -335,7 +335,7 @@ export function AiTrainingModal({
                   </select>
                 </div>
               ) : (
-                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-[11px] text-slate-600">
+                <div className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-tiny text-slate-600">
                   <div className="font-bold text-slate-800">Current Design</div>
                   <div>
                     Theme: <strong>{designSettings?.accentTheme ?? "lime"}</strong> · Density:{" "}
@@ -346,7 +346,7 @@ export function AiTrainingModal({
             </div>
 
             <div>
-              <label className="mb-1 block text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              <label className="mb-1 block text-tiny font-bold uppercase tracking-wider text-slate-500">
                 What do you want to change? *
               </label>
               <textarea
@@ -358,12 +358,12 @@ export function AiTrainingModal({
                     ? "e.g. Always keep meta descriptions under 155 characters and mention direct-booking perks..."
                     : "e.g. Switch accent theme to sky blue, or make layout compact, or hide summary cards..."
                 }
-                className="input text-xs"
+                className="input text-caption"
               />
             </div>
 
             <div className="space-y-1.5">
-              <div className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+              <div className="text-tiny font-bold uppercase tracking-wider text-slate-500">
                 1-Click Quick Feedback
               </div>
               <div className="flex flex-wrap gap-1.5">
@@ -376,7 +376,7 @@ export function AiTrainingModal({
                           setTaskId(preset.taskId);
                           setFeedbackText(preset.text);
                         }}
-                        className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-brand hover:bg-brand-50"
+                        className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-tiny font-semibold text-slate-700 hover:border-brand hover:bg-brand-50"
                       >
                         + {preset.label}
                       </button>
@@ -392,7 +392,7 @@ export function AiTrainingModal({
                             void submitFeedback(preset.patch, preset.text);
                           }
                         }}
-                        className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-brand hover:bg-brand-50"
+                        className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-tiny font-semibold text-slate-700 hover:border-brand hover:bg-brand-50"
                       >
                         {preset.label}
                       </button>
@@ -404,14 +404,14 @@ export function AiTrainingModal({
               <Button variant="primary" disabled={saving} onClick={() => void submitFeedback()}>
                 {saving ? "Applying..." : "Apply Feedback Automatically"}
               </Button>
-              <span className="text-[11px] text-slate-500">
+              <span className="text-tiny text-slate-500">
                 Every change is logged with your name and can be reverted in History.
               </span>
             </div>
 
             {lastOutcome && (
               <div
-                className={`rounded-2xl border p-4 text-xs ${
+                className={`rounded-2xl border p-4 text-caption ${
                   lastOutcome.status === "applied"
                     ? "border-emerald-200 bg-emerald-50/70 text-emerald-900"
                     : "border-amber-200 bg-amber-50 text-amber-900"
@@ -421,12 +421,12 @@ export function AiTrainingModal({
                   <span className="font-bold">
                     {lastOutcome.status === "applied" ? "Applied Automatically" : "Blocked by Guardrail"}
                   </span>
-                  <span className="text-[11px] opacity-80">
+                  <span className="text-tiny opacity-80">
                     By {lastOutcome.entry.authorName} · {new Date(lastOutcome.entry.createdAt).toLocaleTimeString()}
                   </span>
                 </div>
                 <p className="mt-1 font-medium">{lastOutcome.message}</p>
-                <div className="mt-2 rounded-xl border border-black/5 bg-white/80 px-3 py-2 text-[11px]">
+                <div className="mt-2 rounded-xl border border-black/5 bg-white/80 px-3 py-2 text-tiny">
                   <strong>What Changed:</strong> {lastOutcome.entry.summary}
                 </div>
               </div>
@@ -437,9 +437,9 @@ export function AiTrainingModal({
         {tab === "rules" && (
           <div className="space-y-2.5">
             {loading ? (
-              <p className="text-xs text-slate-500">Loading rules...</p>
+              <p className="text-caption text-slate-500">Loading rules...</p>
             ) : rules.length === 0 ? (
-              <p className="text-xs text-slate-500">No training rules yet.</p>
+              <p className="text-caption text-slate-500">No training rules yet.</p>
             ) : (
               rules.map((rule) => (
                 <div
@@ -450,18 +450,18 @@ export function AiTrainingModal({
                 >
                   <div className="space-y-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="text-xs font-bold text-slate-900">{rule.title}</span>
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600">
+                      <span className="text-caption font-bold text-slate-900">{rule.title}</span>
+                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-micro font-semibold text-slate-600">
                         {rule.taskId ?? "All Tasks"}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-600">{rule.ruleText}</p>
+                    <p className="text-caption text-slate-600">{rule.ruleText}</p>
                   </div>
                   <div className="flex shrink-0 items-center gap-2">
                     <button
                       type="button"
                       onClick={() => void handleToggle(rule)}
-                      className={`rounded-lg border px-2.5 py-1 text-[11px] font-semibold ${
+                      className={`rounded-lg border px-2.5 py-1 text-tiny font-semibold ${
                         rule.active
                           ? "border-emerald-200 bg-emerald-50 text-emerald-700"
                           : "border-slate-200 bg-white text-slate-500"
@@ -472,7 +472,7 @@ export function AiTrainingModal({
                     <button
                       type="button"
                       onClick={() => void handleDelete(rule.id)}
-                      className="rounded-lg border border-rose-200 px-2.5 py-1 text-[11px] font-semibold text-rose-600 hover:bg-rose-50"
+                      className="rounded-lg border border-rose-200 px-2.5 py-1 text-tiny font-semibold text-rose-600 hover:bg-rose-50"
                     >
                       Delete
                     </button>
@@ -486,7 +486,7 @@ export function AiTrainingModal({
         {tab === "history" && (
           <div className="space-y-2.5">
             {history.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-8 text-center text-xs text-slate-500">
+              <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-8 text-center text-caption text-slate-500">
                 No feedback changes recorded yet. Submit SEO feedback or a Design tweak to see who changed what here.
               </div>
             ) : (
@@ -495,11 +495,11 @@ export function AiTrainingModal({
                   key={entry.id}
                   className="flex flex-col justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 sm:flex-row sm:items-start"
                 >
-                  <div className="space-y-1 text-xs">
+                  <div className="space-y-1 text-caption">
                     <div className="flex flex-wrap items-center gap-2">
                       <span className="font-bold text-slate-900">{entry.authorName}</span>
                       <span
-                        className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase ${
+                        className={`rounded-md px-2 py-0.5 text-micro font-bold uppercase ${
                           entry.category === "seo"
                             ? "bg-emerald-50 text-emerald-700"
                             : entry.category === "design"
@@ -510,7 +510,7 @@ export function AiTrainingModal({
                         {entry.category === "seo" ? "SEO Rule" : entry.category === "design" ? "Design / UI" : "Blocked"}
                       </span>
                       <span
-                        className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${
+                        className={`rounded-md px-2 py-0.5 text-micro font-semibold ${
                           entry.status === "applied"
                             ? "bg-slate-100 text-slate-700"
                             : entry.status === "reverted"
@@ -520,7 +520,7 @@ export function AiTrainingModal({
                       >
                         {entry.status}
                       </span>
-                      <span className="text-[11px] text-slate-400">
+                      <span className="text-tiny text-slate-400">
                         {new Date(entry.createdAt).toLocaleString()}
                       </span>
                     </div>
@@ -536,7 +536,7 @@ export function AiTrainingModal({
                       type="button"
                       disabled={saving}
                       onClick={() => void handleRevert(entry.id)}
-                      className="shrink-0 rounded-lg border border-slate-200 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:border-amber-300 hover:bg-amber-50"
+                      className="shrink-0 rounded-lg border border-slate-200 px-2.5 py-1 text-tiny font-semibold text-slate-700 hover:border-amber-300 hover:bg-amber-50"
                     >
                       Revert
                     </button>

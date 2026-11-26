@@ -99,7 +99,7 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
             <button
               key={id}
               onClick={() => setTab(id)}
-              className={`rounded-md px-3 py-1 text-xs font-medium ${tab === id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
+              className={`rounded-md px-3 py-1 text-caption font-medium ${tab === id ? "bg-white text-slate-900 shadow-sm" : "text-slate-500 hover:text-slate-700"}`}
             >
               {label}
             </button>
@@ -124,11 +124,11 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
           {bucketGroups.map((g) => (
             <div key={g.id} className="overflow-hidden rounded-md border border-slate-200">
               <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-3 py-2">
-                <span className="text-sm font-semibold text-slate-800">{g.name}</span>
-                <span className="text-xs text-slate-500">{g.rows.length} {g.rows.length === 1 ? "keyword" : "keywords"}</span>
+                <span className="text-body font-semibold text-slate-800">{g.name}</span>
+                <span className="text-caption text-slate-500">{g.rows.length} {g.rows.length === 1 ? "keyword" : "keywords"}</span>
               </div>
               {g.rows.length === 0 ? (
-                <div className="px-3 py-3 text-xs italic text-slate-400">No Data</div>
+                <div className="px-3 py-3 text-caption italic text-slate-400">No Data</div>
               ) : (
                 <table className="w-full">
                   <thead>
@@ -143,10 +143,10 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
                   <tbody>
                     {g.rows.map((k) => (
                       <tr key={k.id}>
-                        <td className="td text-xs">
+                        <td className="td text-caption">
                           {editingId === k.id ? (
                             <input
-                              className="input py-0.5 text-xs"
+                              className="input py-0.5 text-caption"
                               value={draftKw}
                               onChange={(e) => setDraftKw(e.target.value)}
                               autoFocus
@@ -155,23 +155,23 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
                             <span>{k.keyword}</span>
                           )}
                         </td>
-                        <td className="td text-right text-xs tabular-nums">
+                        <td className="td text-right text-caption tabular-nums">
                           {editingId === k.id ? (
-                            <input className="input w-16 py-0.5 text-right text-xs" value={draftVol} onChange={(e) => setDraftVol(e.target.value)} />
+                            <input className="input w-16 py-0.5 text-right text-caption" value={draftVol} onChange={(e) => setDraftVol(e.target.value)} />
                           ) : (
                             k.volume.toLocaleString()
                           )}
                         </td>
-                        <td className="td text-right text-xs">
+                        <td className="td text-right text-caption">
                           {editingId === k.id ? (
-                            <input className="input w-12 py-0.5 text-right text-xs" value={draftKd} onChange={(e) => setDraftKd(e.target.value)} />
+                            <input className="input w-12 py-0.5 text-right text-caption" value={draftKd} onChange={(e) => setDraftKd(e.target.value)} />
                           ) : (
                             <KdPill kd={k.kd} />
                           )}
                         </td>
                         <td className="td">
                           <select
-                            className="input py-0.5 text-xs"
+                            className="input py-0.5 text-caption"
                             value={k.bucketId ?? ""}
                             onChange={(e) => {
                               const next = BUCKETS.find((b) => b.id === e.target.value);
@@ -186,14 +186,14 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
                         <td className="td text-right">
                           {editingId === k.id ? (
                             <div className="flex justify-end gap-1">
-                              <Button className="px-1.5 py-0.5 text-[11px]" onClick={() => commitEdit(k.id)}>Save</Button>
-                              <Button variant="ghost" className="px-1.5 py-0.5 text-[11px]" onClick={() => setEditingId(null)}>×</Button>
+                              <Button className="px-1.5 py-0.5 text-tiny" onClick={() => commitEdit(k.id)}>Save</Button>
+                              <Button variant="ghost" className="px-1.5 py-0.5 text-tiny" onClick={() => setEditingId(null)}>×</Button>
                             </div>
                           ) : (
                             <div className="flex justify-end gap-1">
-                              <Button variant="ghost" className="px-1.5 py-0.5 text-[11px]" onClick={() => startEdit(k)}>Edit</Button>
+                              <Button variant="ghost" className="px-1.5 py-0.5 text-tiny" onClick={() => startEdit(k)}>Edit</Button>
                               {k.role === "fill" && (
-                                <Button variant="danger" className="px-1.5 py-0.5 text-[11px]" onClick={() => onRemove(k.id)}>×</Button>
+                                <Button variant="danger" className="px-1.5 py-0.5 text-tiny" onClick={() => onRemove(k.id)}>×</Button>
                               )}
                             </div>
                           )}
@@ -227,9 +227,9 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
               }}
               action={(k) => (
                 <div className="flex justify-end gap-1">
-                  <Button variant="ghost" className="px-2 py-0.5 text-xs" onClick={() => startEdit(k)}>Edit</Button>
+                  <Button variant="ghost" className="px-2 py-0.5 text-caption" onClick={() => startEdit(k)}>Edit</Button>
                   {k.role === "fill" && (
-                    <Button variant="danger" className="px-2 py-0.5 text-xs" onClick={() => onRemove(k.id)}>Remove</Button>
+                    <Button variant="danger" className="px-2 py-0.5 text-caption" onClick={() => onRemove(k.id)}>Remove</Button>
                   )}
                 </div>
               )}
@@ -238,7 +238,7 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
           {tab === "reserve" && (
             <KeywordTable
               rows={filter(reserve).slice(0, 500)}
-              action={(k) => <Button variant="ghost" className="px-2 py-0.5 text-xs" onClick={() => onAdd(k.id)}>+ Add</Button>}
+              action={(k) => <Button variant="ghost" className="px-2 py-0.5 text-caption" onClick={() => onAdd(k.id)}>+ Add</Button>}
             />
           )}
           {tab === "buckets" && (
@@ -256,7 +256,7 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
                   <tr key={s.bucketId}>
                     <td className="td">
                       {s.bucketName}
-                      {s.bucketId.startsWith("custom:") && <span className="ml-2 text-xs text-slate-400">(from filename/group)</span>}
+                      {s.bucketId.startsWith("custom:") && <span className="ml-2 text-caption text-slate-400">(from filename/group)</span>}
                     </td>
                     <td className="td text-right tabular-nums">{s.count}</td>
                     <td className="td text-right tabular-nums">{poolByBucket.get(s.bucketId)?.length ?? 0}</td>
@@ -282,9 +282,9 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
                   <tr key={`${d.keyword}-${i}`}>
                     <td className="td">{d.keyword || <em className="text-slate-400">(empty)</em>}</td>
                     <td className="td">
-                      <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${d.reason === "geo" ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"}`}>{d.reason}</span>
+                      <span className={`rounded-full px-2 py-0.5 text-tiny font-medium ${d.reason === "geo" ? "bg-orange-100 text-orange-700" : "bg-slate-100 text-slate-600"}`}>{d.reason}</span>
                     </td>
-                    <td className="td text-xs text-slate-500">{d.detail}</td>
+                    <td className="td text-caption text-slate-500">{d.detail}</td>
                     <td className="td text-right tabular-nums">{d.volume}</td>
                     <td className="td text-right"><KdPill kd={d.kd} /></td>
                   </tr>
@@ -346,35 +346,35 @@ function KeywordTable({
           const isEditing = editingId === k.id;
           return (
             <tr key={k.id}>
-              {numbered && <td className="td text-xs text-slate-400 tabular-nums">{i + 1}</td>}
+              {numbered && <td className="td text-caption text-slate-400 tabular-nums">{i + 1}</td>}
               <td className="td">
                 {isEditing ? (
-                  <input className="input py-0.5 text-xs" value={draftKw} onChange={(e) => onDraftKw?.(e.target.value)} autoFocus />
+                  <input className="input py-0.5 text-caption" value={draftKw} onChange={(e) => onDraftKw?.(e.target.value)} autoFocus />
                 ) : (
                   <>
                     <div>{k.keyword}</div>
-                    <div className="text-[11px] text-slate-400" title={k.sourceFiles.join(", ")}>{k.sourceGroup}</div>
+                    <div className="text-tiny text-slate-400" title={k.sourceFiles.join(", ")}>{k.sourceGroup}</div>
                   </>
                 )}
               </td>
               <td className="td text-right tabular-nums">
                 {isEditing ? (
-                  <input className="input w-20 py-0.5 text-right text-xs" value={draftVol} onChange={(e) => onDraftVol?.(e.target.value)} />
+                  <input className="input w-20 py-0.5 text-right text-caption" value={draftVol} onChange={(e) => onDraftVol?.(e.target.value)} />
                 ) : (
                   k.volume.toLocaleString()
                 )}
               </td>
               <td className="td text-right">
                 {isEditing ? (
-                  <input className="input w-14 py-0.5 text-right text-xs" value={draftKd} onChange={(e) => onDraftKd?.(e.target.value)} />
+                  <input className="input w-14 py-0.5 text-right text-caption" value={draftKd} onChange={(e) => onDraftKd?.(e.target.value)} />
                 ) : (
                   <KdPill kd={k.kd} />
                 )}
               </td>
-              <td className="td text-xs">
+              <td className="td text-caption">
                 {onBucketChange ? (
                   <select
-                    className="input py-0.5 text-xs"
+                    className="input py-0.5 text-caption"
                     value={k.bucketId ?? ""}
                     onChange={(e) => onBucketChange(k.id, e.target.value)}
                   >
@@ -393,7 +393,7 @@ function KeywordTable({
                 )}
               </td>
               <td className="td">
-                <span className={`rounded-full px-2 py-0.5 text-[11px] font-medium ${ROLE_STYLE[k.role]}`}>
+                <span className={`rounded-full px-2 py-0.5 text-tiny font-medium ${ROLE_STYLE[k.role]}`}>
                   {k.role}
                   {k.pageId ? ` · ${k.pageId}` : ""}
                 </span>
@@ -404,8 +404,8 @@ function KeywordTable({
               <td className="td text-right">
                 {isEditing ? (
                   <div className="flex justify-end gap-1">
-                    <Button className="px-2 py-0.5 text-xs" onClick={() => onCommit?.(k.id)}>Save</Button>
-                    <Button variant="ghost" className="px-2 py-0.5 text-xs" onClick={onCancel}>Cancel</Button>
+                    <Button className="px-2 py-0.5 text-caption" onClick={() => onCommit?.(k.id)}>Save</Button>
+                    <Button variant="ghost" className="px-2 py-0.5 text-caption" onClick={onCancel}>Cancel</Button>
                   </div>
                 ) : (
                   action(k)

@@ -48,6 +48,8 @@ const config: Config = {
        * hierarchy is consistent instead of a scatter of `text-[10px]`/`[11px]`.
        */
       fontSize: {
+        micro: ["0.625rem", { lineHeight: "0.875rem" }],
+        tiny: ["0.6875rem", { lineHeight: "1rem" }],
         eyebrow: ["0.6875rem", { lineHeight: "1rem", letterSpacing: "0.08em" }],
         caption: ["0.75rem", { lineHeight: "1.0625rem" }],
         body: ["0.875rem", { lineHeight: "1.375rem" }],
@@ -66,9 +68,11 @@ const config: Config = {
       transitionTimingFunction: {
         "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
       },
-      /** `p-4.5` was used before this token existed and silently rendered nothing. */
+      /** `4.5`/`7.5`/`8.5` were used before these tokens existed and silently rendered nothing. */
       spacing: {
         "4.5": "1.125rem",
+        "7.5": "1.875rem",
+        "8.5": "2.125rem",
       },
       keyframes: {
         fadeInSlide: {

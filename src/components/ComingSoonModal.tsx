@@ -43,7 +43,7 @@ export function ComingSoonModal({ task, onClose, onPrioritized }: Props) {
     <Card
       title={
         <div className="flex items-center gap-2.5">
-          <span className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-700">
+          <span className="rounded-lg bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 text-micro font-bold uppercase tracking-wider text-amber-700">
             Roadmap • Phase {task.phase}
           </span>
           <span>{task.name}</span>
@@ -65,17 +65,17 @@ export function ComingSoonModal({ task, onClose, onPrioritized }: Props) {
           </div>
           <div className="space-y-1 text-center sm:text-left">
             <div className="flex items-center justify-center sm:justify-start gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
+              <span className="text-caption font-bold uppercase tracking-wider text-amber-800">
                 Coming Soon in Phase {task.phase}
               </span>
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-900">
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-micro font-semibold text-amber-900">
                 In Development
               </span>
             </div>
             <h3 className="font-display text-base font-bold text-slate-900">
               {task.name}
             </h3>
-            <p className="text-xs text-slate-600 leading-relaxed">
+            <p className="text-caption text-slate-600 leading-relaxed">
               {task.description}
             </p>
           </div>
@@ -83,26 +83,26 @@ export function ComingSoonModal({ task, onClose, onPrioritized }: Props) {
 
         <div className="grid gap-3 sm:grid-cols-3">
           <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-micro font-bold uppercase tracking-wider text-slate-400">
               Output Format
             </span>
-            <div className="mt-1 font-display text-sm font-bold uppercase text-slate-900">
+            <div className="mt-1 font-display text-body font-bold uppercase text-slate-900">
               {task.outputType} Deliverable
             </div>
-            <p className="mt-1 text-[11px] text-slate-500">
+            <p className="mt-1 text-tiny text-slate-500">
               Client-ready {task.outputType.toUpperCase()} file
             </p>
           </div>
 
           <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-micro font-bold uppercase tracking-wider text-slate-400">
               Data Integrations
             </span>
             <div className="mt-1 flex flex-wrap gap-1">
               {task.dataSources.map((src) => (
                 <span
                   key={src}
-                  className="rounded bg-white border border-slate-200 px-1.5 py-0.5 text-[10px] font-medium text-slate-600"
+                  className="rounded bg-white border border-slate-200 px-1.5 py-0.5 text-micro font-medium text-slate-600"
                 >
                   {src}
                 </span>
@@ -111,20 +111,20 @@ export function ComingSoonModal({ task, onClose, onPrioritized }: Props) {
           </div>
 
           <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 p-3">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-micro font-bold uppercase tracking-wider text-slate-400">
               Prerequisites
             </span>
-            <div className="mt-1 text-xs font-semibold text-slate-800">
+            <div className="mt-1 text-caption font-semibold text-slate-800">
               {task.dependsOn.length > 0 ? task.dependsOn.join(", ") : "None (Standalone)"}
             </div>
-            <p className="mt-1 text-[11px] text-slate-500">
+            <p className="mt-1 text-tiny text-slate-500">
               {task.dependsOn.length > 0 ? "Chains from prior task output" : "Can run directly"}
             </p>
           </div>
         </div>
 
         {prioritizedNotice && (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-xs font-medium text-emerald-800">
+          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-caption font-medium text-emerald-800">
             ✓ {prioritizedNotice}
           </div>
         )}
@@ -146,7 +146,7 @@ export function ComingSoonModal({ task, onClose, onPrioritized }: Props) {
               Close
             </Button>
           </div>
-          <span className="text-[11px] text-slate-500">
+          <span className="text-tiny text-slate-500">
             Current active modules ({11}) are fully runnable today.
           </span>
         </div>

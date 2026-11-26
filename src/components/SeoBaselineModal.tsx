@@ -161,7 +161,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
     >
       <div className="space-y-5">
         <div className="grid gap-3 sm:grid-cols-2">
-          <label className="space-y-1 text-xs font-medium text-slate-700">
+          <label className="space-y-1 text-caption font-medium text-slate-700">
             <span>Property / Website Name *</span>
             <input
               type="text"
@@ -171,7 +171,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
               className="input"
             />
           </label>
-          <label className="space-y-1 text-xs font-medium text-slate-700">
+          <label className="space-y-1 text-caption font-medium text-slate-700">
             <span>Client Property URL *</span>
             <input
               type="url"
@@ -183,18 +183,18 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
           </label>
         </div>
 
-        <label className="block space-y-1 text-xs font-medium text-slate-700">
+        <label className="block space-y-1 text-caption font-medium text-slate-700">
           <span>Google Slides Template URL or ID</span>
           <input
             type="text"
             value={templateId}
             onChange={(e) => setTemplateId(e.target.value)}
-            className="input text-xs"
+            className="input text-caption"
           />
         </label>
 
         <div>
-          <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+          <div className="mb-2 text-caption font-bold uppercase tracking-wider text-slate-500">
             Semrush &amp; Site Baseline (Slides 3–4)
           </div>
           <div className="grid gap-3 sm:grid-cols-3">
@@ -245,7 +245,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
                 className="input w-full"
               />
               {crawlPrefilled && (
-                <span className="mt-1 block text-[10px] font-medium text-emerald-700">
+                <span className="mt-1 block text-micro font-medium text-emerald-700">
                   Prefilled from latest Site Crawl
                 </span>
               )}
@@ -261,7 +261,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
         </div>
 
         <div>
-          <div className="mb-2 text-xs font-bold uppercase tracking-wider text-slate-500">
+          <div className="mb-2 text-caption font-bold uppercase tracking-wider text-slate-500">
             Comp Set &amp; AI Visibility (Slides 7–10)
           </div>
           <textarea
@@ -318,7 +318,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
         </div>
 
         {error && (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-caption text-rose-700">
             {error}
           </div>
         )}
@@ -327,7 +327,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
           <Button onClick={() => void handleRun()} disabled={busy}>
             {busy ? "Generating Baseline Deck..." : "Generate SEO Baseline & AI Visibility"}
           </Button>
-          <div className="flex flex-wrap items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2 text-caption">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
               <span className={`h-1.5 w-1.5 rounded-full ${name.trim() && url.trim() ? "bg-brand" : "bg-slate-500"}`} />
               Property Required
@@ -347,7 +347,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
           const baseline = result.data ?? result.output;
           if (!baseline) return null;
           return (
-          <div className="space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-xs">
+          <div className="space-y-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-4 text-caption">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="font-bold text-emerald-900">
                 Baseline Generated for {baseline.propertyName}
@@ -374,7 +374,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
                   <div className="font-bold text-slate-900">
                     Slide {s.slideNumber}: {s.title}
                   </div>
-                  <pre className="mt-1 whitespace-pre-wrap text-[11px] text-slate-600">
+                  <pre className="mt-1 whitespace-pre-wrap text-tiny text-slate-600">
                     {JSON.stringify(s.content, null, 2)}
                   </pre>
                 </div>

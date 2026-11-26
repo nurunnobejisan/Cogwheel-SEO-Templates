@@ -112,13 +112,13 @@ Cogwheel SEO Team`;
     <div className="space-y-5 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4 dark:border-slate-800">
         <div>
-          <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand-50 px-3 py-1 text-xs font-semibold text-slate-800 dark:bg-brand-950/40 dark:text-brand-light">
+          <div className="inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand-50 px-3 py-1 text-caption font-semibold text-slate-800 dark:bg-brand-950/40 dark:text-brand-light">
             Client Deliverable Dispatcher
           </div>
           <h2 className="mt-2 font-display text-xl font-bold text-slate-900 dark:text-white">
             Dispatch Monthly Performance Memo
           </h2>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
+          <p className="text-caption text-slate-500 dark:text-slate-400">
             Compose a client-ready memo from the metrics you supply. The template never fills in
             rankings or citation scores on its own; use the local Gmail bridge only when explicitly
             enabled.
@@ -126,7 +126,7 @@ Cogwheel SEO Team`;
         </div>
 
         {onClose && (
-          <Button variant="ghost" onClick={onClose} className="text-xs">
+          <Button variant="ghost" onClick={onClose} className="text-caption">
             Close
           </Button>
         )}
@@ -134,7 +134,7 @@ Cogwheel SEO Team`;
 
       {statusMessage && (
         <div
-          className={`rounded-2xl p-4 text-xs font-semibold ${
+          className={`rounded-2xl p-4 text-caption font-semibold ${
             statusType === "success"
               ? "border border-emerald-300 bg-emerald-50 text-emerald-800 dark:border-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300"
               : statusType === "error"
@@ -154,7 +154,7 @@ Cogwheel SEO Team`;
             value={recipient}
             onChange={(e) => setRecipient(e.target.value)}
             placeholder="e.g. generalmanager@hotel.com"
-            className="input font-mono text-xs"
+            className="input font-mono text-caption"
           />
         </div>
 
@@ -164,7 +164,7 @@ Cogwheel SEO Team`;
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
-            className="input text-xs font-semibold"
+            className="input text-caption font-semibold"
           />
         </div>
 
@@ -174,7 +174,7 @@ Cogwheel SEO Team`;
             value={body}
             onChange={(e) => setBody(e.target.value)}
             rows={10}
-            className="input resize-y font-sans text-xs leading-relaxed"
+            className="input resize-y font-sans text-caption leading-relaxed"
           />
         </div>
       </div>
@@ -185,7 +185,7 @@ Cogwheel SEO Team`;
           <Button
             variant="ghost"
             onClick={handleCopyClipboard}
-            className="text-xs"
+            className="text-caption"
           >
             {copied ? "Copied" : "Copy Email Text"}
           </Button>
@@ -193,7 +193,7 @@ Cogwheel SEO Team`;
             variant="secondary"
             onClick={handleOpenWebCompose}
             disabled={!recipient.trim()}
-            className="text-xs"
+            className="text-caption"
           >
             Open in Gmail Web
           </Button>
@@ -204,7 +204,7 @@ Cogwheel SEO Team`;
             variant="secondary"
             disabled={busy || !recipient.trim()}
             onClick={() => handleDispatch("draft")}
-            className="text-xs"
+            className="text-caption"
           >
             {busy ? "Saving..." : "Save Draft in Gmail"}
           </Button>
@@ -212,7 +212,7 @@ Cogwheel SEO Team`;
             variant="primary"
             disabled={busy || !recipient.trim()}
             onClick={() => handleDispatch("send")}
-            className="text-xs"
+            className="text-caption"
           >
             {busy ? "Sending..." : "Send Email"}
           </Button>

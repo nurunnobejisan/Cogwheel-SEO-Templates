@@ -240,14 +240,14 @@ export function AutoPilotModal({
     >
       <div className="space-y-4">
         {canRun ? (
-          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 text-xs text-emerald-900">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-emerald-200 bg-emerald-50/70 px-4 py-2.5 text-caption text-emerald-900">
             <span>
               Target Property: <strong>{activeProperty.name}</strong> ({activeProperty.url})
             </span>
             <span className="font-semibold">{pct}% complete</span>
           </div>
         ) : (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-xs text-amber-900">
+          <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-2.5 text-caption text-amber-900">
             Select a property with a URL from <strong>Pick Trained Client</strong> or <strong>1-Click Presets</strong> first.
           </div>
         )}
@@ -269,7 +269,7 @@ export function AutoPilotModal({
                 key={step.id}
                 className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50/60 px-3.5 py-2.5"
               >
-                <label className="flex items-center gap-2.5 text-xs font-semibold text-slate-800">
+                <label className="flex items-center gap-2.5 text-caption font-semibold text-slate-800">
                   <input
                     type="checkbox"
                     disabled={running}
@@ -286,24 +286,24 @@ export function AutoPilotModal({
                 </label>
 
                 <div className="flex flex-wrap items-center gap-2">
-                  {step.detail && <span className="text-[11px] text-slate-500">{step.detail}</span>}
+                  {step.detail && <span className="text-tiny text-slate-500">{step.detail}</span>}
                   {step.status === "running" && (
-                    <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-[10px] font-bold text-sky-700">
+                    <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-micro font-bold text-sky-700">
                       Running
                     </span>
                   )}
                   {step.status === "done" && (
-                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700">
+                    <span className="rounded-full bg-emerald-100 px-2.5 py-0.5 text-micro font-bold text-emerald-700">
                       Done
                     </span>
                   )}
                   {step.status === "flagged" && (
-                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-800">
+                    <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-micro font-bold text-amber-800">
                       Flagged
                     </span>
                   )}
                   {step.status === "error" && (
-                    <span className="rounded-full bg-rose-100 px-2.5 py-0.5 text-[10px] font-bold text-rose-700">
+                    <span className="rounded-full bg-rose-100 px-2.5 py-0.5 text-micro font-bold text-rose-700">
                       Error
                     </span>
                   )}
@@ -312,7 +312,7 @@ export function AutoPilotModal({
                       href={step.outputUrl}
                       target="_blank"
                       rel="noreferrer"
-                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-hilton hover:bg-slate-100"
+                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-tiny font-semibold text-hilton hover:bg-slate-100"
                     >
                       Open
                     </a>
@@ -321,7 +321,7 @@ export function AutoPilotModal({
                     <button
                       type="button"
                       onClick={() => downloadXlsx(step.xlsxBase64!, `${step.id}.xlsx`)}
-                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100"
+                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-tiny font-semibold text-slate-700 hover:bg-slate-100"
                     >
                       .xlsx
                     </button>
@@ -334,7 +334,7 @@ export function AutoPilotModal({
                         setCopiedStepId(step.id);
                         setTimeout(() => setCopiedStepId(null), 2000);
                       }}
-                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100"
+                      className="rounded-lg border border-slate-200 bg-white px-2 py-1 text-tiny font-semibold text-slate-700 hover:bg-slate-100"
                     >
                       {copiedStepId === step.id ? "Copied" : "Copy JSON-LD"}
                     </button>
@@ -346,7 +346,7 @@ export function AutoPilotModal({
         </div>
 
         {error && (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-xs text-rose-700">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2 text-caption text-rose-700">
             {error}
           </div>
         )}
@@ -374,7 +374,7 @@ export function AutoPilotModal({
                     }
                   }
                 }}
-                className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800 transition hover:bg-emerald-100 shadow-sm"
+                className="rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-caption font-bold text-emerald-800 transition hover:bg-emerald-100 shadow-sm"
               >
                 Download All Audit Deliverables
               </button>

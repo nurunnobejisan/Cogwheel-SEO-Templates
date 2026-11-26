@@ -126,34 +126,34 @@ export function ApprovalMatrix({
                 <tr key={row.pageId} className={isApproved ? "bg-emerald-50/50" : ""}>
                   <td className="td">
                     <div className="font-medium">{row.title}</div>
-                    <div className="font-mono text-xs text-slate-400">{row.path}</div>
+                    <div className="font-mono text-caption text-slate-400">{row.path}</div>
                   </td>
                   <td className="td">
                     {isEditingPrimary ? (
                       <div className="flex flex-wrap items-center gap-1.5">
                         <input
-                          className="input min-w-[180px] flex-1 py-1 text-xs"
+                          className="input min-w-[180px] flex-1 py-1 text-caption"
                           value={draftKw}
                           onChange={(e) => setDraftKw(e.target.value)}
                           placeholder="Custom keyword"
                           autoFocus
                         />
                         <input
-                          className="input w-20 py-1 text-xs"
+                          className="input w-20 py-1 text-caption"
                           value={draftVol}
                           onChange={(e) => setDraftVol(e.target.value)}
                           placeholder="SV"
                           title="Search Volume"
                         />
                         <input
-                          className="input w-16 py-1 text-xs"
+                          className="input w-16 py-1 text-caption"
                           value={draftKd}
                           onChange={(e) => setDraftKd(e.target.value)}
                           placeholder="KD"
                           title="KD (leave blank for N/A)"
                         />
-                        <Button className="px-2 py-1 text-xs" onClick={commitEdit}>Save</Button>
-                        <Button variant="ghost" className="px-2 py-1 text-xs" onClick={() => setEditing(null)}>Cancel</Button>
+                        <Button className="px-2 py-1 text-caption" onClick={commitEdit}>Save</Button>
+                        <Button variant="ghost" className="px-2 py-1 text-caption" onClick={() => setEditing(null)}>Cancel</Button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-1.5">
@@ -168,7 +168,7 @@ export function ApprovalMatrix({
                         {!isApproved && (
                           <Button
                             variant="ghost"
-                            className="shrink-0 px-2 py-1 text-xs"
+                            className="shrink-0 px-2 py-1 text-caption"
                             title="Inline edit custom keyword"
                             onClick={() => startEdit(row.pageId, "primary", row.primary)}
                           >
@@ -178,7 +178,7 @@ export function ApprovalMatrix({
                       </div>
                     )}
                     {row.exceptionCandidate && (
-                      <div className="mt-1 text-xs text-violet-700">
+                      <div className="mt-1 text-caption text-violet-700">
                         Exception available: <strong>{row.exceptionCandidate.keyword}</strong> — {row.exceptionCandidate.volume} SV, KD {row.exceptionCandidate.kd}
                       </div>
                     )}
@@ -190,26 +190,26 @@ export function ApprovalMatrix({
                       {isEditingSecondary ? (
                         <div className="flex flex-wrap items-center gap-1.5">
                           <input
-                            className="input min-w-[150px] flex-1 py-1 text-xs"
+                            className="input min-w-[150px] flex-1 py-1 text-caption"
                             value={draftKw}
                             onChange={(e) => setDraftKw(e.target.value)}
                             placeholder="Secondary keyword"
                             autoFocus
                           />
                           <input
-                            className="input w-16 py-1 text-xs"
+                            className="input w-16 py-1 text-caption"
                             value={draftVol}
                             onChange={(e) => setDraftVol(e.target.value)}
                             placeholder="SV"
                           />
                           <input
-                            className="input w-14 py-1 text-xs"
+                            className="input w-14 py-1 text-caption"
                             value={draftKd}
                             onChange={(e) => setDraftKd(e.target.value)}
                             placeholder="KD"
                           />
-                          <Button className="px-2 py-1 text-xs" onClick={commitEdit}>Save</Button>
-                          <Button variant="ghost" className="px-2 py-1 text-xs" onClick={() => setEditing(null)}>Cancel</Button>
+                          <Button className="px-2 py-1 text-caption" onClick={commitEdit}>Save</Button>
+                          <Button variant="ghost" className="px-2 py-1 text-caption" onClick={() => setEditing(null)}>Cancel</Button>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1.5">
@@ -224,7 +224,7 @@ export function ApprovalMatrix({
                           {!isApproved && (
                             <Button
                               variant="ghost"
-                              className="shrink-0 px-2 py-1 text-xs"
+                              className="shrink-0 px-2 py-1 text-caption"
                               title="Inline edit secondary keyword"
                               onClick={() => startEdit(row.pageId, "secondary", row.secondary)}
                             >
@@ -234,7 +234,7 @@ export function ApprovalMatrix({
                         </div>
                       )}
                       {row.secondary && (
-                        <div className="mt-1 text-xs text-slate-500">
+                        <div className="mt-1 text-caption text-slate-500">
                           {row.secondary.volume.toLocaleString()} SV · KD {row.secondary.kd ?? "N/A"}
                         </div>
                       )}

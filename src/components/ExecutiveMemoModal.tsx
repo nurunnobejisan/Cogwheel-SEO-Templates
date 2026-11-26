@@ -77,31 +77,31 @@ Prepared with Cogwheel SEO Intelligence Suite.`;
       {/* Top Action Controls (hidden on print) */}
       <div className="no-print flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center gap-2">
-          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-micro font-bold uppercase tracking-wider text-brand-light">
             1-Page Template
           </span>
-          <span className="font-display text-sm font-bold text-slate-900 dark:text-white">
+          <span className="font-display text-body font-bold text-slate-900 dark:text-white">
             Executive Owner &amp; GM Memo
           </span>
         </div>
 
         <div className="flex items-center gap-2">
-          <Button variant="ghost" onClick={handleCopy} className="text-xs">
+          <Button variant="ghost" onClick={handleCopy} className="text-caption">
             {copied ? "Copied" : "Copy Text"}
           </Button>
 
           {onOpenEmail && (
-            <Button variant="secondary" onClick={onOpenEmail} className="text-xs">
+            <Button variant="secondary" onClick={onOpenEmail} className="text-caption">
               Email Deliverable
             </Button>
           )}
 
-          <Button variant="primary" onClick={handlePrint} className="text-xs">
+          <Button variant="primary" onClick={handlePrint} className="text-caption">
             Print / Save as PDF
           </Button>
 
           {onClose && (
-            <Button variant="ghost" onClick={onClose} className="text-xs">
+            <Button variant="ghost" onClick={onClose} className="text-caption">
               Close
             </Button>
           )}
@@ -113,27 +113,27 @@ Prepared with Cogwheel SEO Intelligence Suite.`;
         {/* Memo Header */}
         <div className="flex items-start justify-between border-b-2 border-slate-900 pb-5 dark:border-slate-700">
           <div>
-            <div className="font-display text-xs font-bold uppercase tracking-widest text-[#381a5e] dark:text-brand-light">
+            <div className="font-display text-caption font-bold uppercase tracking-widest text-[#381a5e] dark:text-brand-light">
               COGWHEEL MARKETING &bull; EXECUTIVE PERFORMANCE BRIEF
             </div>
             <h1 className="mt-1 font-display text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
               {propertyName}
             </h1>
-            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
+            <p className="text-caption font-medium text-slate-500 dark:text-slate-400">
               {location || "Location not set"} &bull; Monthly Search &amp; GEO Visibility Memorandum
             </p>
           </div>
           <div className="text-right">
-            <div className="rounded-md bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
+            <div className="rounded-md bg-slate-100 px-2.5 py-1 font-mono text-caption font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
               {reportDate}
             </div>
-            <span className="mt-1 block text-[10px] uppercase font-bold tracking-wider text-slate-400">
+            <span className="mt-1 block text-micro uppercase font-bold tracking-wider text-slate-400">
               Template — not measured
             </span>
           </div>
         </div>
 
-        <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-3 text-xs text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
+        <div className="mt-5 rounded-xl border border-amber-300 bg-amber-50 p-3 text-caption text-amber-900 dark:border-amber-800 dark:bg-amber-950/40 dark:text-amber-200">
           <strong>No metrics are included in this template.</strong> Add verified rankings, search
           volumes and revenue figures before sending. The memo will not invent them for you.
         </div>
@@ -150,13 +150,13 @@ Prepared with Cogwheel SEO Intelligence Suite.`;
               key={kpi.label}
               className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3.5 dark:border-slate-700 dark:bg-slate-900"
             >
-              <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              <span className="text-micro font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 {kpi.label}
               </span>
-              <div className="mt-1 font-display text-2xl font-black text-slate-400 dark:text-slate-500">
+              <div className="mt-1 font-display text-2xl font-extrabold text-slate-400 dark:text-slate-500">
                 —
               </div>
-              <div className="text-[10px] text-slate-500 dark:text-slate-500">{kpi.note}</div>
+              <div className="text-micro text-slate-500 dark:text-slate-500">{kpi.note}</div>
             </div>
           ))}
         </div>
@@ -164,13 +164,13 @@ Prepared with Cogwheel SEO Intelligence Suite.`;
         {/* Section 1: Top Search Wins */}
         <div className="mt-6">
           <div className="flex items-center justify-between border-b border-slate-200 pb-1.5 dark:border-slate-800">
-            <h2 className="font-display text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+            <h2 className="font-display text-caption font-bold uppercase tracking-wider text-slate-900 dark:text-white">
               1. Top Organic Search Wins (Current Cycle)
             </h2>
-            <span className="text-[10px] text-slate-500">Populate from rank tracker</span>
+            <span className="text-micro text-slate-500">Populate from rank tracker</span>
           </div>
 
-          <div className="mt-2 rounded-xl border border-dashed border-slate-300 p-5 text-center text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          <div className="mt-2 rounded-xl border border-dashed border-slate-300 p-5 text-center text-caption text-slate-500 dark:border-slate-700 dark:text-slate-400">
             No verified keyword rows loaded. Export the audit or paste ranked queries with their
             reporting window before producing the client memo.
           </div>
@@ -179,13 +179,13 @@ Prepared with Cogwheel SEO Intelligence Suite.`;
         {/* Section 2: Local Comp-Set Summary */}
         <div className="mt-5">
           <div className="flex items-center justify-between border-b border-slate-200 pb-1.5 dark:border-slate-800">
-            <h2 className="font-display text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+            <h2 className="font-display text-caption font-bold uppercase tracking-wider text-slate-900 dark:text-white">
               2. Local Comp-Set Positioning
             </h2>
-            <span className="text-[10px] text-slate-500">Requires competitor data</span>
+            <span className="text-micro text-slate-500">Requires competitor data</span>
           </div>
 
-          <p className="mt-2 text-xs leading-relaxed text-slate-500 dark:text-slate-400">
+          <p className="mt-2 text-caption leading-relaxed text-slate-500 dark:text-slate-400">
             No competitor comparison is included. Add the comp-set and their measured positions from
             your rank tracker; the template does not assume competitor names or rank gaps.
           </p>
@@ -194,13 +194,13 @@ Prepared with Cogwheel SEO Intelligence Suite.`;
         {/* Section 3: How to complete */}
         <div className="mt-5">
           <div className="flex items-center justify-between border-b border-slate-200 pb-1.5 dark:border-slate-800">
-            <h2 className="font-display text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+            <h2 className="font-display text-caption font-bold uppercase tracking-wider text-slate-900 dark:text-white">
               3. Next Steps Before Sending
             </h2>
-            <span className="text-[10px] text-slate-500">Checklist</span>
+            <span className="text-micro text-slate-500">Checklist</span>
           </div>
 
-          <div className="mt-2 space-y-2 text-xs">
+          <div className="mt-2 space-y-2 text-caption">
             {[
               "Run the Full Website Audit for the property.",
               "Export the report (HTML/PDF/PPTX) and attach it to the email.",
@@ -221,7 +221,7 @@ Prepared with Cogwheel SEO Intelligence Suite.`;
         </div>
 
         {/* Memo Footer */}
-        <div className="mt-8 border-t border-slate-200 pt-3 text-center text-[10px] text-slate-400 dark:border-slate-800">
+        <div className="mt-8 border-t border-slate-200 pt-3 text-center text-micro text-slate-400 dark:border-slate-800">
           Generated by Cogwheel SEO Intelligence Suite &bull; Confidential &bull; Single-Page Format
           &bull; Template only — add verified metrics before distribution
         </div>

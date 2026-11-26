@@ -53,16 +53,16 @@ export function GoogleSerpPreview({
     <div className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
         <div className="flex items-center gap-2">
-          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-micro font-bold uppercase tracking-wider text-brand-light">
             Visual SERP
           </span>
-          <h3 className="font-display text-sm font-bold text-slate-900">
+          <h3 className="font-display text-body font-bold text-slate-900">
             Google Search Snippet Simulator
           </h3>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="inline-flex rounded-xl bg-slate-100 p-0.5 text-xs font-semibold">
+          <div className="inline-flex rounded-xl bg-slate-100 p-0.5 text-caption font-semibold">
             <button
               type="button"
               onClick={() => setDevice("mobile")}
@@ -96,16 +96,16 @@ export function GoogleSerpPreview({
           }`}
         >
           <div className="flex items-center gap-3 mb-1.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-xs font-bold text-slate-600">
+            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-caption font-bold text-slate-600">
               <svg className="h-3.5 w-3.5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
               </svg>
             </div>
             <div className="leading-tight">
-              <div className="text-xs font-medium text-[#202124]">
+              <div className="text-caption font-medium text-[#202124]">
                 {propertyName}
               </div>
-              <div className="text-[11px] text-[#4d5156] truncate">
+              <div className="text-tiny text-[#4d5156] truncate">
                 https://{parsedUrl.domain}{parsedUrl.displayPath}
               </div>
             </div>
@@ -125,7 +125,7 @@ export function GoogleSerpPreview({
             {meta || "Enter a Meta Description..."}
           </p>
 
-          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-[10px]">
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5 text-micro">
             <span className="rounded bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 font-semibold text-emerald-800">
               ✓ Direct Booking
             </span>
@@ -141,10 +141,10 @@ export function GoogleSerpPreview({
 
       <div className="grid gap-3 sm:grid-cols-2 pt-1">
         <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-caption">
             <label className="font-semibold text-slate-700">Page Title</label>
             <span
-              className={`rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${titleStatus}`}
+              className={`rounded-md border px-1.5 py-0.5 text-micro font-bold ${titleStatus}`}
             >
               {titleLength} / 60 chars {titleLength > 60 ? "(Truncated on Google)" : ""}
             </span>
@@ -153,16 +153,16 @@ export function GoogleSerpPreview({
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="input text-xs"
+            className="input text-caption"
             placeholder="SEO Title Tag..."
           />
         </div>
 
         <div className="space-y-1">
-          <div className="flex items-center justify-between text-xs">
+          <div className="flex items-center justify-between text-caption">
             <label className="font-semibold text-slate-700">Meta Description</label>
             <span
-              className={`rounded-md border px-1.5 py-0.5 text-[10px] font-bold ${metaStatus}`}
+              className={`rounded-md border px-1.5 py-0.5 text-micro font-bold ${metaStatus}`}
             >
               {metaLength} / 155 chars {metaLength > 155 ? "(Truncated on Google)" : ""}
             </span>
@@ -171,7 +171,7 @@ export function GoogleSerpPreview({
             type="text"
             value={meta}
             onChange={(e) => setMeta(e.target.value)}
-            className="input text-xs"
+            className="input text-caption"
             placeholder="Meta Description..."
           />
         </div>

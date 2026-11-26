@@ -134,7 +134,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-xs font-bold text-brand-light dark:bg-brand dark:text-slate-950"
+              className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
               CW
             </Link>
@@ -145,7 +145,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
               >
                 Cogwheel SEO &amp; GEO Studio
               </Link>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              <p className="text-tiny text-slate-500 dark:text-slate-400">
                 Hospitality Production Template Hub
               </p>
             </div>
@@ -153,7 +153,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
 
           <nav
             aria-label="Header Navigation"
-            className="flex items-center gap-2 text-xs font-semibold"
+            className="flex items-center gap-2 text-caption font-semibold"
           >
             <Link
               href="/"
@@ -188,7 +188,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
         {/* Semantic Breadcrumbs Navigation */}
         <nav
           aria-label="Breadcrumb Navigation"
-          className="mb-6 flex flex-wrap items-center gap-2 text-xs text-slate-500 dark:text-slate-400"
+          className="mb-6 flex flex-wrap items-center gap-2 text-caption text-slate-500 dark:text-slate-400"
         >
           <Link href="/" className="hover:underline">
             Home
@@ -212,11 +212,11 @@ export default function TemplateDetailPage({ params }: PageProps) {
           {/* Header Block */}
           <header className="space-y-3 border-b border-slate-200 pb-6 dark:border-slate-800">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="rounded-md bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800 dark:bg-blue-950/70 dark:text-blue-300">
+              <span className="rounded-md bg-blue-100 px-2.5 py-0.5 text-caption font-semibold text-blue-800 dark:bg-blue-950/70 dark:text-blue-300">
                 {template.category}
               </span>
               <span
-                className={`rounded-md px-2.5 py-0.5 text-xs font-semibold ${
+                className={`rounded-md px-2.5 py-0.5 text-caption font-semibold ${
                   template.difficulty === "Beginner"
                     ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/70 dark:text-emerald-300"
                     : template.difficulty === "Intermediate"
@@ -226,10 +226,10 @@ export default function TemplateDetailPage({ params }: PageProps) {
               >
                 {template.difficulty}
               </span>
-              <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-caption font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                 ⏱ Est. {template.estimatedTime}
               </span>
-              <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-xs font-mono text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              <span className="rounded-md bg-slate-100 px-2.5 py-0.5 text-caption font-mono text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                 Schema: {template.schemaType}
               </span>
             </div>
@@ -245,14 +245,14 @@ export default function TemplateDetailPage({ params }: PageProps) {
             className="rounded-xl border border-brand/30 bg-brand/5 p-4 sm:p-5 dark:border-brand/40 dark:bg-brand/10"
           >
             <div className="mb-2 flex items-center gap-2">
-              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand text-[10px] font-bold text-slate-950">
+              <span className="flex h-5 w-5 items-center justify-center rounded-full bg-brand text-micro font-bold text-slate-950">
                 AI
               </span>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+              <h2 className="text-caption font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                 Direct Answer &amp; Key Takeaway (GEO Citation Anchor)
               </h2>
             </div>
-            <p className="text-sm leading-relaxed text-slate-800 dark:text-slate-200 font-medium">
+            <p className="text-body leading-relaxed text-slate-800 dark:text-slate-200 font-medium">
               {template.directAnswer}
             </p>
           </aside>
@@ -266,7 +266,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
       </main>
 
       {/* Semantic Footer Landmark */}
-      <footer className="mt-16 border-t border-slate-200 bg-white py-8 text-center text-xs text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+      <footer className="mt-16 border-t border-slate-200 bg-white py-8 text-center text-caption text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>© {new Date().getFullYear()} Cogwheel SEO &amp; GEO Studio. Hospitality Search Engine Suite.</p>
           <div className="flex gap-4">

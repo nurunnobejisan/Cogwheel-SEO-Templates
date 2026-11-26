@@ -46,19 +46,19 @@ export function ReportResultCard({
           <button
             type="button"
             onClick={onExportExcel}
-            className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-caption font-semibold text-slate-700 hover:bg-slate-50"
           >
             Export Excel (.xlsx)
           </button>
           <a
             href={pdfUrl}
-            className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-caption font-semibold text-slate-700 hover:bg-slate-50"
           >
             Export PDF
           </a>
           <a
             href={docxUrl}
-            className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+            className="inline-flex items-center rounded-md border border-slate-200 bg-white px-3 py-1.5 text-caption font-semibold text-slate-700 hover:bg-slate-50"
           >
             Export DOCX
           </a>
@@ -66,7 +66,7 @@ export function ReportResultCard({
             href={reportDoc.docUrl}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+            className="inline-flex items-center rounded-md bg-emerald-600 px-3 py-1.5 text-body font-medium text-white hover:bg-emerald-700"
           >
             Open Google Doc →
           </a>
@@ -76,13 +76,13 @@ export function ReportResultCard({
       <div className="space-y-4">
         {quality && (
           <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-            <div className="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-700">
+            <div className="flex items-center justify-between text-caption font-bold uppercase tracking-wider text-slate-700">
               <span>Document Quality Check</span>
               <span>
                 {quality.passedCount} passed · {quality.warningCount} warning · {quality.failedCount} failed
               </span>
             </div>
-            <ul className="mt-2 grid grid-cols-1 gap-1.5 text-xs md:grid-cols-2">
+            <ul className="mt-2 grid grid-cols-1 gap-1.5 text-caption md:grid-cols-2">
               {quality.checks.map((c) => (
                 <li key={c.id} className="flex items-start gap-2">
                   <span
@@ -105,7 +105,7 @@ export function ReportResultCard({
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-xs md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 text-caption md:grid-cols-3">
           <div>
             <div className="font-bold uppercase tracking-wider text-slate-500">Brand Split</div>
             <div className="mt-1 text-slate-800">
@@ -129,10 +129,10 @@ export function ReportResultCard({
 
         {flaggedRows.length > 0 && (
           <div className="rounded-2xl border border-amber-200 bg-amber-50/70 p-4">
-            <div className="text-xs font-bold uppercase tracking-wider text-amber-800">
+            <div className="text-caption font-bold uppercase tracking-wider text-amber-800">
               Flag Summary ({flaggedRows.length} {flaggedRows.length === 1 ? "page needs" : "pages need"} review)
             </div>
-            <ul className="mt-2 space-y-1 text-xs text-amber-900">
+            <ul className="mt-2 space-y-1 text-caption text-amber-900">
               {flaggedRows.map((m) => (
                 <li key={m.pageId}>
                   <strong>{m.title}:</strong> {m.primary?.keyword ?? "—"} ({m.flags.join(", ")})
@@ -142,7 +142,7 @@ export function ReportResultCard({
           </div>
         )}
 
-        <ul className="space-y-2 text-sm text-slate-700">
+        <ul className="space-y-2 text-body text-slate-700">
           {reportDoc.rationales.map((r) => (
             <li key={r.pageId}>
               <strong>{r.title}:</strong> {r.text}

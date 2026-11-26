@@ -45,13 +45,13 @@ export function TemplatesHubClient() {
               placeholder="Search 12 templates by keyword, audit task, or category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-10 text-xs font-medium text-slate-900 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
+              className="h-11 w-full rounded-xl border border-slate-200 bg-slate-50 pl-10 pr-10 text-caption font-medium text-slate-900 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery("")}
-                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
+                className="absolute inset-y-0 right-0 flex items-center pr-3.5 text-caption text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
               >
                 Clear
               </button>
@@ -60,14 +60,14 @@ export function TemplatesHubClient() {
 
           {/* Difficulty Dropdown */}
           <div className="flex shrink-0 items-center gap-2">
-            <label htmlFor="difficulty-select" className="text-xs font-semibold text-slate-500 dark:text-slate-400">
+            <label htmlFor="difficulty-select" className="text-caption font-semibold text-slate-500 dark:text-slate-400">
               Difficulty:
             </label>
             <select
               id="difficulty-select"
               value={selectedDifficulty}
               onChange={(e) => setSelectedDifficulty(e.target.value)}
-              className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-semibold text-slate-700 focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              className="h-11 rounded-xl border border-slate-200 bg-slate-50 px-3 text-caption font-semibold text-slate-700 focus:border-brand focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
             >
               <option value="all">All Difficulties</option>
               <option value="beginner">Beginner</option>
@@ -82,7 +82,7 @@ export function TemplatesHubClient() {
           <button
             type="button"
             onClick={() => setSelectedCategory("all")}
-            className={`rounded-xl px-3 py-1.5 text-xs font-bold transition ${
+            className={`rounded-xl px-3 py-1.5 text-caption font-bold transition ${
               selectedCategory === "all"
                 ? "bg-slate-900 text-brand-light shadow-sm dark:bg-brand dark:text-slate-950"
                 : "border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-400 dark:hover:text-white"
@@ -98,7 +98,7 @@ export function TemplatesHubClient() {
                 key={cat.slug}
                 type="button"
                 onClick={() => setSelectedCategory(cat.slug)}
-                className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
+                className={`rounded-xl px-3 py-1.5 text-caption font-semibold transition ${
                   isActive
                     ? "bg-slate-900 text-brand-light shadow-sm dark:bg-brand dark:text-slate-950"
                     : "border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-400 dark:hover:text-white"
@@ -112,7 +112,7 @@ export function TemplatesHubClient() {
       </section>
 
       {/* Results Readout */}
-      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+      <div className="flex items-center justify-between text-caption text-slate-500 dark:text-slate-400">
         <span>
           Showing <strong className="text-slate-900 dark:text-white">{filteredTemplates.length}</strong> of{" "}
           {TEMPLATES_DATA.length} templates
@@ -135,12 +135,12 @@ export function TemplatesHubClient() {
             <div>
               {/* Header: Category & Difficulty Badge */}
               <div className="flex items-center justify-between gap-2">
-                <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
+                <span className="rounded-md bg-slate-100 px-2 py-0.5 text-micro font-bold text-slate-700 dark:bg-slate-800 dark:text-slate-300">
                   {tmpl.category}
                 </span>
 
                 <span
-                  className={`rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
+                  className={`rounded-md px-2 py-0.5 text-micro font-bold uppercase tracking-wider ${
                     tmpl.difficulty === "Beginner"
                       ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
                       : tmpl.difficulty === "Intermediate"
@@ -156,22 +156,22 @@ export function TemplatesHubClient() {
               <h3 className="mt-3 font-display text-base font-bold text-slate-900 dark:text-white line-clamp-2">
                 {tmpl.title}
               </h3>
-              <p className="mt-1 text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
+              <p className="mt-1 text-caption text-slate-600 dark:text-slate-400 line-clamp-2">
                 {tmpl.metaDescription}
               </p>
 
               {/* Direct Answer Preview */}
               <div className="mt-3.5 rounded-xl border border-slate-100 bg-slate-50/80 p-2.5 dark:border-slate-800/80 dark:bg-slate-950/40">
-                <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
+                <div className="text-micro font-bold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
                   Key Takeaway
                 </div>
-                <p className="mt-1 text-[11px] text-slate-700 dark:text-slate-300 line-clamp-3">
+                <p className="mt-1 text-tiny text-slate-700 dark:text-slate-300 line-clamp-3">
                   {tmpl.directAnswer}
                 </p>
               </div>
 
               {/* Checklists & Metrics */}
-              <div className="mt-4 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
+              <div className="mt-4 flex items-center justify-between text-tiny text-slate-500 dark:text-slate-400">
                 <span>{tmpl.checklist.length} Action Tasks</span>
                 <span>Est. {tmpl.estimatedTime}</span>
               </div>
@@ -181,7 +181,7 @@ export function TemplatesHubClient() {
             <div className="mt-5 border-t border-slate-100 pt-3.5 dark:border-slate-800">
               <Link
                 href={`/templates/${tmpl.categorySlug}/${tmpl.slug}`}
-                className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-xs font-bold text-white shadow-xs transition hover:bg-brand-dark dark:bg-brand dark:text-slate-950 dark:hover:bg-brand-light"
+                className="flex w-full items-center justify-center gap-1.5 rounded-xl bg-slate-900 px-4 py-2.5 text-caption font-bold text-white shadow-xs transition hover:bg-brand-dark dark:bg-brand dark:text-slate-950 dark:hover:bg-brand-light"
               >
                 Use Template &amp; Customize &rarr;
               </Link>

@@ -35,7 +35,7 @@ function DiffPreview({ text }: { text: string }) {
   const segments = parseDiffSegments(text);
   if (!text.trim()) return <span className="italic text-slate-400">No proposed copy yet.</span>;
   return (
-    <div className="whitespace-pre-wrap text-sm leading-relaxed text-slate-800">
+    <div className="whitespace-pre-wrap text-body leading-relaxed text-slate-800">
       {segments.map((seg, i) => {
         if (seg.kind === "added") {
           return (
@@ -117,7 +117,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
   return (
     <div className="space-y-6">
       {error && (
-        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{error}</div>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-body text-red-700">{error}</div>
       )}
 
       <Card
@@ -143,7 +143,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
                 <option key={b} value={b}>{b}</option>
               ))}
             </select>
-            <div className="mt-1.5 flex items-center gap-2 text-xs">
+            <div className="mt-1.5 flex items-center gap-2 text-caption">
               <span className="text-slate-500">Half &amp; Half Eligibility:</span>
               <span
                 className={`rounded-full px-2 py-0.5 font-semibold ${
@@ -187,12 +187,12 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
         </div>
 
         <div className="mt-4 rounded-lg border border-slate-200 bg-slate-50 p-3">
-          <div className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <div className="text-caption font-semibold uppercase tracking-wide text-slate-500">
             Inherited Approved Keywords ({matrix.length} pages)
           </div>
           <div className="mt-2 flex flex-wrap gap-2">
             {matrix.map((m) => (
-              <span key={m.pageId} className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-xs">
+              <span key={m.pageId} className="rounded-md border border-slate-200 bg-white px-2.5 py-1 text-caption">
                 <strong className="text-slate-700">{m.title}:</strong>{" "}
                 <span className="text-hilton">{m.primary?.keyword ?? "—"}</span>
               </span>
@@ -201,7 +201,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
         </div>
 
         {docResult && (
-          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm">
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-body">
             {docResult.docUrl ? (
               <>
                 <span className="text-emerald-900">
@@ -245,7 +245,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
               <div className="flex flex-wrap items-center gap-2">
                 <span>{rule.label}</span>
                 {keyword && (
-                  <span className="rounded-full bg-hilton-light px-2.5 py-0.5 text-xs font-medium text-hilton">
+                  <span className="rounded-full bg-hilton-light px-2.5 py-0.5 text-caption font-medium text-hilton">
                     Target: {keyword}
                   </span>
                 )}
@@ -255,7 +255,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
             actions={
               <div className="flex items-center gap-2">
                 {sectionId === "dining-outlet" && (
-                  <label className="flex items-center gap-1.5 text-xs text-slate-600">
+                  <label className="flex items-center gap-1.5 text-caption text-slate-600">
                     <input
                       type="checkbox"
                       checked={grandfatheredOutlet}
@@ -265,7 +265,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
                   </label>
                 )}
                 <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums ${
+                  className={`rounded-full px-2.5 py-0.5 text-caption font-semibold tabular-nums ${
                     check.overLimit
                       ? "bg-red-100 text-red-700"
                       : check.charCount > 0
@@ -294,7 +294,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
                   <span className="label mb-0">Proposed Diff Copy (**additions**, ~~removals~~)</span>
                   <button
                     type="button"
-                    className="text-xs text-hilton hover:underline"
+                    className="text-caption text-hilton hover:underline"
                     onClick={() =>
                       setEditingProposed({ ...editingProposed, [sectionId]: !editingProposed[sectionId] })
                     }
@@ -305,7 +305,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
 
                 {editingProposed[sectionId] ? (
                   <textarea
-                    className="input min-h-[110px] font-mono text-xs"
+                    className="input min-h-[110px] font-mono text-caption"
                     value={proposed}
                     onChange={(e) => setProposedCopy({ ...proposedCopy, [sectionId]: e.target.value })}
                   />
@@ -316,7 +316,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
                 )}
 
                 {proposed && !check.valid && (
-                  <ul className="mt-2 space-y-0.5 text-xs text-red-600">
+                  <ul className="mt-2 space-y-0.5 text-caption text-red-600">
                     {check.violations.map((v, i) => (
                       <li key={i}>• {v}</li>
                     ))}

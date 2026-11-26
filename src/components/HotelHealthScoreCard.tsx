@@ -143,30 +143,30 @@ export function HotelHealthScoreCard({ activeProperty, latestRuns, onRunAudit }:
             <div className="absolute flex flex-col items-center justify-center text-center">
               {score !== null ? (
                 <>
-                  <span className="font-display text-2xl font-black text-slate-900 leading-none">
+                  <span className="font-display text-2xl font-extrabold text-slate-900 leading-none">
                     {score}
                   </span>
-                  <span className="text-[10px] font-bold text-slate-400">/ 100</span>
+                  <span className="text-micro font-bold text-slate-400">/ 100</span>
                 </>
               ) : (
-                <span className="text-xs font-bold text-slate-400">READY</span>
+                <span className="text-caption font-bold text-slate-400">READY</span>
               )}
             </div>
           </div>
 
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-caption font-bold uppercase tracking-wider text-slate-400">
                 Hotel SEO Health Score
               </span>
-              <span className={`text-xs font-bold ${statusColor}`}>
+              <span className={`text-caption font-bold ${statusColor}`}>
                 • {statusLabel}
               </span>
             </div>
             <h3 className="font-display text-base font-bold text-slate-900">
               {activeProperty.name ? activeProperty.name : "Select or Detect Property"}
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-caption text-slate-500">
               {score !== null
                 ? `${checks.filter((c) => c.passed).length} of 4 core SEO verification checks passed.`
                 : "Run an auto-audit to calculate broken links, schema coverage, meta quality, and crawl health."}
@@ -179,7 +179,7 @@ export function HotelHealthScoreCard({ activeProperty, latestRuns, onRunAudit }:
             {checks.map((check) => (
               <div
                 key={check.name}
-                className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold ${
+                className={`flex items-center gap-1.5 rounded-xl border px-3 py-1.5 text-caption font-semibold ${
                   check.passed
                     ? "border-emerald-200 bg-emerald-50 text-emerald-800"
                     : "border-slate-200 bg-slate-50 text-slate-500"
@@ -203,10 +203,10 @@ export function HotelHealthScoreCard({ activeProperty, latestRuns, onRunAudit }:
 
       {deductions.length > 0 && (
         <div className="mt-3.5 border-t border-slate-100 pt-3">
-          <div className="text-[11px] font-semibold text-slate-600">
+          <div className="text-tiny font-semibold text-slate-600">
             Audit Recommendations ({deductions.length}):
           </div>
-          <div className="mt-1 flex flex-wrap gap-2 text-[11px] text-slate-500">
+          <div className="mt-1 flex flex-wrap gap-2 text-tiny text-slate-500">
             {deductions.map((d, i) => (
               <span
                 key={i}

@@ -104,10 +104,10 @@ export function DownloadFeedbackModal() {
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="font-display text-3xl font-black text-slate-900 animate-pulse">
+                  <span className="font-display text-3xl font-extrabold text-slate-900 animate-pulse">
                     {state.remainingSeconds}
                   </span>
-                  <span className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                  <span className="text-micro font-bold uppercase tracking-wider text-slate-400">
                     sec
                   </span>
                 </div>
@@ -117,7 +117,7 @@ export function DownloadFeedbackModal() {
             <h3 className="font-display text-lg font-bold text-slate-900">
               Starting Download...
             </h3>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-caption text-slate-500">
               Your SEO report is ready and will begin downloading automatically.
             </p>
 
@@ -134,10 +134,10 @@ export function DownloadFeedbackModal() {
                 </svg>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-bold text-slate-800" title={request.filename}>
+                <p className="truncate text-caption font-bold text-slate-800" title={request.filename}>
                   {request.filename}
                 </p>
-                <span className="text-[10px] font-medium text-slate-400">
+                <span className="text-micro font-medium text-slate-400">
                   {formatInfo.label} • Ready
                 </span>
               </div>
@@ -148,14 +148,14 @@ export function DownloadFeedbackModal() {
               <button
                 type="button"
                 onClick={() => downloadManager.cancel()}
-                className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-600 hover:bg-slate-50 transition"
+                className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-caption font-semibold text-slate-600 hover:bg-slate-50 transition"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={() => downloadManager.skipCountdown()}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2 text-xs font-bold font-display text-slate-900 shadow-glow hover:bg-brand-light transition active:scale-95"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-brand px-4 py-2 text-caption font-bold font-display text-slate-900 shadow-glow hover:bg-brand-light transition active:scale-95"
               >
                 <span>Download Now</span>
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -178,7 +178,7 @@ export function DownloadFeedbackModal() {
             <h3 className="font-display text-lg font-bold text-slate-900">
               Packaging Deliverable
             </h3>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-caption text-slate-500">
               Saving <span className="font-semibold text-slate-700">{request.filename}</span> to your device...
             </p>
 
@@ -205,21 +205,21 @@ export function DownloadFeedbackModal() {
             <h3 className="font-display text-lg font-bold text-slate-900">
               Download Complete!
             </h3>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-caption text-slate-500">
               Your file was generated and saved to your default downloads folder.
             </p>
 
             {/* File info badge */}
             <div className="mt-4 flex items-center justify-between rounded-2xl border border-emerald-100 bg-emerald-50/50 p-3 text-left">
               <div className="min-w-0 flex-1">
-                <p className="truncate text-xs font-bold text-emerald-950" title={request.filename}>
+                <p className="truncate text-caption font-bold text-emerald-950" title={request.filename}>
                   {request.filename}
                 </p>
-                <span className="text-[10px] font-semibold text-emerald-700">
+                <span className="text-micro font-semibold text-emerald-700">
                   {formatInfo.label} • Successfully Downloaded
                 </span>
               </div>
-              <span className="shrink-0 rounded-md bg-emerald-200/60 px-2 py-0.5 text-[10px] font-bold text-emerald-800">
+              <span className="shrink-0 rounded-md bg-emerald-200/60 px-2 py-0.5 text-micro font-bold text-emerald-800">
                 SAVED
               </span>
             </div>
@@ -229,7 +229,7 @@ export function DownloadFeedbackModal() {
               <button
                 type="button"
                 onClick={() => downloadManager.dismiss()}
-                className="w-full rounded-xl bg-slate-900 py-2.5 text-xs font-bold text-white shadow-sm hover:bg-slate-800 transition active:scale-98"
+                className="w-full rounded-xl bg-slate-900 py-2.5 text-caption font-bold text-white shadow-sm hover:bg-slate-800 transition active:scale-98"
               >
                 Done
               </button>

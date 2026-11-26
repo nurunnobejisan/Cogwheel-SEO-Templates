@@ -210,14 +210,14 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
           <h3 className="font-display text-xl font-bold tracking-tight text-slate-900">
             Upload Source Files
           </h3>
-          <p className="mt-0.5 text-xs text-slate-500">
+          <p className="mt-0.5 text-caption text-slate-500">
             SEO Only Visibility Report (Monthly) — upload your template and Semrush exports to build your client deck.
           </p>
         </div>
         <button
           type="button"
           onClick={onClose}
-          className="rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+          className="rounded-xl border border-slate-200 bg-white px-3.5 py-1.5 text-caption font-semibold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
         >
           Close
         </button>
@@ -249,10 +249,10 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
               onChange={(e) => setTemplateFile(e.target.files?.[0] ?? null)}
             />
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-tiny font-bold uppercase tracking-wider text-slate-400">
                 STEP 01
               </span>
-              <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
+              <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-micro font-bold text-white">
                 Required
               </span>
             </div>
@@ -263,15 +263,15 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3 4.5h18M4.5 4.5v10.5a1.5 1.5 0 001.5 1.5h12a1.5 1.5 0 001.5-1.5V4.5M9 20.25l3-3.75 3 3.75" />
                 </svg>
               </div>
-              <div className="font-display text-sm font-bold text-slate-900">PowerPoint Template</div>
-              <div className="mt-0.5 text-xs text-slate-500 truncate max-w-[200px]" title={templateFile ? templateFile.name : "Master slide deck"}>
+              <div className="font-display text-body font-bold text-slate-900">PowerPoint Template</div>
+              <div className="mt-0.5 text-caption text-slate-500 truncate max-w-[200px]" title={templateFile ? templateFile.name : "Master slide deck"}>
                 {templateFile ? templateFile.name : "Master slide deck or drag .pptx here"}
               </div>
             </div>
           </label>
 
-          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
-            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
+          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-caption">
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-tiny text-slate-500">
               .pptx
             </span>
             {templateFile ? (
@@ -316,10 +316,10 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
               onChange={(e) => setXlsxFile(e.target.files?.[0] ?? null)}
             />
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-tiny font-bold uppercase tracking-wider text-slate-400">
                 STEP 02
               </span>
-              <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[10px] font-bold text-white">
+              <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-micro font-bold text-white">
                 Required
               </span>
             </div>
@@ -330,15 +330,15 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <div className="font-display text-sm font-bold text-slate-900">Keywords Workbook</div>
-              <div className="mt-0.5 text-xs text-slate-500 truncate max-w-[200px]" title={xlsxFile ? xlsxFile.name : "Excel export"}>
+              <div className="font-display text-body font-bold text-slate-900">Keywords Workbook</div>
+              <div className="mt-0.5 text-caption text-slate-500 truncate max-w-[200px]" title={xlsxFile ? xlsxFile.name : "Excel export"}>
                 {xlsxFile ? xlsxFile.name : "Excel export or drag .xlsx here"}
               </div>
             </div>
           </label>
 
-          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
-            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
+          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-caption">
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-tiny text-slate-500">
               .xlsx
             </span>
             {xlsxFile ? (
@@ -383,10 +383,10 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
               onChange={(e) => setPdfFile(e.target.files?.[0] ?? null)}
             />
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <span className="text-tiny font-bold uppercase tracking-wider text-slate-400">
                 STEP 03
               </span>
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold text-slate-500">
+              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-micro font-semibold text-slate-500">
                 Optional
               </span>
             </div>
@@ -397,15 +397,15 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
                   <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </div>
-              <div className="font-display text-sm font-bold text-slate-900">Semrush Audit PDF</div>
-              <div className="mt-0.5 text-xs text-slate-500 truncate max-w-[200px]" title={pdfFile ? pdfFile.name : "Optional PDF report"}>
+              <div className="font-display text-body font-bold text-slate-900">Semrush Audit PDF</div>
+              <div className="mt-0.5 text-caption text-slate-500 truncate max-w-[200px]" title={pdfFile ? pdfFile.name : "Optional PDF report"}>
                 {pdfFile ? pdfFile.name : "Optional PDF or drag .pdf here"}
               </div>
             </div>
           </label>
 
-          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-xs">
-            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-[11px] text-slate-500">
+          <div className="flex items-center justify-between border-t border-slate-100 pt-3 text-caption">
+            <span className="rounded bg-slate-100 px-2 py-0.5 font-mono text-tiny text-slate-500">
               .pdf
             </span>
             {pdfFile ? (
@@ -431,18 +431,18 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
       <div className="mt-5 rounded-2xl border border-slate-200 bg-white p-5">
         <div className="flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <span className="text-tiny font-bold uppercase tracking-wider text-slate-400">
               STEP 04
             </span>
-            <h4 className="font-display text-sm font-bold text-slate-900">
+            <h4 className="font-display text-body font-bold text-slate-900">
               Target Website Crawl &amp; Service Match
             </h4>
           </div>
-          <span className="rounded-full border border-purple-200 bg-purple-50 px-3 py-0.5 text-[11px] font-semibold text-purple-700">
+          <span className="rounded-full border border-purple-200 bg-purple-50 px-3 py-0.5 text-tiny font-semibold text-purple-700">
             Service Verification
           </span>
         </div>
-        <p className="mt-1.5 text-xs text-slate-500">
+        <p className="mt-1.5 text-caption text-slate-500">
           Enter the target property website URL to crawl its offerings and match services against your Keywords Workbook. Unmatched services are automatically excluded from the Ancillary Keyword Position Summary.
         </p>
         <div className="mt-3.5 flex flex-col gap-3 sm:flex-row">
@@ -457,13 +457,13 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
               }
             }}
             placeholder="https://www.marriott.com/en-us/hotels/... or https://www.propertywebsite.com"
-            className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/25"
+            className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-body text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/25"
           />
           <button
             type="button"
             onClick={handleInspectWebsite}
             disabled={crawlBusy || (!targetUrl.trim() && !xlsxFile)}
-            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-xs font-bold font-display text-slate-800 shadow-sm transition hover:border-brand hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-xl border border-slate-300 bg-white px-5 py-2.5 text-caption font-bold font-display text-slate-800 shadow-sm transition hover:border-brand hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg className="h-4 w-4 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.8}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9 9 0 100-18 9 9 0 000 18zM3.6 9h16.8M3.6 15h16.8M12 3a14.5 14.5 0 010 18M12 3a14.5 14.5 0 000 18" />
@@ -474,12 +474,12 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
 
         {/* Matched Services Result Card matching reference design */}
         {crawlInfo && (
-          <div className="mt-4 rounded-xl border border-slate-200/90 bg-white p-4 text-xs space-y-2.5 shadow-sm animate-fade-in">
+          <div className="mt-4 rounded-xl border border-slate-200/90 bg-white p-4 text-caption space-y-2.5 shadow-sm animate-fade-in">
             <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-2">
               <span className="font-semibold text-slate-800 truncate max-w-xl" title={crawlInfo.target_url || crawlInfo.page_title}>
                 Target: {crawlInfo.target_url || crawlInfo.page_title}
               </span>
-              <span className="text-[11px] font-medium text-slate-500">
+              <span className="text-tiny font-medium text-slate-500">
                 {crawlInfo.crawled_pages > 0
                   ? `${crawlInfo.crawled_pages} page(s) crawled${crawlInfo.sitemap_urls ? ` • ${crawlInfo.sitemap_urls} sitemap URLs scanned` : ""}`
                   : "URL & Workbook profile analyzed"}
@@ -494,7 +494,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
                   crawlInfo.matched_services.map((s, idx) => (
                     <span
                       key={idx}
-                      className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 font-medium text-emerald-700 text-[11px]"
+                      className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 font-medium text-emerald-700 text-tiny"
                     >
                       {s}
                     </span>
@@ -509,7 +509,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
                 <span className="font-semibold text-slate-700 block mb-1">Detected Website Topics &amp; Headings:</span>
                 <div className="flex flex-wrap gap-1.5">
                   {crawlInfo.page_topics.map((t, idx) => (
-                    <span key={idx} className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-medium text-slate-700 text-[11px]">
+                    <span key={idx} className="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-0.5 font-medium text-slate-700 text-tiny">
                       {t}
                     </span>
                   ))}
@@ -523,7 +523,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
                 </span>
                 <div className="flex flex-wrap gap-1.5">
                   {crawlInfo.unmatched_services.map((s, idx) => (
-                    <span key={idx} className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-0.5 font-medium text-rose-600 text-[11px]">
+                    <span key={idx} className="rounded-full border border-rose-200 bg-rose-50 px-2.5 py-0.5 font-medium text-rose-600 text-tiny">
                       {s}
                     </span>
                   ))}
@@ -533,10 +533,10 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
           </div>
         )}
         <div className="mt-3.5 flex flex-wrap items-center justify-between gap-2 border-t border-slate-100 pt-3">
-          <span className="text-[11px] text-slate-500">
+          <span className="text-tiny text-slate-500">
             Slide 5 (SEO Errors) applies to independents &amp; soft brands with a vanity site:
           </span>
-          <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-0.5 text-[11px] font-semibold">
+          <div className="inline-flex rounded-xl border border-slate-200 bg-slate-50 p-0.5 text-tiny font-semibold">
             {(
               [
                 ["auto", "Auto-Detect"],
@@ -562,7 +562,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
       </div>
 
       {error && (
-        <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs text-rose-700">
+        <div className="mt-4 rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-caption text-rose-700">
           {error}
         </div>
       )}
@@ -574,7 +574,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
             type="button"
             onClick={handleGenerate}
             disabled={busy || !templateFile || !xlsxFile}
-            className="inline-flex items-center gap-2.5 rounded-xl bg-brand px-5 py-3 font-display text-sm font-bold text-slate-950 shadow-glow transition hover:bg-brand-light disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex items-center gap-2.5 rounded-xl bg-brand px-5 py-3 font-display text-body font-bold text-slate-950 shadow-glow transition hover:bg-brand-light disabled:cursor-not-allowed disabled:opacity-50"
           >
             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
@@ -585,13 +585,13 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
           <button
             type="button"
             onClick={() => setShowPreview((v) => !v)}
-            className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 font-display text-sm font-bold text-white transition hover:bg-white/20"
+            className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-3 font-display text-body font-bold text-white transition hover:bg-white/20"
           >
             {showPreview ? "Hide Live Preview" : "Live Slide Preview"}
           </button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 text-xs">
+        <div className="flex flex-wrap items-center gap-2 text-caption">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
             <span className={`h-1.5 w-1.5 rounded-full ${templateFile ? "bg-brand" : "bg-slate-500"}`} />
             Template Required
@@ -622,7 +622,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
       )}
 
       {summary && (
-        <div className="mt-4 space-y-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-xs text-slate-800">
+        <div className="mt-4 space-y-2 rounded-2xl border border-emerald-200 bg-emerald-50 p-4 text-caption text-slate-800">
           <div className="font-semibold text-emerald-900">
             Report Generated: {summary.property_name} ({summary.slide_count} slides,{" "}
             {summary.is_brand_hosted ? "Brand-Hosted" : "Standalone"})

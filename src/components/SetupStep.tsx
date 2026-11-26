@@ -81,7 +81,7 @@ export function PropertySetup({
     <Card title="1. Property Setup" subtitle="Quick-pick from your 132 trained client properties or enter details manually.">
       <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
-          <label className="text-xs font-bold uppercase tracking-wider text-slate-600">
+          <label className="text-caption font-bold uppercase tracking-wider text-slate-600">
             Portfolio Quick-Pick ({filteredPortfolio.length} of {PORTFOLIO.length} properties)
           </label>
           <input
@@ -89,7 +89,7 @@ export function PropertySetup({
             value={portfolioFilter}
             onChange={(e) => setPortfolioFilter(e.target.value)}
             placeholder="Filter by name, city, brand, soft vanity…"
-            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs sm:w-64"
+            className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-caption sm:w-64"
           />
         </div>
         <select
@@ -110,7 +110,7 @@ export function PropertySetup({
           const activeEntry = PORTFOLIO.find((p) => p.name === property.name);
           if (!activeEntry?.slidesUrl && !activeEntry?.backlinkSlidesUrl) return null;
           return (
-            <div className="mt-2 flex flex-wrap gap-4 text-xs text-slate-600">
+            <div className="mt-2 flex flex-wrap gap-4 text-caption text-slate-600">
               {activeEntry.slidesUrl && (
                 <a href={activeEntry.slidesUrl} target="_blank" rel="noreferrer" className="font-semibold text-indigo-600 hover:underline">
                   Duplicate Content Audit Slides ↗
@@ -137,7 +137,7 @@ export function PropertySetup({
             {onCrawlUrl && (
               <Button
                 variant="secondary"
-                className="shrink-0 px-3 text-xs"
+                className="shrink-0 px-3 text-caption"
                 disabled={!property.url?.trim() || crawling}
                 onClick={onCrawlUrl}
                 title="Auto-detect City, State, Pet Policy & Sitemap Pages from URL"
@@ -156,7 +156,7 @@ export function PropertySetup({
             ))}
           </select>
           {property.brand && (
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-caption text-slate-500">
               Half &amp; Half: <strong>{isHalfAndHalfEligible(property.brand) ? "Yes" : "No"}</strong>
             </p>
           )}
@@ -175,22 +175,22 @@ export function PropertySetup({
             <button
               type="button"
               onClick={() => onTemplateChange("A")}
-              className={`rounded-2xl border-2 px-4 py-3 text-left text-sm transition-all ${
+              className={`rounded-2xl border-2 px-4 py-3 text-left text-body transition-all ${
                 template === "A" ? "border-brand bg-brand-50 font-semibold text-slate-900 shadow-sm" : "border-slate-200 hover:border-brand/60"
               }`}
             >
               <div className="font-display">Standard Catbird / Arrive (Format A)</div>
-              <div className="text-xs font-normal text-slate-500">2-col table (Page | Keyword) + Why did we do this? bullets</div>
+              <div className="text-caption font-normal text-slate-500">2-col table (Page | Keyword) + Why did we do this? bullets</div>
             </button>
             <button
               type="button"
               onClick={() => onTemplateChange("B")}
-              className={`rounded-2xl border-2 px-4 py-3 text-left text-sm transition-all ${
+              className={`rounded-2xl border-2 px-4 py-3 text-left text-body transition-all ${
                 template === "B" ? "border-brand bg-brand-50 font-semibold text-slate-900 shadow-sm" : "border-slate-200 hover:border-brand/60"
               }`}
             >
               <div className="font-display">Cogwheel Reitz Union (Format B)</div>
-              <div className="text-xs font-normal text-slate-500">Current Sitemap + 3-col table (Primary &amp; Secondary) + Comments</div>
+              <div className="text-caption font-normal text-slate-500">Current Sitemap + 3-col table (Primary &amp; Secondary) + Comments</div>
             </button>
           </div>
         </div>
@@ -216,7 +216,7 @@ export function PropertySetup({
                 <option value="reitz">Rationale: Reitz / Cogwheel (qualitative)</option>
               </select>
             </div>
-            <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm font-medium text-slate-700 md:col-span-1">
+            <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-body font-medium text-slate-700 md:col-span-1">
               <input
                 type="checkbox"
                 className="h-4 w-4 accent-slate-900"
@@ -245,7 +245,7 @@ export function PropertySetup({
             onBlur={(e) => set("allowedLocations", splitList(e.target.value))}
             placeholder="university of florida, uf, midtown, archer road"
           />
-          <p className="mt-1 text-xs text-slate-500">Neighborhoods, nearby towns, campuses, landmarks — comma separated.</p>
+          <p className="mt-1 text-caption text-slate-500">Neighborhoods, nearby towns, campuses, landmarks — comma separated.</p>
         </div>
         <div className="md:col-span-3">
           <label className="label">Excluded locations</label>
@@ -256,7 +256,7 @@ export function PropertySetup({
             onBlur={(e) => set("excludedLocations", splitList(e.target.value))}
             placeholder="alachua, newberry, lake city"
           />
-          <p className="mt-1 text-xs text-slate-500">Always dropped, in addition to wrong states and major cities.</p>
+          <p className="mt-1 text-caption text-slate-500">Always dropped, in addition to wrong states and major cities.</p>
         </div>
       </div>
     </Card>
@@ -310,18 +310,18 @@ export function Dropzone({
       subtitle={`Drop up to ${max} CSV/XLSX/TSV/TXT/JSON files, paste raw keywords, sync Google Drive, or pull Semrush API.`}
       actions={
         <div className="flex flex-wrap gap-2">
-          <Button variant="secondary" className="px-3 py-1.5 text-xs" onClick={() => setShowPaste((v) => !v)}>
+          <Button variant="secondary" className="px-3 py-1.5 text-caption" onClick={() => setShowPaste((v) => !v)}>
             Paste Data
           </Button>
           {onDriveSync && (
-            <Button variant="secondary" className="px-3 py-1.5 text-xs" onClick={() => setShowDrive((v) => !v)}>
+            <Button variant="secondary" className="px-3 py-1.5 text-caption" onClick={() => setShowDrive((v) => !v)}>
               Sync Google Drive
             </Button>
           )}
           {onSemrushPull && (
             <Button
               variant="secondary"
-              className="px-3 py-1.5 text-xs"
+              className="px-3 py-1.5 text-caption"
               disabled={!canPullSemrush || syncing}
               onClick={onSemrushPull}
               title="Pull keywords directly via SEMRUSH_API_KEY"
@@ -335,19 +335,19 @@ export function Dropzone({
       {showPaste && (
         <div className="mb-4 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
           <input
-            className="input py-1.5 text-xs"
+            className="input py-1.5 text-caption"
             value={pasteBucket}
             onChange={(e) => setPasteBucket(e.target.value)}
             placeholder="Bucket / Group name (optional — e.g. Rooftop Bar Denver)"
           />
           <textarea
-            className="input min-h-[84px] font-mono text-xs"
+            className="input min-h-[84px] font-mono text-caption"
             value={pasteText}
             onChange={(e) => setPasteText(e.target.value)}
             placeholder={"Paste CSV/TSV rows or 1 keyword per line…\nKeyword,Volume,KD\nrooftop bar denver,1900,23"}
           />
           <div className="flex justify-end">
-            <Button className="px-3 py-1.5 text-xs" disabled={!pasteText.trim()} onClick={addPastedData}>
+            <Button className="px-3 py-1.5 text-caption" disabled={!pasteText.trim()} onClick={addPastedData}>
               Add Pasted Data
             </Button>
           </div>
@@ -356,13 +356,13 @@ export function Dropzone({
       {showDrive && onDriveSync && (
         <div className="mb-4 flex gap-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
           <input
-            className="input py-1.5 text-xs"
+            className="input py-1.5 text-caption"
             value={driveFolder}
             onChange={(e) => setDriveFolder(e.target.value)}
             placeholder="Paste Google Drive folder URL or ID (reads 01-semrush/ automatically)…"
           />
           <Button
-            className="shrink-0 px-3 py-1.5 text-xs"
+            className="shrink-0 px-3 py-1.5 text-caption"
             disabled={!driveFolder.trim() || syncing}
             onClick={() => onDriveSync(driveFolder)}
           >
@@ -391,27 +391,27 @@ export function Dropzone({
       >
         <input type="file" multiple accept=".csv,.xlsx,.xls,.tsv,.txt,.json" className="hidden" onChange={(e) => addFiles(e.target.files)} />
         <div className="flex w-full items-center justify-between">
-          <span className="font-display text-xs font-bold uppercase tracking-wider text-slate-400">Multi-CSV</span>
-          <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-[11px] font-semibold text-white">Required</span>
+          <span className="font-display text-caption font-bold uppercase tracking-wider text-slate-400">Multi-CSV</span>
+          <span className="rounded-full bg-slate-900 px-2.5 py-0.5 text-tiny font-semibold text-white">Required</span>
         </div>
         <div className="my-auto py-4">
           <div className="font-display text-base font-bold text-slate-800">
             {files.length > 0 ? `${files.length} export${files.length === 1 ? "" : "s"} ready` : "Drop Semrush exports here"}
           </div>
-          <div className="mt-1 text-xs text-slate-500">
+          <div className="mt-1 text-caption text-slate-500">
             or click to browse · {files.length}/{max} files selected
           </div>
         </div>
-        <div className="text-[11px] font-medium text-slate-400">CSV, XLSX, XLS, TSV</div>
+        <div className="text-tiny font-medium text-slate-400">CSV, XLSX, XLS, TSV</div>
       </label>
       {files.length > 0 && (
         <ul className="mt-4 max-h-56 divide-y divide-slate-100 overflow-auto rounded-md border border-slate-200">
           {files.map((f) => (
-            <li key={f.name} className="flex items-center justify-between px-3 py-1.5 text-sm">
+            <li key={f.name} className="flex items-center justify-between px-3 py-1.5 text-body">
               <span className="truncate">{f.name}</span>
               <span className="flex items-center gap-3">
-                <span className="text-xs text-slate-400">{(f.size / 1024).toFixed(1)} KB</span>
-                <button className="text-xs text-red-600 hover:underline" onClick={() => onChange(files.filter((x) => x !== f))}>
+                <span className="text-caption text-slate-400">{(f.size / 1024).toFixed(1)} KB</span>
+                <button className="text-caption text-red-600 hover:underline" onClick={() => onChange(files.filter((x) => x !== f))}>
                   remove
                 </button>
               </span>
@@ -461,7 +461,7 @@ export function PagesEditor({ pages, onChange }: { pages: SitemapPage[]; onChang
                   <input className="input py-1" value={p.title} onChange={(e) => update(i, { title: e.target.value })} />
                 </td>
                 <td className="td">
-                  <input className="input py-1 font-mono text-xs" value={p.path} onChange={(e) => update(i, { path: e.target.value })} />
+                  <input className="input py-1 font-mono text-caption" value={p.path} onChange={(e) => update(i, { path: e.target.value })} />
                 </td>
                 <td className="td">
                   <BucketPicker value={p.buckets} onChange={(b) => update(i, { buckets: b })} />
@@ -480,7 +480,7 @@ function BucketPicker({ value, onChange }: { value: string[]; onChange: (v: stri
   return (
     <div className="flex flex-wrap items-center gap-1">
       {value.map((id) => (
-        <span key={id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-xs">
+        <span key={id} className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-caption">
           {BUCKETS.find((b) => b.id === id)?.name ?? id}
           <button className="text-slate-400 hover:text-red-600" onClick={() => onChange(value.filter((x) => x !== id))} aria-label="remove">
             ×
@@ -488,7 +488,7 @@ function BucketPicker({ value, onChange }: { value: string[]; onChange: (v: stri
         </span>
       ))}
       {remaining.length > 0 && (
-        <select className="rounded border border-dashed border-slate-300 bg-transparent px-1 py-0.5 text-xs text-slate-500" value="" onChange={(e) => e.target.value && onChange([...value, e.target.value])}>
+        <select className="rounded border border-dashed border-slate-300 bg-transparent px-1 py-0.5 text-caption text-slate-500" value="" onChange={(e) => e.target.value && onChange([...value, e.target.value])}>
           <option value="">+ bucket</option>
           {remaining.map((b) => (
             <option key={b.id} value={b.id}>{b.name}</option>

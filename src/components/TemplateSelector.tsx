@@ -73,9 +73,9 @@ export function TemplateSelector({
                   <div className="font-display font-bold text-slate-900">{t.name}</div>
                   <span className={`h-4 w-4 rounded-full border-2 ${selected ? "border-slate-900 bg-brand" : "border-slate-300"}`} />
                 </div>
-                <div className="text-xs text-slate-500">{t.clients}</div>
-                <p className="mt-2 text-sm text-slate-600">{t.description}</p>
-                <div className="mt-3 overflow-hidden rounded border border-slate-200 bg-white text-xs">
+                <div className="text-caption text-slate-500">{t.clients}</div>
+                <p className="mt-2 text-body text-slate-600">{t.description}</p>
+                <div className="mt-3 overflow-hidden rounded border border-slate-200 bg-white text-caption">
                   {t.includeCurrentSitemap && <div className="border-b border-slate-200 bg-slate-50 px-2 py-1 font-medium">Current Sitemap</div>}
                   <div className="grid" style={{ gridTemplateColumns: `repeat(${t.tableColumns.length}, minmax(0, 1fr))` }}>
                     {t.tableColumns.map((c) => (
@@ -102,7 +102,7 @@ export function TemplateSelector({
       >
         <div className="space-y-3">
           <div>
-            <label className="mb-1 block text-xs font-semibold text-slate-700">Master Template Document URL</label>
+            <label className="mb-1 block text-caption font-semibold text-slate-700">Master Template Document URL</label>
             <input
               type="url"
               value={masterUrl}
@@ -111,28 +111,28 @@ export function TemplateSelector({
                 onMasterTemplateUrlChange?.(e.target.value);
               }}
               placeholder="https://docs.google.com/document/d/.../edit"
-              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-slate-300 px-3 py-2 text-body"
             />
           </div>
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-700">Example Output Document 1 (optional)</label>
+              <label className="mb-1 block text-caption font-semibold text-slate-700">Example Output Document 1 (optional)</label>
               <input
                 type="url"
                 value={example1Url}
                 onChange={(e) => setExample1Url(e.target.value)}
                 placeholder="https://docs.google.com/document/d/.../edit"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-body"
               />
             </div>
             <div>
-              <label className="mb-1 block text-xs font-semibold text-slate-700">Example Output Document 2 (optional)</label>
+              <label className="mb-1 block text-caption font-semibold text-slate-700">Example Output Document 2 (optional)</label>
               <input
                 type="url"
                 value={example2Url}
                 onChange={(e) => setExample2Url(e.target.value)}
                 placeholder="https://docs.google.com/document/d/.../edit"
-                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-slate-300 px-3 py-2 text-body"
               />
             </div>
           </div>
@@ -142,11 +142,11 @@ export function TemplateSelector({
               {inspecting ? <Spinner /> : null}
               Inspect & Preview Template
             </Button>
-            {inspectError && <span className="text-xs text-red-700">{inspectError}</span>}
+            {inspectError && <span className="text-caption text-red-700">{inspectError}</span>}
           </div>
 
           {inspection && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-xs text-slate-700 space-y-2">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-caption text-slate-700 space-y-2">
               <div className="font-bold text-slate-900">
                 Master: {inspection.master.title} ({inspection.master.tableCount} tables · {inspection.master.paragraphCount} paragraphs ·{" "}
                 {inspection.master.hasHeader ? "Header ✓" : "No Header"} · {inspection.master.hasFooter ? "Footer ✓" : "No Footer"})

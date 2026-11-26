@@ -371,9 +371,9 @@ export function CommandPalette({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Type a command, search hotel, or jump to task..."
-            className="w-full bg-transparent text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
+            className="w-full bg-transparent text-body text-slate-900 placeholder:text-slate-400 focus:outline-none dark:text-white"
           />
-          <kbd className="hidden rounded bg-slate-100 px-2 py-0.5 font-mono text-[10px] text-slate-500 dark:bg-slate-800 dark:text-slate-400 sm:inline-block">
+          <kbd className="hidden rounded bg-slate-100 px-2 py-0.5 font-mono text-micro text-slate-500 dark:bg-slate-800 dark:text-slate-400 sm:inline-block">
             ESC
           </kbd>
         </div>
@@ -381,7 +381,7 @@ export function CommandPalette({
         {/* Results List */}
         <div className="max-h-96 overflow-y-auto p-2">
           {filteredItems.length === 0 ? (
-            <div className="py-8 text-center text-xs text-slate-400">
+            <div className="py-8 text-center text-caption text-slate-400">
               No matching commands or hotels found for &ldquo;{query}&rdquo;
             </div>
           ) : (
@@ -400,20 +400,20 @@ export function CommandPalette({
                 >
                   <div className="min-w-0 pr-3">
                     <div className="flex items-center gap-2">
-                      <span className="truncate text-xs font-semibold">
+                      <span className="truncate text-caption font-semibold">
                         {item.title}
                       </span>
                       {item.badge && (
-                        <span className="rounded bg-slate-200/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+                        <span className="rounded bg-slate-200/70 px-1.5 py-0.5 text-micro font-bold uppercase tracking-wider text-slate-600 dark:bg-slate-800 dark:text-slate-300">
                           {item.badge}
                         </span>
                       )}
                     </div>
-                    <div className="truncate text-[11px] text-slate-400 dark:text-slate-500">
+                    <div className="truncate text-tiny text-slate-400 dark:text-slate-500">
                       {item.subtitle}
                     </div>
                   </div>
-                  <span className="shrink-0 text-[10px] font-medium text-slate-400 dark:text-slate-500">
+                  <span className="shrink-0 text-micro font-medium text-slate-400 dark:text-slate-500">
                     {item.category}
                   </span>
                 </div>
@@ -423,7 +423,7 @@ export function CommandPalette({
         </div>
 
         {/* Footer shortcuts */}
-        <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/70 px-4 py-2 text-[10px] text-slate-400 dark:border-slate-800 dark:bg-slate-900/60">
+        <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/70 px-4 py-2 text-micro text-slate-400 dark:border-slate-800 dark:bg-slate-900/60">
           <div className="flex items-center gap-2">
             <span>Use</span>
             <kbd className="rounded bg-slate-200 px-1 py-0.5 text-slate-700 dark:bg-slate-800 dark:text-slate-300">&uarr;</kbd>

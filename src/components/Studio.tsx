@@ -346,16 +346,16 @@ export default function Studio({
         <div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-4 px-6">
           <div className="flex items-center gap-3">
             <div
-              className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-brand font-display text-[19px] font-black text-slate-900 shadow-sm"
+              className="flex h-[42px] w-[42px] items-center justify-center rounded-xl bg-brand font-display text-[19px] font-extrabold text-slate-900 shadow-sm"
               style={{ letterSpacing: "-1px" }}
             >
               KR
             </div>
             <div className="flex flex-col justify-center">
-              <span className="font-display text-[18px] font-black uppercase leading-none tracking-tight text-slate-900">
+              <span className="font-display text-[18px] font-extrabold uppercase leading-none tracking-tight text-slate-900">
                 KEYWORD RESEARCH
               </span>
-              <span className="mt-1 font-display text-[11px] font-light uppercase leading-none tracking-[0.24em] text-slate-600">
+              <span className="mt-1 font-display text-tiny font-light uppercase leading-none tracking-[0.24em] text-slate-600">
                 SEO/GEO STUDIO
               </span>
             </div>
@@ -370,7 +370,7 @@ export default function Studio({
                     key={n}
                     disabled={!enabled}
                     onClick={() => setStep(n)}
-                    className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
+                    className={`flex items-center gap-2 rounded-full px-3.5 py-1.5 text-caption font-semibold transition-all ${
                       step === n
                         ? "bg-slate-900 text-white shadow-sm"
                         : enabled
@@ -379,7 +379,7 @@ export default function Studio({
                     }`}
                   >
                     <span
-                      className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold ${
+                      className={`flex h-5 w-5 items-center justify-center rounded-full text-tiny font-bold ${
                         step === n ? "bg-brand text-slate-900" : "bg-white text-slate-500"
                       }`}
                     >
@@ -394,7 +394,7 @@ export default function Studio({
               <button
                 type="button"
                 onClick={resetAll}
-                className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-xs font-semibold text-slate-600 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
+                className="rounded-xl border border-slate-200 bg-slate-100 px-3 py-2 text-caption font-semibold text-slate-600 transition-colors hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
               >
                 Reset All
               </button>
@@ -405,13 +405,13 @@ export default function Studio({
 
       <main className="mx-auto w-full max-w-7xl flex-grow space-y-6 px-6 py-8">
         {error && (
-          <div className="flex items-start justify-between rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          <div className="flex items-start justify-between rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-body text-red-700">
             <span>{error}</span>
             <button onClick={() => setError(null)} className="ml-4 text-red-400 hover:text-red-700">×</button>
           </div>
         )}
         {notice && (
-          <div className="flex items-start justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+          <div className="flex items-start justify-between rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-body text-emerald-800">
             <span>{notice}</span>
             <button onClick={() => setNotice(null)} className="ml-4 text-emerald-500">×</button>
           </div>
@@ -449,7 +449,7 @@ export default function Studio({
               </div>
             </div>
             <div className="flex flex-col items-center justify-between gap-4 rounded-2xl border border-slate-800 bg-slate-900 p-5 shadow-lg lg:flex-row">
-              <div className="flex flex-wrap items-center gap-2 text-xs">
+              <div className="flex flex-wrap items-center gap-2 text-caption">
                 <span className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 font-medium ${propReady ? "border-emerald-500/30 bg-emerald-500/15 text-emerald-300" : "border-slate-700 bg-slate-800 text-slate-400"}`}>
                   <span className={`h-1.5 w-1.5 rounded-full ${propReady ? "bg-emerald-400" : "bg-slate-500"}`} />
                   Property {propReady ? "✓" : "Required"}
@@ -513,7 +513,7 @@ export default function Studio({
 
             {ingest.files.some((f) => f.error) && (
               <Card title="File errors">
-                <ul className="list-disc pl-5 text-sm text-red-700">
+                <ul className="list-disc pl-5 text-body text-red-700">
                   {ingest.files.filter((f) => f.error).map((f) => (
                     <li key={f.fileName}>
                       <strong>{f.fileName}</strong>: {f.error}
@@ -524,7 +524,7 @@ export default function Studio({
             )}
 
             {stale && (
-              <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+              <div className="flex items-center justify-between rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-body text-amber-800">
                 <span>Template or sitemap changed since this matrix was built. Rebuilding discards manual edits.</span>
                 <Button variant="secondary" onClick={() => runBucketAndSelect()}>Rebuild</Button>
               </div>

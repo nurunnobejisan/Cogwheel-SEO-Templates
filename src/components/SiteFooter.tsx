@@ -7,26 +7,26 @@ export function SiteFooter() {
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-900 text-xs font-bold text-brand-light dark:bg-brand dark:text-slate-950">
+              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950">
                 CW
               </span>
-              <span className="font-display text-sm font-bold text-slate-900 dark:text-white">
+              <span className="font-display text-body font-bold text-slate-900 dark:text-white">
                 Cogwheel SEO &amp; GEO Studio
               </span>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                 v3.0.0
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-micro font-bold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                 Updated: November 24, 2026
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
               Enterprise hospitality search, pixel budgeting &amp; generative engine optimization suite.
             </p>
           </div>
 
-          <nav aria-label="Footer Navigation" className="flex flex-wrap items-center gap-4 text-xs font-semibold">
+          <nav aria-label="Footer Navigation" className="flex flex-wrap items-center gap-4 text-caption font-semibold">
             <Link href="/" className="transition hover:text-slate-900 dark:hover:text-white">
               Studio
             </Link>
@@ -50,7 +50,7 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <div className="mt-8 flex flex-col gap-2 border-t border-slate-200/60 pt-6 text-[11px] text-slate-500 dark:border-slate-800/60 dark:text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-8 flex flex-col gap-2 border-t border-slate-200/60 pt-6 text-tiny text-slate-500 dark:border-slate-800/60 dark:text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
             &copy; {new Date().getFullYear()} Cogwheel Marketing &amp;{" "}
             <a

@@ -81,12 +81,12 @@ function shortUrl(url: string): string {
 
 function DiffList({ triage }: { triage: PatchTriage }) {
   if (triage.mutations.length === 0) {
-    return <p className="text-xs text-slate-400">No deployable mutations.</p>;
+    return <p className="text-caption text-slate-400">No deployable mutations.</p>;
   }
   return (
     <ul className="space-y-1.5">
       {triage.mutations.map((mutation, index) => (
-        <li key={`${mutation.field}-${index}`} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-xs dark:bg-slate-800/60">
+        <li key={`${mutation.field}-${index}`} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-2.5 py-1.5 text-caption dark:bg-slate-800/60">
           <span className="font-mono text-slate-700 dark:text-slate-300">{mutation.field}</span>
           <span className="flex items-center gap-2">
             <span className="text-slate-400">{mutation.action}</span>
@@ -127,26 +127,26 @@ export function OverviewPanel({ data, onRefresh }: { data: ConsoleData; onRefres
           actions={<Button size="sm" variant="secondary" onClick={onRefresh}>Refresh</Button>}
         >
           {data.health ? (
-            <dl className="grid grid-cols-2 gap-3 text-sm">
+            <dl className="grid grid-cols-2 gap-3 text-body">
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Version</dt>
+                <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Version</dt>
                 <dd className="mt-0.5 font-mono text-slate-800 dark:text-slate-200">{data.health.version}</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Uptime</dt>
+                <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Uptime</dt>
                 <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{Math.round(data.health.uptimeMs / 1000)}s</dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Status</dt>
+                <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Status</dt>
                 <dd className="mt-0.5"><Badge variant={data.health.ok ? "success" : "danger"} size="sm">{data.health.ok ? "online" : "offline"}</Badge></dd>
               </div>
               <div>
-                <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Audit log</dt>
+                <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Audit log</dt>
                 <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{data.audit?.entries.length ?? 0} entries</dd>
               </div>
             </dl>
           ) : (
-            <p className="text-sm text-slate-400">Health endpoint unreachable.</p>
+            <p className="text-body text-slate-400">Health endpoint unreachable.</p>
           )}
         </Card>
 
@@ -156,15 +156,15 @@ export function OverviewPanel({ data, onRefresh }: { data: ConsoleData; onRefres
           ) : (
             <ul className="space-y-2.5">
               {recent.map((entry) => (
-                <li key={entry.id} className="flex items-start justify-between gap-3 text-sm">
+                <li key={entry.id} className="flex items-start justify-between gap-3 text-body">
                   <div className="min-w-0">
                     <p className="truncate font-medium text-slate-800 dark:text-slate-200">
-                      <span className="font-mono text-xs text-brand-dark dark:text-brand">{entry.action}</span>
+                      <span className="font-mono text-caption text-brand-dark dark:text-brand">{entry.action}</span>
                       {entry.targetUrl ? <span className="ml-2 text-slate-500">{shortUrl(entry.targetUrl)}</span> : null}
                     </p>
-                    <p className="text-xs text-slate-400">{entry.actor} · {entry.role}</p>
+                    <p className="text-caption text-slate-400">{entry.actor} · {entry.role}</p>
                   </div>
-                  <span className="shrink-0 text-xs text-slate-400">{time(entry.at)}</span>
+                  <span className="shrink-0 text-caption text-slate-400">{time(entry.at)}</span>
                 </li>
               ))}
             </ul>
@@ -220,7 +220,7 @@ export function ApprovalsPanel({
           >
             <DiffList triage={approval.triage} />
             {!allowed && (
-              <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-xs font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+              <p className="mt-3 rounded-lg bg-amber-50 px-3 py-2 text-caption font-medium text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
                 Your role cannot approve {approval.triage.overallRisk}-risk changes. An admin must approve.
               </p>
             )}
@@ -248,9 +248,9 @@ export function HistoryPanel({
   return (
     <Card title="Deployment history" subtitle="Every applied change is snapshot-backed" className="overflow-hidden">
       <div className="-mx-2 overflow-x-auto">
-        <table className="w-full min-w-[720px] text-left text-sm">
+        <table className="w-full min-w-[720px] text-left text-body">
           <thead>
-            <tr className="text-[11px] uppercase tracking-wider text-slate-400">
+            <tr className="text-tiny uppercase tracking-wider text-slate-400">
               <th className="px-2 py-2 font-semibold">Target</th>
               <th className="px-2 py-2 font-semibold">Status</th>
               <th className="px-2 py-2 font-semibold">Platform</th>
@@ -267,7 +267,7 @@ export function HistoryPanel({
                 <tr key={entry.id} className="align-middle">
                   <td className="px-2 py-3">
                     <p className="font-medium text-slate-800 dark:text-slate-200">{shortUrl(entry.targetUrl)}</p>
-                    <p className="font-mono text-[11px] text-slate-400">{entry.patchId}</p>
+                    <p className="font-mono text-tiny text-slate-400">{entry.patchId}</p>
                   </td>
                   <td className="px-2 py-3">
                     <span className="flex items-center gap-1.5">
@@ -277,8 +277,8 @@ export function HistoryPanel({
                   </td>
                   <td className="px-2 py-3 capitalize text-slate-600 dark:text-slate-400">{entry.platform}</td>
                   <td className="px-2 py-3 tabular-nums text-slate-600 dark:text-slate-400">{entry.applied}</td>
-                  <td className="px-2 py-3 text-xs text-slate-500">{entry.actor}</td>
-                  <td className="px-2 py-3 text-xs text-slate-500">{time(entry.at)}</td>
+                  <td className="px-2 py-3 text-caption text-slate-500">{entry.actor}</td>
+                  <td className="px-2 py-3 text-caption text-slate-500">{time(entry.at)}</td>
                   <td className="px-2 py-3 text-right">
                     <Button
                       size="sm"
@@ -320,7 +320,7 @@ export function AuditPanel({
         actions={<Button size="sm" variant="secondary" disabled={verifying} onClick={onVerify}>{verifying ? "Verifying…" : "Verify chain"}</Button>}
       >
         {verification ? (
-          <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-sm ${
+          <div className={`flex items-center gap-3 rounded-2xl border px-4 py-3 text-body ${
             verification.valid
               ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300"
               : "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/50 dark:bg-rose-950/40 dark:text-rose-300"
@@ -328,22 +328,22 @@ export function AuditPanel({
             <span className="text-lg">{verification.valid ? "✓" : "⚠"}</span>
             <div>
               <p className="font-semibold">{verification.valid ? "Chain verified" : "Tampering detected"}</p>
-              <p className="text-xs opacity-80">
+              <p className="text-caption opacity-80">
                 {verification.entries} entries{verification.brokenAt !== null ? ` · first break at #${verification.brokenAt}` : ""}
               </p>
             </div>
           </div>
         ) : (
-          <p className="text-sm text-slate-400">No verification result yet.</p>
+          <p className="text-body text-slate-400">No verification result yet.</p>
         )}
       </Card>
 
       <Card title="Entries" subtitle={`${data.audit?.entries.length ?? 0} recorded actions`} className="overflow-hidden">
         {data.audit && data.audit.entries.length > 0 ? (
           <div className="-mx-2 max-h-[28rem] overflow-auto">
-            <table className="w-full min-w-[720px] text-left text-sm">
+            <table className="w-full min-w-[720px] text-left text-body">
               <thead className="sticky top-0 bg-white dark:bg-slate-900">
-                <tr className="text-[11px] uppercase tracking-wider text-slate-400">
+                <tr className="text-tiny uppercase tracking-wider text-slate-400">
                   <th className="px-2 py-2 font-semibold">#</th>
                   <th className="px-2 py-2 font-semibold">Action</th>
                   <th className="px-2 py-2 font-semibold">Actor</th>
@@ -356,11 +356,11 @@ export function AuditPanel({
                 {[...data.audit.entries].reverse().map((entry) => (
                   <tr key={entry.id}>
                     <td className="px-2 py-2.5 tabular-nums text-slate-400">{entry.sequence}</td>
-                    <td className="px-2 py-2.5 font-mono text-xs text-slate-700 dark:text-slate-300">{entry.action}</td>
-                    <td className="px-2 py-2.5 text-xs text-slate-500">{entry.actor}<span className="ml-1 text-slate-400">({entry.role})</span></td>
-                    <td className="px-2 py-2.5 text-xs text-slate-500">{entry.targetUrl ? shortUrl(entry.targetUrl) : "—"}</td>
-                    <td className="px-2 py-2.5 text-xs text-slate-500">{time(entry.at)}</td>
-                    <td className="px-2 py-2.5 font-mono text-[11px] text-slate-400" title={entry.hash}>{entry.hash.slice(0, 10)}…</td>
+                    <td className="px-2 py-2.5 font-mono text-caption text-slate-700 dark:text-slate-300">{entry.action}</td>
+                    <td className="px-2 py-2.5 text-caption text-slate-500">{entry.actor}<span className="ml-1 text-slate-400">({entry.role})</span></td>
+                    <td className="px-2 py-2.5 text-caption text-slate-500">{entry.targetUrl ? shortUrl(entry.targetUrl) : "—"}</td>
+                    <td className="px-2 py-2.5 text-caption text-slate-500">{time(entry.at)}</td>
+                    <td className="px-2 py-2.5 font-mono text-tiny text-slate-400" title={entry.hash}>{entry.hash.slice(0, 10)}…</td>
                   </tr>
                 ))}
               </tbody>
@@ -430,11 +430,11 @@ function ConnectorsCard({
   return (
     <Card title="Connected targets" subtitle="Where the platform is allowed to deploy">
       {data.connectors.length === 0 ? (
-        <p className="mb-4 text-xs text-slate-400">No targets connected yet. Register one below — leave the credential empty to use the universal runtime connector.</p>
+        <p className="mb-4 text-caption text-slate-400">No targets connected yet. Register one below — leave the credential empty to use the universal runtime connector.</p>
       ) : (
         <ul className="mb-4 space-y-1.5">
           {data.connectors.map((target) => (
-            <li key={target} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs dark:bg-slate-800/60">
+            <li key={target} className="flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2 text-caption dark:bg-slate-800/60">
               <span className="text-emerald-500">●</span>
               <span className="truncate font-mono text-slate-700 dark:text-slate-300">{target}</span>
             </li>
@@ -489,11 +489,11 @@ function SchedulesCard({
   return (
     <Card title="Scheduled scans" subtitle="Continuous monitoring cadence">
       {data.schedules.length === 0 ? (
-        <p className="mb-4 text-xs text-slate-400">No scans scheduled. The worker drains due jobs and runs the healing pipeline.</p>
+        <p className="mb-4 text-caption text-slate-400">No scans scheduled. The worker drains due jobs and runs the healing pipeline.</p>
       ) : (
         <ul className="mb-4 space-y-1.5">
           {data.schedules.map((schedule) => (
-            <li key={schedule.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs dark:bg-slate-800/60">
+            <li key={schedule.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-caption dark:bg-slate-800/60">
               <span className="truncate font-mono text-slate-700 dark:text-slate-300">{shortUrl(schedule.targetUrl)}</span>
               <span className="flex items-center gap-2">
                 <Badge variant={schedule.enabled ? "success" : "neutral"} size="sm">{schedule.enabled ? "on" : "off"}</Badge>
@@ -577,14 +577,14 @@ function CredentialsCard({
   return (
     <Card title="CMS credentials" subtitle="Secrets are encrypted at rest and never returned">
       {data.credentials.length === 0 ? (
-        <p className="mb-4 text-xs text-slate-400">No credentials stored. Admins can connect a WordPress, Shopify, Webflow or custom site below.</p>
+        <p className="mb-4 text-caption text-slate-400">No credentials stored. Admins can connect a WordPress, Shopify, Webflow or custom site below.</p>
       ) : (
         <ul className="mb-4 grid gap-1.5 sm:grid-cols-2">
           {data.credentials.map((credential) => (
-            <li key={credential.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs dark:bg-slate-800/60">
+            <li key={credential.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-caption dark:bg-slate-800/60">
               <span className="min-w-0">
                 <span className="block truncate font-medium text-slate-700 dark:text-slate-200">{credential.label}</span>
-                <span className="font-mono text-[11px] text-slate-400">{credential.fingerprint}</span>
+                <span className="font-mono text-tiny text-slate-400">{credential.fingerprint}</span>
               </span>
               <Badge variant="info" size="sm">{credential.platform}</Badge>
             </li>
@@ -603,25 +603,25 @@ function CredentialsCard({
         </div>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="block">
-            <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Meta (JSON)</span>
+            <span className="block text-caption font-semibold text-slate-700 dark:text-slate-300">Meta (JSON)</span>
             <textarea
-              className="mt-1.5 block h-24 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+              className="mt-1.5 block h-24 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-caption text-slate-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
               value={metaText}
               onChange={(e) => setMetaText(e.target.value)}
             />
           </label>
           <label className="block">
-            <span className="block text-xs font-semibold text-slate-700 dark:text-slate-300">Secret (JSON)</span>
+            <span className="block text-caption font-semibold text-slate-700 dark:text-slate-300">Secret (JSON)</span>
             <textarea
-              className="mt-1.5 block h-24 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-xs text-slate-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
+              className="mt-1.5 block h-24 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 font-mono text-caption text-slate-900 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 dark:border-slate-800 dark:bg-slate-900 dark:text-white"
               value={secretText}
               onChange={(e) => setSecretText(e.target.value)}
             />
           </label>
         </div>
-        {error && <p className="text-xs text-rose-600 dark:text-rose-400">{error}</p>}
+        {error && <p className="text-caption text-rose-600 dark:text-rose-400">{error}</p>}
         <Button type="submit" size="sm" disabled={busy || !label.trim()}>Store credential</Button>
-        <p className="text-[11px] text-slate-400">Only admins can create credentials. Values are sealed with AES-256-GCM.</p>
+        <p className="text-tiny text-slate-400">Only admins can create credentials. Values are sealed with AES-256-GCM.</p>
       </form>
     </Card>
   );
@@ -688,7 +688,7 @@ export function HealPanel({
           <div className="grid gap-2 sm:grid-cols-5">
             {(["critical", "high", "medium", "low", "info"] as const).map((severity) => (
               <div key={severity} className="rounded-xl bg-slate-50 px-3 py-2 text-center dark:bg-slate-800/60">
-                <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">{severity}</p>
+                <p className="text-micro font-bold uppercase tracking-wider text-slate-400">{severity}</p>
                 <p className="font-display text-lg font-extrabold text-slate-800 dark:text-slate-100">{report.summary.bySeverity[severity]}</p>
               </div>
             ))}
@@ -697,7 +697,7 @@ export function HealPanel({
           {report.issues.length > 0 && (
             <ul className="mt-4 space-y-1.5">
               {report.issues.slice(0, 8).map((issue) => (
-                <li key={issue.issueId} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-xs dark:bg-slate-800/60">
+                <li key={issue.issueId} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-caption dark:bg-slate-800/60">
                   <span className="truncate text-slate-700 dark:text-slate-300">{issue.issueId}</span>
                   <span className="flex shrink-0 items-center gap-2">
                     <span className="text-slate-400">{issue.category}</span>
@@ -737,26 +737,26 @@ export function HealPanel({
           subtitle={`Run ${run.runId}`}
           actions={statusBadge(run.status)}
         >
-          <dl className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-4">
+          <dl className="grid grid-cols-2 gap-3 text-body sm:grid-cols-4">
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Patch</dt>
-              <dd className="mt-0.5 truncate font-mono text-xs text-slate-700 dark:text-slate-300">{run.patchId}</dd>
+              <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Patch</dt>
+              <dd className="mt-0.5 truncate font-mono text-caption text-slate-700 dark:text-slate-300">{run.patchId}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Applied</dt>
+              <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Applied</dt>
               <dd className="mt-0.5 text-slate-800 dark:text-slate-200">{run.deployment?.applied ?? 0}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Verified</dt>
+              <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Verified</dt>
               <dd className="mt-0.5">{run.verification ? <Badge variant={run.verification.domMatches ? "success" : "danger"} size="sm">{run.verification.domMatches ? "dom match" : "mismatch"}</Badge> : "—"}</dd>
             </div>
             <div>
-              <dt className="text-xs font-semibold uppercase tracking-wide text-slate-400">Snapshot</dt>
-              <dd className="mt-0.5 truncate font-mono text-xs text-slate-700 dark:text-slate-300">{run.snapshotId ?? "—"}</dd>
+              <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Snapshot</dt>
+              <dd className="mt-0.5 truncate font-mono text-caption text-slate-700 dark:text-slate-300">{run.snapshotId ?? "—"}</dd>
             </div>
           </dl>
           {run.deployment?.errors && run.deployment.errors.length > 0 && (
-            <ul className="mt-4 space-y-1 rounded-xl bg-rose-50 px-3 py-2 text-xs text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+            <ul className="mt-4 space-y-1 rounded-xl bg-rose-50 px-3 py-2 text-caption text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
               {run.deployment.errors.map((error, index) => (
                 <li key={index}>{error}</li>
               ))}

@@ -31,16 +31,16 @@ export function ClientDeliverablesModal({
       {/* Top Navigation Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="flex items-center gap-2">
-          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-light dark:bg-brand dark:text-slate-900">
+          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-micro font-bold uppercase tracking-wider text-brand-light dark:bg-brand dark:text-slate-900">
             Deliverables
           </span>
-          <span className="font-display text-sm font-bold text-slate-900 dark:text-white">
+          <span className="font-display text-body font-bold text-slate-900 dark:text-white">
             Client Presentation &amp; Report Studio
           </span>
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <div className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1 text-xs font-semibold dark:bg-slate-800">
+          <div className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1 text-caption font-semibold dark:bg-slate-800">
             <button
               type="button"
               onClick={() => setActiveTab("deck")}
@@ -109,7 +109,7 @@ export function ClientDeliverablesModal({
             </button>
           </div>
 
-          <Button variant="ghost" onClick={onClose} className="text-xs">
+          <Button variant="ghost" onClick={onClose} className="text-caption">
             Close
           </Button>
         </div>

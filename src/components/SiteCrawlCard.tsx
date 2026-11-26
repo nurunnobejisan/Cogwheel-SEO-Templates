@@ -102,7 +102,7 @@ export function SiteCrawlCard({
       className="animate-fade-in"
       title={
         <div className="flex items-center gap-2.5">
-          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-light">
+          <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-micro font-bold uppercase tracking-wider text-brand-light">
             Crawler
           </span>
           <span>Site Crawl (Shared Infrastructure)</span>
@@ -150,7 +150,7 @@ export function SiteCrawlCard({
           <Button variant="primary" disabled={running} onClick={startCrawl}>
             {running ? "Crawling Property..." : "Run Site Crawl"}
           </Button>
-          <div className="flex flex-wrap items-center gap-2 text-xs">
+          <div className="flex flex-wrap items-center gap-2 text-caption">
             <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-slate-300">
               <span className={`h-1.5 w-1.5 rounded-full ${url.trim() ? "bg-brand" : "bg-slate-500"}`} />
               robots.txt Respected
@@ -168,7 +168,7 @@ export function SiteCrawlCard({
         </div>
 
         {error && (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-xs text-rose-700">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-2.5 text-caption text-rose-700">
             {error}
           </div>
         )}

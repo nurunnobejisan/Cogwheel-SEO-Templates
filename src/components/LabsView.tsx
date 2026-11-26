@@ -390,19 +390,19 @@ export function LabsView({
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-white p-3.5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div>
           <div className="flex items-center gap-2">
-            <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-brand-light dark:bg-brand dark:text-slate-900">
+            <span className="rounded-lg bg-slate-900 px-2.5 py-1 text-micro font-bold uppercase tracking-wider text-brand-light dark:bg-brand dark:text-slate-900">
               Labs Studio
             </span>
-            <span className="font-display text-sm font-bold text-slate-900 dark:text-white">
+            <span className="font-display text-body font-bold text-slate-900 dark:text-white">
               SEO &amp; GEO Intelligence Suite
             </span>
           </div>
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
             Generative Engine Optimization (GEO), Local Comp-Set benchmarking, and interactive diagnostic utilities.
           </p>
         </div>
 
-        <div className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1 text-xs font-semibold dark:bg-slate-800">
+        <div className="inline-flex flex-wrap rounded-xl bg-slate-100 p-1 text-caption font-semibold dark:bg-slate-800">
           <button
             type="button"
             onClick={() => setTab("geo")}
@@ -525,10 +525,10 @@ export function LabsView({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Live SERP &amp; Rich Snippet Preview</span>
+                <span className="text-body font-bold text-slate-800 dark:text-slate-100">Live SERP &amp; Rich Snippet Preview</span>
               </div>
               <div className="flex items-center gap-2">
-                <label className="flex items-center gap-1.5 text-[11px] font-medium text-slate-600 dark:text-slate-300 cursor-pointer">
+                <label className="flex items-center gap-1.5 text-tiny font-medium text-slate-600 dark:text-slate-300 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={showRichSnippet}
@@ -541,14 +541,14 @@ export function LabsView({
                   <button
                     type="button"
                     onClick={() => setSerpDevice("desktop")}
-                    className={`px-2 py-1 text-[11px] font-semibold rounded-md transition ${serpDevice === "desktop" ? "bg-white shadow-xs text-slate-900 dark:bg-slate-900 dark:text-white" : "text-slate-500"}`}
+                    className={`px-2 py-1 text-tiny font-semibold rounded-md transition ${serpDevice === "desktop" ? "bg-white shadow-xs text-slate-900 dark:bg-slate-900 dark:text-white" : "text-slate-500"}`}
                   >
                     Desktop (580px)
                   </button>
                   <button
                     type="button"
                     onClick={() => setSerpDevice("mobile")}
-                    className={`px-2 py-1 text-[11px] font-semibold rounded-md transition ${serpDevice === "mobile" ? "bg-white shadow-xs text-slate-900 dark:bg-slate-900 dark:text-white" : "text-slate-500"}`}
+                    className={`px-2 py-1 text-tiny font-semibold rounded-md transition ${serpDevice === "mobile" ? "bg-white shadow-xs text-slate-900 dark:bg-slate-900 dark:text-white" : "text-slate-500"}`}
                   >
                     Mobile (920px)
                   </button>
@@ -556,29 +556,29 @@ export function LabsView({
               </div>
             </div>
 
-            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+            <label className="block text-tiny font-bold text-slate-600 dark:text-slate-400 mb-1">
               Page Title ({serpTitle.length} chars • {titlePx}px / {serpDevice === "desktop" ? "580px" : "920px"})
             </label>
             <input
               type="text"
               value={serpTitle}
               onChange={(e) => setSerpTitle(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 focus:border-sky-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 mb-3"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-caption text-slate-800 focus:border-sky-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100 mb-3"
             />
 
-            <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+            <label className="block text-tiny font-bold text-slate-600 dark:text-slate-400 mb-1">
               Meta Description ({serpDesc.length} chars • {descPx}px / 920px)
             </label>
             <textarea
               rows={2}
               value={serpDesc}
               onChange={(e) => setSerpDesc(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 focus:border-sky-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-caption text-slate-800 focus:border-sky-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             />
 
             {/* Google Result Preview Mockup */}
             <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40">
-              <div className="text-[11px] text-slate-500 flex items-center gap-1.5 mb-1 truncate">
+              <div className="text-tiny text-slate-500 flex items-center gap-1.5 mb-1 truncate">
                 <span className="font-semibold text-slate-700 dark:text-slate-300">razibmarketing.com</span>
                 <span>›</span>
                 <span>hotels</span>
@@ -593,22 +593,22 @@ export function LabsView({
 
               {/* Rich Snippet Elements: Stars, Price, Reviews (example placeholders) */}
               {showRichSnippet && (
-                <div className="flex items-center gap-2 mt-1 text-xs">
-                  <span className="rounded bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-400">Example</span>
-                  <span className="font-bold text-slate-700 dark:text-slate-200 text-[11px]">4.9</span>
-                  <span className="text-slate-400 text-[11px]">(reviews)</span>
+                <div className="flex items-center gap-2 mt-1 text-caption">
+                  <span className="rounded bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 text-micro font-bold text-amber-700 dark:text-amber-400">Example</span>
+                  <span className="font-bold text-slate-700 dark:text-slate-200 text-tiny">4.9</span>
+                  <span className="text-slate-400 text-tiny">(reviews)</span>
                   <span className="text-slate-300 dark:text-slate-600">•</span>
-                  <span className="font-semibold text-emerald-700 dark:text-emerald-400 text-[11px]">From $000/night</span>
-                  <span className="rounded bg-sky-100 dark:bg-sky-950 px-1.5 py-0.2 text-[10px] text-sky-700 dark:text-sky-300 font-semibold">Free WiFi</span>
+                  <span className="font-semibold text-emerald-700 dark:text-emerald-400 text-tiny">From $000/night</span>
+                  <span className="rounded bg-sky-100 dark:bg-sky-950 px-1.5 py-0.2 text-micro text-sky-700 dark:text-sky-300 font-semibold">Free WiFi</span>
                 </div>
               )}
 
-              <div className="text-xs text-slate-600 dark:text-slate-300 mt-1 line-clamp-2 leading-relaxed">
+              <div className="text-caption text-slate-600 dark:text-slate-300 mt-1 line-clamp-2 leading-relaxed">
                 {serpDesc}
               </div>
 
               {/* Status Indicator Pill */}
-              <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-[11px]">
+              <div className="mt-3 pt-2.5 border-t border-slate-200/60 dark:border-slate-700/60 flex items-center justify-between text-tiny">
                 <span className={isTitleDesktopOver && serpDevice === "desktop" ? "text-amber-600 font-bold" : "text-emerald-600 font-bold"}>
                   {isTitleDesktopOver && serpDevice === "desktop" ? "Title exceeds Desktop width" : "Title pixel width optimal"}
                 </span>
@@ -630,7 +630,7 @@ export function LabsView({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">JSON-LD @graph Schema Generator</span>
+                <span className="text-body font-bold text-slate-800 dark:text-slate-100">JSON-LD @graph Schema Generator</span>
               </div>
               <div className="flex gap-1">
                 {(["Hotel", "FAQ", "Breadcrumbs"] as const).map((type) => (
@@ -638,7 +638,7 @@ export function LabsView({
                     key={type}
                     type="button"
                     onClick={() => setSchemaType(type)}
-                    className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition ${schemaType === type ? "bg-emerald-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
+                    className={`px-2.5 py-1 text-tiny font-semibold rounded-lg transition ${schemaType === type ? "bg-emerald-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
                   >
                     {type}
                   </button>
@@ -646,22 +646,22 @@ export function LabsView({
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2.5">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-2.5">
               Live, composable Schema.org structured data preview ready for Google Rich Snippets:
             </p>
 
-            <pre className="h-48 overflow-auto rounded-xl border border-slate-200 bg-slate-900 p-3 font-mono text-[11px] text-emerald-400 dark:border-slate-800">
+            <pre className="h-48 overflow-auto rounded-xl border border-slate-200 bg-slate-900 p-3 font-mono text-tiny text-emerald-400 dark:border-slate-800">
               {generatedSchema}
             </pre>
           </div>
 
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2">
-            <span className="text-[11px] text-slate-500">Includes schema.org @context &amp; @graph structure</span>
+            <span className="text-tiny text-slate-500">Includes schema.org @context &amp; @graph structure</span>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={handleValidateWithGoogle}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-xs font-semibold text-sky-700 transition hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-sky-300 bg-sky-50 px-3 py-1.5 text-caption font-semibold text-sky-700 transition hover:bg-sky-100 dark:border-sky-800 dark:bg-sky-950/60 dark:text-sky-300"
                 title="Copies JSON-LD and opens Google's Rich Results Testing Tool"
               >
                 <svg className="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -672,7 +672,7 @@ export function LabsView({
               <button
                 type="button"
                 onClick={handleCopySchema}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-emerald-700"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-1.5 text-caption font-semibold text-white transition hover:bg-emerald-700"
               >
                 {copiedSchema ? "Copied!" : "Copy JSON-LD"}
               </button>
@@ -690,7 +690,7 @@ export function LabsView({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Multi-CMS Production Exporter</span>
+                <span className="text-body font-bold text-slate-800 dark:text-slate-100">Multi-CMS Production Exporter</span>
               </div>
               <div className="flex gap-1">
                 {(["HTML", "Shopify", "WordPress", "Webflow"] as const).map((cms) => (
@@ -698,7 +698,7 @@ export function LabsView({
                     key={cms}
                     type="button"
                     onClick={() => setExportCms(cms)}
-                    className={`px-2 py-1 text-[11px] font-semibold rounded-lg transition ${exportCms === cms ? "bg-indigo-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
+                    className={`px-2 py-1 text-tiny font-semibold rounded-lg transition ${exportCms === cms ? "bg-indigo-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
                   >
                     {cms}
                   </button>
@@ -706,31 +706,31 @@ export function LabsView({
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2.5">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-2.5">
               Instantly export W3C HTML5, Shopify Liquid objects, WordPress PHP partials, or Webflow CSV:
             </p>
 
-            <pre className="h-48 overflow-auto rounded-xl border border-slate-200 bg-slate-900 p-3 font-mono text-[11px] text-indigo-300 dark:border-slate-800">
+            <pre className="h-48 overflow-auto rounded-xl border border-slate-200 bg-slate-900 p-3 font-mono text-tiny text-indigo-300 dark:border-slate-800">
               {exportedCmsCode}
             </pre>
           </div>
 
           <div className="mt-3 flex items-center justify-between">
-            <span className="text-[11px] text-slate-500">
+            <span className="text-tiny text-slate-500">
               Format: {exportCms === "HTML" ? "HTML5 (.html)" : exportCms === "Shopify" ? "Liquid (.liquid)" : exportCms === "WordPress" ? "PHP (.php)" : "CSV (.csv)"}
             </span>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={handleCopyCms}
-                className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-xs font-semibold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-caption font-semibold text-indigo-700 transition hover:bg-indigo-100 dark:border-indigo-800 dark:bg-indigo-950/60 dark:text-indigo-300"
               >
                 {copiedCms ? "Copied!" : "Copy Code"}
               </button>
               <button
                 type="button"
                 onClick={handleDownloadCms}
-                className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-1.5 text-xs font-semibold text-white transition hover:bg-indigo-700"
+                className="inline-flex items-center gap-1.5 rounded-xl bg-indigo-600 px-3 py-1.5 text-caption font-semibold text-white transition hover:bg-indigo-700"
               >
                 Download File &darr;
               </button>
@@ -748,7 +748,7 @@ export function LabsView({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">GEO AI Search Simulator</span>
+                <span className="text-body font-bold text-slate-800 dark:text-slate-100">GEO AI Search Simulator</span>
               </div>
               <div className="flex gap-1">
                 {(["Gemini", "ChatGPT", "Perplexity"] as const).map((eng) => (
@@ -756,7 +756,7 @@ export function LabsView({
                     key={eng}
                     type="button"
                     onClick={() => setAiEngine(eng)}
-                    className={`px-2.5 py-1 text-[11px] font-semibold rounded-lg transition ${aiEngine === eng ? "bg-purple-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
+                    className={`px-2.5 py-1 text-tiny font-semibold rounded-lg transition ${aiEngine === eng ? "bg-purple-600 text-white" : "border border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
                   >
                     {eng}
                   </button>
@@ -764,28 +764,28 @@ export function LabsView({
               </div>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-2">
               Illustrative example of how a generative engine might summarise{" "}
               {property?.name || "your hotel"} from JSON-LD schemas. This is a static example, not a live AI output.
             </p>
 
             <div className="rounded-xl border border-purple-200/80 bg-purple-50/50 p-3.5 dark:border-purple-900/60 dark:bg-purple-950/30">
-              <div className="flex items-center gap-2 text-[11px] font-bold text-purple-800 dark:text-purple-300 mb-2">
-                <span className="rounded bg-purple-200/70 px-1.5 py-0.5 text-[9px] uppercase tracking-wider text-purple-900 dark:bg-purple-900/60 dark:text-purple-200">
+              <div className="flex items-center gap-2 text-tiny font-bold text-purple-800 dark:text-purple-300 mb-2">
+                <span className="rounded bg-purple-200/70 px-1.5 py-0.5 text-micro uppercase tracking-wider text-purple-900 dark:bg-purple-900/60 dark:text-purple-200">
                   Example
                 </span>
                 <span>{aiEngine} summary shape:</span>
               </div>
-              <p className="text-xs text-slate-700 dark:text-slate-200 leading-relaxed">
+              <p className="text-caption text-slate-700 dark:text-slate-200 leading-relaxed">
                 &ldquo;{property?.name || "The Curtis Denver"} is a boutique hotel in downtown {property?.city || "Denver"}.
                 Key amenities include high-speed Wi-Fi, pet-friendly accommodations, valet parking, and on-site dining.&rdquo;
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-2 pt-2 border-t border-purple-200/60 dark:border-purple-900/40">
-                <span className="text-[10px] font-semibold text-slate-500">Sources an engine would cite:</span>
-                <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700 shadow-xs dark:bg-slate-800 dark:text-slate-200">
+                <span className="text-micro font-semibold text-slate-500">Sources an engine would cite:</span>
+                <span className="rounded-md bg-white px-2 py-0.5 text-micro font-medium text-slate-700 shadow-xs dark:bg-slate-800 dark:text-slate-200">
                   {property?.name || "The Curtis"} Official Site
                 </span>
-                <span className="rounded-md bg-white px-2 py-0.5 text-[10px] font-medium text-slate-700 shadow-xs dark:bg-slate-800 dark:text-slate-200">
+                <span className="rounded-md bg-white px-2 py-0.5 text-micro font-medium text-slate-700 shadow-xs dark:bg-slate-800 dark:text-slate-200">
                   Schema.org Hotel Graph
                 </span>
               </div>
@@ -793,10 +793,10 @@ export function LabsView({
           </div>
 
           <div className="mt-3 flex items-center justify-between">
-            <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+            <span className="text-tiny font-semibold text-emerald-600 dark:text-emerald-400">
               {geoReadiness.pct}% Schema readiness ({geoReadiness.passed}/{geoReadiness.total} checks)
             </span>
-            <span className="text-[10px] text-slate-400">Derived from the JSON-LD above — not an AI-citation score</span>
+            <span className="text-micro text-slate-400">Derived from the JSON-LD above — not an AI-citation score</span>
           </div>
         </div>
 
@@ -809,26 +809,26 @@ export function LabsView({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                 </svg>
               </span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Keyword Cluster Analyzer</span>
+              <span className="text-body font-bold text-slate-800 dark:text-slate-100">Keyword Cluster Analyzer</span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-2">
               Group raw target keywords into semantic topical clusters for site architecture:
             </p>
             <textarea
               rows={4}
               value={kwInput}
               onChange={(e) => setKwInput(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 font-mono text-xs text-slate-800 focus:border-violet-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 font-mono text-caption text-slate-800 focus:border-violet-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             />
 
             {clusters && (
-              <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+              <div className="mt-3 grid grid-cols-2 gap-2 text-caption">
                 {Object.entries(clusters).map(([cat, kws]) => (
                   <div key={cat} className="rounded-xl border border-violet-200/70 bg-violet-50/50 p-2.5 dark:border-violet-900/60 dark:bg-violet-950/30">
-                    <div className="font-bold text-violet-800 dark:text-violet-300 text-[11px] mb-1">
+                    <div className="font-bold text-violet-800 dark:text-violet-300 text-tiny mb-1">
                       {cat} ({kws.length})
                     </div>
-                    <ul className="space-y-0.5 text-[10px] text-slate-600 dark:text-slate-300">
+                    <ul className="space-y-0.5 text-micro text-slate-600 dark:text-slate-300">
                       {kws.slice(0, 3).map((kw, i) => (
                         <li key={i} className="truncate">• {kw}</li>
                       ))}
@@ -842,7 +842,7 @@ export function LabsView({
           <button
             type="button"
             onClick={handleClusterKeywords}
-            className="mt-4 w-full rounded-xl bg-violet-600 py-2 text-xs font-semibold text-white transition hover:bg-violet-700"
+            className="mt-4 w-full rounded-xl bg-violet-600 py-2 text-caption font-semibold text-white transition hover:bg-violet-700"
           >
             Cluster Keywords &rarr;
           </button>
@@ -857,9 +857,9 @@ export function LabsView({
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
               </span>
-              <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Robots.txt &amp; AI Crawler Simulator</span>
+              <span className="text-body font-bold text-slate-800 dark:text-slate-100">Robots.txt &amp; AI Crawler Simulator</span>
             </div>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-2">
               Test whether specific URL paths are allowed or blocked for traditional searchbots and AI models:
             </p>
             <div className="space-y-2">
@@ -867,7 +867,7 @@ export function LabsView({
                 type="url"
                 value={testUrl}
                 onChange={(e) => setTestUrl(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 focus:border-orange-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-caption text-slate-800 focus:border-orange-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
               />
               <div className="flex gap-2">
                 {(["Googlebot", "GPTBot", "ClaudeBot"] as const).map((bot) => (
@@ -875,7 +875,7 @@ export function LabsView({
                     key={bot}
                     type="button"
                     onClick={() => setSelectedBot(bot)}
-                    className={`flex-1 py-1.5 text-xs font-semibold rounded-xl border transition ${selectedBot === bot ? "border-orange-500 bg-orange-50 text-orange-800 dark:bg-orange-950/40 dark:text-orange-300" : "border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
+                    className={`flex-1 py-1.5 text-caption font-semibold rounded-xl border transition ${selectedBot === bot ? "border-orange-500 bg-orange-50 text-orange-800 dark:bg-orange-950/40 dark:text-orange-300" : "border-slate-200 bg-slate-50 text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"}`}
                   >
                     {bot}
                   </button>
@@ -884,9 +884,9 @@ export function LabsView({
             </div>
 
             {robotsResult && (
-              <div className={`mt-3 rounded-xl border p-3 text-xs ${robotsResult.allowed ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300" : "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"}`}>
+              <div className={`mt-3 rounded-xl border p-3 text-caption ${robotsResult.allowed ? "border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-300" : "border-rose-200 bg-rose-50 text-rose-800 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-300"}`}>
                 <div className="font-bold">{robotsResult.allowed ? "ALLOWED" : "BLOCKED"}</div>
-                <div className="text-[11px] mt-0.5 font-mono">{robotsResult.rule}</div>
+                <div className="text-tiny mt-0.5 font-mono">{robotsResult.rule}</div>
               </div>
             )}
           </div>
@@ -894,7 +894,7 @@ export function LabsView({
           <button
             type="button"
             onClick={handleTestRobots}
-            className="mt-4 w-full rounded-xl bg-orange-500 py-2 text-xs font-semibold text-white transition hover:bg-orange-600"
+            className="mt-4 w-full rounded-xl bg-orange-500 py-2 text-caption font-semibold text-white transition hover:bg-orange-600"
           >
             Simulate Crawler Access &rarr;
           </button>
@@ -910,7 +910,7 @@ export function LabsView({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Duplicate &amp; Thin-Content Scanner</span>
+                <span className="text-body font-bold text-slate-800 dark:text-slate-100">Duplicate &amp; Thin-Content Scanner</span>
               </div>
               <button
                 type="button"
@@ -918,23 +918,23 @@ export function LabsView({
                   setDocA("The Curtis Denver - a DoubleTree by Hilton Hotel offers boutique downtown accommodations with themed floor decor, high-speed Wi-Fi, and convenient access to the Denver Performing Arts Complex. Enjoy on-site bistro dining, complimentary fitness center access, and flexible meeting spaces.");
                   setDocB("Stay at The Curtis Denver - a DoubleTree by Hilton Hotel. Features downtown boutique accommodations, themed floor decor, high-speed Wi-Fi, and proximity to the Denver Performing Arts Complex. Amenities include on-site bistro dining, complimentary fitness center, and event space.");
                 }}
-                className="text-[11px] font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:underline"
+                className="text-tiny font-semibold text-rose-600 hover:text-rose-700 dark:text-rose-400 hover:underline"
               >
                 Load Sample
               </button>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-3">
               Compare website copy against OTA (Expedia, Booking.com) to prevent Google duplicate content penalties (&lt;70% similarity ceiling):
             </p>
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                  <label className="text-tiny font-bold text-slate-600 dark:text-slate-400">
                     Document A (Website Copy)
                   </label>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-micro font-mono text-slate-400">
                     {duplicateAnalysis.wordsA} words
                   </span>
                 </div>
@@ -943,16 +943,16 @@ export function LabsView({
                   value={docA}
                   onChange={(e) => setDocA(e.target.value)}
                   placeholder="Paste website room copy or article text..."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-800 focus:border-rose-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-caption text-slate-800 focus:border-rose-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400">
+                  <label className="text-tiny font-bold text-slate-600 dark:text-slate-400">
                     Document B (OTA / Syndicated Copy)
                   </label>
-                  <span className="text-[10px] font-mono text-slate-400">
+                  <span className="text-micro font-mono text-slate-400">
                     {duplicateAnalysis.wordsB} words
                   </span>
                 </div>
@@ -961,13 +961,13 @@ export function LabsView({
                   value={docB}
                   onChange={(e) => setDocB(e.target.value)}
                   placeholder="Paste OTA listing copy or comparison text..."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs text-slate-800 focus:border-rose-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-caption text-slate-800 focus:border-rose-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
                 />
               </div>
             </div>
 
             {/* Live Similarity Score & Validation Result */}
-            <div className={`mt-3 rounded-xl border p-3 text-xs transition ${
+            <div className={`mt-3 rounded-xl border p-3 text-caption transition ${
               duplicateAnalysis.isDuplicate
                 ? "border-rose-200 bg-rose-50/70 text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200"
                 : "border-emerald-200 bg-emerald-50/70 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200"
@@ -977,28 +977,28 @@ export function LabsView({
                   <span className={`h-2 w-2 rounded-full ${duplicateAnalysis.isDuplicate ? "bg-rose-600" : "bg-emerald-500"}`} />
                   {duplicateAnalysis.isDuplicate ? "DUPLICATE CONTENT DETECTED" : "SAFE & UNIQUE CONTENT"}
                 </span>
-                <span className="font-mono text-sm font-extrabold">
+                <span className="font-mono text-body font-extrabold">
                   {duplicateAnalysis.simPercent}% Similarity
                 </span>
               </div>
-              <p className="mt-1 text-[11px] leading-relaxed opacity-90">
+              <p className="mt-1 text-tiny leading-relaxed opacity-90">
                 {duplicateAnalysis.isDuplicate
                   ? "Exceeds 70% Jaccard tri-gram threshold. Search engines may filter or de-index one of the pages. Rewrite key phrases to differentiate."
                   : "Within safe uniqueness thresholds (< 70%). Independent topical signals established for organic search ranking."}
               </p>
 
               {duplicateAnalysis.isThin && (
-                <div className="mt-2 text-[10px] font-semibold text-amber-700 dark:text-amber-400">
+                <div className="mt-2 text-micro font-semibold text-amber-700 dark:text-amber-400">
                   Note: One or both documents contain under 50 words (thin content risk).
                 </div>
               )}
 
               {duplicateAnalysis.overlapping.length > 0 && (
                 <div className="mt-2.5 pt-2 border-t border-slate-200/50 dark:border-slate-800/60">
-                  <span className="text-[10px] font-semibold text-slate-500 block mb-1">Overlapping 3-Gram Phrases:</span>
+                  <span className="text-micro font-semibold text-slate-500 block mb-1">Overlapping 3-Gram Phrases:</span>
                   <div className="flex flex-wrap gap-1">
                     {duplicateAnalysis.overlapping.map((phrase, i) => (
-                      <span key={i} className="rounded-md bg-white/80 dark:bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                      <span key={i} className="rounded-md bg-white/80 dark:bg-slate-800 px-1.5 py-0.5 text-micro font-mono text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                         &ldquo;{phrase}&rdquo;
                       </span>
                     ))}
@@ -1008,7 +1008,7 @@ export function LabsView({
             </div>
           </div>
 
-          <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="mt-3 flex items-center justify-between text-tiny text-slate-400">
             <span>Client-side Jaccard Tri-gram Algorithm</span>
             <span className="font-medium text-slate-500 dark:text-slate-400">Zero Server Latency</span>
           </div>
@@ -1024,20 +1024,20 @@ export function LabsView({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Dirty URL &amp; Canonical Normalizer</span>
+                <span className="text-body font-bold text-slate-800 dark:text-slate-100">Dirty URL &amp; Canonical Normalizer</span>
               </div>
               <button
                 type="button"
                 onClick={() => {
                   setRawUrlInput("http://HOTEL-DENVER.COM//hotels///downtown-suites/?utm_source=google_ads&utm_medium=cpc&utm_campaign=winter_promo&gclid=789xyz&fbclid=abc123#rates");
                 }}
-                className="text-[11px] font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 hover:underline"
+                className="text-tiny font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400 hover:underline"
               >
                 Load Messy Ad URL
               </button>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-2">
               Normalize campaign URLs, strip tracking tags (`utm_*`, `gclid`, `fbclid`), deduplicate slashes, and generate canonical meta tags:
             </p>
 
@@ -1046,11 +1046,11 @@ export function LabsView({
               value={rawUrlInput}
               onChange={(e) => setRawUrlInput(e.target.value)}
               placeholder="Paste raw URL (e.g. http://hotel.com//rooms/?utm_source=fb)..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-mono text-slate-800 focus:border-teal-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-caption font-mono text-slate-800 focus:border-teal-400 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-100"
             />
 
             {/* Options Checkboxes */}
-            <div className="mt-2.5 flex flex-wrap items-center gap-3 text-[11px] font-medium text-slate-600 dark:text-slate-300">
+            <div className="mt-2.5 flex flex-wrap items-center gap-3 text-tiny font-medium text-slate-600 dark:text-slate-300">
               <label className="flex items-center gap-1.5 cursor-pointer">
                 <input
                   type="checkbox"
@@ -1092,41 +1092,41 @@ export function LabsView({
             {/* Normalized Result Box */}
             <div className="mt-3 rounded-xl border border-teal-200/80 bg-teal-50/50 p-3.5 dark:border-teal-900/60 dark:bg-teal-950/30">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-[10px] font-extrabold tracking-wider text-teal-800 uppercase dark:text-teal-300">
+                <span className="text-micro font-extrabold tracking-wider text-teal-800 uppercase dark:text-teal-300">
                   Clean Canonical URL
                 </span>
                 <button
                   type="button"
                   onClick={handleCopyCanonical}
-                  className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-300"
+                  className="text-tiny font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-300"
                 >
                   {copiedCanonical ? "Copied URL!" : "Copy URL"}
                 </button>
               </div>
-              <div className="font-mono text-xs font-bold text-slate-800 dark:text-slate-100 break-all">
+              <div className="font-mono text-caption font-bold text-slate-800 dark:text-slate-100 break-all">
                 {normalizedResult.url || "Invalid URL"}
               </div>
 
               {normalizedResult.tag && (
                 <div className="mt-2.5 pt-2 border-t border-teal-200/60 dark:border-teal-900/40">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[10px] font-semibold text-slate-500">HTML Canonical Tag:</span>
+                    <span className="text-micro font-semibold text-slate-500">HTML Canonical Tag:</span>
                     <button
                       type="button"
                       onClick={handleCopyTag}
-                      className="text-[11px] font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-300"
+                      className="text-tiny font-semibold text-teal-700 hover:text-teal-900 dark:text-teal-300"
                     >
                       {copiedTag ? "Copied Tag!" : "Copy <link> Tag"}
                     </button>
                   </div>
-                  <pre className="rounded-lg bg-white/80 p-2 font-mono text-[11px] text-slate-800 dark:bg-slate-900 dark:text-slate-200 overflow-x-auto border border-teal-100 dark:border-teal-950">
+                  <pre className="rounded-lg bg-white/80 p-2 font-mono text-tiny text-slate-800 dark:bg-slate-900 dark:text-slate-200 overflow-x-auto border border-teal-100 dark:border-teal-950">
                     {normalizedResult.tag}
                   </pre>
                 </div>
               )}
 
               {normalizedResult.removedParams.length > 0 && (
-                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[10px]">
+                <div className="mt-2 flex flex-wrap items-center gap-1.5 text-micro">
                   <span className="font-semibold text-teal-800 dark:text-teal-300">Stripped:</span>
                   {normalizedResult.removedParams.map((param, i) => (
                     <span key={i} className="rounded bg-teal-200/60 dark:bg-teal-900/60 px-1.5 py-0.5 font-mono text-teal-900 dark:text-teal-200">
@@ -1138,7 +1138,7 @@ export function LabsView({
             </div>
           </div>
 
-          <div className="mt-3 flex items-center justify-between text-[11px] text-slate-400">
+          <div className="mt-3 flex items-center justify-between text-tiny text-slate-400">
             <span>RFC 3986 &amp; Google Canonical Guidelines</span>
             <span className="font-semibold text-teal-600 dark:text-teal-400">100% Free &amp; Offline</span>
           </div>
@@ -1154,23 +1154,23 @@ export function LabsView({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Image Optimization Audit Tool</span>
+                <span className="text-body font-bold text-slate-800 dark:text-slate-100">Image Optimization Audit Tool</span>
               </div>
-              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
+              <span className="rounded-full bg-amber-100 px-2 py-0.5 text-micro font-bold text-amber-800 dark:bg-amber-900/60 dark:text-amber-300">
                 Multi-Tab XLSX
               </span>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-3">
               Crawl public pages to inspect &lt;img&gt;, &lt;picture&gt;, and CSS background assets. Generates a 5-tab workbook with <code>=IMAGE()</code> &amp; <code>=LEN()</code> formulas, Core Web Vitals checks, and Google Sheets export.
             </p>
 
-            <div className="rounded-xl border border-amber-200/60 bg-amber-50/40 p-3 text-xs text-slate-700 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-slate-300 space-y-1.5">
-              <div className="flex items-center justify-between text-[11px]">
+            <div className="rounded-xl border border-amber-200/60 bg-amber-50/40 p-3 text-caption text-slate-700 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-slate-300 space-y-1.5">
+              <div className="flex items-center justify-between text-tiny">
                 <span className="font-semibold text-amber-900 dark:text-amber-300">Audited Target:</span>
                 <span className="font-mono text-slate-600 dark:text-slate-400">{property?.url || "Custom Domain"}</span>
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+              <div className="text-tiny text-slate-500 dark:text-slate-400">
                 • Matches reference Google Sheet layout<br/>
                 • Detects missing alt, oversized files &gt;100KB, WebP/AVIF candidates, CLS shifts
               </div>
@@ -1180,7 +1180,7 @@ export function LabsView({
           <button
             type="button"
             onClick={onOpenImageAudit}
-            className="mt-4 w-full rounded-xl bg-amber-600 py-2 text-xs font-semibold text-white transition hover:bg-amber-700 shadow-sm"
+            className="mt-4 w-full rounded-xl bg-amber-600 py-2 text-caption font-semibold text-white transition hover:bg-amber-700 shadow-sm"
           >
             Launch Website Image Auditor &rarr;
           </button>
@@ -1196,23 +1196,23 @@ export function LabsView({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h8m-8 6h16" />
                   </svg>
                 </span>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-100">Heading Structure Optimization</span>
+                <span className="text-body font-bold text-slate-800 dark:text-slate-100">Heading Structure Optimization</span>
               </div>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                 The Nines Format
               </span>
             </div>
 
-            <p className="text-xs text-slate-500 dark:text-slate-400 mb-3">
+            <p className="text-caption text-slate-500 dark:text-slate-400 mb-3">
               Crawl public pages and sitemaps to inspect rendered H1–H6 tags. Detects missing H1, multiple H1s, skipped levels, and unrendered JS templates with 6-column optimized spreadsheet export.
             </p>
 
-            <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3 text-xs text-slate-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-slate-300 space-y-1.5">
-              <div className="flex items-center justify-between text-[11px]">
+            <div className="rounded-xl border border-emerald-200/60 bg-emerald-50/40 p-3 text-caption text-slate-700 dark:border-emerald-900/40 dark:bg-emerald-950/20 dark:text-slate-300 space-y-1.5">
+              <div className="flex items-center justify-between text-tiny">
                 <span className="font-semibold text-emerald-900 dark:text-emerald-300">Audited Target:</span>
                 <span className="font-mono text-slate-600 dark:text-slate-400">{property?.url || "No property URL set"}</span>
               </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400">
+              <div className="text-tiny text-slate-500 dark:text-slate-400">
                 • Matches &ldquo;Heading Structure Optimization- thenines&rdquo; template<br/>
                 • Category banners, yellow table headers, green recommendations
               </div>
@@ -1222,7 +1222,7 @@ export function LabsView({
           <button
             type="button"
             onClick={onOpenHeadingAudit}
-            className="mt-4 w-full rounded-xl bg-emerald-600 py-2 text-xs font-semibold text-white transition hover:bg-emerald-700 shadow-sm"
+            className="mt-4 w-full rounded-xl bg-emerald-600 py-2 text-caption font-semibold text-white transition hover:bg-emerald-700 shadow-sm"
           >
             Launch Heading Structure Auditor &rarr;
           </button>
@@ -1232,10 +1232,10 @@ export function LabsView({
 
       {/* Roadmap Banner */}
       <div className="rounded-2xl border border-dashed border-violet-300 bg-violet-50/50 p-4 text-center dark:border-violet-800/60 dark:bg-violet-950/20">
-        <p className="text-xs font-semibold text-violet-800 dark:text-violet-300">
+        <p className="text-caption font-semibold text-violet-800 dark:text-violet-300">
           Enterprise SEO Labs Suite — Powered by Razib Marketing
         </p>
-        <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
+        <p className="text-tiny text-slate-500 dark:text-slate-400 mt-0.5">
           Integrated with 10-Gate SEO Quality Engine • Multi-CMS Export Support (HTML5, Shopify Liquid, WordPress PHP, Webflow CSV)
         </p>
       </div>

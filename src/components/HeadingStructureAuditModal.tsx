@@ -145,11 +145,11 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               Heading Structure Optimization Studio
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-semibold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                 The Nines Reference Parity
               </span>
             </h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
+            <p className="text-caption text-slate-500 dark:text-slate-400">
               Audit rendered heading hierarchies (H1–H6), detect missing or unrendered placeholders, and export 6-column optimized spreadsheets.
             </p>
           </div>
@@ -171,7 +171,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
         <div className="rounded-2xl border border-slate-200 bg-slate-50/50 p-5 dark:border-slate-800 dark:bg-slate-800/30">
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              <label className="block text-caption font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Target Website URL
               </label>
               <div className="flex gap-2">
@@ -181,7 +181,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                   onChange={(e) => setUrlInput(e.target.value)}
                   placeholder="https://your-property.com/"
                   disabled={loading}
-                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm text-slate-900 placeholder-slate-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
+                  className="flex-1 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-body text-slate-900 placeholder-slate-400 focus:border-amber-500 focus:outline-none focus:ring-1 focus:ring-amber-500 dark:border-slate-700 dark:bg-slate-900 dark:text-white"
                 />
                 <Button
                   onClick={handleRunAudit}
@@ -204,7 +204,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
             </div>
 
             {/* Advanced Discovery Controls */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-caption">
               <div>
                 <label className="block font-medium text-slate-600 dark:text-slate-400 mb-1">
                   Max Crawl Depth
@@ -213,7 +213,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                   value={maxPages}
                   onChange={(e) => setMaxPages(Number(e.target.value))}
                   disabled={loading}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-caption text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 >
                   <option value={10}>10 pages (Fast)</option>
                   <option value={25}>25 pages (Standard)</option>
@@ -231,7 +231,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                   value={delayMs}
                   onChange={(e) => setDelayMs(Number(e.target.value))}
                   disabled={loading}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                  className="w-full rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-caption text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
                 >
                   <option value={0}>0ms (Fastest)</option>
                   <option value={50}>50ms (Balanced)</option>
@@ -287,11 +287,11 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
               </svg>
-              <span className="text-sm font-semibold text-amber-900 dark:text-amber-200">
+              <span className="text-body font-semibold text-amber-900 dark:text-amber-200">
                 {progressMsg}
               </span>
             </div>
-            <p className="mt-1 text-xs text-amber-700 dark:text-amber-400">
+            <p className="mt-1 text-caption text-amber-700 dark:text-amber-400">
               Traversing sitemaps, extracting rendered headings, validating single H1, and generating hierarchy optimization recommendations.
             </p>
           </div>
@@ -299,7 +299,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
 
         {/* Error notification */}
         {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-xs text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-caption text-red-700 dark:border-red-900 dark:bg-red-950/40 dark:text-red-300">
             <div className="font-semibold mb-0.5">Audit Failed</div>
             {error}
           </div>
@@ -311,43 +311,43 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
             {/* KPI Metric Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center dark:border-slate-800 dark:bg-slate-800/40">
-                <div className="text-[11px] font-medium text-slate-500">Pages Audited</div>
+                <div className="text-tiny font-medium text-slate-500">Pages Audited</div>
                 <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">
                   {result.summary.pagesScanned}
-                  <span className="text-xs font-normal text-slate-400"> / {result.summary.pagesDiscovered}</span>
+                  <span className="text-caption font-normal text-slate-400"> / {result.summary.pagesDiscovered}</span>
                 </div>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center dark:border-slate-800 dark:bg-slate-800/40">
-                <div className="text-[11px] font-medium text-slate-500">Total Headings</div>
+                <div className="text-tiny font-medium text-slate-500">Total Headings</div>
                 <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">
                   {result.summary.totalHeadingsAudited}
                 </div>
               </div>
 
               <div className="rounded-xl border border-red-200 bg-red-50/50 p-3 text-center dark:border-red-900/40 dark:bg-red-950/20">
-                <div className="text-[11px] font-medium text-red-600 dark:text-red-400">Missing H1</div>
+                <div className="text-tiny font-medium text-red-600 dark:text-red-400">Missing H1</div>
                 <div className="mt-1 text-xl font-extrabold text-red-700 dark:text-red-400">
                   {result.summary.pagesMissingH1Count}
                 </div>
               </div>
 
               <div className="rounded-xl border border-amber-200 bg-amber-50/50 p-3 text-center dark:border-amber-900/40 dark:bg-amber-950/20">
-                <div className="text-[11px] font-medium text-amber-700 dark:text-amber-400">Multiple H1s</div>
+                <div className="text-tiny font-medium text-amber-700 dark:text-amber-400">Multiple H1s</div>
                 <div className="mt-1 text-xl font-extrabold text-amber-700 dark:text-amber-400">
                   {result.summary.pagesMultipleH1Count}
                 </div>
               </div>
 
               <div className="rounded-xl border border-purple-200 bg-purple-50/50 p-3 text-center dark:border-purple-900/40 dark:bg-purple-950/20">
-                <div className="text-[11px] font-medium text-purple-700 dark:text-purple-400">Skipped Levels</div>
+                <div className="text-tiny font-medium text-purple-700 dark:text-purple-400">Skipped Levels</div>
                 <div className="mt-1 text-xl font-extrabold text-purple-700 dark:text-purple-400">
                   {result.summary.pagesWithSkippedLevelsCount}
                 </div>
               </div>
 
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center dark:border-slate-800 dark:bg-slate-800/40">
-                <div className="text-[11px] font-medium text-slate-500">Empty Headings</div>
+                <div className="text-tiny font-medium text-slate-500">Empty Headings</div>
                 <div className="mt-1 text-xl font-extrabold text-slate-900 dark:text-white">
                   {result.summary.emptyHeadingsCount}
                 </div>
@@ -359,7 +359,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
               <div className="flex items-center gap-2">
                 <Button
                   onClick={handleDownloadXlsx}
-                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs px-4 py-2 flex items-center gap-2 shadow-sm"
+                  className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-caption px-4 py-2 flex items-center gap-2 shadow-sm"
                 >
                   <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -372,7 +372,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                     href={result.googleSheetUrl}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-xs font-bold text-white shadow-md hover:bg-blue-700 transition"
+                    className="inline-flex items-center gap-2 rounded-xl bg-blue-600 px-4 py-2 text-caption font-bold text-white shadow-md hover:bg-blue-700 transition"
                   >
                     <svg className="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
                       <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z" />
@@ -380,29 +380,29 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                     Open Google Sheet ↗
                   </a>
                 ) : result.googleSheetError ? (
-                  <span className="text-[11px] text-amber-700 dark:text-amber-400" title={result.googleSheetError}>
+                  <span className="text-tiny text-amber-700 dark:text-amber-400" title={result.googleSheetError}>
                     Google Sheet credentials required (XLSX downloaded above)
                   </span>
                 ) : null}
               </div>
 
-              <div className="text-xs text-slate-500 dark:text-slate-400">
+              <div className="text-caption text-slate-500 dark:text-slate-400">
                 Duration: <span className="font-semibold text-slate-700 dark:text-slate-300">{(result.summary.durationMs / 1000).toFixed(1)}s</span> | Status: <span className="font-semibold text-slate-700 dark:text-slate-300">{result.summary.crawlCompleted ? "Full Crawl Completed" : "Partial (Limit Reached)"}</span>
               </div>
             </div>
 
             {/* Coverage Boundary Statement */}
-            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400">
+            <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-caption text-slate-600 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400">
               <span className="font-semibold text-slate-800 dark:text-slate-200">Coverage Statement:</span> {result.summary.coverageStatement}
             </div>
 
             {/* Top Strategic Findings */}
             {result.summary.topFindings && result.summary.topFindings.length > 0 && (
               <div className="rounded-xl border border-amber-200/80 bg-amber-50/50 p-4 dark:border-amber-900/50 dark:bg-amber-950/20">
-                <div className="text-xs font-bold text-amber-900 dark:text-amber-300 mb-2">
+                <div className="text-caption font-bold text-amber-900 dark:text-amber-300 mb-2">
                   Key Strategic Observations & Optimization Guidance
                 </div>
-                <ul className="space-y-1.5 text-xs text-slate-700 dark:text-slate-300">
+                <ul className="space-y-1.5 text-caption text-slate-700 dark:text-slate-300">
                   {result.summary.topFindings.map((finding, idx) => (
                     <li key={idx} className="flex items-start gap-2">
                       <span className="mt-0.5 text-amber-600 font-bold">•</span>
@@ -419,7 +419,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                 <button
                   type="button"
                   onClick={() => setFilterType("all")}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                  className={`rounded-lg px-2.5 py-1 text-caption font-medium transition ${
                     filterType === "all"
                       ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -430,7 +430,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                 <button
                   type="button"
                   onClick={() => setFilterType("issues")}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                  className={`rounded-lg px-2.5 py-1 text-caption font-medium transition ${
                     filterType === "issues"
                       ? "bg-amber-600 text-white"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -441,7 +441,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                 <button
                   type="button"
                   onClick={() => setFilterType("missing-h1")}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                  className={`rounded-lg px-2.5 py-1 text-caption font-medium transition ${
                     filterType === "missing-h1"
                       ? "bg-red-600 text-white"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -452,7 +452,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                 <button
                   type="button"
                   onClick={() => setFilterType("multi-h1")}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                  className={`rounded-lg px-2.5 py-1 text-caption font-medium transition ${
                     filterType === "multi-h1"
                       ? "bg-purple-600 text-white"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -463,7 +463,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                 <button
                   type="button"
                   onClick={() => setFilterType("skipped")}
-                  className={`rounded-lg px-2.5 py-1 text-xs font-medium transition ${
+                  className={`rounded-lg px-2.5 py-1 text-caption font-medium transition ${
                     filterType === "skipped"
                       ? "bg-blue-600 text-white"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300"
@@ -478,19 +478,19 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                 placeholder="Search page URL, keyword, headline..."
                 value={searchFilter}
                 onChange={(e) => setSearchFilter(e.target.value)}
-                className="w-full sm:w-64 rounded-lg border border-slate-200 bg-white px-3 py-1 text-xs text-slate-800 focus:border-amber-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                className="w-full sm:w-64 rounded-lg border border-slate-200 bg-white px-3 py-1 text-caption text-slate-800 focus:border-amber-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
               />
             </div>
 
             {/* 6-Column The Nines Sheet Preview */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between text-xs text-slate-500">
+              <div className="flex items-center justify-between text-caption text-slate-500">
                 <span>Displaying 6-column hierarchy structure matching The Nines reference template</span>
                 <span>{filteredPages.length} pages listed</span>
               </div>
 
               <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
-                <table className="w-full border-collapse text-left text-xs">
+                <table className="w-full border-collapse text-left text-caption">
                   <thead>
                     {/* Yellow Table Header Row (#FFE599) */}
                     <tr className="bg-[#FFE599] text-slate-900 font-bold border-b border-amber-300 text-center">
@@ -509,15 +509,15 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                         <tr key={pIdx} className="border-b border-slate-100 dark:border-slate-800">
                           <td colSpan={6} className="p-0">
                             {/* Category Banner (Blue #4A86E8) */}
-                            <div className="bg-[#4A86E8] text-white px-4 py-2 font-bold text-sm tracking-wide">
+                            <div className="bg-[#4A86E8] text-white px-4 py-2 font-bold text-body tracking-wide">
                               {pIdx + 1}. {page.subCategory.toUpperCase()} - {page.category}
                             </div>
 
                             {/* Page URL & Headings Table */}
                             <div className="divide-y divide-slate-100 dark:divide-slate-800">
                               {page.headings.length === 0 ? (
-                                <div className="grid grid-cols-6 p-2.5 bg-red-50/30 text-xs">
-                                  <div className="truncate font-mono text-[11px] text-blue-600 px-2" title={page.pageUrl}>
+                                <div className="grid grid-cols-6 p-2.5 bg-red-50/30 text-caption">
+                                  <div className="truncate font-mono text-tiny text-blue-600 px-2" title={page.pageUrl}>
                                     <a href={page.pageUrl} target="_blank" rel="noreferrer" className="hover:underline">
                                       {page.pageUrl}
                                     </a>
@@ -538,7 +538,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                                   return (
                                     <div
                                       key={hIdx}
-                                      className={`grid grid-cols-6 items-center p-2 text-xs transition ${
+                                      className={`grid grid-cols-6 items-center p-2 text-caption transition ${
                                         hasIssues
                                           ? "bg-amber-50/20 dark:bg-amber-950/10"
                                           : hIdx % 2 === 0
@@ -547,7 +547,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                                       }`}
                                     >
                                       {/* Col A: Page URL (First row only) */}
-                                      <div className="truncate font-mono text-[11px] text-blue-600 dark:text-blue-400 px-2" title={page.pageUrl}>
+                                      <div className="truncate font-mono text-tiny text-blue-600 dark:text-blue-400 px-2" title={page.pageUrl}>
                                         {hIdx === 0 ? (
                                           <a href={page.pageUrl} target="_blank" rel="noreferrer" className="hover:underline font-semibold">
                                             {page.pageUrl}
@@ -572,7 +572,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                                             {h.issues.map((iss, iIdx) => (
                                               <span
                                                 key={iIdx}
-                                                className={`text-[9px] font-bold px-1.5 py-0.2 rounded ${
+                                                className={`text-micro font-bold px-1.5 py-0.2 rounded ${
                                                   iss.type === "template-placeholder"
                                                     ? "bg-red-100 text-red-800 dark:bg-red-950/60 dark:text-red-300"
                                                     : iss.type === "skipped-level"
@@ -620,10 +620,10 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-6 py-3 dark:border-slate-800 dark:bg-slate-900/50">
-        <span className="text-xs text-slate-500">
+        <span className="text-caption text-slate-500">
           Hotel SEO Hierarchy Optimizer • The Nines Portland Parity
         </span>
-        <Button variant="secondary" onClick={onClose} className="text-xs">
+        <Button variant="secondary" onClick={onClose} className="text-caption">
           Close
         </Button>
       </div>
