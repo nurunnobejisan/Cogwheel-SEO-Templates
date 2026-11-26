@@ -8,6 +8,7 @@ import {
 } from "@/core/outcomes";
 import { recordChange } from "@/core/outcomes/record";
 import { readChanges, readOutcomes, upsertOutcome } from "@/core/outcomes/store";
+import { judgeOutcomes } from "@/core/judgment";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,11 @@ export async function POST(req: NextRequest) {
           ? undefined
           : "Search Console not connected — outcomes recorded as unavailable.",
       });
+    }
+
+    if (action === "judge") {
+      const [changes, outcomes] = await Promise.all([readChanges(), readOutcomes()]);
+      return NextResponse.json({ success: true, report: judgeOutcomes(changes, outcomes) });
     }
 
     return NextResponse.json({ error: `unknown action: ${action}` }, { status: 400 });
