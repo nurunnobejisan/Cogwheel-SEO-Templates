@@ -37,7 +37,7 @@ describe("training dataset gates", () => {
       note: "Call +1 415 555 0199 or email guest@example.com",
       nested: ["Bearer sk-live-abcdef1234567890abcdef"],
       count: 3,
-    }) as any;
+    }) as { note: string; nested: string[]; count: number };
     expect(clean.note).not.toContain("guest@example.com");
     expect(clean.note).not.toContain("415 555 0199");
     expect(clean.nested[0]).not.toContain("sk-live-abcdef");

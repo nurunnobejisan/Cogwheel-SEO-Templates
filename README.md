@@ -155,7 +155,7 @@ npm start
 | `npm run test:ts` | TypeScript integration tests |
 | `pytest tests/python -q` | Python analyzer and generator tests |
 | `npm run build:extension` | Build, verify, and package the Chrome extension |
-| `npm run export:schemas` | Regenerate `shared/schemas/*.json` from Zod contracts |
+| `npm run export:schemas` | Mirror the canonical `schemas/*.json` contracts into `shared/schemas/` for the Python engine |
 
 ## Configuration
 
@@ -193,7 +193,7 @@ Secrets belong in environment variables or the platform vault — never in the r
 ├── python/                   Analyzers, generators, batch tools
 ├── api/                      Python HTTP bridge and Pydantic models
 ├── schemas/                  Zod schema sources
-├── shared/schemas/           Exported JSON Schema contracts
+├── shared/schemas/           Generated JSON Schema mirror for Python (from schemas/)
 ├── rules/                    Standalone audit rule engine
 ├── tests/                    Vitest, node:test, pytest, e2e, fixtures
 ├── docs/                     Architecture, security, reporting, roadmap

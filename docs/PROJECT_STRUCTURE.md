@@ -9,7 +9,7 @@
 3. **`src/`** — All TypeScript source code (the Next.js app + Chrome extension core).
 4. **`python/`** — All Python source code, organized by domain.
 5. **`tests/`** — All test files, split into `ts/`, `python/`, `e2e/`, and `fixtures/`.
-6. **`schemas/`** — Single source of truth for all JSON Schema and TS schema definitions.
+6. **`schemas/`** — Single source of truth for all JSON Schema and TS schema definitions. The five Python-facing contracts are **mirrored** into `shared/schemas/` by `npm run export:schemas`; that mirror is generated, never authored by hand.
 7. **`scripts/`** — Build, CI, and automation scripts (TS, Python, shell).
 8. **`templates/`** — SEO audit prompt templates.
 9. **`data/`** — Static data files, training datasets, model registry.
@@ -45,5 +45,5 @@
 - **Never add loose `.md` docs to the root** — put them in `docs/`.
 - **Never duplicate files** across `python/` and `scripts/python/` — Python scripts go to `python/scripts/`.
 - **Never add Python code to `outputs/`** — that folder was removed; use `python/generators/`.
-- **Keep `shared/` empty** — schemas are consolidated in `schemas/`.
+- **Never hand-edit `shared/schemas/`** — it is generated from `schemas/` by `npm run export:schemas`; edit the canonical file in `schemas/` instead.
 - **Run `npm run lint && npm test`** before committing to verify nothing broke.

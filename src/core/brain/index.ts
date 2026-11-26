@@ -1,6 +1,6 @@
 import "server-only";
 
-import { runFullWebsiteAudit } from "@/core/full-audit";
+import { runFullWebsiteAudit, type FullWebsiteAuditReport } from "@/core/full-audit";
 import {
   fullAuditTool,
   schemaCheckTool,
@@ -257,7 +257,7 @@ export interface ProvenanceResult {
 
 export function verifyProvenance(
   text: string,
-  audit: Awaited<ReturnType<typeof runFullWebsiteAudit>>,
+  audit: FullWebsiteAuditReport,
   retrieved: Array<{ text?: string; title?: string }>,
 ): ProvenanceResult {
   const haystack =
@@ -327,7 +327,7 @@ function stem(word: string): string {
  */
 export function verifyClaimProvenance(
   text: string,
-  audit: Awaited<ReturnType<typeof runFullWebsiteAudit>>,
+  audit: FullWebsiteAuditReport,
   retrieved: Array<{ id?: string; title?: string; text?: string }>,
 ): ClaimProvenanceResult {
   const sourceText = `${JSON.stringify(audit)} ${retrieved.map((chunk) => `${chunk.id ?? ""} ${chunk.title ?? ""} ${chunk.text ?? ""}`).join(" ")}`;

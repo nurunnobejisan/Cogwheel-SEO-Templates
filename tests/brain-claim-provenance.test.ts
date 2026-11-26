@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { verifyClaimProvenance, verifyProvenance } from "../src/core/brain";
+import type { FullWebsiteAuditReport } from "../src/core/full-audit";
 
-function audit() {
+function audit(): FullWebsiteAuditReport {
   return {
     targetUrl: "https://example.com/",
     domain: "example.com",
@@ -22,7 +23,7 @@ function audit() {
       estimated: ["citability"],
       unavailable: ["searchConsole"],
     },
-  } as any;
+  } as unknown as FullWebsiteAuditReport;
 }
 
 const retrieved = [{ id: "kc-title-tag", title: "Title tag best practice", text: "Keep titles within 40-60 characters." }];
