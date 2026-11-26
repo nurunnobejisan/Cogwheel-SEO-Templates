@@ -51,6 +51,8 @@ Sentences that explicitly declare a dimension unavailable are allowed (they are 
 ## Training data
 Triples are `{ url, audit (measured), expertFix }` plus consent and a robots/ToS gate. Tiers are `raw`, `reviewed`, `gold`; only `reviewed` and `gold` are training-eligible. Each triple also carries `tenantId` (the operator's organisation, for per-tenant isolation) and a required `provenance` (`measured` | `estimated` | `unavailable`). Raw captures are PII-stripped and deduplicated by URL and content hash. The extension training vault sets new captures to `tier: "raw"` and requires consent.
 
+Capture is wired into the **Content Studio** (`src/components/ContentStudio.tsx`, `src/lib/training-capture.ts`): the operator accepts/rejects each generated section, edits the accepted copy, and explicitly contributes it with consent + robots/ToS acknowledgement. The accepted, edited copy is the `expertFix`; the measured per-section checks plus the AI draft are the `audit`. Nothing is captured automatically, and such Studio triples are tagged `provenance: "estimated"` because the source is operator-supplied copy rather than a live crawl.
+
 ### Data-governance gate (`npm run train:validate`)
 CI fails if any row in `data/training/*.jsonl`:
 - contains an unresolved `{{placeholder}}`,
