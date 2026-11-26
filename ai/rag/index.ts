@@ -10,10 +10,12 @@ import type { KnowledgeBase, RagChunk } from "../types.ts";
 import { createHashingEmbedder } from "./embedder.ts";
 import { createKnowledgeBase, chunkDocument, type KnowledgeBaseHandle } from "./knowledge-base.ts";
 import { SEED_KNOWLEDGE } from "./seed-knowledge.ts";
+import { GEO_KNOWLEDGE } from "./geo-knowledge.ts";
 
 export * from "./embedder.ts";
 export * from "./knowledge-base.ts";
 export * from "./seed-knowledge.ts";
+export * from "./geo-knowledge.ts";
 
 export interface RagPipelineOptions {
   /** Additional domain-specific knowledge to ingest alongside the seed corpus. */
@@ -36,9 +38,18 @@ export interface RagPipeline {
 export function createRagPipeline(options: RagPipelineOptions = {}): RagPipeline {
   const embedder = createHashingEmbedder(options.dimensions ?? 256);
   const knowledgeBase = createKnowledgeBase(embedder);
+  const fingerprints = new Set<string>();
+
+  const fingerprint = (text: string): string => text.toLowerCase().replace(/\s+/g, " ").trim().slice(0, 240);
 
   const ingest = (chunks: RagChunk[]): void => {
-    knowledgeBase.upsert(chunks);
+    const fresh = chunks.filter((chunk) => {
+      const key = fingerprint(chunk.text);
+      if (!key || fingerprints.has(key)) return false;
+      fingerprints.add(key);
+      return true;
+    });
+    knowledgeBase.upsert(fresh);
   };
 
   const ingestDocument: RagPipeline["ingestDocument"] = (input) => {
@@ -48,6 +59,7 @@ export function createRagPipeline(options: RagPipelineOptions = {}): RagPipeline
   };
 
   ingest(SEED_KNOWLEDGE);
+  ingest(GEO_KNOWLEDGE);
   if (options.extraChunks?.length) {
     ingest(options.extraChunks);
   }

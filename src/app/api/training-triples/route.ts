@@ -2,61 +2,47 @@ import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "node:fs";
 import path from "node:path";
 import crypto from "node:crypto";
+import { isAuthenticatedPrincipal, principalFromRequest } from "@/lib/platform/auth";
+import { assertEgressAllowed, readTextCapped, safeFetch } from "@/lib/security/egress";
+import {
+  contentHash,
+  isTrainingEligible,
+  stripPii,
+  type TrainingTriple,
+} from "@/core/training/dataset";
 
 export const dynamic = "force-dynamic";
 
 const FILE = path.join(process.cwd(), "data", "training-triples.jsonl");
 
-type Quality = "raw" | "reviewed" | "gold";
-
-interface Triple {
-  id: string;
-  url: string;
-  audit: unknown;
-  expertFix: unknown;
-  quality: Quality;
-  capturedAt: string;
-}
-
-function stripPii(value: unknown): unknown {
-  if (typeof value === "string") {
-    return value
-      .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[REDACTED_EMAIL]")
-      .replace(/\b(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{2,4}\)|\d{2,4})[-.\s]\d{3,4}[-.\s]\d{3,4}\b/g, "[REDACTED_PHONE]");
-  }
-  if (Array.isArray(value)) return value.map(stripPii);
-  if (value && typeof value === "object") {
-    const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(value as Record<string, unknown>)) out[k] = stripPii(v);
-    return out;
-  }
-  return value;
-}
-
-async function readAll(): Promise<Triple[]> {
+async function readAll(): Promise<TrainingTriple[]> {
   try {
     const raw = await fs.readFile(FILE, "utf8");
-    return raw.split("\n").filter(Boolean).map((l) => JSON.parse(l) as Triple);
+    return raw.split("\n").filter(Boolean).map((line) => JSON.parse(line) as TrainingTriple);
   } catch {
     return [];
   }
 }
 
+/** Fetch robots.txt through the SSRF-safe egress path and evaluate the path. */
 async function robotsAllowed(url: string): Promise<boolean> {
   try {
     const u = new URL(url);
     const robotsUrl = `${u.protocol}//${u.host}/robots.txt`;
-    const res = await fetch(robotsUrl, { signal: AbortSignal.timeout(5000) });
-    if (!res.ok) return true;
-    const text = await res.text();
-    // Very small gate: disallow if "Disallow: /" for User-agent: *
-    const lines = text.split("\n").map((l) => l.trim().toLowerCase());
+    const fetched = await safeFetch(
+      robotsUrl,
+      { method: "GET", headers: { "User-Agent": "CogwheelSeoBot/3.0 (+https://cogwheel.ai/bot)" } },
+      { timeoutMs: 5000, maxRedirects: 3 }
+    ).catch(() => null);
+    if (!fetched || !fetched.response.ok) return true;
+    const text = await readTextCapped(fetched.response, 200_000).catch(() => "");
+    const lines = text.split("\n").map((line) => line.trim().toLowerCase());
     let inStar = false;
     for (const line of lines) {
       if (line.startsWith("user-agent:")) inStar = line.includes("*");
       if (inStar && line.startsWith("disallow:") && line.includes("/")) {
-        const path = line.split(":")[1]?.trim() ?? "";
-        if (path === "/" || u.pathname.startsWith(path.replace("*", ""))) return false;
+        const rulePath = line.split(":")[1]?.trim() ?? "";
+        if (rulePath === "/" || u.pathname.startsWith(rulePath.replace("*", ""))) return false;
       }
     }
     return true;
@@ -66,42 +52,82 @@ async function robotsAllowed(url: string): Promise<boolean> {
 }
 
 export async function POST(req: NextRequest) {
+  const principal = await principalFromRequest({ header: (name: string) => req.headers.get(name) });
+  if (!isAuthenticatedPrincipal(principal)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const body = await req.json().catch(() => ({}));
     const url = typeof body.url === "string" ? body.url.trim() : "";
     if (!url) return NextResponse.json({ error: "url is required" }, { status: 400 });
     if (!body.consent) return NextResponse.json({ error: "consent is required" }, { status: 400 });
+    if (body.tosAccepted !== true) {
+      return NextResponse.json({ error: "Site terms acceptance (tosAccepted) is required" }, { status: 400 });
+    }
+    await assertEgressAllowed(url);
 
     const allowed = await robotsAllowed(url);
     if (!allowed) return NextResponse.json({ error: "robots.txt disallows capture" }, { status: 403 });
 
+    const cleanAudit = stripPii(body.audit ?? null);
+    const cleanFix = stripPii(body.expertFix ?? null);
+    const hash = contentHash(cleanAudit, cleanFix);
     const all = await readAll();
-    if (all.some((t) => t.url === url)) {
+    if (all.some((triple) => triple.url === url)) {
       return NextResponse.json({ error: "duplicate url" }, { status: 409 });
     }
+    if (all.some((triple) => triple.contentHash === hash)) {
+      return NextResponse.json({ error: "duplicate content" }, { status: 409 });
+    }
 
-    const record: Triple = {
+    const record: TrainingTriple = {
       id: crypto.randomUUID(),
       url,
-      audit: stripPii(body.audit ?? null),
-      expertFix: stripPii(body.expertFix ?? null),
+      audit: cleanAudit,
+      expertFix: cleanFix,
       quality: "raw",
       capturedAt: new Date().toISOString(),
+      contentHash: hash,
+      consent: true,
+      reviewedBy: undefined,
     };
     await fs.mkdir(path.dirname(FILE), { recursive: true });
-    await fs.appendFile(FILE, JSON.stringify(record) + "\n", "utf8");
-    return NextResponse.json({ success: true, id: record.id, quality: record.quality });
+    await fs.appendFile(FILE, `${JSON.stringify(record)}\n`, "utf8");
+    return NextResponse.json({
+      success: true,
+      id: record.id,
+      quality: record.quality,
+      trainingEligible: false,
+    });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const principal = await principalFromRequest({ header: (name: string) => req.headers.get(name) });
+  if (!isAuthenticatedPrincipal(principal)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
   try {
     const all = await readAll();
-    const counts = { raw: 0, reviewed: 0, gold: 0 };
-    for (const t of all) counts[t.quality] += 1;
-    return NextResponse.json({ success: true, total: all.length, counts, triples: all });
+    const counts: Record<string, number> = { raw: 0, reviewed: 0, gold: 0 };
+    for (const triple of all) {
+      const tier = triple.quality ?? "raw";
+      counts[tier] = (counts[tier] ?? 0) + 1;
+    }
+    const { searchParams } = new URL(req.url);
+    const eligibleOnly = searchParams.get("eligible") === "true";
+    const triples = eligibleOnly
+      ? all.filter((triple) => isTrainingEligible(triple.quality))
+      : all;
+    return NextResponse.json({
+      success: true,
+      total: all.length,
+      counts,
+      trainingEligible: all.filter((triple) => isTrainingEligible(triple.quality)).length,
+      triples,
+    });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
   }

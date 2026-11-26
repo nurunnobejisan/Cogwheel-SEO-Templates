@@ -317,6 +317,7 @@ export function verifyClaimProvenance(
   const sourceText = `${JSON.stringify(audit)} ${retrieved.map((chunk) => `${chunk.id ?? ""} ${chunk.title ?? ""} ${chunk.text ?? ""}`).join(" ")}`;
   const sourceLower = sourceText.toLowerCase();
   const sourceTokens = new Set(sourceLower.split(/[^a-z0-9]+/).filter((word) => word.length >= 3));
+  const sourceNumbers = new Set(sourceText.match(/\d+(?:[.,]\d+)*/g) ?? []);
   const retrievedIds = new Set(retrieved.map((chunk) => chunk.id).filter((id): id is string => Boolean(id)));
 
   const untracedNumbers: string[] = [];
@@ -331,7 +332,12 @@ export function verifyClaimProvenance(
 
     checkedClaims += 1;
     const numbers = Array.from(new Set(sentence.match(/\b\d+(?:\.\d+)?\b/g) ?? []));
-    const missingNumbers = numbers.filter((number) => !sourceText.includes(number));
+    const missingNumbers = numbers.filter((number) => {
+      if (sourceNumbers.has(number)) return false;
+      // "/100" and "out of 100" are scale denominators, not measured values.
+      if (number === "100" && /\/\s*100\b|out of 100\b/i.test(sentence)) return false;
+      return true;
+    });
     if (missingNumbers.length > 0) {
       untracedNumbers.push(...missingNumbers);
       unmappedClaims.push(sentence);
