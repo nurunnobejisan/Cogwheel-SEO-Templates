@@ -180,7 +180,10 @@ def main() -> int:
         "modelVersion": model_version,
         "baseModel": args.base_model,
         "provider": args.provider,
-        "status": "ready",
+        # A fresh checkpoint is NOT proven: it has only run the lexical proxy
+        # benchmark above. `unverified` until a golden-set run
+        # (npm run ml:golden:check + ml/eval/run_eval.py) confirms it.
+        "status": "unverified",
         "createdAt": datetime.utcnow().isoformat() + "Z",
         "trainingStats": {
             "trainingRecords": len(train_records),

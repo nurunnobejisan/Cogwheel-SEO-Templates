@@ -6,7 +6,7 @@
       "modelVersion": "v1795487332",
       "baseModel": "gemini-1.5-flash-002",
       "provider": "tuned_gemini",
-      "status": "ready",
+      "status": "unverified",
       "createdAt": "2026-11-24T02:28:52.813100Z",
       "trainingStats": {
         "trainingRecords": 134,
@@ -32,14 +32,15 @@
         "geo_llm_citation_optimization",
         "keyword_intent_matrix",
         "serp_pixel_budgeting"
-      ]
+      ],
+      "statusReason": "Base model gemini-1.5-flash-002 is retired and no serving endpoint has been confirmed since the SEO Studio rebrand. The stored evaluationBenchmark values are lexical proxies over the eval file, not model-quality measurements. Flip back to 'ready' only after a golden-set run (npm run ml:golden:check + ml/eval/run_eval.py)."
     },
     {
       "modelId": "cogwheel-seo-unified-tuned_gemini-v1795486557",
       "modelVersion": "v1795486557",
       "baseModel": "gemini-1.5-flash-002",
       "provider": "tuned_gemini",
-      "status": "ready",
+      "status": "unverified",
       "createdAt": "2026-11-24T02:15:57.752523Z",
       "trainingStats": {
         "trainingRecords": 134,
@@ -65,7 +66,8 @@
         "geo_llm_citation_optimization",
         "keyword_intent_matrix",
         "serp_pixel_budgeting"
-      ]
+      ],
+      "statusReason": "Base model gemini-1.5-flash-002 is retired and no serving endpoint has been confirmed since the SEO Studio rebrand. The stored evaluationBenchmark values are lexical proxies over the eval file, not model-quality measurements. Flip back to 'ready' only after a golden-set run (npm run ml:golden:check + ml/eval/run_eval.py)."
     }
   ],
   "lastUpdated": "2026-11-24T02:28:52.813488Z"
