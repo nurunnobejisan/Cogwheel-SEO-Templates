@@ -67,7 +67,7 @@ The file header states plainly (lines 16–17):
 | --- | --- |
 | `fetcher.ts` | `RateLimiter` (default 2 req/s), `fetchPageWithRedirects` — manual redirect tracking, 10s timeout, 2 retries on 5xx/network, `MAX_REDIRECTS = 10`. Re-validates SSRF on **every** hop (line 73). |
 | `url.ts` | `normalizeCrawlUrl`, tracking-param stripping, `validateTargetUrl`, IPv4/IPv6 private/reserved range detection (`isPrivateOrReservedIp`). |
-| `robots.ts` | `parseRobotsTxt` — most-specific UA group (`HiltonSEOStudioCrawler` else `*`), Allow/Disallow, `Sitemap:` directives. |
+| `robots.ts` | `parseRobotsTxt` — most-specific UA group (`SeoStudioCrawler` else `*`), Allow/Disallow, `Sitemap:` directives. |
 | `sitemap.ts` | `parseSitemapXml` (index vs urlset), `fetchAndParseSitemaps` with safeFetch. |
 | `storage.ts` | `createCrawlRun`/page records; Supabase when configured, else in-memory `Map`. |
 | `types.ts` | `CrawlPageRecord` (status, redirectChain, canonical, robotsMeta, h1H6, wordCount, images, hreflang…), `CrawlQueueState`, `SiteCrawlSummary` (`brokenLinks`, `redirectChains`, `orphanPages`, `missingFromSitemap`, `jsRenderedPages`). |
@@ -78,7 +78,7 @@ The file header states plainly (lines 16–17):
 - **No redirect-loop detection.** `fetchPageWithRedirects` iterates to `MAX_REDIRECTS` and returns the trailing 3xx + chain; it does not detect or flag an A→B→A loop.
 - **No JS rendering.** `jsRenderedPages` is a *recorded observation* (the snapshot flags `js-rendering-required`); there is no headless renderer (no Playwright/Puppeteer/Browser Rendering dependency anywhere in `package.json`). JS-only content is not fetched.
 - **No configurable crawl depth/concurrency per run** beyond the fixed `RateLimiter(2)`.
-- **Branding debt:** `CRAWLER_USER_AGENT = "HiltonSEOStudioCrawler/1.0 (+https://hilton-seo-studio.vercel.app)"` and `BOT_TOKEN = "hiltonseostudiocrawler"` in `robots.ts`.
+- ~~**Branding debt:** crawler UA/token under the old Hilton brand.~~ Resolved: `CRAWLER_USER_AGENT = "SeoStudioCrawler/1.0 (+https://seo-studio-one.vercel.app)"` and `BOT_TOKEN = "seostudiocrawler"` in `robots.ts`.
 
 ### 2.5 SSRF / egress protection — `src/lib/security/egress.ts`
 
@@ -121,7 +121,7 @@ Auth: `src/lib/platform/auth.ts` (`isAuthenticatedPrincipal`, `principalFromRequ
 - CMS fixes are approval-gated (`healing/approval.ts`, `cms/runtime/seo-autofix.ts`).
 
 **Gaps / debt:**
-- Crawler identifies as `HiltonSEOStudioCrawler` (stale branding).
+- Crawler identifies as `SeoStudioCrawler` (branding aligned).
 - On Vercel the writable data dir falls back to temp (ephemeral); durable history needs `COGWHEEL_DATA_DIR`/Supabase (`src/lib/platform/data-dir.ts`, documented in `CHANGELOG.md`).
 - No background job/queue: all audits run synchronously inside route handlers (serverless duration limits).
 - No redirect-loop detection; no multi-page crawl; no JS rendering.

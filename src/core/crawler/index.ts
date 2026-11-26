@@ -8,6 +8,7 @@ export * from "./url";
 
 // Compatibility facade for /api/crawl-property and existing tests
 import { fetchAndParseSitemaps } from "./sitemap";
+import { CRAWLER_USER_AGENT } from "./robots";
 import { assertEgressAllowed, readTextCapped, safeFetch } from "../../lib/security/egress";
 
 export const SERVICE_PATTERNS: Record<string, RegExp> = {
@@ -162,7 +163,7 @@ export async function crawlTargetWebsite(targetUrl: string, options: CrawlOption
       safeFetch(
         normalizedUrl,
         {
-          headers: { "User-Agent": "HiltonSEOStudioCrawler/1.0 (+https://hilton-seo-studio.vercel.app)" },
+          headers: { "User-Agent": CRAWLER_USER_AGENT },
         },
         { timeoutMs: 8000 },
       ).catch(() => null),

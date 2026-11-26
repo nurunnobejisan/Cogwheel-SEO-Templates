@@ -138,6 +138,6 @@ These are the highest-value, testable improvements derived from the matrix, each
 4. **JS-rendered page support** via an optional renderer adapter (managed rendering API or containerized Playwright worker) behind a feature flag, defaulting to `unavailable` when not configured — mirroring the `stagehand-example` pattern.
 5. **Async/background execution** option for large crawls (job + polling endpoint), adopting the `cf-ai-web-opt` status-machine pattern, while keeping the synchronous path for small audits.
 6. **AI-crawler set refresh** in `rules/geo/ai-crawlers.ts` to cover the UAs listed in §A6 (measured, never inferred).
-7. **Crawler branding fix** (`HiltonSEOStudioCrawler` → SEO Studio UA) in `src/core/crawler/robots.ts`.
+7. ~~**Crawler branding fix**~~ Done: `SeoStudioCrawler/1.0 (+https://seo-studio-one.vercel.app)` in `src/core/crawler/robots.ts`.
 
 No item above requires a new third-party dependency except #4, whose dependency choice is deliberately deferred.

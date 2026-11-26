@@ -1,12 +1,12 @@
 import type { RobotsRuleSet } from "./types";
 import { readTextCapped, safeFetch } from "../../lib/security/egress";
 
-export const CRAWLER_USER_AGENT = "HiltonSEOStudioCrawler/1.0 (+https://hilton-seo-studio.vercel.app)";
-const BOT_TOKEN = "hiltonseostudiocrawler";
+export const CRAWLER_USER_AGENT = "SeoStudioCrawler/1.0 (+https://seo-studio-one.vercel.app)";
+const BOT_TOKEN = "seostudiocrawler";
 
 /**
  * Parses robots.txt selecting the most specific matching User-Agent group
- * (`HiltonSEOStudioCrawler` if present, otherwise `*`), plus all `Sitemap:` directives.
+ * (`SeoStudioCrawler` if present, otherwise `*`), plus all `Sitemap:` directives.
  */
 export function parseRobotsTxt(raw: string): RobotsRuleSet {
   const lines = (raw || "").split(/\r?\n/);
