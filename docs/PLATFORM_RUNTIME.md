@@ -223,6 +223,35 @@ await worker.tick();   // drain due jobs now (cron route / queue worker)
 worker.start();        // or poll on an interval
 ```
 
+## ML runtime environment (Phase 0)
+
+Optional knobs for the tuned-model and embedding path. All five are empty in
+`.env.example` and none of them is required: with them unset the router keeps
+using the existing providers and RAG keeps the offline hashing embedder, so CI
+and the extension continue to work with no model server and no network.
+
+| Variable | Consumed by | When unset |
+|---|---|---|
+| `CUSTOM_MODEL_ENDPOINT` | `ai/router.ts` → the existing `cogwheel-tuned` provider | provider reports `configured: false`, route falls back |
+| `CUSTOM_MODEL_ID` | same | model id from `src/core/ai/models.ts` |
+| `CUSTOM_MODEL_API_KEY` | same (optional bearer) | request sent without an `Authorization` header |
+| `EMBEDDINGS_ENDPOINT` | `ai/rag/embedder.ts` → `HttpEmbedder` | deterministic hashing embedder is used |
+| `ML_PRIVATE_DATASET_REPO` | `ml/build`, `ml/train` | datasets are written to `data/build/` only, never pushed |
+
+Rules that apply to this path:
+
+- **SSRF guard** — `CUSTOM_MODEL_ENDPOINT` and `EMBEDDINGS_ENDPOINT` are
+  resolved through the same DNS-aware SSRF guard as every crawl target
+  (docs/SECURITY.md). They are never accepted from a request body.
+- **Fail-closed** — any endpoint this path calls requires the signed `cw_session`
+  and RBAC from `platform/rbac.ts`, and is rate-limited by
+  `platform/rate-limit.ts`.
+- **No prompt logging** — only ids, providers, latency and outcomes are logged;
+  never prompts, page text or client data.
+- **No weights in this repo** — `ML_PRIVATE_DATASET_REPO` must point at a
+  *private* Hugging Face repo. `.gitignore` already excludes
+  `*.safetensors`, `*.gguf`, `*.bin`, `data/raw/` and `data/build/`.
+
 ## Contracts
 
 - `schemas/platform-runtime.schema.json` — audit-log entry, history entry and

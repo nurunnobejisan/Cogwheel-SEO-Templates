@@ -110,5 +110,20 @@ temp/
 /data/outcome-changes.jsonl
 /data/brain-usage.json
 /data/usage-meter.json
+# ------------------------------------------------------------------------------
+# ML / model training artifacts (Phase 0+ — rule 4: never commit weights or
+# crawled data; only small synthetic or hand-written licence-clean examples)
+# ------------------------------------------------------------------------------
+data/raw/
+data/build/
+ml/**/outputs/
+ml/**/checkpoints/
+ml/**/.venv*/
+*.safetensors
+*.gguf
+*.bin
+data/lora-dataset.jsonl
+data/training-triples.jsonl
+
 .vercel
 .env*
