@@ -22,6 +22,8 @@ import { ReportResultCard, type ReportDocResult } from "./ReportResultCard";
 import { Dropzone, PagesEditor, PropertySetup } from "./SetupStep";
 import { TemplateSelector } from "./TemplateSelector";
 import { GenerationProgressModal } from "./GenerationProgressModal";
+import { buildMatrixCapture, captureTrainingTriple, type MatrixCaptureRow } from "@/lib/training-capture";
+import { TrainingCaptureCard } from "./TrainingCaptureCard";
 import { Button, Card, Spinner, Stat } from "./ui";
 
 type Step = 1 | 2 | 3 | 4;

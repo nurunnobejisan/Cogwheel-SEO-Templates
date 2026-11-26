@@ -13,10 +13,10 @@ import {
   buildStudioCapture,
   captureTrainingTriple,
   type StudioCaptureSection,
-  type TrainingCaptureResponse,
 } from "@/lib/training-capture";
 import type { MatrixRow, Property } from "@/lib/types";
 import { Button, Card, Spinner } from "./ui";
+import { TrainingCaptureCard } from "./TrainingCaptureCard";
 
 const EDITABLE_SECTIONS: HiltonSectionId[] = [
   "home-headline",
@@ -82,11 +82,6 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
   // distinguishable from model output, and let each section be accepted/rejected.
   const [aiDraft, setAiDraft] = useState<Record<string, string>>({});
   const [accepted, setAccepted] = useState<Record<string, boolean>>({});
-  const [consent, setConsent] = useState(false);
-  const [tosAccepted, setTosAccepted] = useState(false);
-  const [captureBusy, setCaptureBusy] = useState(false);
-  const [captureError, setCaptureError] = useState<string | null>(null);
-  const [captureResult, setCaptureResult] = useState<TrainingCaptureResponse | null>(null);
 
   const usps = useMemo(() => [usp1, usp2].map((u) => u.trim()).filter(Boolean), [usp1, usp2]);
   const halfAndHalf = isHalfAndHalfEligible(property.brand);
@@ -126,7 +121,6 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
         }
         return next;
       });
-      setCaptureResult(null);
       setDocResult({
         docUrl: data.docUrl ?? null,
         warning: data.googleWarning ?? null,
@@ -190,40 +184,20 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
   const editedCount = capturePayload?.expertFix.edited.length ?? 0;
   const hasPropertyUrl = Boolean(property.url?.trim());
 
-  async function handleCaptureTraining() {
-    if (!capturePayload) return;
+  async function captureContent() {
     const url = property.url?.trim() ?? "";
-    if (!url) {
-      setCaptureError("Add the property URL before capturing.");
-      return;
+    if (!capturePayload || !url) {
+      throw new Error("Nothing to capture yet — add the property URL and accept some sections.");
     }
-    if (!consent) {
-      setCaptureError("Confirm you have the rights to contribute this copy.");
-      return;
-    }
-    if (!tosAccepted) {
-      setCaptureError("Accept the site terms to capture.");
-      return;
-    }
-    setCaptureBusy(true);
-    setCaptureError(null);
-    setCaptureResult(null);
-    try {
-      const res = await captureTrainingTriple({
-        url,
-        audit: capturePayload.audit,
-        expertFix: capturePayload.expertFix,
-        consent: true,
-        tosAccepted: true,
-        // Derived from operator-supplied copy, not a live crawl.
-        provenance: "estimated",
-      });
-      setCaptureResult(res);
-    } catch (e) {
-      setCaptureError((e as Error).message);
-    } finally {
-      setCaptureBusy(false);
-    }
+    return captureTrainingTriple({
+      url,
+      audit: capturePayload.audit,
+      expertFix: capturePayload.expertFix,
+      consent: true,
+      tosAccepted: true,
+      // Derived from operator-supplied copy, not a live crawl.
+      provenance: "estimated",
+    });
   }
 
   return (
@@ -454,72 +428,19 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
         );
       })}
 
-      <Card
+      <TrainingCaptureCard
         title="Training capture (expert-in-the-loop)"
         subtitle="Contribute the sections you accepted and edited to the Cogwheel SEO/GEO training set. Only accepted sections with copy are sent, and nothing is captured automatically."
-      >
-        <div className="space-y-4">
-          <div className="flex flex-wrap gap-x-6 gap-y-1 text-caption text-slate-600">
-            <span>
-              Accepted sections: <strong className="tabular-nums text-slate-800">{acceptedCount}</strong>
-            </span>
-            <span>
-              Edited vs AI draft: <strong className="tabular-nums text-slate-800">{editedCount}</strong>
-            </span>
-            <span>
-              Property URL: <strong className="text-slate-800">{hasPropertyUrl ? property.url : "not set"}</strong>
-            </span>
-          </div>
-
-          <p className="text-caption text-slate-500">
-            The audit records the measured per-section checks (character limits, keyword presence, violations) and the AI
-            draft; the expert fix is your final accepted copy. Metrics you have not supplied are never asserted.
-          </p>
-
-          {!hasPropertyUrl && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-body text-amber-800">
-              Add the property URL above to enable capture.
-            </div>
-          )}
-
-          <label className="flex items-start gap-2 text-body text-slate-700">
-            <input
-              type="checkbox"
-              className="mt-1 h-4 w-4 accent-emerald-600"
-              checked={consent}
-              onChange={(e) => setConsent(e.target.checked)}
-            />
-            <span>
-              I have the rights to contribute this copy and consent to it training/improving the Cogwheel models. PII is
-              stripped before storage.
-            </span>
-          </label>
-
-          <label className="flex items-start gap-2 text-body text-slate-700">
-            <input
-              type="checkbox"
-              className="mt-1 h-4 w-4 accent-emerald-600"
-              checked={tosAccepted}
-              onChange={(e) => setTosAccepted(e.target.checked)}
-            />
-            <span>I accept that capture is gated by the site&apos;s robots.txt / terms of service.</span>
-          </label>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <Button onClick={handleCaptureTraining} disabled={captureBusy || acceptedCount === 0 || !hasPropertyUrl}>
-              {captureBusy ? <Spinner /> : null}
-              Save reviewed copy to training set
-            </Button>
-            {captureError && <span className="text-body text-red-600">{captureError}</span>}
-            {captureResult && (
-              <span className="text-body text-emerald-700">
-                Captured <code className="font-mono">{captureResult.id.slice(0, 8)}</code> · tier {captureResult.quality}
-                {captureResult.persistenceNote ? ` — ${captureResult.persistenceNote}` : ""}
-              </span>
-            )}
-          </div>
-        </div>
-      </Card>
+        stats={[
+          { label: "Accepted sections", value: acceptedCount },
+          { label: "Edited vs AI draft", value: editedCount },
+          { label: "Property URL", value: property.url?.trim() || "not set" },
+        ]}
+        note="The audit records the measured per-section checks (character limits, keyword presence, violations) and the AI draft; the expert fix is your final accepted copy. Metrics you have not supplied are never asserted."
+        disabledReason={hasPropertyUrl ? null : "Add the property URL above to enable capture."}
+        disabled={acceptedCount === 0}
+        onCapture={captureContent}
+      />
     </div>
   );
 }

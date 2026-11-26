@@ -130,6 +130,102 @@ export function buildStudioCapture(input: StudioCaptureInput): StudioCapturePayl
   };
 }
 
+export interface MatrixCaptureAssignment {
+  keyword: string;
+  volume: number | null;
+  kd: number | null;
+}
+
+export interface MatrixCaptureRow {
+  pageId: string;
+  path: string;
+  title: string;
+  approved: boolean;
+  primary: MatrixCaptureAssignment | null;
+  secondary: MatrixCaptureAssignment | null;
+  /** Keyword originally proposed by the allocator, for edit detection. */
+  proposedPrimary: string | null;
+  proposedSecondary: string | null;
+  alternatives: MatrixCaptureAssignment[];
+  flags: string[];
+}
+
+export interface MatrixCaptureInput {
+  property: StudioCaptureProperty;
+  template: string;
+  rows: MatrixCaptureRow[];
+}
+
+export interface MatrixCapturePayload {
+  audit: {
+    source: "keyword-matrix";
+    property: StudioCaptureProperty;
+    template: string;
+    proposals: Array<{
+      pageId: string;
+      path: string;
+      title: string;
+      proposedPrimary: string | null;
+      proposedSecondary: string | null;
+      alternatives: MatrixCaptureAssignment[];
+      flags: string[];
+      approved: boolean;
+    }>;
+  };
+  expertFix: {
+    source: "keyword-matrix";
+    assignments: Record<string, { primary: MatrixCaptureAssignment | null; secondary: MatrixCaptureAssignment | null }>;
+    accepted: string[];
+    edited: string[];
+  };
+}
+
+/**
+ * Build the audit + expert-fix pair for the page-to-keyword approval matrix.
+ *
+ * The audit carries the allocator's proposal for every page (plus alternatives
+ * and flags); the expert fix carries the operator's accepted, possibly edited
+ * assignments. Returns `null` when no page has been approved with an assignment.
+ */
+export function buildMatrixCapture(input: MatrixCaptureInput): MatrixCapturePayload | null {
+  const approved = input.rows.filter((row) => row.approved && (row.primary || row.secondary));
+  if (approved.length === 0) return null;
+
+  const assignments: MatrixCapturePayload["expertFix"]["assignments"] = {};
+  const edited: string[] = [];
+  for (const row of approved) {
+    assignments[row.pageId] = { primary: row.primary, secondary: row.secondary };
+    const changed =
+      (row.primary?.keyword ?? null) !== row.proposedPrimary ||
+      (row.secondary?.keyword ?? null) !== row.proposedSecondary;
+    if (changed) edited.push(row.pageId);
+  }
+
+  return {
+    audit: {
+      source: "keyword-matrix",
+      property: input.property,
+      template: input.template,
+      proposals: input.rows.map((row) => ({
+        pageId: row.pageId,
+        path: row.path,
+        title: row.title,
+        proposedPrimary: row.proposedPrimary,
+        proposedSecondary: row.proposedSecondary,
+        alternatives: row.alternatives,
+        flags: row.flags,
+        approved: row.approved,
+      })),
+    },
+    expertFix: {
+      source: "keyword-matrix",
+      assignments,
+      accepted: approved.map((row) => row.pageId),
+      edited,
+    },
+  };
+}
+
 export interface TrainingCaptureRequest {
   url: string;
   audit: unknown;
