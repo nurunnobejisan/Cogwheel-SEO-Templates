@@ -92,7 +92,7 @@ export async function POST(req: NextRequest) {
     };
 
     if (cliEnabled && gmailCliPath && fs.existsSync(gmailCliPath)) {
-      const tmpFile = path.join(os.tmpdir(), `cogwheel-email-${Date.now()}-${process.pid}.txt`);
+      const tmpFile = path.join(os.tmpdir(), `seo-studio-email-${Date.now()}-${process.pid}.txt`);
       try {
         fs.writeFileSync(tmpFile, body, { encoding: "utf8", mode: 0o600 });
 

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Cogwheel Chrome Extension Build & Release Packaging Script
+ * SEO Studio Chrome Extension Build & Release Packaging Script
  * 
  * 1. Verifies manifest.json update_url and version synchronization
  * 2. Compiles TypeScript and builds production bundle with Vite
@@ -20,7 +20,7 @@ const UPDATES_XML = path.join(ROOT_DIR, "updates.xml");
 const MANIFEST_JSON = path.join(EXT_DIR, "public", "manifest.json");
 
 console.log("================================================================================");
-console.log(" COGWHEEL CHROME EXTENSION — PRODUCTION BUILD & RELEASE PIPELINE");
+console.log(" SEO STUDIO CHROME EXTENSION — PRODUCTION BUILD & RELEASE PIPELINE");
 console.log("================================================================================");
 
 // 1. Verify Manifest and updates.xml synchronization
@@ -123,6 +123,6 @@ fs.copyFileSync(UPDATES_XML, path.join(DIST_DIR, "updates.xml"));
 console.log("✔ updates.xml synchronized to public/updates.xml and dist/updates.xml.");
 
 console.log("--------------------------------------------------------------------------------");
-console.log("✔ COGWHEEL EXTENSION BUILD COMPLETED CLEANLY! READY FOR GITHUB RELEASES.");
+console.log("✔ SEO STUDIO EXTENSION BUILD COMPLETED CLEANLY! READY FOR GITHUB RELEASES.");
 console.log("================================================================================");
 process.exit(0);

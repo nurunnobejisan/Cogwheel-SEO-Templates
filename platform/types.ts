@@ -1,5 +1,5 @@
 /**
- * Cogwheel Platform Runtime — Shared Types (Phase 5)
+ * SEO Studio Platform Runtime — Shared Types (Phase 5)
  *
  * Contracts for the governance/runtime layer that exposes Phases 1–4 over an
  * authenticated, rate-limited, fully-audited operator API:

@@ -1,11 +1,11 @@
-# Cogwheel SEO & GEO Studio
+# SEO & GEO Studio
 > Hospitality Search Engine and Generative Engine Optimization Suite
 
-Cogwheel SEO & GEO Studio provides battle-tested SEO, GEO (Generative Engine Optimization), and structured data frameworks purpose-built for hospitality and hotel digital marketing.
+SEO & GEO Studio provides battle-tested SEO, GEO (Generative Engine Optimization), and structured data frameworks purpose-built for hospitality and hotel digital marketing.
 
 - Website: https://cogwheel-seo-templates.vercel.app
 - Documentation: https://cogwheel-seo-templates.vercel.app/architecture
-- GitHub: https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates
+- GitHub: https://github.com/nurunnobejisan/SEO-Studio
 
 ## Core System Modules
 - Strategy Matrix: https://cogwheel-seo-templates.vercel.app/strategy-matrix (78-Keyword hospitality matrix across Brand, Local, Amenities, Meetings, Extended Stay, and GEO)

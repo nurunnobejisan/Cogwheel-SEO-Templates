@@ -11,12 +11,12 @@ import {
   stripPii,
   type TrainingTriple,
 } from "@/core/training/dataset";
-import { cogwheelDataFile } from "@/lib/platform/data-dir";
+import { seoStudioDataFile } from "@/lib/platform/data-dir";
 
 export const dynamic = "force-dynamic";
 
 function tripleFile(): string {
-  return cogwheelDataFile("training-triples.jsonl");
+  return seoStudioDataFile("training-triples.jsonl");
 }
 
 /** Temp-dir writes on serverless are ephemeral; surface that honestly. */

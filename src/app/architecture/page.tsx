@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "System Architecture & Technical Specs — Cogwheel Studio",
+  title: "System Architecture & Technical Specs — SEO Studio Suite",
   description:
     "Complete technical architecture for Manifest V3 extension, AI training data vault, hybrid model inference routing, and Python fine-tuning pipelines.",
 };
@@ -24,7 +24,7 @@ export default function ArchitecturePage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                  Cogwheel SEO &amp; GEO Studio
+                  SEO &amp; GEO Studio
                 </h1>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                   v3.0.0
@@ -101,7 +101,7 @@ export default function ArchitecturePage() {
           <div className="w-full overflow-x-auto">
             <Image
               src="/system-architecture.svg"
-              alt="Cogwheel SEO Studio System Architecture Diagram"
+              alt="SEO Studio System Architecture Diagram"
               width={1200}
               height={780}
               className="w-full min-w-[700px] rounded-lg"

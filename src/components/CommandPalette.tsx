@@ -119,7 +119,7 @@ export function CommandPalette({
     list.push({
       id: "action-extension",
       title: "Download Chrome Extension (.zip)",
-      subtitle: "Install the Cogwheel SEO & GEO Inspector extension for real-time hotel page audits",
+      subtitle: "Install the SEO Studio & GEO Inspector extension for real-time hotel page audits",
       category: "Actions",
       badge: "Extension",
       action: () => {

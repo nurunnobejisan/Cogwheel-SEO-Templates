@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO & GEO Studio - Supervised Fine-Tuning Dataset Builder & API Sync v3.0
+ * SEO & GEO Studio - Supervised Fine-Tuning Dataset Builder & API Sync v3.0
  *
  * Formats curated DOM training pairs for LLM fine-tuning:
  * 1. Raw JSONL Export with full schemaVersion and provenance (url hash, capturedAt, version).
@@ -347,7 +347,7 @@ export function estimateTokenCount(text: string): number {
 const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 /**
- * Direct App API Sync: Pushes a batch of training pairs to Cogwheel Web App API
+ * Direct App API Sync: Pushes a batch of training pairs to SEO Studio Web App API
  * with exponential backoff and idempotency keys, returning a summary.
  */
 export async function syncBatchToApi(

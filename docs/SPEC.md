@@ -22,7 +22,7 @@ Browser UI (Next.js 14+ App Router / TypeScript / Tailwind)
  │   └─ Tabs: On Page | Technical | Off Page | Local | Reporting
  └─ Keyword & Content Studio (src/components/Studio.tsx)
      ├─ 1. Property Setup & Multi-CSV Dropzone (or Google Drive Folder Sync)
-     ├─ 2. Template Selector (Catbird Standard Format vs. Reitz Union / Cogwheel Format)
+     ├─ 2. Template Selector (Catbird Standard Format vs. Reitz Union / SEO Studio Format)
      ├─ 3. 78-Keyword Pool & Page-to-Keyword Approval Matrix (Editable Checkpoint)
      └─ 4. Hilton SEO/GEO Content Studio (Live Character Counter + Diff Viewer)
         │
@@ -148,7 +148,7 @@ Each matrix row: `page`, `primary`, `secondary` (Format B), top-5 `alternatives`
 
 ## 5. Report Templates (Phase 2 output, selectable in Phase 1)
 
-| | **Format A — Standard (Catbird / Arrive)** | **Format B — Cogwheel (Reitz Union)** |
+| | **Format A — Standard (Catbird / Arrive)** | **Format B — SEO Studio (Reitz Union)** |
 |---|---|---|
 | Structure | 2-col table `Page \| Keyword` | `Current Sitemap` section, then 3-col table `Page \| Keyword \| Secondary` |
 | Rationale | `Why did we do this?` bullet list | `Comments` paragraphs |

@@ -1,5 +1,5 @@
 /**
- * Cogwheel Universal SEO Engine — Shared Rule Types
+ * SEO Studio Universal SEO Engine — Shared Rule Types
  *
  * Defines the mode-aware contract shared by the Hotel Mode ruleset (existing,
  * untouched) and the new Universal Mode ruleset. Hotel Mode and Universal Mode

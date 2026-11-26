@@ -1,4 +1,4 @@
-"""Cogwheel SEO Templates — Content Engine & Similarity Scorer
+"""SEO Studio Templates — Content Engine & Similarity Scorer
 
 Provides:
 - Batch thin-content detection & TF-IDF / Jaccard similarity checking (>70% duplicate blocker)

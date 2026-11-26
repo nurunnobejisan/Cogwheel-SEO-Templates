@@ -1,5 +1,5 @@
 /**
- * Cogwheel Universal SEO Engine — Issue Factory & Scoring
+ * SEO Studio Universal SEO Engine — Issue Factory & Scoring
  */
 
 import type {

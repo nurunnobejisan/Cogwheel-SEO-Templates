@@ -189,7 +189,7 @@ export function PropertySetup({
                 template === "B" ? "border-brand bg-brand-50 font-semibold text-slate-900 shadow-sm" : "border-slate-200 hover:border-brand/60"
               }`}
             >
-              <div className="font-display">Cogwheel Reitz Union (Format B)</div>
+              <div className="font-display">SEO Studio Reitz Union (Format B)</div>
               <div className="text-caption font-normal text-slate-500">Current Sitemap + 3-col table (Primary &amp; Secondary) + Comments</div>
             </button>
           </div>
@@ -213,7 +213,7 @@ export function PropertySetup({
               >
                 <option value="catbird">Rationale: Catbird (with supporting KWs)</option>
                 <option value="arrive">Rationale: Arrive (short &amp; direct)</option>
-                <option value="reitz">Rationale: Reitz / Cogwheel (qualitative)</option>
+                <option value="reitz">Rationale: Reitz / SEO Studio (qualitative)</option>
               </select>
             </div>
             <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-body font-medium text-slate-700 md:col-span-1">

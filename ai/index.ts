@@ -1,5 +1,5 @@
 /**
- * Cogwheel AI SEO Brain — Entry Point (Phase 2)
+ * SEO Studio AI SEO Brain — Entry Point (Phase 2)
  *
  * The AI layer that sits between the Universal Audit Engine (`rules/`) and the
  * CMS deployment gateway (Phase 3):

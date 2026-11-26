@@ -127,7 +127,7 @@ describe("Audit Exporters Engine", () => {
 
       expect(html).toContain("<!DOCTYPE html>");
       expect(html).toContain("<title>Executive Audit Report - www.marriott.com</title>");
-      expect(html).toContain("COGWHEEL SEO & GEO STUDIO");
+      expect(html).toContain("SEO STUDIO SEO & GEO STUDIO");
       expect(html).toContain("Hospitality Executive Search & GEO Audit");
       expect(html).toContain("Marriott");
       expect(html).toContain("88<span class=\"kpi-scale\">/100</span>");

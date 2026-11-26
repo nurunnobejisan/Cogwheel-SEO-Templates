@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "FixPatch",
-  "description": "Standardized machine-applicable fix patch emitted by the Cogwheel AI SEO Brain (ai/orchestrator.ts). Freeform text is rejected by the validation layer.",
+  "description": "Standardized machine-applicable fix patch emitted by the SEO Studio AI SEO Brain (ai/orchestrator.ts). Freeform text is rejected by the validation layer.",
   "type": "object",
   "properties": {
     "patchId": { "type": "string", "minLength": 1 },

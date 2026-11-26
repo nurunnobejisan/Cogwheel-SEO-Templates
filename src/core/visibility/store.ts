@@ -12,7 +12,7 @@ import path from "node:path";
 import type { VisibilityRun } from "./types.ts";
 
 function storeFile(): string {
-  return path.join(process.env.COGWHEEL_DATA_DIR || path.join(os.tmpdir(), "cogwheel-visibility"), "runs.jsonl");
+  return path.join(process.env.COGWHEEL_DATA_DIR || path.join(os.tmpdir(), "seo-studio-visibility"), "runs.jsonl");
 }
 
 export async function saveVisibilityRun(run: VisibilityRun): Promise<void> {

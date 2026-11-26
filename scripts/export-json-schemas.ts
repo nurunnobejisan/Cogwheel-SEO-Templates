@@ -27,7 +27,7 @@ const EXPORT_TARGETS: SchemaExportTarget[] = [
     fileName: "keyword-matrix.schema.json",
     schema: KeywordStrategyMatrixSchema,
     name: "KeywordStrategyMatrix",
-    description: "Standard JSON Schema for the Cogwheel 78-keyword hospitality strategy matrix.",
+    description: "Standard JSON Schema for the SEO Studio 78-keyword hospitality strategy matrix.",
   },
   {
     fileName: "brand-guardrails.schema.json",

@@ -1,6 +1,6 @@
-import { CogwheelTemplate, ClientProfile, PageAuditData, ScoreBreakdown, QuickWinItem } from "../types/extension";
+import { SeoStudioTemplate, ClientProfile, PageAuditData, ScoreBreakdown, QuickWinItem } from "../types/extension";
 
-export const COGWHEEL_TEMPLATES: CogwheelTemplate[] = [
+export const SEO_STUDIO_TEMPLATES: SeoStudioTemplate[] = [
   // ── 1. Landing Pages ──
   {
     id: "hotel-destination-guide",
@@ -305,19 +305,19 @@ export const COGWHEEL_TEMPLATES: CogwheelTemplate[] = [
     title: "78-Keyword Pool Allocation & Rationale Prompt",
     category: "AI Prompts",
     format: "markdown",
-    description: "Claude & ChatGPT prompt for allocating Semrush hospitality keyword pools across hotel landing pages using the 3-step Cogwheel rationale.",
+    description: "Claude & ChatGPT prompt for allocating Semrush hospitality keyword pools across hotel landing pages using the 3-step SEO Studio rationale.",
     tags: ["Claude", "ChatGPT", "Semrush", "Keyword Research"],
-    content: `You are the Lead Hospitality SEO Strategist at Razib Marketing following Cogwheel SEO standards.
+    content: `You are the Lead Hospitality SEO Strategist at Nurunnobe Jisan following SEO Studio standards.
 
 Analyze the following property and allocate target keywords across landing pages:
 PROPERTY: {{hotelName}}
 CITY / REGION: {{cityName}}, {{stateCode}}
 BRAND FLAG: {{brandFlag}}
 
-CRITICAL COGWHEEL GROUND RULES:
+CRITICAL SEO STUDIO GROUND RULES:
 1. Cite real Semrush search demand (Search Volume & Keyword Difficulty). Never fabricate traffic numbers.
 2. Secondary room & amenity pages MUST target KD < 45 to achieve 60-90 day rank velocity.
-3. Every recommendation must provide the 3-Step Cogwheel Rationale:
+3. Every recommendation must provide the 3-Step SEO Studio Rationale:
    - Step 1 & 2: Demand Grounding & Strategic Fit (search intent, booking urgency, comp-set win)
    - Step 3: On-Page Placement Directives (Meta Title, H1, H2s, image alt tags, JSON-LD schema)
 
@@ -358,12 +358,12 @@ REQUIREMENTS:
   // ── 5. Audits & Checklists ──
   {
     id: "checklist-10-gate-quality",
-    title: "Cogwheel 10-Gate Production Quality Checklist",
+    title: "SEO Studio 10-Gate Production Quality Checklist",
     category: "Audits & Checklists",
     format: "markdown",
     description: "The official 10-gate quality standard required before publishing or approving any hotel page.",
     tags: ["Quality Gate", "Pre-Launch", "Audits"],
-    content: `# Cogwheel 10-Gate Production Quality Checklist
+    content: `# SEO Studio 10-Gate Production Quality Checklist
 
 - [ ] **Gate 1 · Title Tag**: 45–60 characters, primary keyword in front, CTR benefit hook, branded suffix.
 - [ ] **Gate 2 · Meta Description**: 120–155 characters, includes secondary keyword, value hook, and direct call-to-action.
@@ -386,7 +386,7 @@ REQUIREMENTS:
     format: "html",
     description: "Ready-to-paste Shopify Liquid section template for hotels running boutique stores or reservation add-ons.",
     tags: ["Shopify", "Liquid", "E-commerce"],
-    content: `{% comment %} Cogwheel SEO Studio - Shopify Liquid Exporter {% endcomment %}
+    content: `{% comment %} SEO Studio - Shopify Liquid Exporter {% endcomment %}
 <div class="hotel-room-section" id="room-{{ section.id }}">
   <div class="page-width">
     <h2 class="room-title">{{ section.settings.room_title | default: "{{roomTitle}}" }}</h2>
@@ -422,7 +422,7 @@ REQUIREMENTS:
     tags: ["WordPress", "PHP", "Yoast SEO", "RankMath"],
     content: `<?php
 /**
- * Cogwheel SEO - WordPress Dynamic Meta Injection
+ * SEO Studio - WordPress Dynamic Meta Injection
  */
 add_filter( 'wpseo_title', function( $title ) {
     if ( is_singular( 'hotel_room' ) ) {
@@ -621,11 +621,11 @@ add_filter( 'wpseo_metadesc', function( $desc ) {
 }`,
     defaultVariables: {
       canonicalUrl: "https://example.com/platform",
-      softwareName: "Cogwheel SEO & GEO Studio",
+      softwareName: "SEO & GEO Studio",
       softwareDescription: "Enterprise SEO and Generative Engine Optimization platform for automated DOM auditing and AI search ranking.",
       applicationCategory: "BusinessApplication",
       startingPrice: "0",
-      companyName: "Cogwheel AI",
+      companyName: "SEO Studio AI",
       originUrl: "https://example.com",
     },
   },
@@ -806,7 +806,7 @@ add_filter( 'wpseo_metadesc', function( $desc ) {
       dateModified: "2026-11-24T10:00:00+00:00",
       authorName: "Sarah Jenkins",
       authorTitle: "Head of Search Research",
-      publisherName: "Cogwheel Research",
+      publisherName: "SEO Studio Research",
       publisherLogoUrl: "https://example.com/logo.png",
       metaDescription: "In-depth guide covering the core pillars of Generative Engine Optimization (GEO), entity extraction, and schema integration for AI search engines.",
     },
@@ -860,10 +860,10 @@ export const metadata: Metadata = {
 };`,
     defaultVariables: {
       pageSlug: "solutions",
-      targetTitle: "Enterprise SEO Automation & GEO Studio | Cogwheel AI",
+      targetTitle: "Enterprise SEO Automation & GEO Studio | SEO Studio AI",
       targetMetaDescription: "Autonomous search intelligence and in-browser DOM optimization engine for modern growth teams. Start your free trial today.",
       canonicalUrl: "https://example.com/solutions",
-      brandName: "Cogwheel AI",
+      brandName: "SEO Studio AI",
       ogImageUrl: "https://example.com/og/solutions.png",
     },
   },
@@ -1277,24 +1277,24 @@ export function calculateSeoScores(data: PageAuditData): ScoreBreakdown {
   };
 }
 
-export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
-  url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+export const SEO_STUDIO_OPTIMAL_AUDIT_DATA: PageAuditData = {
+  url: "https://github.com/nurunnobejisan/SEO-Studio",
   origin: "https://github.com",
-  pathname: "/jisan-razibmarketing/Cogwheel-SEO-Templates",
+  pathname: "/nurunnobejisan/SEO-Studio",
   protocol: "https:",
   hostname: "github.com",
-  title: "Cogwheel SEO & Hospitality Templates Studio | Official Site",
+  title: "SEO Studio | Hospitality SEO & GEO Templates Studio",
   titlePixelWidth: 465,
-  metaDesc: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.",
+  metaDesc: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Nurunnobe Jisan.",
   metaDescPixelWidth: 880,
-  canonical: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+  canonical: "https://github.com/nurunnobejisan/SEO-Studio",
   metaRobots: "index, follow",
   language: "en",
   siteCategory: "saas",
   siteCategoryLabel: "SaaS & AI Technology",
   detectedCms: "Next.js",
   detectedCmsLabel: "Next.js (SSR / React)",
-  h1Elements: ["Cogwheel SEO & Hospitality Templates Studio"],
+  h1Elements: ["SEO Studio"],
   h2Elements: [
     "Brand Guardrails & Pixel Enforcement",
     "Lodging Schema & JSON-LD Automation",
@@ -1307,7 +1307,7 @@ export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
     "OTA Direct-Booking Displacement Engine",
   ],
   allHeadings: [
-    { tag: "H1", text: "Cogwheel SEO & Hospitality Templates Studio" },
+    { tag: "H1", text: "SEO Studio" },
     { tag: "H2", text: "Brand Guardrails & Pixel Enforcement" },
     { tag: "H2", text: "Lodging Schema & JSON-LD Automation" },
     { tag: "H2", text: "Generative Engine Optimization (GEO) Answer Blocks" },
@@ -1317,7 +1317,7 @@ export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
     { tag: "H3", text: "OTA Direct-Booking Displacement Engine" },
   ],
   headingHierarchy: [
-    { tag: "H1", text: "Cogwheel SEO & Hospitality Templates Studio", level: 1, suggestedTitleCase: "Cogwheel SEO & Hospitality Templates Studio" },
+    { tag: "H1", text: "SEO Studio", level: 1, suggestedTitleCase: "SEO Studio" },
     { tag: "H2", text: "Brand Guardrails & Pixel Enforcement", level: 2, suggestedTitleCase: "Brand Guardrails & Pixel Enforcement" },
     { tag: "H2", text: "Lodging Schema & JSON-LD Automation", level: 2, suggestedTitleCase: "Lodging Schema & JSON-LD Automation" },
   ],
@@ -1326,16 +1326,16 @@ export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
   imagesWithoutAlt: 0,
   oversizedImages: 0,
   imagesList: [
-    { src: "/assets/banner.png", alt: "Cogwheel SEO Studio Banner", loading: "lazy" },
+    { src: "/assets/banner.png", alt: "SEO Studio Banner", loading: "lazy" },
     { src: "/assets/preview.png", alt: "SERP and Social Preview", loading: "lazy" },
   ],
   detailedImages: [
     {
       id: "img-1",
       src: "https://cogwheel-seo-templates.vercel.app/banner.webp",
-      alt: "Cogwheel SEO Studio Banner",
-      proposedAlt: "Cogwheel SEO & Hospitality Templates Studio Universal AI Inspector",
-      targetFilename: "cogwheel-seo-studio-universal-inspector.webp",
+      alt: "SEO Studio Banner",
+      proposedAlt: "SEO Studio Universal AI Inspector",
+      targetFilename: "seo-studio-seo-studio-universal-inspector.webp",
       isDecorative: false,
       width: 1200,
       height: 630,
@@ -1374,9 +1374,9 @@ export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
     {
       "@context": "https://schema.org",
       "@type": "Hotel",
-      name: "Cogwheel Luxury Resort & Studio",
+      name: "SEO Studio Luxury Resort & Studio",
       description: "Premier hospitality SEO and Generative Engine Optimization platform.",
-      url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+      url: "https://github.com/nurunnobejisan/SEO-Studio",
     },
     {
       "@context": "https://schema.org",
@@ -1384,10 +1384,10 @@ export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
       mainEntity: [
         {
           "@type": "Question",
-          name: "What is Cogwheel SEO Studio?",
+          name: "What is SEO Studio?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Cogwheel SEO Studio is a specialized hospitality optimization platform designed for hotel SEO managers.",
+            text: "SEO Studio is a specialized hospitality optimization platform designed for hotel SEO managers.",
           },
         },
       ],
@@ -1407,29 +1407,29 @@ export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
     nofollow: 0,
   },
   internalUrls: [
-    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/brand-compliant-hotel-onpage.md",
-    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/hotel-geo-ai-visibility.md",
-    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/hotel-lodging-schema.md",
+    "https://github.com/nurunnobejisan/SEO-Studio/blob/main/templates/brand-compliant-hotel-onpage.md",
+    "https://github.com/nurunnobejisan/SEO-Studio/blob/main/templates/hotel-geo-ai-visibility.md",
+    "https://github.com/nurunnobejisan/SEO-Studio/blob/main/templates/hotel-lodging-schema.md",
   ],
   hasViewport: true,
   hasOgTitle: true,
   hasOgImage: true,
-  ogTitle: "Cogwheel SEO & Hospitality Templates Studio | Official Site",
-  ogDescription: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.",
-  ogImage: "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/assets/banner.png",
+  ogTitle: "SEO Studio | Official Site",
+  ogDescription: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Nurunnobe Jisan.",
+  ogImage: "https://raw.githubusercontent.com/nurunnobejisan/SEO-Studio/main/assets/banner.png",
   twitterTags: {
     card: "summary_large_image",
-    title: "Cogwheel SEO & Hospitality Templates Studio",
+    title: "SEO Studio",
     description: "Production-grade hospitality SEO & GEO platform.",
-    image: "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/assets/banner.png",
+    image: "https://raw.githubusercontent.com/nurunnobejisan/SEO-Studio/main/assets/banner.png",
   },
   detectedNap: {
     phone: "+1-800-555-0199",
     address: "Panama City Beachfront, FL 32413",
-    email: "contact@razibmarketing.com",
+    email: "nurunnobejisan@users.noreply.github.com",
   },
   socialLinks: [
-    { platform: "GitHub", url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates" },
+    { platform: "GitHub", url: "https://github.com/nurunnobejisan/SEO-Studio" },
   ],
   loadTimeMs: 240,
 };

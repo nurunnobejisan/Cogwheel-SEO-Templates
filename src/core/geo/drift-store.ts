@@ -15,7 +15,7 @@ import type { GeoSnapshot } from "../../../rules/geo/types.ts";
 const MAX_HISTORY = 30;
 
 function storeDir(): string {
-  return path.join(process.env.COGWHEEL_DATA_DIR || path.join(os.tmpdir(), "cogwheel-geo"), "snapshots");
+  return path.join(process.env.COGWHEEL_DATA_DIR || path.join(os.tmpdir(), "seo-studio-geo"), "snapshots");
 }
 
 function storeEnabled(): boolean {

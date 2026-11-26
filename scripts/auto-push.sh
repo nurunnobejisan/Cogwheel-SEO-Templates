@@ -1,6 +1,6 @@
 #!/bin/bash
 # Auto-commit and push all changes to GitHub
-cd /Users/jisanjomadder/Cogwheel-SEO-Templates
+cd /Users/jisanjomadder/SEO-Studio
 
 # Check if there are any changes (staged, unstaged, or untracked)
 if [ -z "$(git status --porcelain)" ]; then

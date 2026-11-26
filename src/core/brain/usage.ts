@@ -2,7 +2,7 @@ import "server-only";
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { cogwheelDataFile } from "@/lib/platform/data-dir";
+import { seoStudioDataFile } from "@/lib/platform/data-dir";
 
 interface Usage {
   date: string;
@@ -11,7 +11,7 @@ interface Usage {
 }
 
 function usageFile(): string {
-  return cogwheelDataFile("brain-usage.json");
+  return seoStudioDataFile("brain-usage.json");
 }
 
 function today(): string {

@@ -1,5 +1,5 @@
 /**
- * Cogwheel Platform Runtime — Entry Point (Phase 5)
+ * SEO Studio Platform Runtime — Entry Point (Phase 5)
  *
  * The governance and operator API layer that closes the loop over Phases 1–4:
  * RBAC, an append-only hash-chained audit log, rate limiting with backoff,

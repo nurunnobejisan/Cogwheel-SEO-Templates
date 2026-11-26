@@ -136,7 +136,7 @@ export function OptionsApp() {
           </div>
           <div>
             <h1 className="text-xl font-bold text-white tracking-wide">
-              Cogwheel Extension Settings & Training Guardrails
+              SEO Studio Extension Settings & Training Guardrails
             </h1>
             <p className="text-xs text-slate-400">
               Configure safe training data collection, domain allowlists/blocklists, and API synchronization
@@ -167,7 +167,7 @@ export function OptionsApp() {
             1. Safe Training Data Collection Consent
           </h2>
           <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-            Cogwheel can extract clean, anonymized webpage structures (H1-H6, JSON-LD, metadata, and Core Web Vitals) to build high-quality fine-tuning datasets for hotel search optimization. Personal identifiable information, credit cards, JWTs, and passwords are strictly excluded.
+            SEO Studio can extract clean, anonymized webpage structures (H1-H6, JSON-LD, metadata, and Core Web Vitals) to build high-quality fine-tuning datasets for hotel search optimization. Personal identifiable information, credit cards, JWTs, and passwords are strictly excluded.
           </p>
 
           <label className="flex items-center gap-3 p-3.5 rounded-xl border border-slate-800 bg-slate-950/70 cursor-pointer mb-4">
@@ -337,7 +337,7 @@ export function OptionsApp() {
             3. Web App API Synchronization
           </h2>
           <p className="text-xs text-slate-400">
-            Configure the endpoint to push curated training records to the Cogwheel Web App API with Bearer token authentication.
+            Configure the endpoint to push curated training records to the SEO Studio Web App API with Bearer token authentication.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>

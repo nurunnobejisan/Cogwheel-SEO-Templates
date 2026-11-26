@@ -104,12 +104,12 @@ function asString(value: ConnectorMutation["after"]): string {
   return value === null ? "" : typeof value === "string" ? value : JSON.stringify(value);
 }
 
-const PRODUCT_SEO_QUERY = `query CogwheelProductSeo($id: ID!) {
+const PRODUCT_SEO_QUERY = `query SeoStudioProductSeo($id: ID!) {
   product(id: $id) {
     id
     title
     seo { title description }
-    metafield(namespace: "cogwheel", key: "schema_json") { value }
+    metafield(namespace: "seo-studio", key: "schema_json") { value }
   }
 }`;
 
@@ -118,7 +118,7 @@ export function createShopifyConnector(config: ShopifyConnectorConfig): CmsConne
   const shop = normalizeShop(config.shop);
   const version = config.apiVersion ?? DEFAULT_SHOPIFY_API_VERSION;
   const endpoint = `https://${shop}/admin/api/${version}/graphql.json`;
-  const namespace = config.schemaNamespace ?? "cogwheel";
+  const namespace = config.schemaNamespace ?? "seo-studio";
   const key = config.schemaKey ?? "schema_json";
   const resourceType = config.target.resourceType ?? "product";
 
@@ -176,7 +176,7 @@ export function createShopifyConnector(config: ShopifyConnectorConfig): CmsConne
       if (Object.keys(input).length > 1 || Object.keys(input).some((field) => field !== "id")) {
         const mutationName = shopifyUpdateMutation(resourceType);
         const response = await graphql(
-          `mutation CogwheelUpdateSeo($input: ${mutationRootInput(mutationName)}!) {
+          `mutation SeoStudioUpdateSeo($input: ${mutationRootInput(mutationName)}!) {
             ${mutationName}(input: $input) {
               userErrors { field message }
             }
@@ -193,7 +193,7 @@ export function createShopifyConnector(config: ShopifyConnectorConfig): CmsConne
 
       if (schema) {
         const response = await graphql(
-          `mutation CogwheelSchemaMetafield($metafields: [MetafieldsSetInput!]!) {
+          `mutation SeoStudioSchemaMetafield($metafields: [MetafieldsSetInput!]!) {
             metafieldsSet(metafields: $metafields) {
               userErrors { field message }
             }
@@ -235,7 +235,7 @@ export function createShopifyConnector(config: ShopifyConnectorConfig): CmsConne
       const seo = (snapshot.seo as Record<string, string>) ?? {};
       const mutationName = shopifyUpdateMutation(resourceType);
       await graphql(
-        `mutation CogwheelRestoreSeo($input: ${mutationRootInput(mutationName)}!) {
+        `mutation SeoStudioRestoreSeo($input: ${mutationRootInput(mutationName)}!) {
           ${mutationName}(input: $input) {
             userErrors { field message }
           }

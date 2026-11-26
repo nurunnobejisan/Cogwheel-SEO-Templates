@@ -1,4 +1,4 @@
-"""Single Source of Truth Pydantic & Typed Data Models for Cogwheel SEO Studio.
+"""Single Source of Truth Pydantic & Typed Data Models for SEO Studio.
 
 Mirrors TypeScript schemas defined in src/schemas/validation.ts and JSON schemas
 located in schemas/*.schema.json.

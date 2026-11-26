@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — SERP Pixel-Width Optimizer
+ * SEO Studio Templates — SERP Pixel-Width Optimizer
  * 
  * Provides:
  * - Proportional glyph pixel-width estimation for Google SERP typography (Arial / Roboto)

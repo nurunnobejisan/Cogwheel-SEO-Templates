@@ -1,4 +1,4 @@
-"""Cogwheel SEO Studio — Python Automation & Validation Tools.
+"""SEO Studio — Python Automation & Validation Tools.
 
 Single source of truth for hospitality SEO & GEO data models and validation.
 """

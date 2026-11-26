@@ -1,4 +1,4 @@
-"""Cogwheel SEO Python Package.
+"""SEO Studio Python Package.
 
 Exports the core models, hotel fact extractor, GEO scorer, and template processor.
 """

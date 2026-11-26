@@ -52,7 +52,7 @@ function createAdapter(): { adapter: PersistenceAdapter; storage: RuntimeHandle[
   const configured = process.env.PLATFORM_DATA_DIR;
   // Serverless filesystems are ephemeral/read-only, so fall back to /tmp there.
   const defaultDir = process.env.VERCEL
-    ? path.join(os.tmpdir(), "cogwheel-platform")
+    ? path.join(os.tmpdir(), "seo-studio-platform")
     : path.join(process.cwd(), ".platform-data");
   const dir = configured ?? defaultDir;
 

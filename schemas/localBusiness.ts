@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — LocalBusiness & LodgingBusiness Schema Builder
+ * SEO Studio Templates — LocalBusiness & LodgingBusiness Schema Builder
  */
 
 export interface LocalBusinessInput {

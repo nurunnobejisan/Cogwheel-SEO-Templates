@@ -15,7 +15,7 @@ import {
   Filter,
 } from "lucide-react";
 import { PageAuditData, ClientProfile } from "../types/extension";
-import { COGWHEEL_TEMPLATES, resolveTemplateContent } from "../data/cogwheelTemplates";
+import { SEO_STUDIO_TEMPLATES, resolveTemplateContent } from "../data/seoStudioTemplates";
 
 interface Props {
   pageData?: PageAuditData;
@@ -91,11 +91,11 @@ export function AutomationBulkRunner({ pageData, activeProfile }: Props) {
         answer2: `Yes, complimentary high-speed Wi-Fi and secure on-site parking with EV vehicle chargers are provided.`,
       };
 
-      const titleMetaTpl = COGWHEEL_TEMPLATES.find((t) => t.id === "title-meta-suite")?.content || "";
-      const h1Tpl = COGWHEEL_TEMPLATES.find((t) => t.id === "usp-headline-hero")?.content || "";
-      const schemaTpl = COGWHEEL_TEMPLATES.find((t) => t.id === "schema-hotel-graph")?.content || "";
-      const faqTpl = COGWHEEL_TEMPLATES.find((t) => t.id === "hotel-faq-amenities")?.content || "";
-      const aiGeoTpl = COGWHEEL_TEMPLATES.find((t) => t.id === "prompt-geo-ai-citation")?.content || "";
+      const titleMetaTpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "title-meta-suite")?.content || "";
+      const h1Tpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "usp-headline-hero")?.content || "";
+      const schemaTpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "schema-hotel-graph")?.content || "";
+      const faqTpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "hotel-faq-amenities")?.content || "";
+      const aiGeoTpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "prompt-geo-ai-citation")?.content || "";
 
       const resTitleMeta = resolveTemplateContent(titleMetaTpl, vars);
       const resH1 = resolveTemplateContent(h1Tpl, vars);
@@ -103,7 +103,7 @@ export function AutomationBulkRunner({ pageData, activeProfile }: Props) {
       const resFaq = resolveTemplateContent(faqTpl, vars);
       const resGeo = resolveTemplateContent(aiGeoTpl, vars);
 
-      const packetMarkdown = `# Cogwheel SEO & GEO Production Deliverable Packet
+      const packetMarkdown = `# SEO Studio & GEO Production Deliverable Packet
 **Property:** ${hotelName} (${cityName}, ${stateCode})  
 **Target URL:** ${canonical}  
 **Primary Target Keyword:** ${targetKw}  
@@ -164,7 +164,7 @@ ${resGeo}
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `${(pageData?.hostname || "hotel").replace(/\./g, "_")}_Cogwheel_Deliverable_Packet.md`;
+    a.download = `${(pageData?.hostname || "hotel").replace(/\./g, "_")}_SEO Studio_Deliverable_Packet.md`;
     a.click();
   };
 
@@ -379,7 +379,7 @@ ${resGeo}
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Cogwheel_Monthly_Visibility_Audit_${timestamp}.csv`;
+    a.download = `SEO_Studio_Monthly_Visibility_Audit_${timestamp}.csv`;
     a.click();
   };
 
@@ -387,7 +387,7 @@ ${resGeo}
   const handleExportJson = () => {
     const timestamp = new Date().toISOString();
     const payload = {
-      report: "Cogwheel Monthly Visibility Deck Audit",
+      report: "SEO Studio Monthly Visibility Deck Audit",
       timestamp,
       totalProperties: batchResults.length,
       averageOverallScore:
@@ -406,7 +406,7 @@ ${resGeo}
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `Cogwheel_Visibility_Deck_${new Date().toISOString().split("T")[0]}.json`;
+    a.download = `SEO_Studio_Visibility_Deck_${new Date().toISOString().split("T")[0]}.json`;
     a.click();
   };
 
@@ -689,7 +689,7 @@ ${resGeo}
           ) : (
             <Play className="h-4 w-4" />
           )}
-          <span>{workflowRunning ? "Compiling Deliverables..." : "Run Full Cogwheel Workflow on This Page"}</span>
+          <span>{workflowRunning ? "Compiling Deliverables..." : "Run Full SEO Studio Workflow on This Page"}</span>
         </button>
 
         {/* Unified Deliverable Packet Preview */}

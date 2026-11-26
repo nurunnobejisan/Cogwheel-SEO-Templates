@@ -3,7 +3,7 @@ import Link from "next/link";
 import matrixData from "../../../data/78-keyword-strategy-matrix.json";
 
 export const metadata: Metadata = {
-  title: "78-Keyword Hospitality Strategy Matrix — Cogwheel Studio",
+  title: "78-Keyword Hospitality Strategy Matrix — SEO Studio Suite",
   description:
     "Comprehensive 78-keyword strategy matrix for hotel SEO across Brand, Local, Airport, Meetings, Extended Stay, and Generative AI conversational queries.",
 };
@@ -26,7 +26,7 @@ export default function StrategyMatrixPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                  Cogwheel SEO &amp; GEO Studio
+                  SEO &amp; GEO Studio
                 </h1>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                   v3.0.0

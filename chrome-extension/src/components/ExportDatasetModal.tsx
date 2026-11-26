@@ -108,7 +108,7 @@ export function ExportDatasetModal({
 
   const handleDownload = () => {
     if (!jsonlOutput) return;
-    const filename = `cogwheel_${activeFormat}_sft_${new Date().toISOString().slice(0, 10)}.jsonl`;
+    const filename = `seo-studio_${activeFormat}_sft_${new Date().toISOString().slice(0, 10)}.jsonl`;
     const blob = new Blob([jsonlOutput], { type: "application/jsonlines;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

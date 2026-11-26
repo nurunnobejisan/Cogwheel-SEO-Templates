@@ -14,7 +14,7 @@ export default defineConfig({
     emptyOutDir: false,
     lib: {
       entry: resolve(__dirname, "src/content/index.ts"),
-      name: "CogwheelContent",
+      name: "SeoStudioContent",
       formats: ["iife"],
       fileName: () => "content.js",
     },

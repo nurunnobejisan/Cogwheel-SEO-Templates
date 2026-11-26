@@ -1,6 +1,6 @@
 """Automated Image Optimization Generator for Any Website URL.
 
-Enforces Cogwheel's Exact Image Rules:
+Enforces SEO Studio's Exact Image Rules:
 1. Site-Wide Image Crawler & Audit:
    - Extracts every <img>, <picture>, and CSS hero image URL across all crawled pages.
    - Deduplicates by canonical asset URL while tracking which page(s) and surrounding section heading
@@ -572,7 +572,7 @@ class ImageOptimizer:
         ws1.column_dimensions["C"].width = 65
 
         ws1.merge_cells("B2:C2")
-        title_cell = ws1.cell(row=2, column=2, value="Cogwheel Image SEO & Accessibility Optimization Guide")
+        title_cell = ws1.cell(row=2, column=2, value="SEO Studio Image SEO & Accessibility Optimization Guide")
         title_cell.font = font_instruction_title
 
         ws1.merge_cells("B3:C3")
@@ -589,7 +589,7 @@ class ImageOptimizer:
             ("4. Hard Cap Violation Alert", "Any ALT text exceeding 125 characters is automatically highlighted in red via conditional formatting per WCAG screen reader best practices."),
             ("5. Clean File Naming", "Opaque camera filenames (DSC*, IMG_*, image+244) hurt image rankings. In Tab 2, descriptive SEO Titles are provided for media library renaming."),
             ("6. Preview Links", "Column A contains clickable '=HYPERLINK()' previews for developers and content managers to verify the image subject instantly."),
-            ("7. 1-Click CMS Auto-Fill", "Use the Cogwheel Chrome Extension Side Panel to auto-fill all image alt attributes across the page with one click."),
+            ("7. 1-Click CMS Auto-Fill", "Use the SEO Studio Chrome Extension Side Panel to auto-fill all image alt attributes across the page with one click."),
         ]
 
         curr_row = 5

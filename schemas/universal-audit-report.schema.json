@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "UniversalAuditReport",
-  "description": "Standardized mode-aware audit payload emitted by the Cogwheel Universal SEO Engine (rules/index.ts). Consumed by the AI patch engine and the CMS deployment gateway.",
+  "description": "Standardized mode-aware audit payload emitted by the SEO Studio Universal SEO Engine (rules/index.ts). Consumed by the AI patch engine and the CMS deployment gateway.",
   "type": "object",
   "properties": {
     "auditId": { "type": "string", "minLength": 1 },

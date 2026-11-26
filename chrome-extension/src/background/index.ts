@@ -1,7 +1,7 @@
-// Background Service Worker for Cogwheel Chrome Extension
+// Background Service Worker for SEO Studio Chrome Extension
 import { checkPageRestriction, isRestrictedUrl } from "../utils/urlSecurity";
 import { initAutoUpdater } from "./auto-updater";
-import { calculateSeoScores } from "../data/cogwheelTemplates";
+import { calculateSeoScores } from "../data/seoStudioTemplates";
 import { PageAuditData } from "../types/extension";
 
 // Initialize GitHub Auto-Update & Silent OTA Live Sync Engine
@@ -154,20 +154,20 @@ chrome.runtime.onInstalled.addListener(() => {
 
   // Create Right-Click Context Menus
   chrome.contextMenus.create({
-    id: "cogwheel-audit-page",
-    title: "Cogwheel SEO: Audit This Page",
+    id: "seo-studio-audit-page",
+    title: "SEO Studio: Audit This Page",
     contexts: ["page", "link"],
   });
 
   chrome.contextMenus.create({
-    id: "cogwheel-generate-schema",
-    title: "Cogwheel SEO: Generate Schema for Page",
+    id: "seo-studio-generate-schema",
+    title: "SEO Studio: Generate Schema for Page",
     contexts: ["page"],
   });
 
   chrome.contextMenus.create({
-    id: "cogwheel-template-selection",
-    title: "Cogwheel SEO: Run Template on Selection",
+    id: "seo-studio-template-selection",
+    title: "SEO Studio: Run Template on Selection",
     contexts: ["selection"],
   });
 });
@@ -177,11 +177,11 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   if (!tab || !tab.id) return;
   const tabId = tab.id;
 
-  if (info.menuItemId === "cogwheel-audit-page") {
+  if (info.menuItemId === "seo-studio-audit-page") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
       chrome.sidePanel.open({ tabId }).catch(() => {});
     }
-  } else if (info.menuItemId === "cogwheel-generate-schema") {
+  } else if (info.menuItemId === "seo-studio-generate-schema") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
       chrome.sidePanel.open({ tabId }).then(() => {
         broadcastPageUpdate(tabId, {
@@ -191,7 +191,7 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
         });
       }).catch(() => {});
     }
-  } else if (info.menuItemId === "cogwheel-template-selection") {
+  } else if (info.menuItemId === "seo-studio-template-selection") {
     if (chrome.sidePanel && chrome.sidePanel.open) {
       chrome.sidePanel.open({ tabId }).then(() => {
         broadcastPageUpdate(tabId, {

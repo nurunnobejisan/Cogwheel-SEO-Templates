@@ -1,4 +1,4 @@
-# Contributing to Cogwheel SEO
+# Contributing to SEO Studio
 
 We welcome contributions! By participating in this project you agree to follow our
 [Code of Conduct](CODE_OF_CONDUCT.md).

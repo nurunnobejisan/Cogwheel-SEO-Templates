@@ -7,7 +7,7 @@ export function buildEmailOutreachPrompt(opts: {
   input: EmailOutreachFormattingInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are an elite Digital PR & Outreach Copywriter at Cogwheel SEO Studio.
+  const system = `You are an elite Digital PR & Outreach Copywriter at SEO Studio.
 Craft high-converting, personalized, non-spammy outreach email sequences for luxury and boutique hotels.
 Never write generic automated blast templates. Focus on mutual value, high journalistic relevance, and professional hospitality tone.
 Output strictly valid JSON conforming to the schema.`;

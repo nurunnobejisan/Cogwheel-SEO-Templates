@@ -502,7 +502,7 @@ class KeywordResearchEngine:
         # Cover Header
         # -------------------------------------------------------------------
         title_p = doc.add_paragraph()
-        run_badge = title_p.add_run("COGWHEEL SEO STUDIO • STRATEGIC DELIVERABLE\n")
+        run_badge = title_p.add_run("SEO STUDIO SEO STUDIO • STRATEGIC DELIVERABLE\n")
         run_badge.font.size = Pt(9)
         run_badge.font.bold = True
         run_badge.font.color.rgb = COLOR_ACCENT

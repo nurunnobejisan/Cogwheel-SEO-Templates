@@ -44,7 +44,7 @@ Before sending:
 3. Remove any line above that your rank tracker does not support.
 
 Best regards,
-Cogwheel SEO Team`;
+SEO Studio Team`;
 
   const [body, setBody] = useState(defaultBody);
   const [busy, setBusy] = useState(false);

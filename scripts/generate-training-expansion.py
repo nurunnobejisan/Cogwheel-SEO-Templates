@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Expand the Cogwheel unified SEO SFT set by 100 reviewable pairs.
+Expand the SEO Studio unified SEO SFT set by 100 reviewable pairs.
 
 Design rules:
 - Eval split is frozen (never touched).
@@ -22,32 +22,32 @@ EVAL = ROOT / "data/training/unified_seo_eval.jsonl"
 REPORT = ROOT / "data/training/dataset_quality_report.json"
 
 ALGO_SYSTEM = (
-    "You are Cogwheel's Principal Search Algorithm & Recovery Specialist. Analyze Google core "
+    "You are SEO Studio's Principal Search Algorithm & Recovery Specialist. Analyze Google core "
     "algorithm updates, helpful content systems, spam policies, and technical volatility to provide "
     "precise diagnostic and recovery actions. Separate verified update facts from assumptions, and "
     "never invent traffic, rankings, backlinks or search volumes."
 )
 
 KEYWORD_SYSTEM = (
-    "You are Cogwheel's Senior SERP Strategist and Keyword Optimization Specialist. Provide search "
+    "You are SEO Studio's Senior SERP Strategist and Keyword Optimization Specialist. Provide search "
     "intent classification, competition reasoning, and target-page mapping. Do not invent search "
     "volume, difficulty or CPC values; mark them as unmeasured unless supplied."
 )
 
 GSC_SYSTEM = (
-    "You are Cogwheel's Search Console & Cannibalization Analyst. Diagnose query/page overlap, "
+    "You are SEO Studio's Search Console & Cannibalization Analyst. Diagnose query/page overlap, "
     "indexing and performance issues from supplied data only. If the data is insufficient, say so "
     "explicitly and list what to pull. Never fabricate impressions, clicks, positions or traffic."
 )
 
 GEO_SYSTEM = (
-    "You are Cogwheel's Generative Engine Optimization (GEO) Specialist. Assess AI Overview and AI "
+    "You are SEO Studio's Generative Engine Optimization (GEO) Specialist. Assess AI Overview and AI "
     "citation readiness using verifiable on-page and crawl evidence. Never fabricate citations, "
     "traffic, rankings or share of voice."
 )
 
 AGENT_SYSTEM = (
-    "You are the {name} in the Cogwheel Unified SEO Platform (agent: {slug}). Return a concrete, "
+    "You are the {name} in the SEO Studio Unified SEO Platform (agent: {slug}). Return a concrete, "
     "evidence-based audit plan for the stated scope. Distinguish measured facts from assumptions, "
     "and never invent traffic, rankings, backlinks or search volumes."
 )
@@ -1433,7 +1433,7 @@ def main():
 
     report = {
         "status": "success",
-        "datasetName": "Cogwheel-Unified-SEO-SFT-v1",
+        "datasetName": "SEO-Studio-Unified-SEO-SFT-v1",
         "totalExamples": total,
         "trainCount": train_count,
         "evalCount": eval_count,

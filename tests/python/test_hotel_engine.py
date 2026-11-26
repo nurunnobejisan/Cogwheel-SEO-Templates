@@ -214,7 +214,7 @@ def test_geo_scorer_evaluates_citation_readiness() -> None:
 
 
 def test_template_processor_renders_all_templates() -> None:
-    """Verify TemplateProcessor injects live facts into all 10 Cogwheel templates."""
+    """Verify TemplateProcessor injects live facts into all 10 SEO Studio templates."""
     extractor = HotelExtractor()
     facts: ExtractedHotelFacts = extractor.extract_from_html(
         SAMPLE_HOTEL_HTML, url="https://grandpacific-hotel.com"

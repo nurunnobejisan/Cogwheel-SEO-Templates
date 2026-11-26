@@ -1,11 +1,11 @@
 [project]
-name = "cogwheel-seo-studio"
+name = "seo-studio-seo-studio"
 version = "3.0.0"
 description = "Enterprise Hospitality Search & Generative Engine Optimization (GEO) Suite"
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-    { name = "Razib Marketing", email = "contact@razibmarketing.com" }
+    { name = "Nurunnobe Jisan", email = "nurunnobejisan@users.noreply.github.com" }
 ]
 dependencies = [
     "pydantic>=2.7.0",

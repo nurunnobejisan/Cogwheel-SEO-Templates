@@ -31,7 +31,7 @@ export function ExecutivePitchDeckModal({
   const location = [property?.city, property?.state].filter(Boolean).join(", ");
 
   // White-label custom agency settings
-  const [agencyName, setAgencyName] = useState("Razib Marketing");
+  const [agencyName, setAgencyName] = useState("Nurunnobe Jisan");
   const [agencyTagline, setAgencyTagline] = useState("Hospitality Organic Growth & GEO Advisory");
   const [leadConsultant, setLeadConsultant] = useState("Senior Search Strategist");
   const [contactEmail, setContactEmail] = useState("");
@@ -240,7 +240,7 @@ CONTACT: ${contactEmail || "[add contact email]"}`;
 
           {/* Page 1 Footer */}
           <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4 text-micro text-slate-400 dark:border-slate-800">
-            <span>Powered by {agencyName} • Cogwheel Direct-Booking Engine</span>
+            <span>Powered by {agencyName} • SEO Studio Direct-Booking Engine</span>
             <span>Page 1 of 2</span>
           </div>
         </div>

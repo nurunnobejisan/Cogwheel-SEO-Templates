@@ -1,4 +1,4 @@
-# Integration Status Report — Cogwheel Enterprise Platform
+# Integration Status Report — SEO Studio Enterprise Platform
 **Date:** 2026-11-23  
 **Document:** `AUDIT/INTEGRATION-STATUS.md`  
 **Registry Location:** `src/core/integrations/integration-manager.ts`  

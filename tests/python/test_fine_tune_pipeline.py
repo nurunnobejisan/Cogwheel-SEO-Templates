@@ -166,13 +166,13 @@ def test_dataset_split_and_config_generation():
 def test_evaluation_summary_table():
     benchmarks = compute_evaluation_benchmark()
     assert "Base Model (Zero-Shot)" in benchmarks
-    assert "Cogwheel Tuned Model (SFT)" in benchmarks
+    assert "SEO Studio Tuned Model (SFT)" in benchmarks
 
     table = render_evaluation_summary_table(benchmarks)
-    assert "COGWHEEL SEO STUDIO - FINE-TUNING EVALUATION SUMMARY BENCHMARK" in table
+    assert "SEO STUDIO SEO STUDIO - FINE-TUNING EVALUATION SUMMARY BENCHMARK" in table
     assert "Title SERP Width Budget" in table
     assert "Brand Guardrail Compliance" in table
-    assert "OVERALL COGWHEEL SCORE" in table
+    assert "OVERALL SEO STUDIO SCORE" in table
 
 
 if __name__ == "__main__":

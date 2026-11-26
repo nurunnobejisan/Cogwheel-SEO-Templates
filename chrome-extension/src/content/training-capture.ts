@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO & GEO Studio - Universal Read-Only Training Data Extractor & Sanitizer v3.0
+ * SEO & GEO Studio - Universal Read-Only Training Data Extractor & Sanitizer v3.0
  *
  * Manifest V3 compatible content module that extracts rich structured search metadata,
  * H1-H6 hierarchy, full JSON-LD graphs, microdata, links, images, hotel hospitality blocks,

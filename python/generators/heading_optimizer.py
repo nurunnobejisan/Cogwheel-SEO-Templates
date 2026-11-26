@@ -1,6 +1,6 @@
 """Automated Heading Structure Optimization Generator for Any Website URL.
 
-Enforces Cogwheel's Exact Heading Rules:
+Enforces SEO Studio's Exact Heading Rules:
 1. Full-Page Heading & Section Extraction:
    - Parses rendered DOM in top-to-bottom visual order (H1, H2, H3, H4, plus visual section labels).
    - Detects structural issues: missing H1, multiple H1s, inverted hierarchy, skipped levels (H1 -> H3),
@@ -791,7 +791,7 @@ class HeadingOptimizer:
         ws1.column_dimensions["C"].width = 65
 
         ws1.merge_cells("B2:C2")
-        title_cell = ws1.cell(row=2, column=2, value="Cogwheel Heading Structure Optimization Guide")
+        title_cell = ws1.cell(row=2, column=2, value="SEO Studio Heading Structure Optimization Guide")
         title_cell.font = font_instruction_title
 
         ws1.merge_cells("B3:C3")

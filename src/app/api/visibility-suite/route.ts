@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
           domain: property.url,
           city: property.city || "",
           state: property.state || "",
-          source: "Cogwheel SEO Templates",
+          source: "SEO Studio Templates",
         },
         promptsBatch: activePrompts.map((p: { prompt?: string; text?: string; category?: string; targetEngines?: string[] }) => ({
           text: p.prompt || p.text || "",

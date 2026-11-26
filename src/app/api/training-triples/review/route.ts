@@ -3,12 +3,12 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { isAuthenticatedPrincipal, principalFromRequest } from "@/lib/platform/auth";
 import { isTrainingEligible, type TrainingTriple, type TripleTier } from "@/core/training/dataset";
-import { cogwheelDataFile } from "@/lib/platform/data-dir";
+import { seoStudioDataFile } from "@/lib/platform/data-dir";
 
 export const dynamic = "force-dynamic";
 
 function tripleFile(): string {
-  return cogwheelDataFile("training-triples.jsonl");
+  return seoStudioDataFile("training-triples.jsonl");
 }
 const TIERS: TripleTier[] = ["raw", "reviewed", "gold"];
 

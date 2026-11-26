@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Accurate Google SERP Pixel Calculator
+ * SEO Studio Templates — Accurate Google SERP Pixel Calculator
  * 
  * Provides exact pixel-width estimation for Google SERP typography (Arial / Roboto)
  * matching Desktop Title (580px ceiling) and Meta Description (920px ceiling).

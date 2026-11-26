@@ -285,7 +285,7 @@ export function AiTrainingModal({
                   type="text"
                   value={authorName}
                   onChange={(e) => setAuthorName(e.target.value)}
-                  placeholder="e.g. Razib or Michael"
+                  placeholder="e.g. Nurunnobe or Michael"
                   className="input text-caption"
                 />
               </div>

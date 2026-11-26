@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "KeywordStrategyMatrix",
-  "description": "Standard JSON Schema for the Cogwheel 78-keyword hospitality strategy matrix.",
+  "description": "Standard JSON Schema for the SEO Studio 78-keyword hospitality strategy matrix.",
   "$ref": "#/definitions/KeywordStrategyMatrix",
   "definitions": {
     "KeywordStrategyMatrix": {

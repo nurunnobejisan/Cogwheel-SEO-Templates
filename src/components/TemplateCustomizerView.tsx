@@ -38,7 +38,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
   // Load persistence from localStorage on mount
   useEffect(() => {
     try {
-      const storedProgress = localStorage.getItem(`cogwheel_progress_${template.id}`);
+      const storedProgress = localStorage.getItem(`seo-studio_progress_${template.id}`);
       if (storedProgress) {
         setCheckedTasks(JSON.parse(storedProgress));
       }
@@ -63,7 +63,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
     setCheckedTasks((prev) => {
       const updated = { ...prev, [taskId]: !prev[taskId] };
       try {
-        localStorage.setItem(`cogwheel_progress_${template.id}`, JSON.stringify(updated));
+        localStorage.setItem(`seo-studio_progress_${template.id}`, JSON.stringify(updated));
       } catch {}
       return updated;
     });
@@ -173,7 +173,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
         },
         publisher: {
           "@type": "Organization",
-          name: "Cogwheel SEO Studio",
+          name: "SEO Studio",
           url: baseUrl,
         },
       };

@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Training-capture dedupe is content-based**: `POST /api/training-triples` no longer rejects a repeated URL; it rejects only byte-identical `audit` + `expertFix` content (`hasDuplicateContent`). An operator can now re-capture the same page after further expert edits, while exact duplicates are still blocked.
 - **Custom Fine-Tuned Model Inference Engine & Fallback Router** (`src/engine/custom-model-client.ts`):
   - Multi-provider inference support for Tuned Google Gemini (Vertex AI / Google AI Studio), custom REST API endpoints (vLLM / HuggingFace TGI), and local open-weight instances (Ollama / LoRA).
-  - Zero-latency 3-tier automatic fallback to Cogwheel's local deterministic rules engine on network failure or rate limits.
+  - Zero-latency 3-tier automatic fallback to SEO Studio's local deterministic rules engine on network failure or rate limits.
   - Dedicated inference settings interface in **Settings** tab with model endpoint configuration, API keys, temperature parameters, and live latency connection testing.
 - **Python Supervised Fine-Tuning (SFT) & LoRA Pipeline** (`python/scripts/fine_tune_pipeline.py`):
   - End-to-end dataset ingestion with strict Pydantic token and schema validation.
@@ -53,7 +53,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [3.0.0] - 2026-11-24
 
 ### Added
-- Complete source code integration of `claude-seo`, `open-seo`, and `mcp-gsc` into Cogwheel's unified architecture.
+- Complete source code integration of `claude-seo`, `open-seo`, and `mcp-gsc` into SEO Studio's unified architecture.
 - FastMCP Google Search Console Server and Unified TypeScript Client with query cannibalization detection and URL inspection.
 - 20 specialized autonomous SEO agents and 66-entry Google algorithm updates dataset with volatility risk checker.
 - Open-SEO audit issues catalog, Generative Engine Optimization (GEO) AI visibility tracker, backlinks, and keyword research.

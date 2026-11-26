@@ -1,4 +1,4 @@
-# Repository Audit — Cogwheel SEO & GEO Studio
+# Repository Audit — SEO & GEO Studio
 
 **Date:** 2026-11-25
 **Version audited:** 3.0.0
@@ -175,7 +175,7 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 - `src/middleware.ts`: per-IP API rate limits (read/write/crawl tiers), cross-origin write rejection, security headers, `noindex` for `/api/*` and `/platform`.
 - `src/lib/platform/session.ts` + `src/app/api/platform/session/route.ts`: HMAC-signed `cw_session` tokens, `PLATFORM_OPERATOR_TOKEN` sign-in, `PLATFORM_SESSION_SECRET` signing key; platform API fails closed (`401`) except `GET /health`; spoofable `x-actor-role` only honoured under explicit local `PLATFORM_DEV_AUTH=1`.
 - `src/lib/security/egress.ts`: DNS-aware SSRF validation + redirect-revalidating `safeFetch`, applied to full audit, sitemap audit, property autofill, visibility report, site crawl, heading audit and image audit.
-- OS-exec removed from request paths: Gmail CLI and python-pptx builder are opt-in (`COGWHEEL_ALLOW_LOCAL_*`), use `execFile` argument arrays, and return `501` by default.
+- OS-exec removed from request paths: Gmail CLI and python-pptx builder are opt-in (`SEO_STUDIO_ALLOW_LOCAL_*`), use `execFile` argument arrays, and return `501` by default.
 - Tests: `tests/security.test.ts` covers IP classification, egress rejection, rate-limit windows, session signing/tampering/expiry and header-spoofing rejection.
 
 ### Completed — reporting (H6)

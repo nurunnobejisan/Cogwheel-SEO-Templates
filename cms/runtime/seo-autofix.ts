@@ -45,7 +45,7 @@ export function buildSeoAutofixScript(options: SeoAutofixScriptOptions): string 
   const attr = options.clientIdAttribute ?? "data-client-id";
   // Kept intentionally compact + ES5-safe so it runs in any crawler sandbox.
   return (
-    `/* Cogwheel SEO Auto-Fix Runtime v${SEO_AUTOFIX_VERSION} */` +
+    `/* SEO Studio Auto-Fix Runtime v${SEO_AUTOFIX_VERSION} */` +
     `(function(){` +
     `var s=document.currentScript||document.querySelector('script[${attr}]');` +
     `if(!s)return;` +
@@ -58,9 +58,9 @@ export function buildSeoAutofixScript(options: SeoAutofixScriptOptions): string 
     `m.setAttribute(n,val);document.head.appendChild(m);}m.setAttribute('content',v);}` +
     `function setLink(rel,href){var l=document.head.querySelector('link[rel="'+rel+'"]');` +
     `if(!l){l=document.createElement('link');l.setAttribute('rel',rel);document.head.appendChild(l);}l.setAttribute('href',href);}` +
-    `function setJsonLd(j){document.querySelectorAll('script[type="application/ld+json"][data-cogwheel]').forEach(function(n){n.remove();});` +
+    `function setJsonLd(j){document.querySelectorAll('script[type="application/ld+json"][data-seo-studio]').forEach(function(n){n.remove();});` +
     `var a=Array.isArray(j)?j:[j];a.forEach(function(o){var t=document.createElement('script');` +
-    `t.type='application/ld+json';t.setAttribute('data-cogwheel','1');` +
+    `t.type='application/ld+json';t.setAttribute('data-seo-studio','1');` +
     `t.textContent=JSON.stringify(o);document.head.appendChild(t);});}` +
     `function apply(p){if(!p)return;` +
     `if(p.title)document.title=p.title;` +

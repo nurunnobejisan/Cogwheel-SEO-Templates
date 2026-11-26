@@ -79,7 +79,7 @@ export function TrainingCaptureCard({ title, subtitle, stats, note, disabledReas
             onChange={(e) => setConsent(e.target.checked)}
           />
           <span>
-            I have the rights to contribute this data and consent to it training/improving the Cogwheel models. PII is
+            I have the rights to contribute this data and consent to it training/improving the SEO Studio models. PII is
             stripped before storage.
           </span>
         </label>

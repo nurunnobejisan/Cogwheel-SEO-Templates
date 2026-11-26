@@ -1,5 +1,5 @@
 /**
- * Cogwheel CMS Integration Layer — Entry Point (Phase 3)
+ * SEO Studio CMS Integration Layer — Entry Point (Phase 3)
  *
  * Secure, guarded publishing of Phase 2 FixPatches to real CMS platforms:
  *

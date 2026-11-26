@@ -82,7 +82,7 @@ const result = await deployPatch(patch, { connector, autoPilot: true }); // stat
 
 | Platform | Auth | Writes |
 | --- | --- | --- |
-| **WordPress** | Application password (`seo-autofix-bot`) | REST `/wp-json/wp/v2/{posts\|pages}/{id}`; meta keys for Yoast (`_yoast_wpseo_*`), Rank Math (`rank_math_*`), AIOSEO (`_aioseo_*`), with a generic `_cogwheel_*` fallback |
+| **WordPress** | Application password (`seo-autofix-bot`) | REST `/wp-json/wp/v2/{posts\|pages}/{id}`; meta keys for Yoast (`_yoast_wpseo_*`), Rank Math (`rank_math_*`), AIOSEO (`_aioseo_*`), with a generic `_seo-studio_*` fallback |
 | **Shopify** | OAuth access token | Admin GraphQL `productUpdate`/`collectionUpdate`/`pageUpdate` `seo` input + `metafieldsSet` for JSON-LD (App Embed, no Liquid edits) |
 | **Webflow** | API token | REST v2 `PATCH /collections/{id}/items/{id}` with a configurable field map |
 | **Custom** | public client id | Registers a runtime patch config served by the edge; applied client-side by `seo-autofix.js` |

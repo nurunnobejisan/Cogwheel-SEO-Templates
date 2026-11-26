@@ -160,7 +160,7 @@ export interface QuickWinItem {
   fixActionLabel?: string;
 }
 
-export interface CogwheelTemplate {
+export interface SeoStudioTemplate {
   id: string;
   title: string;
   category: "Landing Pages" | "Schemas" | "Meta & Headings" | "AI Prompts" | "Audits & Checklists" | "CMS Exporters";

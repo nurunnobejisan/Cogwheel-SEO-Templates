@@ -1,13 +1,13 @@
 <div align="center">
 
-<img src="public/razib-marketing-logo.png" alt="Cogwheel SEO & GEO Studio" width="104" />
+<img src="public/nurunnobe-logo.png" alt="SEO & GEO Studio" width="104" />
 
-# Cogwheel SEO & GEO Studio
+# SEO & GEO Studio
 
 **Hospitality SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace.**
 
-[![CI](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions/workflows/ci.yml/badge.svg)](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/live-cogwheel--seo--templates.vercel.app-0f172a?logo=vercel)](https://cogwheel-seo-templates.vercel.app)
+[![CI](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml)
+[![Live](https://img.shields.io/badge/live-seo-studio--seo--templates.vercel.app-0f172a?logo=vercel)](https://cogwheel-seo-templates.vercel.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-3.0.0-7c3aed.svg)](CHANGELOG.md)
 [![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs)](https://nextjs.org)
@@ -26,13 +26,13 @@
 
 ## Overview
 
-Cogwheel is a production-oriented SEO platform for hospitality portfolios. It combines a Next.js operator workspace, a Manifest V3 Chrome extension, a measured audit engine, and a Python analysis layer.
+SEO Studio is a production-oriented SEO platform for hospitality portfolios. It combines a Next.js operator workspace, a Manifest V3 Chrome extension, a measured audit engine, and a Python analysis layer.
 
 The core rule is simple: **measure, label, or leave blank.** Rankings, search volumes, AI citations, and competitor positions are never invented. When a data source is not connected, the product says so instead of showing a plausible-looking number.
 
 | Studio workspace | Template library |
 | --- | --- |
-| ![Cogwheel Studio](docs/assets/app-home.jpg) | ![Hospitality templates](docs/assets/templates-catalog.jpg) |
+| ![SEO Studio](docs/assets/app-home.jpg) | ![Hospitality templates](docs/assets/templates-catalog.jpg) |
 
 ## What it does
 
@@ -71,7 +71,7 @@ The core rule is simple: **measure, label, or leave blank.** Rankings, search vo
 
 ## Architecture
 
-![Cogwheel system architecture](docs/assets/system-architecture.svg)
+![SEO Studio system architecture](docs/assets/system-architecture.svg)
 
 ```text
 Browser (Chrome MV3)                 Next.js operator workspace
@@ -104,8 +104,8 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full component and da
 ### Run the web app
 
 ```bash
-git clone https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates.git
-cd Cogwheel-SEO-Templates
+git clone https://github.com/nurunnobejisan/SEO-Studio.git
+cd SEO-Studio
 
 npm ci
 cp .env.example .env.local     # fill only the providers you use
@@ -238,4 +238,4 @@ Do not report vulnerabilities in public issues. See [`SECURITY.md`](SECURITY.md)
 
 ## License
 
-[MIT](LICENSE) © Razib Marketing.
+[MIT](LICENSE) © Nurunnobe Jisan.

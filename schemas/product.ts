@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Product Schema Builder
+ * SEO Studio Templates — Product Schema Builder
  */
 
 export interface ProductInput {

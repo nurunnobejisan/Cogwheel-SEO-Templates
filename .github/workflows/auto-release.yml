@@ -52,6 +52,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.meta.outputs.version }}
-          name: Cogwheel SEO GEO Studio v${{ steps.meta.outputs.version }}
+          name: SEO Studio GEO Studio v${{ steps.meta.outputs.version }}
           files: cogwheel-seo-studio.zip
           generate_release_notes: true

@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Composable JSON-LD @graph Builder
+ * SEO Studio Templates — Composable JSON-LD @graph Builder
  * 
  * Aggregates individual entity schemas into a single unified JSON-LD @graph
  * under the standard https://schema.org @context.

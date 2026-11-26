@@ -1,5 +1,5 @@
 /**
- * Cogwheel Unified SEO Platform - Full Website Audit Runner
+ * SEO Studio Unified SEO Platform - Full Website Audit Runner
  *
  * Orchestrates the audit dimensions and synthesizes a single
  * FullWebsiteAuditReport.

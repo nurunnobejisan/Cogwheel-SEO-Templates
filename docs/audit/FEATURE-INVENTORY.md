@@ -1,4 +1,4 @@
-# Feature Inventory — Cogwheel Enterprise Platform
+# Feature Inventory — SEO Studio Enterprise Platform
 **Date:** 2026-11-23  
 **Document:** `AUDIT/FEATURE-INVENTORY.md`  
 **Classification:** Fully Implemented | Partially Implemented | Frontend Only | Coming Soon | Missing  

@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — HTML5 CMS Exporter
+ * SEO Studio Templates — HTML5 CMS Exporter
  * 
  * Generates standards-compliant HTML5 output with complete metadata,
  * canonical links, environment-aware robots directives, and serialized JSON-LD.

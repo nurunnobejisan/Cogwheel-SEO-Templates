@@ -37,7 +37,7 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
   {
     id: "seed-rm-property-taxonomy",
     taskId: null,
-    title: "Razib Marketing Property Taxonomy (2026 Portfolio)",
+    title: "Nurunnobe Jisan Property Taxonomy (2026 Portfolio)",
     ruleText:
       "Classify properties accurately using the agency portfolio taxonomy: Full Flag Brand (e.g. Embassy Suites, Courtyard, Hilton Garden Inn, Fairfield, Residence Inn, Hyatt Place), Soft Brand.com (brand-hosted soft-brand URL), Soft Vanity / Vanity Site (standalone domain such as thenines.com, thecurtis.com, morrisonhouse.com, thealexandrian.com, grand1847.com, hotellajolla.com), Large/SMB Independent (e.g. Arrive Hotels, Senza, La Fonda, Coachman), and Restaurant.",
     exampleGood: "Treat The Nines Portland (Soft Vanity: thenines.com) separately from The Nines Portland (Branded: Soft Brand.com).",
@@ -70,7 +70,7 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
     taskId: null,
     title: "5-Platform Generative Search Alignment (VisibilitySuite)",
     ruleText:
-      "Align SEO recommendations with the 5 live AI tracking engines monitored across Cogwheel's 200+ property portfolio: Google AI Overviews, ChatGPT Search, Google Gemini, Perplexity, and AI Mode. Prioritize entity schema (Hotel, LodgingBusiness, DaySpa, FoodEstablishment) and direct-booking citation triggers.",
+      "Align SEO recommendations with the 5 live AI tracking engines monitored across SEO Studio's 200+ property portfolio: Google AI Overviews, ChatGPT Search, Google Gemini, Perplexity, and AI Mode. Prioritize entity schema (Hotel, LodgingBusiness, DaySpa, FoodEstablishment) and direct-booking citation triggers.",
     exampleGood: "Optimize FAQ schema and spa pricing for citations across ChatGPT Search, Google AI Overviews, Gemini, and Perplexity.",
     exampleBad: "Targeting only classic 10 blue links Google desktop search while ignoring AI answer citations.",
     active: true,
@@ -163,11 +163,11 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
     createdAt: "2026-11-16T00:00:00.000Z",
   },
   {
-    id: "seed-kw-cogwheel-3step-rationale",
+    id: "seed-kw-seo-studio-3step-rationale",
     taskId: "keyword-research",
-    title: "Cogwheel Client Rationale Structure (Volume, Difficulty, Implementation)",
+    title: "SEO Studio Client Rationale Structure (Volume, Difficulty, Implementation)",
     ruleText:
-      "Every keyword rationale delivered to hotel clients must follow the 3-step Cogwheel structure: (1) Primary keyword identification with Semrush monthly search volume and KD; (2) Strategic alignment to on-site offering (e.g. direct beach access, specific room configuration, pet policy, wedding capacity); (3) Explicit on-page implementation guidance (meta title/description placement, H1/H2 header incorporation, body copy optimization, alt-tag usage).",
+      "Every keyword rationale delivered to hotel clients must follow the 3-step SEO Studio structure: (1) Primary keyword identification with Semrush monthly search volume and KD; (2) Strategic alignment to on-site offering (e.g. direct beach access, specific room configuration, pet policy, wedding capacity); (3) Explicit on-page implementation guidance (meta title/description placement, H1/H2 header incorporation, body copy optimization, alt-tag usage).",
     exampleGood:
       "Selected 'hotel rooms panama city beach' (SV 210, KD 56) to capture high-intent travelers seeking beachfront accommodations. The low competition relative to commercial intent makes this ideal for the Rooms page. Implementation: place in the meta title, feature in the first H2, and weave into room amenity copy.",
     exampleBad:

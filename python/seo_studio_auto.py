@@ -1,6 +1,6 @@
 """Unified Any-Website SEO Automation Runner.
 
-Executes Cogwheel's complete 4-command agency workflow in a single CLI command:
+Executes SEO Studio's complete 4-command agency workflow in a single CLI command:
 1. Crawl & Discovery (site_mapper.py)
 2. Keyword Research & Thematic Clustering (keyword_research.py -> 01-keyword-research-report.docx)
 3. Meta Title & Description Optimizer (meta_optimizer.py -> 02-meta-title-description.xlsx)
@@ -9,7 +9,7 @@ Executes Cogwheel's complete 4-command agency workflow in a single CLI command:
 6. Consolidates everything into /output/<domain>/extension-bundle.json for 1-click Chrome Extension CMS Auto-Fill.
 
 Usage:
-  python -m cogwheel_auto --url <website_url> [--keywords-csv path/to/kw.csv] [--max-pages 35]
+  python -m seo_studio_auto --url <website_url> [--keywords-csv path/to/kw.csv] [--max-pages 35]
 """
 
 from __future__ import annotations
@@ -29,10 +29,10 @@ from python.generators.keyword_research import KeywordResearchEngine
 from python.generators.meta_optimizer import MetaOptimizer
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger("CogwheelAuto")
+logger = logging.getLogger("SeoStudioAuto")
 
 
-class CogwheelAutoRunner:
+class SeoStudioAutoRunner:
     """Unified Orchestration Pipeline for Any Website URL."""
 
     def __init__(
@@ -59,7 +59,7 @@ class CogwheelAutoRunner:
         """Execute all four generators and produce the final Chrome Extension bundle."""
         start_time = datetime.datetime.now()
         logger.info("============================================================")
-        logger.info("STARTING UNIFIED COGWHEEL AUTOMATION PIPELINE")
+        logger.info("STARTING UNIFIED SEO STUDIO AUTOMATION PIPELINE")
         logger.info("Target: %s | Domain: %s", self.target_url, self.domain)
         logger.info("============================================================")
 
@@ -312,14 +312,14 @@ class CogwheelAutoRunner:
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Unified Cogwheel SEO Automation for Any Website URL.")
+    parser = argparse.ArgumentParser(description="Unified SEO Studio Automation for Any Website URL.")
     parser.add_argument("--url", required=True, help="Target website URL or domain (e.g., https://thenines.com)")
     parser.add_argument("--keywords-csv", default=None, help="Optional CSV path containing keyword data")
     parser.add_argument("--max-pages", type=int, default=35, help="Maximum number of pages to discover & crawl (default: 35)")
     parser.add_argument("--output-dir", default="output", help="Base output directory (default: output)")
 
     args = parser.parse_args()
-    runner = CogwheelAutoRunner(
+    runner = SeoStudioAutoRunner(
         url=args.url,
         keywords_csv=args.keywords_csv,
         max_pages=args.max_pages,

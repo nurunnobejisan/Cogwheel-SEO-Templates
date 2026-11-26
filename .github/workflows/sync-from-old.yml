@@ -1,7 +1,7 @@
 name: Sync from old account
 
-# Mirrors jisan-razibmarketing/Cogwheel-SEO-Templates into this repository
-# (nurunnobejisan/Cogwheel-SEO-Templates).
+# Mirrors nurunnobejisan/SEO-Studio into this repository
+# (nurunnobejisan/SEO-Studio).
 #
 # This file lives in SOURCE as well as TARGET so that a byte-exact mirror carries
 # it across; the job below only actually runs in TARGET (see the `if:` guard).
@@ -30,12 +30,12 @@ concurrency:
   cancel-in-progress: false
 
 env:
-  SOURCE_REPO: jisan-razibmarketing/Cogwheel-SEO-Templates
+  SOURCE_REPO: nurunnobejisan/SEO-Studio
 
 jobs:
   sync:
     # TARGET only — in the SOURCE repo this workflow does nothing.
-    if: github.repository == 'nurunnobejisan/Cogwheel-SEO-Templates'
+    if: github.repository == 'nurunnobejisan/SEO-Studio'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout TARGET (full history, push via SYNC_TOKEN)

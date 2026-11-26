@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO & GEO Studio - Extension Options & Training Guardrails
+ * SEO & GEO Studio - Extension Options & Training Guardrails
  */
 
 export interface ExtensionOptions {

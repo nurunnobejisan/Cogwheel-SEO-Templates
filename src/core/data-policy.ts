@@ -1,7 +1,7 @@
 /**
  * Data-provenance policy.
  *
- * Cogwheel must never present fabricated metrics as measured results. Several
+ * SEO Studio must never present fabricated metrics as measured results. Several
  * integrations — Google Search Console, keyword volume/CPC, backlink authority
  * and AI-engine citation tracking — cannot run without credentials or a paid
  * data provider. When those sources are absent, callers must return empty or

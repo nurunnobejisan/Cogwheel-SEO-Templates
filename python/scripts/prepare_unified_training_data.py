@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Cogwheel Unified SEO Platform - Training Data Preparation Pipeline.
+"""SEO Studio Unified SEO Platform - Training Data Preparation Pipeline.
 
 Synthesizes knowledge from:
 1. Google Algorithm Updates dataset (`data/google-updates.json` from claude-seo)
 2. 20 Specialized SEO Agent prompts (`src/core/claude-seo/agents/`)
 3. Open-SEO Audit Issues Catalog & AI Visibility (`src/core/open-seo/`)
 4. GSC FastMCP Tools & Cannibalization / Inspection logic (`src/core/gsc/`)
-5. Cogwheel 78-Keyword Matrix & OTA Direct Booking Guardrails (`data/`)
+5. SEO Studio 78-Keyword Matrix & OTA Direct Booking Guardrails (`data/`)
 
 Generates structured SFT (Supervised Fine-Tuning) datasets in standard OpenAI / Gemini
 chat format:
@@ -77,7 +77,7 @@ def generate_google_update_examples(updates_path: Path) -> list[dict[str, Any]]:
     updates_list = data.get("updates", []) if isinstance(data, dict) else data
 
     system_prompt = (
-        "You are Cogwheel's Principal Search Algorithm & Recovery Specialist. "
+        "You are SEO Studio's Principal Search Algorithm & Recovery Specialist. "
         "Analyze Google core algorithm updates, helpful content systems, spam policies, and "
         "technical volatility to provide precise diagnostic and recovery actions."
     )
@@ -126,7 +126,7 @@ def generate_agent_prompt_examples(agents_dir: Path) -> list[dict[str, Any]]:
         agent_name = file_path.stem.replace("-", " ").title()
 
         system_prompt = (
-            f"You are the {agent_name} Agent in the Cogwheel Unified SEO Platform. "
+            f"You are the {agent_name} Agent in the SEO Studio Unified SEO Platform. "
             f"Operate under the following domain specification:\n\n{content[:800]}"
         )
 
@@ -156,7 +156,7 @@ def generate_keyword_strategy_examples(matrix_path: Path) -> list[dict[str, Any]
 
     keywords = data.get("keywords", []) if isinstance(data, dict) else data
     system_prompt = (
-        "You are Cogwheel's Senior SERP Strategist and Keyword Optimization Specialist. "
+        "You are SEO Studio's Senior SERP Strategist and Keyword Optimization Specialist. "
         "Provide search volume, search intent classification, competition level, and target meta/heading optimization."
     )
 
@@ -199,7 +199,7 @@ def generate_gsc_cannibalization_examples() -> list[dict[str, Any]]:
     """Synthesize GSC query cannibalization & performance diagnostic pairs."""
     examples: list[dict[str, Any]] = []
     system_prompt = (
-        "You are Cogwheel's Google Search Console (GSC) Diagnostics Engine. "
+        "You are SEO Studio's Google Search Console (GSC) Diagnostics Engine. "
         "Diagnose keyword cannibalization, CTR anomalies, and indexation issues from GSC analytics."
     )
 
@@ -254,7 +254,7 @@ def generate_geo_visibility_examples() -> list[dict[str, Any]]:
     """Synthesize Generative Engine Optimization (GEO) & AI visibility pairs."""
     examples: list[dict[str, Any]] = []
     system_prompt = (
-        "You are Cogwheel's Chief AI Visibility & GEO Strategist. "
+        "You are SEO Studio's Chief AI Visibility & GEO Strategist. "
         "Optimize brand entity citations and structured fact density for LLM search engines "
         "(Perplexity, ChatGPT Search, Claude, Google AI Overviews)."
     )
@@ -288,7 +288,7 @@ def generate_geo_visibility_examples() -> list[dict[str, Any]]:
 
 def main() -> int:
     print("==================================================================")
-    print(" Cogwheel Unified SEO Platform - SFT Training Data Preparation")
+    print(" SEO Studio Unified SEO Platform - SFT Training Data Preparation")
     print("==================================================================")
 
     TRAINING_DIR.mkdir(parents=True, exist_ok=True)
@@ -356,7 +356,7 @@ def main() -> int:
 
     quality_report = {
         "status": "success",
-        "datasetName": "Cogwheel-Unified-SEO-SFT-v1",
+        "datasetName": "SEO-Studio-Unified-SEO-SFT-v1",
         "totalExamples": len(deduped_examples),
         "trainCount": len(train_set),
         "evalCount": len(eval_set),

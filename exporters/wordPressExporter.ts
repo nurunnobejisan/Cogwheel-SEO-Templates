@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — WordPress PHP & Plugin Exporter
+ * SEO Studio Templates — WordPress PHP & Plugin Exporter
  * 
  * Generates:
  * - Compatible PHP template partials for theme integration
@@ -40,7 +40,7 @@ export interface WordPressImportRecord {
 export function exportToWordPressPhp(payload: WordPressExportPayload): string {
   return `<?php
 /**
- * Cogwheel SEO Templates — WordPress Template Partial
+ * SEO Studio Templates — WordPress Template Partial
  * Post: ${payload.postTitle}
  * Slug: ${payload.postName}
  */
@@ -58,7 +58,7 @@ if (!defined('ABSPATH')) {
   </div>
 
   <?php if (!empty('${payload.schemaJsonLd ? "has_schema" : ""}')) : ?>
-  <!-- Cogwheel Unified JSON-LD Schema -->
+  <!-- SEO Studio Unified JSON-LD Schema -->
   <script type="application/ld+json">
     <?php echo '${(payload.schemaJsonLd || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'")}'; ?>
   </script>

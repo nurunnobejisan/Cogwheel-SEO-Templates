@@ -1,6 +1,6 @@
 # Outcome logging
 
-Outcome logging is how Cogwheel answers the only question that matters after a fix:
+Outcome logging is how SEO Studio answers the only question that matters after a fix:
 **did the page actually do better?** It records every change, then measures the
 page's Google Search Console performance over matched **before/after** windows and
 compares it with a set of **unchanged control pages**.

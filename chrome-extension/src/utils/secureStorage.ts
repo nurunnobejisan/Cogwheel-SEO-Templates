@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Studio — best-effort at-rest encryption for secrets.
+ * SEO Studio — best-effort at-rest encryption for secrets.
  *
  * Uses Web Crypto (AES-GCM) with a key derived from the extension runtime id.
  * Values are stored with an `enc:v1:` prefix so legacy plaintext values can be

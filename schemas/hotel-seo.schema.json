@@ -141,7 +141,7 @@
         "templateId": {
           "type": "string",
           "minLength": 1,
-          "description": "Identifier of the Cogwheel template being executed."
+          "description": "Identifier of the SEO Studio template being executed."
         },
         "variables": {
           "type": "object",

@@ -2,7 +2,7 @@ import os
 from PIL import Image, ImageDraw
 
 def create_icon(size):
-    # Brand colors: Dark slate background with vibrant brand lime/emerald cogwheel
+    # Brand colors: Dark slate background with vibrant brand lime/emerald seo-studio
     img = Image.new("RGBA", (size, size), (15, 23, 42, 255)) # slate-900
     draw = ImageDraw.Draw(img)
     

@@ -1,6 +1,6 @@
-# Cogwheel SEO & GEO Studio — Engineering & Standards Rules (GEMINI.md)
+# SEO & GEO Studio — Engineering & Standards Rules (GEMINI.md)
 
-This document establishes the mandatory architectural, SEO, markup, and validation rules for **Cogwheel SEO & GEO Studio**. All code, components, and routes authored in this workspace must strictly adhere to these standards.
+This document establishes the mandatory architectural, SEO, markup, and validation rules for **SEO & GEO Studio**. All code, components, and routes authored in this workspace must strictly adhere to these standards.
 
 ---
 
@@ -47,7 +47,7 @@ Every page and major layout MUST be constructed with explicit semantic HTML5 lan
 
 - Every internal route reference (`<Link href="...">` or `<a href="...">`) must resolve to a valid, existing route (e.g. `/`, `/templates`, `/strategy-matrix`, `/architecture`).
 - Every in-page hash anchor (e.g., `#onpage`, `#schema`) must map to an element with a matching `id`.
-- Asset URLs (`/razib-marketing-logo.png`, `/cogwheel-seo-studio.zip`, `/docs/assets/system-architecture.svg`) must exist in `public/` or `docs/assets/`.
+- Asset URLs (`/nurunnobe-logo.png`, `/cogwheel-seo-studio.zip`, `/docs/assets/system-architecture.svg`) must exist in `public/` or `docs/assets/`.
 - External URLs must point to valid canonical origins with `rel="noopener noreferrer"` and `target="_blank"`.
 - Run automated link verification before every release: zero 404s allowed.
 
@@ -66,16 +66,16 @@ Every route must define unique, bespoke metadata strictly adhering to physical s
 
 ### Route Metadata Registry
 - **`/` (Dashboard)**:
-  - Title: `Cogwheel SEO & GEO Studio — Hotel Search Engine Suite` (53 chars)
+  - Title: `SEO & GEO Audit Studio — Hotel Search Engine Suite` (53 chars)
   - Description: `Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.` (147 chars)
 - **`/templates` (Template Catalog)**:
-  - Title: `Hospitality SEO & GEO Templates — Cogwheel SEO Studio` (53 chars)
+  - Title: `Hospitality SEO & GEO Templates — SEO Studio Platform` (53 chars)
   - Description: `Production-ready on-page, lodging schema, GEO AI visibility, and GBP UNAP audit templates tailored for Marriott, Hilton, IHG, Hyatt, and luxury hotels.` (151 chars)
 - **`/strategy-matrix` (78-Keyword Matrix)**:
-  - Title: `78-Keyword Hospitality Strategy Matrix — Cogwheel Studio` (56 chars)
+  - Title: `78-Keyword Hospitality Strategy Matrix — SEO Studio Suite` (56 chars)
   - Description: `Comprehensive 78-keyword strategy matrix for hotel SEO across Brand, Local, Airport, Meetings, Extended Stay, and Generative AI conversational queries.` (151 chars)
 - **`/architecture` (System Architecture)**:
-  - Title: `System Architecture & Technical Specs — Cogwheel Studio` (55 chars)
+  - Title: `System Architecture & Technical Specs — SEO Studio Suite` (55 chars)
   - Description: `Complete technical architecture for Manifest V3 extension, AI training data vault, hybrid model inference routing, and Python fine-tuning pipelines.` (150 chars)
 
 ---

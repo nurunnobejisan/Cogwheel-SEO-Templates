@@ -4,13 +4,13 @@
 > **Last Updated & Verified**: November 24, 2026  
 > **Status**: Production — Unified Multi-Source Architecture (Claude-SEO + Open-SEO + FastMCP GSC)
 
-This document outlines the software architecture, design patterns, data contracts, and execution pipelines of **Cogwheel SEO & GEO Studio**.
+This document outlines the software architecture, design patterns, data contracts, and execution pipelines of **SEO & GEO Studio**.
 
 ---
 
 ## 1. Architectural Overview & Design Principles
 
-Cogwheel SEO & GEO Studio is engineered as an enterprise hybrid web application, client-side browser side panel suite, and offline machine learning pipeline tailored specifically for multi-property hospitality portfolios (**Marriott International, Hilton Worldwide, IHG Hotels & Resorts, Hyatt Hotels Corporation, and Independent Luxury Hotels**).
+SEO & GEO Studio is engineered as an enterprise hybrid web application, client-side browser side panel suite, and offline machine learning pipeline tailored specifically for multi-property hospitality portfolios (**Marriott International, Hilton Worldwide, IHG Hotels & Resorts, Hyatt Hotels Corporation, and Independent Luxury Hotels**).
 
 ### Core Architectural Tenets
 - **Local-First & Offline Resilience**: Page inspection, pixel calculation, brand guardrail validation, and structured data generation run client-side without dependency on external third-party crawlers.
@@ -19,7 +19,7 @@ Cogwheel SEO & GEO Studio is engineered as an enterprise hybrid web application,
 - **Two-Layer Free Over-the-Air (OTA) Updates**: Decouples lightweight rule and keyword matrix updates (synced silently in the background via GitHub raw endpoints) from binary extension updates (notified via badge alerts and 1-click package downloads).
 - **Universal Privacy-Preserving AI Training Harvest**: Non-destructive, read-only DOM capture coupled with an automated PII redaction engine (scrubbing emails, telephone numbers, IP addresses, credit cards, and URL auth query tokens) allows continuous collection of high-quality hospitality training data directly in the browser.
 - **Client-Side IndexedDB Training Vault**: Local, persistent storage (`CogwheelTrainingVaultDB`) with deterministic canonical URL hashing, quality score algorithms (0-100), and multi-format Supervised Fine-Tuning (SFT) dataset builders (Gemini JSONL, ChatML OpenAI/Unsloth, and Alpaca).
-- **Hybrid Inference & Automatic Fallback Routing**: Multi-provider inference router allowing properties to connect custom fine-tuned models (Google Cloud Vertex AI, fine-tuned Gemini, Ollama, vLLM, HuggingFace TGI) with seamless zero-latency fallback to Cogwheel's local deterministic rules engine.
+- **Hybrid Inference & Automatic Fallback Routing**: Multi-provider inference router allowing properties to connect custom fine-tuned models (Google Cloud Vertex AI, fine-tuned Gemini, Ollama, vLLM, HuggingFace TGI) with seamless zero-latency fallback to SEO Studio's local deterministic rules engine.
 - **End-to-End Supervised Fine-Tuning (SFT) Pipeline**: Standalone Python pipeline (`python/scripts/fine_tune_pipeline.py`) providing dataset validation, deterministic 90/10 train-test splits, auto-generation of Unsloth/LoRA training scripts, and automated SERP/Schema accuracy benchmarking.
 
 ---
@@ -27,7 +27,7 @@ Cogwheel SEO & GEO Studio is engineered as an enterprise hybrid web application,
 ## 2. Multi-Tier System Topology
 
 <div align="center">
-  <img src="assets/system-architecture.svg" alt="Cogwheel SEO & GEO Studio System Architecture Diagram" width="100%" />
+  <img src="assets/system-architecture.svg" alt="SEO & GEO Studio System Architecture Diagram" width="100%" />
 </div>
 
 <br />
@@ -58,7 +58,7 @@ flowchart TD
     subgraph RemoteCloudTier ["Remote Cloud & API Infrastructure"]
         GitHubOTA["GitHub Main Distribution (OTA Rules & 78-KW Matrix)"]
         GitHubReleases["GitHub Releases (Binary ZIP & updates.xml)"]
-        CogwheelAPI["Cogwheel Web App API (Direct Dataset Sync)"]
+        CogwheelAPI["SEO Studio Web App API (Direct Dataset Sync)"]
         
         subgraph InferenceProviders ["External & Local Model Inference"]
             VertexAI["Google Vertex AI / Tuned Gemini"]
@@ -235,7 +235,7 @@ flowchart LR
         Formatter --> GeminiSFT["Google Gemini SFT (.jsonl)"]
         Formatter --> ChatMLSFT["ChatML / Unsloth (.jsonl)"]
         Formatter --> AlpacaSFT["Alpaca Format (.jsonl)"]
-        Formatter --> DirectSync["Cogwheel Web App API Sync"]
+        Formatter --> DirectSync["SEO Studio Web App API Sync"]
     end
 ```
 

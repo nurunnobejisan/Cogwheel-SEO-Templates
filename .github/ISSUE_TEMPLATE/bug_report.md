@@ -1,6 +1,6 @@
 ---
 name: Bug Report
-about: Report an issue or unexpected behavior in Cogwheel SEO Studio
+about: Report an issue or unexpected behavior in SEO Studio
 title: "[BUG] "
 labels: ["bug", "triage"]
 assignees: ""

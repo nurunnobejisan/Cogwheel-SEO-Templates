@@ -108,7 +108,7 @@ export function ingestParsedFiles(
       continue;
     }
 
-    // Competitor chain brands (trained on Razib Marketing / Cogwheel SEO exclusion list)
+    // Competitor chain brands (trained on Nurunnobe Jisan / SEO Studio exclusion list)
     const compBrand = COMPETITOR_CHAIN_BRANDS.find((b) => containsPhrase(norm, b));
     if (compBrand) {
       dropped.push({

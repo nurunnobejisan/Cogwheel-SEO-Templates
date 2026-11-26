@@ -18,7 +18,7 @@ export interface WebflowConnectorConfig {
   accessToken: string;
   collectionId: string;
   target: CmsTarget;
-  /** CMS field slug per Cogwheel field. */
+  /** CMS field slug per SEO Studio field. */
   fieldMap?: Partial<Record<string, string>>;
   fetchImpl?: FetchLike;
 }

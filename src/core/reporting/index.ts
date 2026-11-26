@@ -20,7 +20,7 @@ export const AUDIT_REPORT_FORMATS: Record<
   },
 };
 
-/** Filesystem-safe base name, e.g. `cogwheel-audit-example.com-2026-11-25`. */
+/** Filesystem-safe base name, e.g. `seo-studio-audit-example.com-2026-11-25`. */
 export function auditReportFileName(
   domain: string,
   format: AuditReportFormat,
@@ -28,5 +28,5 @@ export function auditReportFileName(
 ): string {
   const safeDomain = (domain || "site").replace(/[^a-zA-Z0-9.-]+/g, "-").replace(/^-+|-+$/g, "");
   const date = createdAt.slice(0, 10);
-  return `cogwheel-audit-${safeDomain || "site"}-${date}.${AUDIT_REPORT_FORMATS[format].extension}`;
+  return `seo-studio-audit-${safeDomain || "site"}-${date}.${AUDIT_REPORT_FORMATS[format].extension}`;
 }

@@ -16,7 +16,7 @@ export interface ModeOverrideStore extends ModeOverrideStoreLike {
   entries(): Record<string, AuditMode>;
 }
 
-export const MODE_OVERRIDE_STORAGE_KEY = "cogwheel:audit-mode-overrides";
+export const MODE_OVERRIDE_STORAGE_KEY = "seo-studio:audit-mode-overrides";
 
 function normalizeDomain(domain: string): string {
   return domain.trim().toLowerCase().replace(/^www\./, "");

@@ -428,15 +428,15 @@ export default function PropertyDashboard() {
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3.5">
             <a
-              href="https://razibmarketing.com/"
+              href="https://github.com/nurunnobejisan/"
               target="_blank"
               rel="noreferrer"
               className="flex shrink-0 items-center transition-opacity hover:opacity-90"
-              title="Razib Marketing"
+              title="Nurunnobe Jisan"
             >
               <Image
-                src="/razib-marketing-logo.png"
-                alt="Razib Marketing"
+                src="/nurunnobe-logo.png"
+                alt="Nurunnobe Jisan"
                 width={172}
                 height={42}
                 priority
@@ -1433,16 +1433,16 @@ export default function PropertyDashboard() {
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-brand" />
               <span>
-                Powered by <strong className="text-slate-700 dark:text-slate-200">Razib Marketing</strong> — Digital Marketing &amp; SEO Automation for Hotels
+                Powered by <strong className="text-slate-700 dark:text-slate-200">Nurunnobe Jisan</strong> — Digital Marketing &amp; SEO Automation for Hotels
               </span>
             </div>
             <a
-              href="https://razibmarketing.com/"
+              href="https://github.com/nurunnobejisan/"
               target="_blank"
               rel="noreferrer"
               className="font-medium text-slate-600 underline decoration-slate-300 underline-offset-2 hover:text-slate-900 dark:text-slate-400 dark:decoration-slate-700 dark:hover:text-white"
             >
-              razibmarketing.com
+              github.com/nurunnobejisan
             </a>
           </footer>
         </main>

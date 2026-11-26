@@ -98,7 +98,7 @@ export function SlideDeckPreview({
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 rounded-full bg-brand" />
                 <span className="font-display text-body font-extrabold tracking-wider uppercase text-purple-200">
-                  COGWHEEL MARKETING
+                  SEO STUDIO MARKETING
                 </span>
               </div>
               <span className="rounded-md bg-purple-900/60 px-3 py-1 font-mono text-caption text-purple-200 border border-purple-700/50">
@@ -139,7 +139,7 @@ export function SlideDeckPreview({
                 Tracked Rankings &amp; Insights
               </h2>
               <span className="text-caption font-bold text-brand uppercase tracking-wider">
-                COGWHEEL MARKETING
+                SEO STUDIO MARKETING
               </span>
             </div>
 
@@ -215,7 +215,7 @@ export function SlideDeckPreview({
                 Ancillary Keyword Position Summary
               </h2>
               <span className="text-caption font-bold text-brand uppercase tracking-wider">
-                COGWHEEL MARKETING
+                SEO STUDIO MARKETING
               </span>
             </div>
 
@@ -255,7 +255,7 @@ export function SlideDeckPreview({
                 Why Track &amp; Full Visibility Rationale
               </h2>
               <span className="text-caption font-bold text-brand uppercase tracking-wider">
-                COGWHEEL MARKETING
+                SEO STUDIO MARKETING
               </span>
             </div>
 
@@ -291,7 +291,7 @@ export function SlideDeckPreview({
                 Technical SEO Health &amp; Next Steps
               </h2>
               <span className="text-caption font-bold text-brand uppercase tracking-wider">
-                COGWHEEL MARKETING
+                SEO STUDIO MARKETING
               </span>
             </div>
 
@@ -330,7 +330,7 @@ export function SlideDeckPreview({
             </div>
 
             <div className="mt-3 flex items-center justify-between text-caption text-slate-400 border-t border-slate-100 pt-3">
-              <span>Prepared by Cogwheel SEO</span>
+              <span>Prepared by SEO Studio</span>
               <span>Next review: set by account manager</span>
             </div>
           </div>

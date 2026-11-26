@@ -1,5 +1,5 @@
 #!/bin/sh
-# Cogwheel SEO Templates — Git Pre-Commit Hook
+# SEO Studio Templates — Git Pre-Commit Hook
 # Prevents committing secrets or breaking SEO integrity gates
 
 echo "🔍 Running pre-commit secret scan..."

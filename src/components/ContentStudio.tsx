@@ -430,7 +430,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
 
       <TrainingCaptureCard
         title="Training capture (expert-in-the-loop)"
-        subtitle="Contribute the sections you accepted and edited to the Cogwheel SEO/GEO training set. Only accepted sections with copy are sent, and nothing is captured automatically."
+        subtitle="Contribute the sections you accepted and edited to the SEO Studio/GEO training set. Only accepted sections with copy are sent, and nothing is captured automatically."
         stats={[
           { label: "Accepted sections", value: acceptedCount },
           { label: "Edited vs AI draft", value: editedCount },

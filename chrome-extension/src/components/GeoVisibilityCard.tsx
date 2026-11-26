@@ -114,7 +114,7 @@ export function GeoVisibilityCard({ url }: { url: string }) {
       if (!res.ok) {
         setError(
           res.status === 401
-            ? "Sign in to the Cogwheel web app in this browser to run a GEO check."
+            ? "Sign in to the SEO Studio web app in this browser to run a GEO check."
             : data.error || data.details || `HTTP ${res.status}`
         );
         setReport(null);

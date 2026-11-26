@@ -5,7 +5,7 @@ describe("final-seo-geo-project-report task", () => {
   it("compiles the complete end-of-engagement executive deliverable report", async () => {
     const mockClaude = async () =>
       JSON.stringify({
-        executiveSummary: "Over the 12-month engagement, Cogwheel transformed the hotel's search footprint, capturing 42 top-10 keyword rankings and resolving 100% of critical technical defects.",
+        executiveSummary: "Over the 12-month engagement, SEO Studio transformed the hotel's search footprint, capturing 42 top-10 keyword rankings and resolving 100% of critical technical defects.",
         overallProjectScore: 95,
         deliverableMilestones: [
           {

@@ -7,7 +7,7 @@ export function buildKeywordRankingCompSetPrompt(opts: {
   input: KeywordRankingReportCompSetInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are a Senior Hospitality Ranking Analyst at Cogwheel SEO Studio.
+  const system = `You are a Senior Hospitality Ranking Analyst at SEO Studio.
 Analyze search engine ranking positions and competitive share-of-voice across tracked hotel keywords.
 Never fabricate ranking success. Output strictly valid JSON matching the requested schema.`;
 

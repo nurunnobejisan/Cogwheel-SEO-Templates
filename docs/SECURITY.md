@@ -2,7 +2,7 @@
 
 ## Supported Versions
 
-The following versions of Cogwheel SEO Studio are currently supported with security updates and patch releases:
+The following versions of SEO Studio are currently supported with security updates and patch releases:
 
 | Version | Supported          |
 | ------- | ------------------ |
@@ -14,7 +14,7 @@ The following versions of Cogwheel SEO Studio are currently supported with secur
 
 ## Reporting a Vulnerability
 
-The Cogwheel engineering team takes the security of our hospitality search engine optimization tools, browser extensions, and automation scripts seriously.
+The SEO Studio engineering team takes the security of our hospitality search engine optimization tools, browser extensions, and automation scripts seriously.
 
 If you believe you have discovered a vulnerability, security flaw, or credential exposure:
 
@@ -32,7 +32,7 @@ If you believe you have discovered a vulnerability, security flaw, or credential
 
 ---
 
-## Security Practices in Cogwheel SEO Studio
+## Security Practices in SEO Studio
 
 - **Zero Secrets in Code**: Automated CI scanning ensures that no API keys, private tokens, or credentials are committed to the repository.
 - **Client-Side Isolation**: The Chrome Extension Manifest V3 operates in an isolated environment and never transmits property DOM content to third-party endpoints.

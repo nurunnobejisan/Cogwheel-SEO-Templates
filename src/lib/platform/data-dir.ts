@@ -10,12 +10,12 @@
 import os from "node:os";
 import path from "node:path";
 
-export function cogwheelDataDir(): string {
+export function seoStudioDataDir(): string {
   if (process.env.COGWHEEL_DATA_DIR) return process.env.COGWHEEL_DATA_DIR;
-  if (process.env.VERCEL) return path.join(os.tmpdir(), "cogwheel-data");
+  if (process.env.VERCEL) return path.join(os.tmpdir(), "seo-studio-data");
   return path.join(process.cwd(), "data");
 }
 
-export function cogwheelDataFile(name: string): string {
-  return path.join(cogwheelDataDir(), name);
+export function seoStudioDataFile(name: string): string {
+  return path.join(seoStudioDataDir(), name);
 }

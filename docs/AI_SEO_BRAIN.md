@@ -55,7 +55,7 @@ const { patch, validation, deferred } = await generateFixPatch(report, {
 
 | Tier | Tasks | Providers |
 | --- | --- | --- |
-| **Tier 1** (fast/cheap) | `structured_extraction`, `metadata_generation`, `alt_text_generation`, `schema_generation` | Gemini Flash, Groq Llama, Cogwheel tuned model |
+| **Tier 1** (fast/cheap) | `structured_extraction`, `metadata_generation`, `alt_text_generation`, `schema_generation` | Gemini Flash, Groq Llama, SEO Studio tuned model |
 | **Tier 2** (frontier) | `semantic_reasoning`, `rag_synthesis`, `intent_mapping`, `entity_gap_analysis` | Claude (if key), OpenRouter |
 
 Model ids and provider defaults live in `src/core/ai/models.ts` and are **free-first**:

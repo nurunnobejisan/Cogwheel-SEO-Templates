@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""One-off de-branding pass: Cogwheel -> SEO Studio, Razib Marketing -> Nurunnobe Jisan.
+"""One-off de-branding pass: SEO Studio -> SEO Studio, Nurunnobe Jisan -> Nurunnobe Jisan.
 
 Run once, inspect `git diff`, then delete this file.
 Everything that keys into persistence/infra is protected and left byte-identical.
@@ -87,49 +87,49 @@ PROTECT: list[str] = [
 # --- Ordered literal replacements (applied top-down) ---
 REPLACE: list[tuple[str, str]] = [
     # GitHub owner / repo
-    ("jisan-razibmarketing", "nurunnobejisan"),
-    ("Razib-Marketing", "nurunnobejisan"),
-    ("Cogwheel-SEO-Templates", "SEO-Studio"),
-    ("cogwheel-seo-templates", "seo-studio"),
+    ("nurunnobejisan", "nurunnobejisan"),
+    ("nurunnobejisan", "nurunnobejisan"),
+    ("SEO-Studio", "SEO-Studio"),
+    ("seo-studio", "seo-studio"),
     # compound brand phrases
-    ("Cogwheel SEO & Hospitality Templates Studio", "SEO Studio"),
-    ("Cogwheel SEO Studio", "SEO Studio"),
+    ("SEO Studio", "SEO Studio"),
+    ("SEO Studio", "SEO Studio"),
     # brand text
-    ("RAZIB MARKETING", "NURUNNOBE JISAN"),
-    ("Razib Marketing", "Nurunnobe Jisan"),
-    ("contact@razibmarketing.com", "nurunnobejisan@users.noreply.github.com"),
-    ("razibmarketing.com", "github.com/nurunnobejisan"),
-    ("razib-marketing-logo", "nurunnobe-logo"),
-    ("Razib", "Nurunnobe"),
-    ("razib", "nurunnobe"),
+    ("NURUNNOBE JISAN", "NURUNNOBE JISAN"),
+    ("Nurunnobe Jisan", "Nurunnobe Jisan"),
+    ("nurunnobejisan@users.noreply.github.com", "nurunnobejisan@users.noreply.github.com"),
+    ("github.com/nurunnobejisan", "github.com/nurunnobejisan"),
+    ("nurunnobe-logo", "nurunnobe-logo"),
+    ("Nurunnobe", "Nurunnobe"),
+    ("nurunnobe", "nurunnobe"),
     # module / file stems
-    ("cogwheel_auto", "seo_studio_auto"),
+    ("seo_studio_auto", "seo_studio_auto"),
     # identifiers (PascalCase / camelCase / UPPER)
-    ("COGWHEEL_TEMPLATES", "SEO_STUDIO_TEMPLATES"),
-    ("COGWHEEL_OPTIMAL_AUDIT_DATA", "SEO_STUDIO_OPTIMAL_AUDIT_DATA"),
-    ("COGWHEEL_CHECK_UPDATES", "SEO_STUDIO_CHECK_UPDATES"),
-    ("COGWHEEL_SPA_HOOKS__", "SEO_STUDIO_SPA_HOOKS__"),
-    ("COGWHEEL_MESSAGE_LISTENER__", "SEO_STUDIO_MESSAGE_LISTENER__"),
-    ("cogwheelTemplates", "seoStudioTemplates"),
-    ("cogwheelDataFile", "seoStudioDataFile"),
-    ("cogwheelDataDir", "seoStudioDataDir"),
-    ("isCogwheel", "isSeoStudio"),
-    ("CogwheelTemplate", "SeoStudioTemplate"),
-    ("CogwheelAutoRunner", "SeoStudioAutoRunner"),
-    ("CogwheelAuto", "SeoStudioAuto"),
-    ("CogwheelContent", "SeoStudioContent"),
-    ("CogwheelUpdateSeo", "SeoStudioUpdateSeo"),
-    ("CogwheelRestoreSeo", "SeoStudioRestoreSeo"),
-    ("CogwheelProductSeo", "SeoStudioProductSeo"),
-    ("CogwheelSchemaMetafield", "SeoStudioSchemaMetafield"),
-    ("Cogwheel_Visibility_Deck_", "SEO_Studio_Visibility_Deck_"),
-    ("Cogwheel_Monthly_Visibility_Audit_", "SEO_Studio_Monthly_Visibility_Audit_"),
-    ("Cogwheel-Unified-SEO-SFT-v1", "SEO-Studio-Unified-SEO-SFT-v1"),
+    ("SEO_STUDIO_TEMPLATES", "SEO_STUDIO_TEMPLATES"),
+    ("SEO_STUDIO_OPTIMAL_AUDIT_DATA", "SEO_STUDIO_OPTIMAL_AUDIT_DATA"),
+    ("SEO_STUDIO_CHECK_UPDATES", "SEO_STUDIO_CHECK_UPDATES"),
+    ("SEO_STUDIO_SPA_HOOKS__", "SEO_STUDIO_SPA_HOOKS__"),
+    ("SEO_STUDIO_MESSAGE_LISTENER__", "SEO_STUDIO_MESSAGE_LISTENER__"),
+    ("seoStudioTemplates", "seoStudioTemplates"),
+    ("seoStudioDataFile", "seoStudioDataFile"),
+    ("seoStudioDataDir", "seoStudioDataDir"),
+    ("isSeoStudio", "isSeoStudio"),
+    ("SeoStudioTemplate", "SeoStudioTemplate"),
+    ("SeoStudioAutoRunner", "SeoStudioAutoRunner"),
+    ("SeoStudioAuto", "SeoStudioAuto"),
+    ("SeoStudioContent", "SeoStudioContent"),
+    ("SeoStudioUpdateSeo", "SeoStudioUpdateSeo"),
+    ("SeoStudioRestoreSeo", "SeoStudioRestoreSeo"),
+    ("SeoStudioProductSeo", "SeoStudioProductSeo"),
+    ("SeoStudioSchemaMetafield", "SeoStudioSchemaMetafield"),
+    ("SEO_Studio_Visibility_Deck_", "SEO_Studio_Visibility_Deck_"),
+    ("SEO_Studio_Monthly_Visibility_Audit_", "SEO_Studio_Monthly_Visibility_Audit_"),
+    ("SEO-Studio-Unified-SEO-SFT-v1", "SEO-Studio-Unified-SEO-SFT-v1"),
     # remaining blanket
-    ("Cogwheel", "SEO Studio"),
-    ("COGWHEEL_", "SEO_STUDIO_"),
-    ("COGWHEEL", "SEO STUDIO"),
-    ("cogwheel", "seo-studio"),
+    ("SEO Studio", "SEO Studio"),
+    ("SEO_STUDIO_", "SEO_STUDIO_"),
+    ("SEO STUDIO", "SEO STUDIO"),
+    ("seo-studio", "seo-studio"),
 ]
 
 TEXT_EXT = {

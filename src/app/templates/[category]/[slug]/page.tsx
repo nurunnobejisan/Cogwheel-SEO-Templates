@@ -26,8 +26,8 @@ export function generateMetadata({ params }: PageProps): Metadata {
   const template = getTemplateBySlug(params.category, params.slug);
   if (!template) {
     return {
-      title: "Template Not Found — Cogwheel SEO Studio",
-      description: "The requested SEO and GEO template could not be located in the Cogwheel SEO templates repository catalog.",
+      title: "Template Not Found — SEO Studio",
+      description: "The requested SEO and GEO template could not be located in the SEO Studio templates repository catalog.",
     };
   }
 
@@ -43,7 +43,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
       title: template.metaTitle,
       description: template.metaDescription,
       url: canonicalUrl,
-      siteName: "Cogwheel SEO & GEO Studio",
+      siteName: "SEO & GEO Studio",
       type: "article",
     },
     twitter: {
@@ -102,12 +102,12 @@ export default function TemplateDetailPage({ params }: PageProps) {
     description: template.metaDescription,
     author: {
       "@type": "Organization",
-      name: "Cogwheel SEO & GEO Studio",
+      name: "SEO & GEO Studio",
       url: "https://cogwheel-seo-templates.vercel.app",
     },
     publisher: {
       "@type": "Organization",
-      name: "Cogwheel Marketing",
+      name: "SEO Studio Marketing",
       url: "https://cogwheelmarketing.com",
     },
     mainEntityOfPage: {
@@ -143,7 +143,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
                 href="/templates"
                 className="font-display text-base font-extrabold text-slate-900 hover:text-brand dark:text-white dark:hover:text-brand"
               >
-                Cogwheel SEO &amp; GEO Studio
+                SEO &amp; GEO Studio
               </Link>
               <p className="text-tiny text-slate-500 dark:text-slate-400">
                 Hospitality Production Template Hub
@@ -268,7 +268,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
       {/* Semantic Footer Landmark */}
       <footer className="mt-16 border-t border-slate-200 bg-white py-8 text-center text-caption text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} Cogwheel SEO &amp; GEO Studio. Hospitality Search Engine Suite.</p>
+          <p>© {new Date().getFullYear()} SEO &amp; GEO Studio. Hospitality Search Engine Suite.</p>
           <div className="flex gap-4">
             <Link href="/" className="hover:underline">Studio</Link>
             <Link href="/templates" className="hover:underline">Templates</Link>

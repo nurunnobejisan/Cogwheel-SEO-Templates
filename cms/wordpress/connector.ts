@@ -3,7 +3,7 @@
  *
  * Writes SEO metadata through the native WordPress REST API
  * (`/wp-json/wp/v2/{posts|pages}/{id}`) using an isolated application password
- * (`seo-autofix-bot`). Maps the Cogwheel CMS fields onto the leading SEO
+ * (`seo-autofix-bot`). Maps the SEO Studio CMS fields onto the leading SEO
  * plugins' meta keys (Yoast, Rank Math, All in One SEO).
  */
 

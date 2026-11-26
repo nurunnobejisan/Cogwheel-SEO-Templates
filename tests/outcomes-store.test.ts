@@ -10,7 +10,7 @@ let dir: string;
 let previous: string | undefined;
 
 beforeAll(async () => {
-  dir = await fs.mkdtemp(path.join(os.tmpdir(), "cogwheel-outcomes-"));
+  dir = await fs.mkdtemp(path.join(os.tmpdir(), "seo-studio-outcomes-"));
   previous = process.env.COGWHEEL_DATA_DIR;
   process.env.COGWHEEL_DATA_DIR = dir;
 });
