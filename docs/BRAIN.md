@@ -37,7 +37,7 @@ The brain is a thin interpretation layer over the **measured** audit engine.
 - `POST /api/training-triples` `{ url, audit, expertFix, consent, tosAccepted }` → append a raw training triple (JSONL).
 - `GET /api/training-triples` → counts and triples; `?eligible=true` returns only reviewed/gold.
 - `POST /api/training-triples/review` `{ id, quality }` → operator tier change.
-- `GET/POST /api/outcomes` → record a deployed change and measure its Search Console before/after (with a control set); see `docs/OUTCOMES.md`.
+- `GET/POST /api/outcomes` → record a deployed change and measure its Search Console before/after (with a control set); `{ action: "judge" }` returns control-adjusted effect estimates per change kind (L2 judgment). See `docs/OUTCOMES.md` and `docs/JUDGMENT.md`.
 
 All endpoints require a signed operator session and use the shared rate-limit classes.
 
