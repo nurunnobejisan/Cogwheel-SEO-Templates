@@ -12,6 +12,7 @@
  */
 
 import type { ProviderDescriptor, RouteDecision, TaskKind } from "./types.ts";
+import { modelFor } from "../src/core/ai/models.ts";
 
 export const TIER1_TASKS: readonly TaskKind[] = [
   "structured_extraction",
@@ -46,28 +47,28 @@ export function loadProviders(env: NodeJS.ProcessEnv = process.env): ProviderDes
       id: "claude",
       label: "Anthropic Claude (frontier)",
       tier: "tier2",
-      model: env.ANTHROPIC_MODEL || "claude-sonnet-4-5",
+      model: modelFor("anthropic", env),
       configured: Boolean(anthropicKey),
     },
     {
       id: "gemini",
-      label: "Google Gemini Flash (fast)",
+      label: "Google Gemini Flash (fast, free)",
       tier: "tier1",
-      model: env.GEMINI_MODEL || "gemini-2.0-flash",
+      model: modelFor("gemini", env),
       configured: Boolean(geminiKey),
     },
     {
       id: "groq",
-      label: "Groq Llama 3.3 70B (fast)",
+      label: "Groq Llama (fast, free)",
       tier: "tier1",
-      model: env.GROQ_MODEL || "llama-3.3-70b-versatile",
+      model: modelFor("groq", env),
       configured: Boolean(env.GROQ_API_KEY),
     },
     {
       id: "openrouter",
-      label: "OpenRouter (frontier fallback)",
+      label: "OpenRouter (free models)",
       tier: "tier2",
-      model: env.OPENROUTER_MODEL || "openrouter/auto",
+      model: modelFor("openrouter", env),
       configured: Boolean(env.OPENROUTER_API_KEY),
     },
     {

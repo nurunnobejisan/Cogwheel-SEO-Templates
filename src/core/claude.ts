@@ -1,21 +1,26 @@
 import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { formatTrainingContext } from "@/core/training";
+import { modelFor } from "@/core/ai/models";
 
 /** Pinned temperature for all grounded SEO/GEO drafting calls. */
 export const CLAUDE_TEMPERATURE = 0.2 as const;
 
-/** Default model; override with ANTHROPIC_MODEL (e.g. claude-3-5-sonnet-latest). */
-export const DEFAULT_CLAUDE_MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-5";
+/**
+ * Default model for the paid Anthropic path. Only reached when
+ * ANTHROPIC_API_KEY is set; otherwise the client uses the free providers. See
+ * `src/core/ai/models.ts` — override with ANTHROPIC_MODEL.
+ */
+export const DEFAULT_CLAUDE_MODEL = modelFor("anthropic");
 
 let client: Anthropic | null = null;
 
 export function getActiveAiProviderLabel(): string {
   if (process.env.ANTHROPIC_API_KEY) return `Claude (${DEFAULT_CLAUDE_MODEL})`;
-  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY) return "Gemini 2.0 Flash (Free)";
-  if (process.env.GROQ_API_KEY) return "Groq Llama 3.3 70B (Free)";
-  if (process.env.OPENROUTER_API_KEY) return "OpenRouter Free LLM";
-  if (process.env.ENABLE_FREE_ONLINE_AI !== "false") return "Free Online AI (Pollinations)";
+  if (process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY) return `Gemini (${modelFor("gemini")}) — free tier`;
+  if (process.env.GROQ_API_KEY) return `Groq (${modelFor("groq")}) — free`;
+  if (process.env.OPENROUTER_API_KEY) return `OpenRouter (${modelFor("openrouter")}) — free`;
+  if (process.env.ENABLE_FREE_ONLINE_AI !== "false") return `Free Online AI (Pollinations, keyless)`;
   return "Not Configured";
 }
 
@@ -44,7 +49,7 @@ async function callGeminiFree(system: string, prompt: string, maxTokens: number)
   const apiKey = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY;
   if (!apiKey) throw new Error("GEMINI_API_KEY not set");
 
-  const model = process.env.GEMINI_MODEL || "gemini-2.0-flash";
+  const model = modelFor("gemini");
   const res = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${encodeURIComponent(apiKey)}`,
     {
@@ -153,7 +158,7 @@ export async function generateClaudeText(opts: {
       return await callOpenAiCompatible({
         endpoint: "https://api.groq.com/openai/v1/chat/completions",
         apiKey: process.env.GROQ_API_KEY,
-        model: process.env.GROQ_MODEL || "llama-3.3-70b-versatile",
+        model: modelFor("groq"),
         system: fullSystem,
         prompt: opts.prompt,
         maxTokens,
@@ -168,7 +173,7 @@ export async function generateClaudeText(opts: {
       return await callOpenAiCompatible({
         endpoint: "https://openrouter.ai/api/v1/chat/completions",
         apiKey: process.env.OPENROUTER_API_KEY,
-        model: process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free",
+        model: modelFor("openrouter"),
         system: fullSystem,
         prompt: opts.prompt,
         maxTokens,
@@ -182,7 +187,7 @@ export async function generateClaudeText(opts: {
     try {
       return await callOpenAiCompatible({
         endpoint: "https://text.pollinations.ai/openai",
-        model: "openai",
+        model: modelFor("pollinations"),
         system: fullSystem,
         prompt: opts.prompt,
         maxTokens,

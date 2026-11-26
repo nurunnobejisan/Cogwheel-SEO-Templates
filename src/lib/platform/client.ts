@@ -17,8 +17,12 @@ import type {
 } from "../../../healing/index.ts";
 import type { CmsPlatform, CmsTarget, DeploymentResult } from "../../../cms/index.ts";
 import type { AuditLogEntry, DeploymentHistoryEntry, HealthResponse, Role } from "../../../platform/index.ts";
+import type { ChangeEvent, OutcomeRecord } from "../../core/outcomes/types.ts";
+import type { JudgmentReport } from "../../core/judgment/types.ts";
 
 export const PLATFORM_API_BASE = "/api/platform/v1";
+/** Outcome logging lives on its own route, not under the platform gateway. */
+export const OUTCOMES_API_BASE = "/api/outcomes";
 
 /** Redacted credential as returned by the API (secrets never leave the server). */
 export interface PublicCredential {
@@ -71,14 +75,13 @@ export interface ClientOptions {
   fetchImpl?: typeof fetch;
 }
 
-async function request<T>(
-  options: ClientOptions,
+async function requestUrl<T>(
+  fetchImpl: typeof fetch,
+  url: string,
   method: "GET" | "POST" | "PATCH" | "DELETE",
-  path: string,
   body?: unknown
 ): Promise<T> {
-  const fetchImpl = options.fetchImpl ?? fetch;
-  const response = await fetchImpl(`${options.baseUrl ?? PLATFORM_API_BASE}${path}`, {
+  const response = await fetchImpl(url, {
     method,
     headers: body === undefined ? undefined : { "content-type": "application/json" },
     body: body === undefined ? undefined : JSON.stringify(body),
@@ -96,6 +99,20 @@ async function request<T>(
   return parsed as T;
 }
 
+async function request<T>(
+  options: ClientOptions,
+  method: "GET" | "POST" | "PATCH" | "DELETE",
+  path: string,
+  body?: unknown
+): Promise<T> {
+  return requestUrl<T>(
+    options.fetchImpl ?? fetch,
+    `${options.baseUrl ?? PLATFORM_API_BASE}${path}`,
+    method,
+    body
+  );
+}
+
 export interface DeploymentResponse {
   deployment: DeploymentResult;
   historyId: string | null;
@@ -105,6 +122,13 @@ export interface DeploymentResponse {
 export interface ApprovalView {
   approval: ApprovalRequest;
   triage: PatchTriage;
+}
+
+export interface OutcomesOverview {
+  success: boolean;
+  changes: ChangeEvent[];
+  outcomes: OutcomeRecord[];
+  counts: { changes: number; measured: number; unavailable: number; tracked: number };
 }
 
 export function createPlatformClient(options: ClientOptions = {}) {
@@ -189,6 +213,30 @@ export function createPlatformClient(options: ClientOptions = {}) {
     /* -------- audits -------- */
     audit: (url: string) => request<AuditReport>(options, "POST", "/audits", { url }),
 
+    /* -------- outcomes & L2 judgment (separate route) -------- */
+    outcomes: () => requestUrl<OutcomesOverview>(options.fetchImpl ?? fetch, OUTCOMES_API_BASE, "GET"),
+    recordOutcome: (input: { pageUrl: string; appliedAt?: string; summary?: string; kind?: string; fixRef?: string }) =>
+      requestUrl<{ success: boolean; change: ChangeEvent; duplicate: boolean }>(
+        options.fetchImpl ?? fetch,
+        OUTCOMES_API_BASE,
+        "POST",
+        { action: "record", ...input }
+      ),
+    measureOutcomes: (changeId?: string) =>
+      requestUrl<{ success: boolean; measured: number; measuredCount: number; outcomes: OutcomeRecord[]; note?: string }>(
+        options.fetchImpl ?? fetch,
+        OUTCOMES_API_BASE,
+        "POST",
+        { action: "measure", changeId }
+      ),
+    judge: () =>
+      requestUrl<{ success: boolean; report: JudgmentReport }>(
+        options.fetchImpl ?? fetch,
+        OUTCOMES_API_BASE,
+        "POST",
+        { action: "judge" }
+      ),
+
     /* -------- worker helper -------- */
     /** Run the full scan → triage → heal loop for a page. */
     scan: (url: string, opts: { autoPilot?: boolean; maxRisk?: RiskTier; approveAll?: boolean } = {}) =>
@@ -262,4 +310,7 @@ export type {
   RiskTier,
   HealthResponse,
   Role,
+  ChangeEvent,
+  OutcomeRecord,
+  JudgmentReport,
 };

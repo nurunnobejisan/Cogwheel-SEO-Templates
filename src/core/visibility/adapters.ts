@@ -10,6 +10,7 @@
  */
 
 import type { BuyerPrompt, PromptSet, ProviderAnswer, ProviderId } from "./types.ts";
+import { modelFor } from "../ai/models.ts";
 import { analyzeAnswer, unavailableAnswer } from "./analyze.ts";
 import { canUseVisibilityProvider, recordVisibilityUsage } from "./budget.ts";
 
@@ -173,7 +174,7 @@ interface AnthropicResponse {
 }
 
 export function createClaudeAdapter(): ProviderAdapter {
-  const model = process.env.ANTHROPIC_VISIBILITY_MODEL || "claude-sonnet-4-5";
+  const model = process.env.ANTHROPIC_VISIBILITY_MODEL || modelFor("anthropic");
   return {
     id: "claude",
     label: "Claude (Anthropic)",
@@ -304,7 +305,7 @@ interface GeminiResponse {
 }
 
 export function createGeminiAdapter(): ProviderAdapter {
-  const model = process.env.GEMINI_VISIBILITY_MODEL || "gemini-2.0-flash";
+  const model = process.env.GEMINI_VISIBILITY_MODEL || modelFor("gemini");
   const key = process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY || "";
   return {
     id: "gemini",
