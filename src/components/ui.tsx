@@ -125,6 +125,8 @@ export interface StatProps {
   trend?: StatTrend;
   subtext?: string;
   icon?: ReactNode;
+  /** 0–100. Renders a slim progress bar beneath the value. */
+  progress?: number;
 }
 
 const STAT_TONES: Record<StatTone, string> = {
@@ -135,7 +137,7 @@ const STAT_TONES: Record<StatTone, string> = {
   brand: "text-brand-dark dark:text-brand",
 };
 
-export function Stat({ label, value, tone = "default", trend, subtext, icon }: StatProps) {
+export function Stat({ label, value, tone = "default", trend, subtext, icon, progress }: StatProps) {
   return (
     <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-4 shadow-soft transition-all hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900">
       <div className="flex items-center justify-between gap-2">
@@ -145,6 +147,20 @@ export function Stat({ label, value, tone = "default", trend, subtext, icon }: S
       <div className={`mt-2 nums font-display text-2xl font-extrabold tracking-tight ${STAT_TONES[tone]}`}>
         {value}
       </div>
+      {typeof progress === "number" && (
+        <div
+          className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+          role="progressbar"
+          aria-valuenow={Math.round(progress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+        >
+          <div
+            className="h-full rounded-full bg-brand transition-all duration-500 ease-out-expo"
+            style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
+          />
+        </div>
+      )}
       {(trend || subtext) && (
         <div className="mt-2 flex items-center gap-1.5 text-caption">
           {trend && (

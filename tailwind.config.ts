@@ -48,7 +48,7 @@ const config: Config = {
        * hierarchy is consistent instead of a scatter of `text-[10px]`/`[11px]`.
        */
       fontSize: {
-        eyebrow: ["0.6875rem", { lineHeight: "1rem", letterSpacing: "0.08em", fontWeight: "600" }],
+        eyebrow: ["0.6875rem", { lineHeight: "1rem", letterSpacing: "0.08em" }],
         caption: ["0.75rem", { lineHeight: "1.0625rem" }],
         body: ["0.875rem", { lineHeight: "1.375rem" }],
         h3: ["0.9375rem", { lineHeight: "1.375rem" }],
@@ -57,6 +57,7 @@ const config: Config = {
         display: ["1.875rem", { lineHeight: "2.25rem", letterSpacing: "-0.025em" }],
       },
       boxShadow: {
+        xs: "0 1px 2px rgba(15, 23, 42, 0.05)",
         soft: "0 1px 2px rgba(15, 23, 42, 0.04), 0 6px 20px -8px rgba(15, 23, 42, 0.10)",
         card: "0 1px 3px rgba(15, 23, 42, 0.04), 0 12px 32px -14px rgba(15, 23, 42, 0.14)",
         floating: "0 24px 48px -18px rgba(15, 23, 42, 0.26)",
@@ -64,6 +65,10 @@ const config: Config = {
       },
       transitionTimingFunction: {
         "out-expo": "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      /** `p-4.5` was used before this token existed and silently rendered nothing. */
+      spacing: {
+        "4.5": "1.125rem",
       },
       keyframes: {
         fadeInSlide: {

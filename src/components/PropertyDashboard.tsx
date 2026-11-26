@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import trainedPropertiesData from "@/data/trained-properties.json";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
-import { Button, Card } from "./ui";
+import { Button, Card, Stat } from "./ui";
 
 interface TrainedProperty {
   name: string;
@@ -424,14 +424,14 @@ export default function PropertyDashboard() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#0b0f19] dark:text-slate-100 transition-colors">
-      <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/95 backdrop-blur-md dark:border-slate-800/80 dark:bg-slate-900/95">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-3.5">
-          <div className="flex items-center gap-4">
+      <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl dark:border-slate-800/70 dark:bg-slate-950/80">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 sm:px-6">
+          <div className="flex min-w-0 items-center gap-3.5">
             <a
               href="https://razibmarketing.com/"
               target="_blank"
               rel="noreferrer"
-              className="flex items-center transition-opacity hover:opacity-90"
+              className="flex shrink-0 items-center transition-opacity hover:opacity-90"
               title="Razib Marketing"
             >
               <Image
@@ -440,33 +440,34 @@ export default function PropertyDashboard() {
                 width={172}
                 height={42}
                 priority
-                className="h-9 w-auto object-contain"
+                className="h-8 w-auto object-contain"
               />
             </a>
-            <div className="hidden h-7 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
-            <div className="hidden sm:block">
-              <div className="flex items-center gap-2">
-                <h1 className="font-display text-base font-bold tracking-tight text-slate-900 dark:text-white">
+            <div className="hidden h-8 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
+            <div className="hidden min-w-0 sm:block">
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="font-display text-h3 font-bold tracking-tight text-slate-900 dark:text-white">
                   Hotel SEO &amp; GEO Studio
                 </h1>
-                <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/50 bg-brand-50 px-2.5 py-0.5 text-[10px] font-bold text-slate-900 shadow-xs dark:border-brand/40 dark:bg-brand-950/60 dark:text-brand-light">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/40 bg-brand-50 px-2 py-0.5 text-eyebrow font-semibold text-brand-800 dark:border-brand/30 dark:bg-brand-950/50 dark:text-brand-light">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   v3.0.0
                 </span>
-                <span className="hidden rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 md:inline-block">
+                <span className="hidden rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-eyebrow font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 md:inline-block">
                   Hospitality Automation
                 </span>
-                <span className="hidden items-center gap-1 rounded-full border border-emerald-200/80 bg-emerald-50/80 px-2 py-0.5 text-[10px] font-bold text-emerald-800 dark:border-emerald-800/60 dark:bg-emerald-950/40 dark:text-emerald-300 lg:inline-flex">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-2 py-0.5 text-eyebrow font-semibold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/40 dark:text-emerald-300 lg:inline-flex">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                   Unified AI Engine Live
                 </span>
               </div>
-              <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                Direct-booking growth workflows across On Page, Technical, Off Page, Local &amp; Reporting
+              <p className="mt-0.5 truncate text-caption text-slate-500 dark:text-slate-400">
+                Direct-booking growth workflows across On-Page, Technical, Off-Page, Local &amp; Reporting
               </p>
             </div>
           </div>
-          <nav aria-label="Main Navigation" className="flex flex-wrap items-center gap-1.5 rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
+
+          <nav aria-label="Main Navigation" className="flex flex-wrap items-center gap-1 rounded-xl bg-slate-100/80 p-1 dark:bg-slate-800/60">
             {(
               [
                 { id: "home", label: "Home" },
@@ -480,10 +481,11 @@ export default function PropertyDashboard() {
                 key={tab.id}
                 type="button"
                 onClick={() => setMainTab(tab.id)}
-                className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${mainTab === tab.id
-                  ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
-                  : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                  }`}
+                className={`rounded-lg px-3 py-1.5 text-caption font-semibold transition-all ${
+                  mainTab === tab.id
+                    ? "bg-white text-slate-900 shadow-soft dark:bg-slate-900 dark:text-white"
+                    : "text-slate-500 hover:bg-white/60 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-white"
+                }`}
               >
                 {tab.label}
               </button>
@@ -491,17 +493,18 @@ export default function PropertyDashboard() {
             <button
               type="button"
               onClick={() => setShowAiTraining((v) => !v)}
-              className={`rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${showAiTraining
-                ? "bg-slate-900 text-brand-light shadow-sm dark:bg-slate-700 dark:text-brand-light"
-                : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-                }`}
+              className={`rounded-lg px-3 py-1.5 text-caption font-semibold transition-all ${
+                showAiTraining
+                  ? "bg-slate-900 text-brand-light shadow-soft dark:bg-slate-700 dark:text-brand-light"
+                  : "text-slate-500 hover:bg-white/60 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-white"
+              }`}
             >
               Train AI ({aiStatus.activeRules})
             </button>
             <a
               href="/cogwheel-seo-studio.zip"
               download="cogwheel-seo-studio.zip"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-caption font-semibold text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               title="Download Chrome Extension (100-Point Live Inspector)"
             >
               <svg className="h-3.5 w-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -512,19 +515,19 @@ export default function PropertyDashboard() {
             <button
               type="button"
               onClick={() => setShowCommandPalette(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-caption font-semibold text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               title="Open Command Palette (Cmd + K)"
             >
               <svg className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
               </svg>
-              <span className="font-mono text-[10px] text-slate-400">Cmd K</span>
+              <span className="font-mono text-eyebrow text-slate-400">Cmd K</span>
             </button>
             <button
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               {isDark ? (
@@ -562,21 +565,23 @@ export default function PropertyDashboard() {
         <main className="mx-auto max-w-6xl space-y-6 px-6 py-7">
           {mainTab === "home" && (
             <>
-              <section className="rounded-2xl border border-slate-200/80 bg-white p-5 shadow-card dark:border-slate-800 dark:bg-slate-900">
-                <div className="flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-start sm:justify-between lg:items-center">
-                  {/* Left: label + title + preset row */}
-                  <div className="min-w-0 flex-1 space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="shrink-0 rounded-md bg-slate-900 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-brand-light dark:bg-brand dark:text-slate-950">
-                        Active Property
-                      </span>
-                      <span className="min-w-0 truncate text-sm font-bold text-slate-900 dark:text-white">
+              <section className="card overflow-hidden">
+                <div className="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
+                  <div className="min-w-0 flex-1 space-y-3">
+                    <div className="flex flex-wrap items-center gap-2.5">
+                      <span className="eyebrow shrink-0">Active Property</span>
+                      <span className="min-w-0 truncate font-display text-h3 font-bold text-slate-900 dark:text-white">
                         {activeProperty.name
-                          ? `${activeProperty.name}${activeProperty.brand ? ` · ${activeProperty.brand}` : ""}${activeProperty.city
-                            ? ` · ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}`
-                            : ""
-                          }`
-                          : "Select a client or paste a hotel URL"}
+                          ? `${activeProperty.name}${activeProperty.brand ? ` \u00b7 ${activeProperty.brand}` : ""}${
+                              activeProperty.city
+                                ? ` \u00b7 ${activeProperty.city}${activeProperty.state ? `, ${activeProperty.state}` : ""}`
+                                : ""
+                            }`
+                          : (
+                            <span className="font-sans font-normal text-slate-400 dark:text-slate-500">
+                              Select a client or paste a hotel URL
+                            </span>
+                          )}
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5">
@@ -597,14 +602,14 @@ export default function PropertyDashboard() {
                             setAutofillError(null);
                           }
                         }}
-                        className="h-8 rounded-lg border border-slate-200 bg-slate-50 px-2.5 text-xs font-semibold text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 focus:border-brand focus:outline-none"
+                        className="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-caption font-semibold text-slate-700 transition focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                       >
                         <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
                         {TRAINED_PROPERTIES.map((p) => (
                           <option key={`${p.name}-${p.category}`} value={p.name}>
                             {p.name}
                             {p.category ? ` [${p.category}]` : ""}
-                            {p.url ? " • URL" : ""}
+                            {p.url ? " \u2022 URL" : ""}
                           </option>
                         ))}
                       </select>
@@ -617,10 +622,11 @@ export default function PropertyDashboard() {
                             setAutofillUrl(preset.url);
                             setAutofillError(null);
                           }}
-                          className={`h-8 rounded-lg border px-2.5 text-xs font-semibold transition ${activeProperty.name === preset.name
-                            ? "border-brand bg-brand-50 text-slate-900 dark:border-brand/60 dark:bg-brand-950/40 dark:text-brand-light"
-                            : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
-                            }`}
+                          className={`h-9 rounded-xl border px-3 text-caption font-semibold transition ${
+                            activeProperty.name === preset.name
+                              ? "border-brand bg-brand-50 text-slate-900 dark:border-brand/60 dark:bg-brand-950/40 dark:text-brand-light"
+                              : "border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-white"
+                          }`}
                         >
                           {preset.name}
                         </button>
@@ -628,27 +634,27 @@ export default function PropertyDashboard() {
                     </div>
                   </div>
 
-                  {/* Right: URL input + Auto-Fill + Edit — always a tight single row */}
-                  <div className="flex shrink-0 items-center gap-2">
+                  <div className="flex w-full items-center gap-2 lg:w-auto lg:shrink-0">
                     <input
                       type="url"
                       placeholder="Paste hotel URL..."
                       value={autofillUrl}
                       onChange={(e) => setAutofillUrl(e.target.value)}
-                      className="h-8 w-44 min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 sm:w-52"
+                      className="h-9 w-full min-w-0 rounded-xl border border-slate-200 bg-slate-50 px-3 text-caption text-slate-800 placeholder:text-slate-400 focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500 lg:w-60"
                     />
                     <Button
                       variant="primary"
+                      size="sm"
                       disabled={autofillBusy}
                       onClick={() => void handleAutoDetectProperty()}
-                      className="h-8 shrink-0 py-0 text-xs"
+                      className="h-9 shrink-0"
                     >
                       {autofillBusy ? "Detecting..." : "Auto-Fill"}
                     </Button>
                     <button
                       type="button"
                       onClick={() => setShowPropertyDetails((v) => !v)}
-                      className="h-8 shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                      className="h-9 shrink-0 rounded-xl border border-slate-200 bg-white px-3 text-caption font-semibold text-slate-600 transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                     >
                       {showPropertyDetails ? "Hide" : "Edit"}
                     </button>
@@ -656,33 +662,33 @@ export default function PropertyDashboard() {
                 </div>
 
                 {autofillError && (
-                  <div className="mt-2.5 rounded-xl border border-rose-200 bg-rose-50 px-3 py-1.5 text-xs text-rose-700">
+                  <div className="mx-5 mb-4 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-caption text-rose-700 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300">
                     {autofillError}
                   </div>
                 )}
 
                 {showPropertyDetails && (
-                  <div className="mt-3 grid gap-2.5 border-t border-slate-100 pt-3 sm:grid-cols-2 lg:grid-cols-5">
+                  <div className="grid gap-2.5 border-t border-slate-100 px-5 py-4 sm:grid-cols-2 lg:grid-cols-5 dark:border-slate-800">
                     <input
                       type="text"
                       placeholder="Property Name"
                       value={activeProperty.name}
                       onChange={(e) => updateActiveProperty({ name: e.target.value })}
-                      className="input text-xs"
+                      className="input text-caption"
                     />
                     <input
                       type="text"
                       placeholder="Brand"
                       value={activeProperty.brand}
                       onChange={(e) => updateActiveProperty({ brand: e.target.value })}
-                      className="input text-xs"
+                      className="input text-caption"
                     />
                     <input
                       type="text"
                       placeholder="City"
                       value={activeProperty.city}
                       onChange={(e) => updateActiveProperty({ city: e.target.value })}
-                      className="input text-xs"
+                      className="input text-caption"
                     />
                     <input
                       type="text"
@@ -690,14 +696,14 @@ export default function PropertyDashboard() {
                       placeholder="State"
                       value={activeProperty.state}
                       onChange={(e) => updateActiveProperty({ state: e.target.value.toUpperCase() })}
-                      className="input text-xs uppercase"
+                      className="input text-caption uppercase"
                     />
                     <input
                       type="url"
                       placeholder="https://property-url.com"
                       value={activeProperty.url}
                       onChange={(e) => updateActiveProperty({ url: e.target.value })}
-                      className="input text-xs"
+                      className="input text-caption"
                     />
                   </div>
                 )}
@@ -705,7 +711,7 @@ export default function PropertyDashboard() {
 
               <Card
                 title="Automated SEO Workflow"
-                subtitle="Follow steps 1 to 4 or launch Auto-Run Pipeline to execute Crawl + Audits automatically."
+                subtitle="Follow steps 1\u20134, or launch the Auto-Run Pipeline to execute crawl and audits automatically."
                 actions={
                   <Button variant="primary" onClick={() => setShowAutoPilot(true)}>
                     Auto-Run Pipeline
@@ -716,12 +722,12 @@ export default function PropertyDashboard() {
                   <button
                     type="button"
                     onClick={() => setMainTab("crawl")}
-                    className="card-hover group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/70 p-4.5 text-left shadow-xs transition hover:border-emerald-500 hover:shadow-card dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/60 dark:hover:border-emerald-500/60"
+                    className="card-hover group flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/70 p-4 text-left shadow-soft transition-colors hover:border-emerald-500 dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/60 dark:hover:border-emerald-500/60"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2 py-0.5 text-eyebrow font-bold uppercase text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                        STEP 1
+                        Step 1
                       </span>
                       {latestRuns["site-crawl"] ? (
                         <span className="relative flex h-2.5 w-2.5">
@@ -734,30 +740,32 @@ export default function PropertyDashboard() {
                     </div>
                     <div className="mt-3">
                       <div className="flex items-center gap-2">
-                        <svg className="h-4 w-4 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                         </svg>
-                        <span className="font-display text-sm font-bold text-slate-900 group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-400">Site Crawl</span>
+                        <span className="font-display text-h3 font-bold text-slate-900 transition-colors group-hover:text-emerald-600 dark:text-white dark:group-hover:text-emerald-400">
+                          Site Crawl
+                        </span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Autonomous crawl of pages, robots.txt &amp; sitemap.</p>
+                      <p className="mt-1 text-caption text-slate-500 text-pretty dark:text-slate-400">
+                        Autonomous crawl of pages, robots.txt &amp; sitemap.
+                      </p>
                     </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-caption font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
                       <span>Robots &amp; Sitemaps</span>
-                      <span className="text-emerald-600 dark:text-emerald-400">&rarr;</span>
+                      <span className="text-emerald-600 transition-transform group-hover:translate-x-0.5 dark:text-emerald-400">&rarr;</span>
                     </div>
                   </button>
 
                   <button
                     type="button"
-                    onClick={() => {
-                      setMainTab("keywords");
-                    }}
-                    className="card-hover group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/70 p-4.5 text-left shadow-xs transition hover:border-blue-500 hover:shadow-card dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/60 dark:hover:border-blue-500/60"
+                    onClick={() => setMainTab("keywords")}
+                    className="card-hover group flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/70 p-4 text-left shadow-soft transition-colors hover:border-blue-500 dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/60 dark:hover:border-blue-500/60"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-50 px-2 py-0.5 text-eyebrow font-bold uppercase text-blue-800 dark:bg-blue-950/60 dark:text-blue-300">
                         <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
-                        STEP 2
+                        Step 2
                       </span>
                       {latestRuns["keyword-research"] ? (
                         <span className="relative flex h-2.5 w-2.5">
@@ -770,59 +778,65 @@ export default function PropertyDashboard() {
                     </div>
                     <div className="mt-3">
                       <div className="flex items-center gap-2">
-                        <svg className="h-4 w-4 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-4 w-4 shrink-0 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
                         </svg>
-                        <span className="font-display text-sm font-bold text-slate-900 group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">Keyword Research</span>
+                        <span className="font-display text-h3 font-bold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-white dark:group-hover:text-blue-400">
+                          Keyword Research
+                        </span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">78-formula matrix &amp; trained client benchmarks.</p>
+                      <p className="mt-1 text-caption text-slate-500 text-pretty dark:text-slate-400">
+                        78-formula matrix &amp; trained client benchmarks.
+                      </p>
                     </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-caption font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
                       <span>78 Mapped Queries</span>
-                      <span className="text-blue-600 dark:text-blue-400">&rarr;</span>
+                      <span className="text-blue-600 transition-transform group-hover:translate-x-0.5 dark:text-blue-400">&rarr;</span>
                     </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setMainTab("tasks")}
-                    className="card-hover group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/70 p-4.5 text-left shadow-xs transition hover:border-brand hover:shadow-card dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/60 dark:hover:border-brand/60"
+                    className="card-hover group flex flex-col justify-between rounded-2xl border border-slate-200/90 bg-gradient-to-b from-white to-slate-50/70 p-4 text-left shadow-soft transition-colors hover:border-brand dark:border-slate-800 dark:from-slate-900 dark:to-slate-900/60 dark:hover:border-brand/60"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 rounded-md bg-brand-50 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-900 dark:bg-brand-950/60 dark:text-brand-light">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-2 py-0.5 text-eyebrow font-bold uppercase text-slate-900 dark:bg-brand-950/60 dark:text-brand-light">
                         <span className="h-1.5 w-1.5 rounded-full bg-brand" />
-                        STEP 3
+                        Step 3
                       </span>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-eyebrow font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
                         {Array.from(CRAWL_TASK_IDS).filter((id) => Boolean(latestRuns[id])).length}/{CRAWL_TASK_IDS.size} Done
                       </span>
                     </div>
                     <div className="mt-3">
                       <div className="flex items-center gap-2">
-                        <svg className="h-4 w-4 text-brand-dark dark:text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-4 w-4 shrink-0 text-brand-dark dark:text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                         </svg>
-                        <span className="font-display text-sm font-bold text-slate-900 group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand">
+                        <span className="font-display text-h3 font-bold text-slate-900 transition-colors group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand">
                           On-Page &amp; Technical
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">Headings, Title/Meta, Schema &amp; Image Audits.</p>
+                      <p className="mt-1 text-caption text-slate-500 text-pretty dark:text-slate-400">
+                        Headings, Title/Meta, Schema &amp; Image Audits.
+                      </p>
                     </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-[11px] font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
+                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-2 text-caption font-medium text-slate-500 dark:border-slate-800 dark:text-slate-400">
                       <span>Pixel &amp; Alt Guardrails</span>
-                      <span className="text-brand-dark dark:text-brand">&rarr;</span>
+                      <span className="text-brand-dark transition-transform group-hover:translate-x-0.5 dark:text-brand">&rarr;</span>
                     </div>
                   </button>
 
                   <button
                     type="button"
                     onClick={() => setDeliverablesTab("pptx")}
-                    className="card-hover group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-purple-200/90 bg-gradient-to-b from-purple-50/50 via-white to-purple-50/20 p-4.5 text-left shadow-xs transition hover:border-purple-500 hover:shadow-card dark:border-purple-900/60 dark:from-slate-900 dark:to-purple-950/20 dark:hover:border-purple-500/60"
+                    className="card-hover group flex flex-col justify-between rounded-2xl border border-purple-200/90 bg-gradient-to-b from-purple-50/60 via-white to-purple-50/20 p-4 text-left shadow-soft transition-colors hover:border-purple-500 dark:border-purple-900/60 dark:from-slate-900 dark:to-purple-950/20 dark:hover:border-purple-500/60"
                   >
                     <div className="flex items-center justify-between">
-                      <span className="inline-flex items-center gap-1.5 rounded-md bg-purple-100 px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-purple-800 dark:bg-purple-950/60 dark:text-purple-300">
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-purple-100 px-2 py-0.5 text-eyebrow font-bold uppercase text-purple-800 dark:bg-purple-950/60 dark:text-purple-300">
                         <span className="h-1.5 w-1.5 rounded-full bg-purple-500" />
-                        STEP 4
+                        Step 4
                       </span>
                       <span className="relative flex h-2.5 w-2.5">
                         <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-purple-400 opacity-75" />
@@ -831,18 +845,18 @@ export default function PropertyDashboard() {
                     </div>
                     <div className="mt-3">
                       <div className="flex items-center gap-2">
-                        <svg className="h-4 w-4 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <svg className="h-4 w-4 shrink-0 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 13v-1m4 1v-3m4 3V8M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z" />
                         </svg>
-                        <span className="font-display text-sm font-bold text-slate-900 group-hover:text-purple-600 dark:text-white dark:group-hover:text-purple-400">
+                        <span className="font-display text-h3 font-bold text-slate-900 transition-colors group-hover:text-purple-600 dark:text-white dark:group-hover:text-purple-400">
                           Deliverables Studio
                         </span>
                       </div>
-                      <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
+                      <p className="mt-1 text-caption text-slate-600 text-pretty dark:text-slate-400">
                         PPTX Deck, Slide Preview, Memo &amp; Email Dispatcher.
                       </p>
                     </div>
-                    <div className="mt-3 flex items-center justify-between border-t border-purple-100 pt-2 text-[11px] font-medium text-purple-700 dark:border-purple-900/40 dark:text-purple-300">
+                    <div className="mt-3 flex items-center justify-between border-t border-purple-100 pt-2 text-caption font-medium text-purple-700 dark:border-purple-900/40 dark:text-purple-300">
                       <span>Export Suite</span>
                       <span>&rarr;</span>
                     </div>
@@ -850,223 +864,204 @@ export default function PropertyDashboard() {
                 </div>
               </Card>
 
-              {/* Executive Intelligence & Visibility Suite Suite */}
+              {/* Executive intelligence & visibility */}
               <section className="grid gap-4 sm:grid-cols-3">
-                <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200/90 border-t-4 border-t-purple-500 bg-white p-5 shadow-xs dark:border-slate-800 dark:border-t-purple-500 dark:bg-slate-900">
+                <article className="card card-hover flex flex-col justify-between border-t-4 border-t-purple-500 p-5">
                   <div>
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-md bg-purple-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-purple-700 dark:bg-purple-950/60 dark:text-purple-300">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="rounded-full bg-purple-50 px-2.5 py-0.5 text-eyebrow font-bold uppercase text-purple-700 dark:bg-purple-950/50 dark:text-purple-300">
                         AI Citation Engine
                       </span>
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-eyebrow font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                         Not measured
                       </span>
                     </div>
-                    <h3 className="mt-2.5 font-display text-sm font-bold text-slate-900 dark:text-white">
+                    <h3 className="mt-3 font-display text-h3 font-bold text-slate-900 dark:text-white">
                       AI &amp; GEO Readiness Radar
                     </h3>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
-                      Parse JSON-LD, answer coverage and entity signals. AI citations appear only
-                      when a visibility provider is connected.
+                    <p className="mt-1.5 text-caption text-slate-500 text-pretty dark:text-slate-400">
+                      Parse JSON-LD, answer coverage and entity signals. AI citations appear only when a visibility
+                      provider is connected.
                     </p>
-                    <div className="mt-3.5 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-[11px] text-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">
+                    <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-caption text-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">
                       No GEO measurement yet — run the audit in Labs.
                     </div>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
                     <button
                       type="button"
                       onClick={() => {
                         setLabsSubTab("geo");
                         setMainTab("labs");
                       }}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-purple-700 hover:text-purple-900 dark:text-purple-400 dark:hover:text-purple-300"
+                      className="inline-flex items-center gap-1 text-caption font-semibold text-purple-700 transition-all hover:gap-2 dark:text-purple-400"
                     >
                       Inspect AI Readiness <span>&rarr;</span>
                     </button>
                   </div>
-                </div>
+                </article>
 
-                <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200/90 border-t-4 border-t-blue-500 bg-white p-5 shadow-xs dark:border-slate-800 dark:border-t-blue-500 dark:bg-slate-900">
+                <article className="card card-hover flex flex-col justify-between border-t-4 border-t-blue-500 p-5">
                   <div>
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-blue-700 dark:bg-blue-950/60 dark:text-blue-300">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-eyebrow font-bold uppercase text-blue-700 dark:bg-blue-950/50 dark:text-blue-300">
                         Local Comp-Set
                       </span>
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+                      <span className="rounded-full bg-slate-100 px-2 py-0.5 font-mono text-eyebrow font-bold text-slate-500 dark:bg-slate-800 dark:text-slate-400">
                         No data
                       </span>
                     </div>
-                    <h3 className="mt-2.5 font-display text-sm font-bold text-slate-900 dark:text-white">
+                    <h3 className="mt-3 font-display text-h3 font-bold text-slate-900 dark:text-white">
                       Local Comp-Set Intelligence
                     </h3>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-1.5 text-caption text-slate-500 text-pretty dark:text-slate-400">
                       Compare verified organic positions against the competitors you enter.
                     </p>
-                    <div className="mt-3.5 rounded-lg border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-[11px] text-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">
+                    <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-slate-50 px-3 py-2 text-caption text-slate-500 dark:border-slate-700 dark:bg-slate-800/60 dark:text-slate-400">
                       Add competitors and ranked keywords to calculate share of voice.
                     </div>
                   </div>
-                  <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800">
+                  <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
                     <button
                       type="button"
                       onClick={() => {
                         setLabsSubTab("compset");
                         setMainTab("labs");
                       }}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-300"
+                      className="inline-flex items-center gap-1 text-caption font-semibold text-blue-700 transition-all hover:gap-2 dark:text-blue-400"
                     >
                       View Local Matrix <span>&rarr;</span>
                     </button>
                   </div>
-                </div>
+                </article>
 
-                <div className="card-hover flex flex-col justify-between rounded-2xl border border-slate-200/90 border-t-4 border-t-brand bg-white p-5 shadow-xs dark:border-slate-800 dark:border-t-brand dark:bg-slate-900">
+                <article className="card card-hover flex flex-col justify-between border-t-4 border-t-brand p-5">
                   <div>
-                    <div className="flex items-center justify-between">
-                      <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="rounded-full bg-emerald-50 px-2.5 py-0.5 text-eyebrow font-bold uppercase text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300">
                         VisibilitySuite.ai
                       </span>
-                      <span className="inline-flex items-center gap-1 font-mono text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                      <span className="inline-flex items-center gap-1 font-mono text-eyebrow font-semibold text-emerald-600 dark:text-emerald-400">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
                         Live Sync
                       </span>
                     </div>
-                    <h3 className="mt-2.5 font-display text-sm font-bold text-slate-900 dark:text-white">
+                    <h3 className="mt-3 font-display text-h3 font-bold text-slate-900 dark:text-white">
                       VisibilitySuite Data Connector
                     </h3>
-                    <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                    <p className="mt-1.5 text-caption text-slate-500 text-pretty dark:text-slate-400">
                       Sync batch prompts, comp-set radars, and citation snapshots directly with your dashboard.
                     </p>
-                    {/* Visual data sync indicators */}
-                    <div className="mt-3.5 flex items-center gap-2 text-[10px] text-slate-500 dark:text-slate-400">
+                    <div className="mt-4 flex flex-wrap items-center gap-2 text-eyebrow text-slate-500 dark:text-slate-400">
                       <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono dark:bg-slate-800">Batch Sync</span>
                       <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono dark:bg-slate-800">JSON/CSV</span>
                       <span className="rounded-md bg-slate-100 px-2 py-0.5 font-mono dark:bg-slate-800">Citation Radars</span>
                     </div>
                   </div>
-                  <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800">
+                  <div className="mt-4 flex items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-slate-800">
                     <button
                       type="button"
                       onClick={() => setShowVisibilitySuite(true)}
-                      className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 hover:text-emerald-900 dark:text-emerald-400 dark:hover:text-emerald-300"
+                      className="inline-flex items-center gap-1 text-caption font-semibold text-emerald-700 transition-all hover:gap-2 dark:text-emerald-400"
                     >
                       Connect &amp; Sync Data <span>&rarr;</span>
                     </button>
                     <button
                       type="button"
                       onClick={() => setShowVisibilitySuite(true)}
-                      className="rounded-lg bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-800 hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300"
+                      className="rounded-lg bg-emerald-50 px-2.5 py-1 text-eyebrow font-bold text-emerald-800 transition hover:bg-emerald-100 dark:bg-emerald-950/60 dark:text-emerald-300"
                     >
                       Drop Batch File
                     </button>
                   </div>
-                </div>
+                </article>
               </section>
 
-              {/* Unified SEO Suite Hero Card */}
-              <div className="hero-gradient relative overflow-hidden rounded-3xl border-2 border-brand/40 bg-white p-7 shadow-sm dark:bg-slate-900/90 dark:border-brand/50">
+              {/* Unified SEO Suite hero */}
+              <section className="hero-gradient relative overflow-hidden rounded-3xl border border-brand/30 bg-white p-6 shadow-card sm:p-7 dark:border-brand/40 dark:bg-slate-900">
                 <div className="relative z-10 flex flex-col justify-between gap-5 md:flex-row md:items-center">
                   <div className="space-y-3">
                     <div className="flex flex-wrap items-center gap-2">
-                      <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand px-2.5 py-0.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-950 shadow-xs">
-                        <span className="h-1.5 w-1.5 rounded-full bg-slate-950 animate-ping" />
+                      <span className="inline-flex items-center gap-1.5 rounded-full bg-brand px-2.5 py-1 text-eyebrow font-bold uppercase text-slate-950">
+                        <span className="h-1.5 w-1.5 rounded-full bg-slate-950" />
                         Next-Gen Engine
                       </span>
-                      <span className="rounded-lg border border-slate-200/80 bg-white/80 px-2.5 py-0.5 text-[11px] font-bold text-slate-700 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300">
+                      <span className="rounded-full border border-slate-200/80 bg-white/80 px-2.5 py-1 text-caption font-semibold text-slate-600 dark:border-slate-700 dark:bg-slate-800/80 dark:text-slate-300">
                         Claude-SEO + Open-SEO + FastMCP Search Console
                       </span>
                     </div>
                     <div>
-                      <h3 className="font-display text-xl font-black text-slate-900 dark:text-white">
+                      <h3 className="font-display text-title font-black text-slate-900 dark:text-white">
                         Unified 11-Dimension Website Audit &amp; AI Search Engine
                       </h3>
-                      <p className="mt-1 text-xs text-slate-600 dark:text-slate-300 max-w-2xl leading-relaxed">
-                        Execute full multi-tier audits across technical health, headings, images, Search Console cannibalization, and Generative Engine Optimization (GEO) with one click.
+                      <p className="mt-1.5 max-w-2xl text-body text-slate-600 text-pretty dark:text-slate-300">
+                        Execute full multi-tier audits across technical health, headings, images, Search Console
+                        cannibalization, and Generative Engine Optimization (GEO) with one click.
                       </p>
                     </div>
                     <div className="flex flex-wrap items-center gap-2 pt-1">
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        FastMCP GSC Server
-                      </span>
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        20 Specialized SEO Agents
-                      </span>
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        Open-SEO Diagnostic Catalog
-                      </span>
-                      <span className="rounded-md bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
-                        Fine-Tuned SFT Model
-                      </span>
+                      {[
+                        "FastMCP GSC Server",
+                        "20 Specialized SEO Agents",
+                        "Open-SEO Diagnostic Catalog",
+                        "Fine-Tuned SFT Model",
+                      ].map((chip) => (
+                        <span
+                          key={chip}
+                          className="rounded-lg bg-slate-100 px-2 py-1 text-caption font-medium text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                        >
+                          {chip}
+                        </span>
+                      ))}
                     </div>
                   </div>
                   <button
                     type="button"
                     onClick={() => setMainTab("unified-seo")}
-                    className="flex-shrink-0 inline-flex items-center gap-2 rounded-2xl bg-brand px-6 py-3 font-display text-xs font-bold text-slate-900 shadow-glow transition hover:brightness-105 hover:-translate-y-0.5 active:translate-y-0"
+                    className="inline-flex flex-shrink-0 items-center gap-2 rounded-2xl bg-brand px-6 py-3 font-display text-body font-bold text-slate-900 shadow-glow transition-all duration-200 ease-out-expo hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0"
                   >
                     <span>Open Unified SEO Suite</span>
                     <span>&rarr;</span>
                   </button>
                 </div>
-              </div>
+              </section>
 
               <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-                <div className="card-hover rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Active Modules
-                  </div>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">{readyCount}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">/ {TASKS_CONFIG.length} tasks</span>
-                  </div>
-                  <div className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
-                    <div
-                      className="h-full rounded-full bg-brand"
-                      style={{ width: `${Math.round((readyCount / TASKS_CONFIG.length) * 100)}%` }}
-                    />
-                  </div>
-                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">
-                    {readyCount} Active &bull; {TASKS_CONFIG.length - readyCount} Coming Soon
-                  </p>
-                </div>
-
-                <div className="card-hover rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Recorded Runs
-                  </div>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">{runList.length}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">latest executions</span>
-                  </div>
-                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">Synced with Run History</p>
-                </div>
-
-                <div className="card-hover rounded-2xl border border-slate-200/80 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                    Attention Needed
-                  </div>
-                  <div className="mt-1 flex items-baseline gap-2">
-                    <span className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">{flaggedCount}</span>
-                    <span className="text-xs text-slate-500 dark:text-slate-400">flagged runs</span>
-                  </div>
-                  <p className="mt-2 text-[11px] text-slate-500 dark:text-slate-400">Auto-validated Flag Summaries</p>
-                </div>
-
+                <Stat
+                  label="Active Modules"
+                  value={
+                    <>
+                      {readyCount}
+                      <span className="ml-1 text-body font-semibold text-slate-400 dark:text-slate-500">/ {TASKS_CONFIG.length}</span>
+                    </>
+                  }
+                  tone="brand"
+                  progress={Math.round((readyCount / TASKS_CONFIG.length) * 100)}
+                  subtext={`${readyCount} active \u2022 ${TASKS_CONFIG.length - readyCount} coming soon`}
+                />
+                <Stat label="Recorded Runs" value={runList.length} subtext="Synced with Run History" />
+                <Stat
+                  label="Attention Needed"
+                  value={flaggedCount}
+                  tone={flaggedCount > 0 ? "warn" : "good"}
+                  subtext="Auto-validated flag summaries"
+                />
                 <button
                   type="button"
                   onClick={() => setShowAiTraining(true)}
-                  className="card-hover rounded-2xl border border-emerald-200 bg-emerald-50/50 p-4 text-left shadow-card transition hover:border-emerald-300 dark:border-emerald-900/60 dark:bg-emerald-950/20 dark:hover:border-emerald-700"
+                  className="group flex flex-col justify-between rounded-2xl border border-emerald-200/80 bg-emerald-50/60 p-4 text-left shadow-soft transition-colors hover:border-emerald-300 hover:bg-emerald-50 dark:border-emerald-900/50 dark:bg-emerald-950/20 dark:hover:border-emerald-700"
                 >
-                  <div className="text-[11px] font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-400">
-                    Online AI Engine
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="eyebrow text-emerald-700 dark:text-emerald-400">Online AI Engine</span>
+                    <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
                   </div>
-                  <div className="mt-1 font-display text-sm font-bold text-slate-900 dark:text-white">
+                  <div className="mt-2 truncate font-display text-h3 font-bold text-slate-900 dark:text-white">
                     {aiStatus.provider}
                   </div>
-                  <p className="mt-2 text-[11px] font-medium text-emerald-700 dark:text-emerald-400">
-                    {aiStatus.activeRules} trained rules active &rarr;
-                  </p>
+                  <div className="mt-2 flex items-center gap-1 text-caption font-semibold text-emerald-700 dark:text-emerald-400">
+                    {aiStatus.activeRules} trained rules active
+                    <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>
+                  </div>
                 </button>
               </section>
             </>

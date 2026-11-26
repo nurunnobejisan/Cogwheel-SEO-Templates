@@ -98,7 +98,7 @@ p {
 
   /* Headings ---------------------------------------------------------------- */
   .eyebrow {
-    @apply text-eyebrow uppercase text-slate-400 dark:text-slate-500;
+    @apply text-eyebrow font-semibold uppercase text-slate-400 dark:text-slate-500;
   }
   .section-title {
     @apply font-display text-h2 font-bold text-slate-900 dark:text-white;
