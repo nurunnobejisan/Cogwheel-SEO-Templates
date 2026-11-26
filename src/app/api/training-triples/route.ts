@@ -105,6 +105,8 @@ export async function POST(req: NextRequest) {
       capturedAt: new Date().toISOString(),
       contentHash: hash,
       consent: true,
+      tenantId: principal.organizationId,
+      provenance,
       reviewedBy: undefined,
     };
     await fs.mkdir(path.dirname(tripleFile()), { recursive: true });

@@ -18,6 +18,7 @@ function triple(overrides: Partial<TrainingTriple> = {}): TrainingTriple {
     capturedAt: "2026-11-26T00:00:00.000Z",
     contentHash: "hash",
     consent: true,
+    provenance: "measured",
     ...overrides,
   };
 }
