@@ -24,7 +24,14 @@ export type TaskKind =
   | "semantic_reasoning"
   | "rag_synthesis"
   | "intent_mapping"
-  | "entity_gap_analysis";
+  | "entity_gap_analysis"
+  /**
+   * Page-type classification (Phase 2 job 4). Additive: existing call sites
+   * never pass it, so the router's tier map gains one key and nothing else
+   * changes. Routed to Tier 1 because it is a labelling task, not a reasoning
+   * task.
+   */
+  | "page_classification";
 
 export interface ProviderDescriptor {
   id: string;

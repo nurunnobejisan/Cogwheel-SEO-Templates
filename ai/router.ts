@@ -19,6 +19,7 @@ export const TIER1_TASKS: readonly TaskKind[] = [
   "metadata_generation",
   "alt_text_generation",
   "schema_generation",
+  "page_classification",
 ];
 
 export const TIER2_TASKS: readonly TaskKind[] = [

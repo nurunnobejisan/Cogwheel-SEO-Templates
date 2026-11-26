@@ -21,6 +21,7 @@
     "brain:eval": "tsx --conditions=react-server scripts/brain-eval.ts",
     "brain:export-lora": "tsx scripts/export-lora-dataset.ts",
     "train:validate": "node scripts/validate-training-data.mjs && tsx scripts/validate-ml-examples.ts",
+    "ml:golden:check": "tsx scripts/check-golden-set.ts",
     "train:clean": "python3 scripts/clean-training-data.py",
     "geo:drift": "tsx scripts/geo-drift.ts"
   },
