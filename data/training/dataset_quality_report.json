@@ -1,18 +1,18 @@
 {
   "status": "success",
   "datasetName": "Cogwheel-Unified-SEO-SFT-v1",
-  "totalExamples": 168,
-  "trainCount": 134,
+  "totalExamples": 268,
+  "trainCount": 234,
   "evalCount": 34,
-  "trainRatio": 0.8,
-  "evalRatio": 0.2,
-  "estimatedTokens": 54907,
+  "trainRatio": 0.8731,
+  "evalRatio": 0.1269,
+  "estimatedTokens": 91516,
   "sources": {
-    "googleAlgorithmUpdates": 66,
-    "claudeSeoSpecializedAgents": 20,
-    "keywordStrategyMatrix": 78,
-    "gscDiagnostics": 2,
-    "geoAiVisibility": 2
+    "googleAlgorithmUpdates": 81,
+    "claudeSeoSpecializedAgents": 50,
+    "keywordStrategyMatrix": 93,
+    "gscDiagnostics": 24,
+    "geoAiVisibility": 20
   },
   "sanitization": {
     "secretPatternsEnforced": 4,
@@ -21,5 +21,15 @@
   "files": {
     "train": "data/training/unified_seo_train.jsonl",
     "eval": "data/training/unified_seo_eval.jsonl"
+  },
+  "expansion": {
+    "added": 100,
+    "dedupedOut": 0,
+    "categories": {
+      "Google Algorithm Updates": 15,
+      "20 Claude-SEO Agents": 30,
+      "78-Keyword Strategy & Intent": 15,
+      "Search Console Cannibalization & GEO": 40
+    }
   }
 }
