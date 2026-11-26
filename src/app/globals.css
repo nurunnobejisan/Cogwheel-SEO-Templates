@@ -2,35 +2,142 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─────────────────────────────────────────────────────────────────────────────
+   Base
+   ───────────────────────────────────────────────────────────────────────────── */
+
+:root {
+  color-scheme: light;
+}
+
+html.dark {
+  color-scheme: dark;
+}
+
 body {
-  background-color: #f8fafc;
-  background-image: 
+  background-color: #f7f8fa;
+  background-image:
     radial-gradient(at 0% 0%, rgba(163, 209, 27, 0.05) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgba(16, 76, 151, 0.04) 0px, transparent 40%),
     radial-gradient(at 50% 100%, rgba(163, 209, 27, 0.03) 0px, transparent 50%);
   color: #1e293b;
   min-height: 100vh;
+  font-feature-settings: "cv11", "ss01";
+  font-variant-ligatures: contextual;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
   transition: background-color 0.25s ease, color 0.25s ease;
 }
 
 html.dark body {
-  background-color: #0b0f19;
-  background-image: 
+  background-color: #0a0e17;
+  background-image:
     radial-gradient(at 0% 0%, rgba(163, 209, 27, 0.08) 0px, transparent 50%),
     radial-gradient(at 100% 0%, rgba(30, 58, 138, 0.12) 0px, transparent 40%),
     radial-gradient(at 50% 100%, rgba(163, 209, 27, 0.05) 0px, transparent 50%);
-  color: #f1f5f9;
+  color: #eef2f7;
 }
 
+/**
+ * Typographic defaults. Headings use the display face with tightened tracking
+ * and balanced wrapping; body copy avoids orphans/widows.
+ */
+h1, h2, h3, h4, .font-display {
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+h5, h6 {
+  letter-spacing: -0.01em;
+}
+
+p {
+  text-wrap: pretty;
+}
+
+:focus-visible {
+  outline: 2px solid #a3d11b;
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Utilities
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@layer utilities {
+  /* Numbers that should not jitter (metrics, tables, deltas). */
+  .nums {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: "tnum";
+  }
+  .text-pretty {
+    text-wrap: pretty;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Components
+   ───────────────────────────────────────────────────────────────────────────── */
+
+@layer components {
+  /* Surfaces ---------------------------------------------------------------- */
+  .card {
+    @apply rounded-2xl border border-slate-200/80 bg-white shadow-soft transition-colors dark:border-slate-800 dark:bg-slate-900;
+  }
+  .surface-muted {
+    @apply rounded-2xl border border-slate-200/70 bg-slate-50/70 dark:border-slate-800 dark:bg-slate-900/50;
+  }
+  .hairline {
+    @apply border-slate-100 dark:border-slate-800;
+  }
+
+  /* Headings ---------------------------------------------------------------- */
+  .eyebrow {
+    @apply text-eyebrow uppercase text-slate-400 dark:text-slate-500;
+  }
+  .section-title {
+    @apply font-display text-h2 font-bold text-slate-900 dark:text-white;
+  }
+  .section-subtitle {
+    @apply mt-1 text-body text-slate-500 dark:text-slate-400;
+  }
+
+  /* Forms ------------------------------------------------------------------- */
+  .input {
+    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-body text-slate-900 shadow-soft transition placeholder:text-slate-400 focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500;
+  }
+  .label {
+    @apply mb-1.5 block text-eyebrow uppercase text-slate-500 dark:text-slate-400;
+  }
+
+  /* Tables ------------------------------------------------------------------ */
+  .th {
+    @apply sticky top-0 z-10 border-b border-slate-200/70 bg-slate-50/95 px-4 py-3 text-left text-eyebrow uppercase text-slate-500 backdrop-blur-sm dark:border-slate-800 dark:bg-slate-900/95 dark:text-slate-400;
+  }
+  .td {
+    @apply border-t border-slate-100 px-4 py-3 align-top text-body dark:border-slate-800 dark:text-slate-200;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+   Effects (kept as plain classes — widely referenced across components)
+   ───────────────────────────────────────────────────────────────────────────── */
+
 .card-hover {
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s ease;
 }
 .card-hover:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 32px -8px rgba(15, 23, 42, 0.08), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+  transform: translateY(-2px);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 18px 36px -16px rgba(15, 23, 42, 0.18);
 }
 html.dark .card-hover:hover {
-  box-shadow: 0 16px 36px -8px rgba(0, 0, 0, 0.6), 0 0 24px -4px rgba(163, 209, 27, 0.18);
+  box-shadow: 0 18px 40px -16px rgba(0, 0, 0, 0.7), 0 0 26px -6px rgba(163, 209, 27, 0.18);
 }
 
 .glass-card {
@@ -39,7 +146,6 @@ html.dark .card-hover:hover {
   -webkit-backdrop-filter: blur(16px);
   border: 1px solid rgba(226, 232, 240, 0.85);
 }
-
 html.dark .glass-card {
   background: rgba(15, 23, 42, 0.75);
   backdrop-filter: blur(16px);
@@ -47,16 +153,26 @@ html.dark .glass-card {
   border: 1px solid rgba(30, 41, 59, 0.85);
 }
 
-.hero-gradient {
-  background: radial-gradient(circle at 20% 20%, rgba(163, 209, 27, 0.14), transparent 45%),
-              radial-gradient(circle at 85% 25%, rgba(16, 76, 151, 0.16), transparent 50%),
-              radial-gradient(circle at 50% 90%, rgba(147, 51, 234, 0.10), transparent 55%);
+.glass-nav {
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+html.dark .glass-nav {
+  background: rgba(15, 23, 42, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
+.hero-gradient {
+  background: radial-gradient(circle at 20% 20%, rgba(163, 209, 27, 0.14), transparent 45%),
+    radial-gradient(circle at 85% 25%, rgba(16, 76, 151, 0.16), transparent 50%),
+    radial-gradient(circle at 50% 90%, rgba(147, 51, 234, 0.1), transparent 55%);
+}
 html.dark .hero-gradient {
   background: radial-gradient(circle at 20% 20%, rgba(163, 209, 27, 0.15), transparent 45%),
-              radial-gradient(circle at 85% 25%, rgba(30, 64, 175, 0.22), transparent 50%),
-              radial-gradient(circle at 50% 90%, rgba(126, 34, 206, 0.16), transparent 55%);
+    radial-gradient(circle at 85% 25%, rgba(30, 64, 175, 0.22), transparent 50%),
+    radial-gradient(circle at 50% 90%, rgba(126, 34, 206, 0.16), transparent 55%);
 }
 
 .glow-brand {
@@ -68,35 +184,15 @@ html.dark .hero-gradient {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-
 html.dark .gradient-text-brand {
   background: linear-gradient(135deg, #60a5fa 0%, #2dd4bf 50%, #bcf21d 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
-/* Custom sleek scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+.animate-fade-in {
+  animation: fadeInSlide 0.22s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: rgba(148, 163, 184, 0.35);
-  border-radius: 9999px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(148, 163, 184, 0.6);
-}
-html.dark ::-webkit-scrollbar-thumb {
-  background: rgba(100, 116, 139, 0.35);
-}
-html.dark ::-webkit-scrollbar-thumb:hover {
-  background: rgba(100, 116, 139, 0.6);
-}
-
 @keyframes fadeInSlide {
   from {
     opacity: 0;
@@ -108,48 +204,43 @@ html.dark ::-webkit-scrollbar-thumb:hover {
   }
 }
 
-.animate-fade-in {
-  animation: fadeInSlide 0.22s ease-out both;
+/* ─────────────────────────────────────────────────────────────────────────────
+   Scrollbar
+   ───────────────────────────────────────────────────────────────────────────── */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.65);
+}
+html.dark ::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.4);
+}
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.65);
 }
 
-h1, h2, h3, .font-display {
-  font-family: var(--font-jakarta), system-ui, sans-serif;
-  letter-spacing: -0.025em;
-}
-
-.glass-nav {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-html.dark .glass-nav {
-  background: rgba(15, 23, 42, 0.85);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-@layer components {
-  .input {
-    @apply w-full rounded-xl border border-slate-200 bg-white px-3.5 py-2.5 text-sm shadow-sm placeholder:text-slate-400 transition focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/25 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500;
-  }
-  .label {
-    @apply mb-1.5 block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400;
-  }
-  .th {
-    @apply sticky top-0 z-10 bg-slate-100/95 px-3.5 py-2.5 text-left text-[11px] font-bold uppercase tracking-wider text-slate-500 backdrop-blur-sm dark:bg-slate-800/95 dark:text-slate-300;
-  }
-  .td {
-    @apply border-t border-slate-100 px-3.5 py-2.5 align-top text-sm dark:border-slate-800 dark:text-slate-200;
-  }
-}
+/* ─────────────────────────────────────────────────────────────────────────────
+   Print
+   ───────────────────────────────────────────────────────────────────────────── */
 
 @media print {
   body {
     background: white !important;
     color: black !important;
   }
-  .no-print, [aria-hidden="true"], nav {
+  .no-print,
+  [aria-hidden="true"],
+  nav {
     display: none !important;
   }
   .fixed {
@@ -158,7 +249,8 @@ html.dark .glass-nav {
     inset: auto !important;
     background: transparent !important;
   }
-  .overflow-y-auto, .overflow-auto {
+  .overflow-y-auto,
+  .overflow-auto {
     overflow: visible !important;
     max-height: none !important;
   }
