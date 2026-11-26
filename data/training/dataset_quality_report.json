@@ -31,5 +31,33 @@
       "78-Keyword Strategy & Intent": 15,
       "Search Console Cannibalization & GEO": 40
     }
+  },
+  "audit": {
+    "note": "Category + provenance derived from each row's meta after governance cleanup.",
+    "train": {
+      "rows": 234,
+      "templatedResolved": 0,
+      "categories": {
+        "Google Algorithm Updates": 81,
+        "20 Claude-SEO Agents": 50,
+        "78-Keyword Strategy & Intent": 63,
+        "Search Console Cannibalization & GEO": 40
+      }
+    },
+    "eval": {
+      "rows": 34,
+      "templatedResolved": 0,
+      "categories": {
+        "78-Keyword Strategy & Intent": 30,
+        "Search Console Cannibalization & GEO": 4
+      }
+    },
+    "combinedCategories": {
+      "Google Algorithm Updates": 81,
+      "20 Claude-SEO Agents": 50,
+      "78-Keyword Strategy & Intent": 93,
+      "Search Console Cannibalization & GEO": 44
+    },
+    "provenancePolicy": "Rows carry no measured client metrics, so provenance=unavailable."
   }
 }
