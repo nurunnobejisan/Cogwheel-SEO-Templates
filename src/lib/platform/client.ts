@@ -23,6 +23,12 @@ import type { JudgmentReport } from "../../core/judgment/types.ts";
 export const PLATFORM_API_BASE = "/api/platform/v1";
 /** Outcome logging lives on its own route, not under the platform gateway. */
 export const OUTCOMES_API_BASE = "/api/outcomes";
+/**
+ * Operator session bootstrap. This is a Next.js route at `/api/platform/session`
+ * (next to the `/api/platform/v1/*` gateway mount), *not* a gateway endpoint —
+ * `request(base, ...)` would wrongly produce `/api/platform/v1/session`.
+ */
+export const SESSION_API_BASE = "/api/platform/session";
 
 /** Redacted credential as returned by the API (secrets never leave the server). */
 export interface PublicCredential {
@@ -136,10 +142,12 @@ export function createPlatformClient(options: ClientOptions = {}) {
     health: () => request<HealthResponse>(options, "GET", "/health"),
 
     /* -------- session -------- */
-    session: () => request<SessionStatus>(options, "GET", "/session"),
+    session: () =>
+      requestUrl<SessionStatus>(options.fetchImpl ?? fetch, SESSION_API_BASE, "GET"),
     signIn: (token: string, role?: Role) =>
-      request<SessionStatus>(options, "POST", "/session", { token, role }),
-    signOut: () => request<{ authenticated: boolean }>(options, "DELETE", "/session"),
+      requestUrl<SessionStatus>(options.fetchImpl ?? fetch, SESSION_API_BASE, "POST", { token, role }),
+    signOut: () =>
+      requestUrl<{ authenticated: boolean }>(options.fetchImpl ?? fetch, SESSION_API_BASE, "DELETE"),
 
     /* -------- connectors -------- */
     listConnectors: () => request<{ targets: string[] }>(options, "GET", "/connectors"),

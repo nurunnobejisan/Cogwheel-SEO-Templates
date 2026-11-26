@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { OUTCOMES_API_BASE, createPlatformClient } from "../src/lib/platform/client";
+import { OUTCOMES_API_BASE, SESSION_API_BASE, createPlatformClient } from "../src/lib/platform/client";
 
 function mockFetch(payload: unknown) {
   const calls: Array<{ url: string; method?: string; body?: unknown }> = [];
@@ -37,5 +37,20 @@ describe("outcomes client", () => {
     expect(calls[1]!.body).toMatchObject({ action: "measure", changeId: "chg_1" });
     expect(calls[2]!.body).toMatchObject({ action: "measure" });
     expect(calls[3]!.body).toMatchObject({ action: "judge" });
+  });
+});
+
+describe("operator session client", () => {
+  it("targets /api/platform/session, not the v1 gateway mount", async () => {
+    const { fetchImpl, calls } = mockFetch({ authenticated: false, principal: null, devAuth: true, signInConfigured: false });
+    const client = createPlatformClient({ fetchImpl });
+
+    await client.session();
+    await client.signIn("token-value");
+    await client.signOut();
+
+    expect(calls.map((call) => call.url)).toEqual([SESSION_API_BASE, SESSION_API_BASE, SESSION_API_BASE]);
+    expect(calls.map((call) => call.method)).toEqual(["GET", "POST", "DELETE"]);
+    expect(calls[1]!.body).toMatchObject({ token: "token-value" });
   });
 });
