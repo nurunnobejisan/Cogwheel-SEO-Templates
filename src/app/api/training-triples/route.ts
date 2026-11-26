@@ -76,6 +76,10 @@ export async function POST(req: NextRequest) {
     if (body.tosAccepted !== true) {
       return NextResponse.json({ error: "Site terms acceptance (tosAccepted) is required" }, { status: 400 });
     }
+    // Provenance of the captured audit. Defaults to "measured" (live fetch);
+    // callers may pass an explicit value from the allowed set.
+    const ALLOWED_PROVENANCE = new Set(["measured", "estimated", "unavailable"]);
+    const provenance = ALLOWED_PROVENANCE.has(body.provenance) ? (body.provenance as "measured" | "estimated" | "unavailable") : "measured";
     await assertEgressAllowed(url);
 
     const allowed = await robotsAllowed(url);
