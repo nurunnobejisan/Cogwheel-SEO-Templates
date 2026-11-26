@@ -1,0 +1,42 @@
+{
+  "_instructions": "Hand-fill template. Do NOT generate labels with a model. For each prompt, replace {{placeholders}} with the client's real city/brand, then record whether the brand was mentioned and which domains were cited by the provider you tested. Leave expectedMentioned null and expectedCitationDomains empty until a human has verified the result. verifiedBy/verifiedAt must be completed by that human.",
+  "_mode": "GEO-bench-style buyer prompts (hotel + universal)",
+  "_fields": {
+    "expectedMentioned": "true | false | null (null = not yet verified)",
+    "expectedCitationDomains": "exact domains a human observed in the answer",
+    "verifiedBy": "operator id or name",
+    "verifiedAt": "ISO date"
+  },
+  "prompts": [
+    { "id": "geo-hotel-01", "mode": "hotel", "category": "comparison", "prompt": "best boutique hotel in {{city}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-02", "mode": "hotel", "category": "local", "prompt": "best hotels in {{city}} for a weekend", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-03", "mode": "hotel", "category": "local", "prompt": "where to stay in {{city}} for a first visit", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-04", "mode": "hotel", "category": "local", "prompt": "hotel in {{city}} with a rooftop pool", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-05", "mode": "hotel", "category": "local", "prompt": "pet friendly hotel in {{city}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-06", "mode": "hotel", "category": "local", "prompt": "hotel near {{landmark}} in {{city}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-07", "mode": "hotel", "category": "local", "prompt": "best hotel in {{city}} for {{audience}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-08", "mode": "hotel", "category": "transactional", "prompt": "how much does a hotel room in {{city}} cost per night?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-09", "mode": "hotel", "category": "branded", "prompt": "is {{brand}} a good hotel?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-10", "mode": "hotel", "category": "branded", "prompt": "{{brand}} reviews and guest experiences", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-11", "mode": "hotel", "category": "comparison", "prompt": "alternatives to {{brand}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-12", "mode": "hotel", "category": "informational", "prompt": "what should I look for when choosing a hotel?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-13", "mode": "hotel", "category": "comparison", "prompt": "best hotels for a romantic weekend", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-14", "mode": "hotel", "category": "local", "prompt": "hotel in {{city}} with free breakfast", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-hotel-15", "mode": "hotel", "category": "informational", "prompt": "how do I choose a hotel for a business trip in {{city}}?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-01", "mode": "universal", "category": "comparison", "prompt": "best {{category}} in {{city}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-02", "mode": "universal", "category": "local", "prompt": "top rated {{category}} near {{city}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-03", "mode": "universal", "category": "transactional", "prompt": "how much does {{category}} cost in {{city}}?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-04", "mode": "universal", "category": "comparison", "prompt": "best {{category}} for {{audience}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-05", "mode": "universal", "category": "informational", "prompt": "what should I look for when choosing {{category}}?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-06", "mode": "universal", "category": "informational", "prompt": "{{category}} with {{feature}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-07", "mode": "universal", "category": "branded", "prompt": "is {{brand}} legit?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-08", "mode": "universal", "category": "branded", "prompt": "{{brand}} reviews", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-09", "mode": "universal", "category": "branded", "prompt": "is {{brand}} worth it?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-10", "mode": "universal", "category": "comparison", "prompt": "alternatives to {{brand}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-11", "mode": "universal", "category": "comparison", "prompt": "best {{category}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-12", "mode": "universal", "category": "local", "prompt": "top rated {{category}} near me", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-13", "mode": "universal", "category": "transactional", "prompt": "how much does {{category}} cost?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-14", "mode": "universal", "category": "informational", "prompt": "what is the best way to compare {{category}} providers?", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" },
+    { "id": "geo-universal-15", "mode": "universal", "category": "informational", "prompt": "common mistakes when choosing {{category}}", "brand": "{{brand}}", "expectedMentioned": null, "expectedCitationDomains": [], "verifiedBy": null, "verifiedAt": null, "notes": "" }
+  ]
+}
