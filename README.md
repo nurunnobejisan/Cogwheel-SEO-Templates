@@ -7,7 +7,7 @@
 **Hospitality SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace.**
 
 [![CI](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/live-app-0f172a?logo=vercel)](https://cogwheel-seo-templates.vercel.app)
+[![Live](https://img.shields.io/badge/live-app-0f172a?logo=vercel)](https://seo-studio-one.vercel.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-3.0.0-7c3aed.svg)](CHANGELOG.md)
 [![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs)](https://nextjs.org)
@@ -15,8 +15,8 @@
 [![Python](https://img.shields.io/badge/Python-3.11+-3776ab?logo=python&logoColor=white)](https://www.python.org)
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285f4?logo=googlechrome&logoColor=white)](chrome-extension/)
 
-[Live application](https://cogwheel-seo-templates.vercel.app) ·
-[Download extension](https://cogwheel-seo-templates.vercel.app/cogwheel-seo-studio.zip) ·
+[Live application](https://seo-studio-one.vercel.app) ·
+[Download extension](https://seo-studio-one.vercel.app/cogwheel-seo-studio.zip) ·
 [Documentation](docs/README.md) ·
 [Changelog](CHANGELOG.md)
 
@@ -223,7 +223,7 @@ The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT
 
 ## Deployment
 
-- **Web app:** Vercel production at [cogwheel-seo-templates.vercel.app](https://cogwheel-seo-templates.vercel.app).
+- **Web app:** Vercel production at [seo-studio-one.vercel.app](https://seo-studio-one.vercel.app).
 - **CI:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request.
 - **Extension releases:** [`.github/workflows/auto-release.yml`](.github/workflows/auto-release.yml) builds and attaches `cogwheel-seo-studio.zip` when the manifest version changes.
 - **Updates:** `updates.xml` and the packaged ZIP are served from `public/`.

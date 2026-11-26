@@ -8,7 +8,7 @@ import type {
 import { assertEgressAllowed, readTextCapped, safeFetch } from "../../lib/security/egress.ts";
 
 const CRAWLER_USER_AGENT =
-  "Mozilla/5.0 (compatible; CogwheelImageAudit/2.7; +https://cogwheel-seo-templates.vercel.app)";
+  "Mozilla/5.0 (compatible; CogwheelImageAudit/2.7; +https://seo-studio-one.vercel.app)";
 
 function normalizeUrl(raw: string, baseUrl?: string): string | null {
   try {

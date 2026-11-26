@@ -13,7 +13,7 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cogwheel-seo-templates.vercel.app"),
+  metadataBase: new URL("https://seo-studio-one.vercel.app"),
   title: {
     default: "SEO & GEO Audit Studio — Hotel Search Engine Suite",
     template: "%s",

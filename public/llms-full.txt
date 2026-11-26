@@ -2,7 +2,7 @@
 
 > Hospitality Search Engine and Generative Engine Optimization Suite with Real-Time Character and Pixel Budgeting, Dynamic Schema Ingestion, and Multi-Format Export Engines.
 
-Canonical Origin: https://cogwheel-seo-templates.vercel.app
+Canonical Origin: https://seo-studio-one.vercel.app
 Repository: https://github.com/nurunnobejisan/SEO-Studio
 
 ## System Overview
@@ -11,7 +11,7 @@ SEO & GEO Studio is an enterprise-grade web application and browser extension su
 ---
 
 ## 78-Keyword Hospitality Strategy Matrix
-URL: https://cogwheel-seo-templates.vercel.app/strategy-matrix
+URL: https://seo-studio-one.vercel.app/strategy-matrix
 Coverage: 6 intent tiers across Brand Direct, Local Hyper-Targeted, Amenities & Dining, MICE Meetings & Weddings, Extended Stay & Corporate Housing, and Generative AI Search Queries.
 
 ---
@@ -19,84 +19,84 @@ Coverage: 6 intent tiers across Brand Direct, Local Hyper-Targeted, Amenities & 
 ## Full Catalog of 12 Production SEO & GEO Templates
 
 ### 1. Core Web Vitals & PageSpeed Technical Audit
-- URL: https://cogwheel-seo-templates.vercel.app/templates/technical-seo/core-web-vitals-audit
+- URL: https://seo-studio-one.vercel.app/templates/technical-seo/core-web-vitals-audit
 - Category: Technical SEO Audits
 - Difficulty: Advanced | Est. Time: 2.5 hours
 - Schema: TechArticle
 - Direct Answer: A Core Web Vitals audit identifies bottlenecks affecting Largest Contentful Paint (LCP), Interaction to Next Paint (INP), and Cumulative Layout Shift (CLS). By optimizing hero images, deferring non-critical JavaScript, and establishing explicit container dimensions, websites achieve a 100% green assessment in Google PageSpeed Insights.
 
 ### 2. JavaScript Rendering & DOM Hydration Diagnostics
-- URL: https://cogwheel-seo-templates.vercel.app/templates/technical-seo/javascript-rendering-hydration
+- URL: https://seo-studio-one.vercel.app/templates/technical-seo/javascript-rendering-hydration
 - Category: Technical SEO Audits
 - Difficulty: Advanced | Est. Time: 3 hours
 - Schema: TechArticle
 - Direct Answer: JavaScript rendering diagnostics evaluate disparities between raw HTML responses and fully hydrated DOM states. Ensuring booking engine widgets, price calendars, and room descriptions render server-side or via static generation prevents search bot rendering timeouts and indexing omissions.
 
 ### 3. Luxury Hotel Landing Page Content Brief
-- URL: https://cogwheel-seo-templates.vercel.app/templates/on-page-seo/hotel-landing-page-brief
+- URL: https://seo-studio-one.vercel.app/templates/on-page-seo/hotel-landing-page-brief
 - Category: On-Page Content Briefs
 - Difficulty: Intermediate | Est. Time: 2 hours
 - Schema: Article
 - Direct Answer: A luxury hotel landing page content brief aligns commercial search intent with guest booking behaviors. Structuring copy around verified amenities, high-resolution visual anchors, location proximity indicators, and direct-booking incentives ensures high conversions while satisfying Google helpful content criteria.
 
 ### 4. Keyword Cannibalization Mapping & Remediation Matrix
-- URL: https://cogwheel-seo-templates.vercel.app/templates/on-page-seo/keyword-cannibalization-matrix
+- URL: https://seo-studio-one.vercel.app/templates/on-page-seo/keyword-cannibalization-matrix
 - Category: On-Page Content Briefs
 - Difficulty: Intermediate | Est. Time: 1.5 hours
 - Schema: TechArticle
 - Direct Answer: Keyword cannibalization occurs when multiple hotel landing pages compete for identical search queries, diluting domain authority and confusing search engines. Establishing clear URL intent hierarchies, consolidated 301 redirects, and targeted internal anchor links restores definitive organic ranking signals.
 
 ### 5. Google Business Profile Multi-Property Master Checklist
-- URL: https://cogwheel-seo-templates.vercel.app/templates/local-seo/gbp-multi-property-optimization
+- URL: https://seo-studio-one.vercel.app/templates/local-seo/gbp-multi-property-optimization
 - Category: Local SEO & GBP Checklists
 - Difficulty: Intermediate | Est. Time: 2 hours
 - Schema: LocalBusiness
 - Direct Answer: Optimizing multi-property Google Business Profiles requires precise primary category selection, exact UNAP alignment, geo-tagged photography, real-time amenity attributes, and active review response protocols to maximize 3-pack visibility across high-intent traveler local search clusters.
 
 ### 6. UNAP Consistency & Local Citation Hygiene Audit
-- URL: https://cogwheel-seo-templates.vercel.app/templates/local-seo/unap-local-citation-audit
+- URL: https://seo-studio-one.vercel.app/templates/local-seo/unap-local-citation-audit
 - Category: Local SEO & GBP Checklists
 - Difficulty: Beginner | Est. Time: 1.5 hours
 - Schema: LocalBusiness
 - Direct Answer: UNAP consistency audits verify that a hotel's Name, Address, Phone number, and Website URL are identical across Tier 1 directories, OTAs, mapping aggregators, and social profiles. Resolving legacy discrepancies directly boosts local proximity rankings in Google Maps.
 
 ### 7. Dynamic Location Landing Pages Scalable Architecture
-- URL: https://cogwheel-seo-templates.vercel.app/templates/programmatic-seo/dynamic-location-landing-pages
+- URL: https://seo-studio-one.vercel.app/templates/programmatic-seo/dynamic-location-landing-pages
 - Category: Programmatic SEO Blueprints
 - Difficulty: Advanced | Est. Time: 4 hours
 - Schema: SoftwareApplication
 - Direct Answer: Programmatic location landing pages generate high-intent destination guides programmatically without thin-content penalties. By injecting proprietary property data, verified neighborhood drive-times, and authentic amenity checklists, hotel groups capture thousands of long-tail geographical queries.
 
 ### 8. Hotel Amenities & Experiences Matrix Programmatic Blueprint
-- URL: https://cogwheel-seo-templates.vercel.app/templates/programmatic-seo/hotel-amenities-matrix-blueprint
+- URL: https://seo-studio-one.vercel.app/templates/programmatic-seo/hotel-amenities-matrix-blueprint
 - Category: Programmatic SEO Blueprints
 - Difficulty: Intermediate | Est. Time: 2.5 hours
 - Schema: TechArticle
 - Direct Answer: The amenities programmatic matrix transforms unstructured hotel facility data into indexed experiential landing pages. Covering pet policies, EV charging stations, rooftop bars, and spa packages, this architecture secures top-of-funnel amenity searches directly ahead of OTAs.
 
 ### 9. High-Tier Destination Media Digital PR Pitch Kit
-- URL: https://cogwheel-seo-templates.vercel.app/templates/link-building/destination-pr-pitch-kit
+- URL: https://seo-studio-one.vercel.app/templates/link-building/destination-pr-pitch-kit
 - Category: Link Building & Digital PR Outreach
 - Difficulty: Advanced | Est. Time: 3 hours
 - Schema: Article
 - Direct Answer: Destination digital PR pitches secure authoritative editorial backlinks by packaging proprietary hospitality trend data, culinary milestones, and unique regional stay packages into newsworthy angles tailored for Conde Nast Traveler, Travel + Leisure, and national lifestyle journalists.
 
 ### 10. Unlinked Brand Mention Reclamation & Partner Link Engine
-- URL: https://cogwheel-seo-templates.vercel.app/templates/link-building/unlinked-brand-mention-reclamation
+- URL: https://seo-studio-one.vercel.app/templates/link-building/unlinked-brand-mention-reclamation
 - Category: Link Building & Digital PR Outreach
 - Difficulty: Beginner | Est. Time: 1 hour
 - Schema: HowTo
 - Direct Answer: Unlinked brand mention reclamation converts existing press citations, wedding blog vendor tags, and conference organizer listings into authoritative follow backlinks through polite, value-driven outreach providing updated URLs and high-resolution assets.
 
 ### 11. Generative Engine Optimization (GEO) Knowledge Playbook
-- URL: https://cogwheel-seo-templates.vercel.app/templates/ai-search-geo/generative-engine-optimization-playbook
+- URL: https://seo-studio-one.vercel.app/templates/ai-search-geo/generative-engine-optimization-playbook
 - Category: AI Search / GEO Optimization
 - Difficulty: Advanced | Est. Time: 3 hours
 - Schema: TechArticle
 - Direct Answer: Generative Engine Optimization (GEO) structures digital assets so AI models like Google Gemini, ChatGPT Search, and Perplexity synthesize and cite brand properties. By embedding factual statistics, quotation hooks, and structured entity definitions, brands dominate conversational AI answer summaries.
 
 ### 12. Schema.org FAQPage Structured Entity Architecture
-- URL: https://cogwheel-seo-templates.vercel.app/templates/ai-search-geo/faq-structured-entity-framework
+- URL: https://seo-studio-one.vercel.app/templates/ai-search-geo/faq-structured-entity-framework
 - Category: AI Search / GEO Optimization
 - Difficulty: Beginner | Est. Time: 1 hour
 - Schema: FAQPage

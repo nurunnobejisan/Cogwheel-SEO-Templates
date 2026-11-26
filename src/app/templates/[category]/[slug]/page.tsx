@@ -31,7 +31,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
     };
   }
 
-  const canonicalUrl = `https://cogwheel-seo-templates.vercel.app/templates/${template.categorySlug}/${template.slug}`;
+  const canonicalUrl = `https://seo-studio-one.vercel.app/templates/${template.categorySlug}/${template.slug}`;
 
   return {
     title: template.metaTitle,
@@ -72,25 +72,25 @@ export default function TemplateDetailPage({ params }: PageProps) {
         "@type": "ListItem",
         position: 1,
         name: "Home",
-        item: "https://cogwheel-seo-templates.vercel.app",
+        item: "https://seo-studio-one.vercel.app",
       },
       {
         "@type": "ListItem",
         position: 2,
         name: "Templates",
-        item: "https://cogwheel-seo-templates.vercel.app/templates",
+        item: "https://seo-studio-one.vercel.app/templates",
       },
       {
         "@type": "ListItem",
         position: 3,
         name: template.category,
-        item: `https://cogwheel-seo-templates.vercel.app/templates#${template.categorySlug}`,
+        item: `https://seo-studio-one.vercel.app/templates#${template.categorySlug}`,
       },
       {
         "@type": "ListItem",
         position: 4,
         name: template.title,
-        item: `https://cogwheel-seo-templates.vercel.app/templates/${template.categorySlug}/${template.slug}`,
+        item: `https://seo-studio-one.vercel.app/templates/${template.categorySlug}/${template.slug}`,
       },
     ],
   };
@@ -103,7 +103,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
     author: {
       "@type": "Organization",
       name: "SEO & GEO Studio",
-      url: "https://cogwheel-seo-templates.vercel.app",
+      url: "https://seo-studio-one.vercel.app",
     },
     publisher: {
       "@type": "Organization",
@@ -112,7 +112,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
     },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `https://cogwheel-seo-templates.vercel.app/templates/${template.categorySlug}/${template.slug}`,
+      "@id": `https://seo-studio-one.vercel.app/templates/${template.categorySlug}/${template.slug}`,
     },
   };
 

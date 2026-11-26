@@ -49,7 +49,7 @@ export const DEFAULT_OPTIONS: ExtensionOptions = {
   allowlistDomains: ["marriott.com", "hilton.com", "ihg.com", "hyatt.com"],
   blocklistDomains: DEFAULT_BLOCKLIST_DOMAINS,
   blocklistPaths: DEFAULT_BLOCKLIST_PATHS,
-  apiUrl: "https://cogwheel-seo-templates.vercel.app/api/ai-training",
+  apiUrl: "https://seo-studio-one.vercel.app/api/ai-training",
   apiToken: "",
 };
 

@@ -34,7 +34,7 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
-USER_AGENT = "Mozilla/5.0 (compatible; CogwheelImageAudit/2.7; +https://cogwheel-seo-templates.vercel.app)"
+USER_AGENT = "Mozilla/5.0 (compatible; CogwheelImageAudit/2.7; +https://seo-studio-one.vercel.app)"
 
 
 # -----------------------------------------------------------------------------

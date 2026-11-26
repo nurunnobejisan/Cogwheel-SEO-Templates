@@ -1332,7 +1332,7 @@ export const SEO_STUDIO_OPTIMAL_AUDIT_DATA: PageAuditData = {
   detailedImages: [
     {
       id: "img-1",
-      src: "https://cogwheel-seo-templates.vercel.app/banner.webp",
+      src: "https://seo-studio-one.vercel.app/banner.webp",
       alt: "SEO Studio Banner",
       proposedAlt: "SEO Studio Universal AI Inspector",
       targetFilename: "seo-studio-seo-studio-universal-inspector.webp",

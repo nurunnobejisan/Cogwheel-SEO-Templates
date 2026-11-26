@@ -93,15 +93,15 @@ describe("GEMINI.md Rules Enforcement — Route Metadata & SEO Standards", () =>
     const sitemapEntries = sitemap();
     expect(sitemapEntries.length).toBe(16);
     const urls = sitemapEntries.map((e) => e.url);
-    expect(urls).toContain("https://cogwheel-seo-templates.vercel.app");
-    expect(urls).toContain("https://cogwheel-seo-templates.vercel.app/templates");
-    expect(urls).toContain("https://cogwheel-seo-templates.vercel.app/strategy-matrix");
-    expect(urls).toContain("https://cogwheel-seo-templates.vercel.app/architecture");
+    expect(urls).toContain("https://seo-studio-one.vercel.app");
+    expect(urls).toContain("https://seo-studio-one.vercel.app/templates");
+    expect(urls).toContain("https://seo-studio-one.vercel.app/strategy-matrix");
+    expect(urls).toContain("https://seo-studio-one.vercel.app/architecture");
 
     // All 12 templates must be represented
     TEMPLATES_DATA.forEach((tmpl) => {
       expect(urls).toContain(
-        `https://cogwheel-seo-templates.vercel.app/templates/${tmpl.categorySlug}/${tmpl.slug}`
+        `https://seo-studio-one.vercel.app/templates/${tmpl.categorySlug}/${tmpl.slug}`
       );
     });
   });
@@ -109,6 +109,6 @@ describe("GEMINI.md Rules Enforcement — Route Metadata & SEO Standards", () =>
   it("generates valid robots.txt rules", () => {
     const robotsRules = robots();
     expect(robotsRules.rules).toBeDefined();
-    expect(robotsRules.sitemap).toBe("https://cogwheel-seo-templates.vercel.app/sitemap.xml");
+    expect(robotsRules.sitemap).toBe("https://seo-studio-one.vercel.app/sitemap.xml");
   });
 });

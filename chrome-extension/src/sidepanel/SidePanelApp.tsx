@@ -56,7 +56,7 @@ export function SidePanelApp() {
     setBrainLoading(true);
     setBrainAnswer("");
     try {
-      const res = await fetch("https://cogwheel-seo-templates.vercel.app/api/brain", {
+      const res = await fetch("https://seo-studio-one.vercel.app/api/brain", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },

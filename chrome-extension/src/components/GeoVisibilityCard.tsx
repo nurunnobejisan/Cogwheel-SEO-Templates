@@ -47,7 +47,7 @@ interface GeoReport {
   };
 }
 
-const API_BASE = "https://cogwheel-seo-templates.vercel.app";
+const API_BASE = "https://seo-studio-one.vercel.app";
 
 const PROVENANCE_STYLE: Record<Provenance, string> = {
   measured: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",

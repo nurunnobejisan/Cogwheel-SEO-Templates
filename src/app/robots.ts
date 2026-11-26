@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/platform"],
       },
     ],
-    sitemap: "https://cogwheel-seo-templates.vercel.app/sitemap.xml",
+    sitemap: "https://seo-studio-one.vercel.app/sitemap.xml",
   };
 }
