@@ -6,6 +6,7 @@
  */
 
 import crypto from "node:crypto";
+import type { DataProvenance } from "../data-policy.ts";
 
 export type TripleTier = "raw" | "reviewed" | "gold";
 
@@ -21,6 +22,10 @@ export interface TrainingTriple {
   capturedAt: string;
   contentHash: string;
   consent: true;
+  /** Tenant/organisation that owns this data. Enforces per-tenant isolation. */
+  tenantId?: string;
+  /** Provenance of the measured/estimated values in the audit and fix. */
+  provenance: DataProvenance;
   reviewedBy?: string;
   reviewedAt?: string;
 }
@@ -67,7 +72,7 @@ export function isTrainingEligible(quality: TripleTier): boolean {
 
 export interface LoraExample {
   messages: Array<{ role: "system" | "user" | "assistant"; content: string }>;
-  metadata: { tripleId: string; url: string; quality: TripleTier };
+  metadata: { tripleId: string; url: string; quality: TripleTier; tenantId: string | null; provenance: DataProvenance };
 }
 
 const SYSTEM_PROMPT =
@@ -82,6 +87,6 @@ export function buildLoraExample(triple: TrainingTriple): LoraExample {
       { role: "user", content: JSON.stringify(triple.audit) },
       { role: "assistant", content: JSON.stringify(triple.expertFix) },
     ],
-    metadata: { tripleId: triple.id, url: triple.url, quality: triple.quality },
+    metadata: { tripleId: triple.id, url: triple.url, quality: triple.quality, tenantId: triple.tenantId ?? null, provenance: triple.provenance },
   };
 }

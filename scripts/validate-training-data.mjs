@@ -33,12 +33,16 @@ const ALLOWED_CATEGORIES = new Set([
 
 const ALLOWED_PROVENANCE = new Set(["measured", "estimated", "unavailable"]);
 
-// Fabricated-metric signatures. Kept precise to avoid flagging guardrail prose
-// such as "never invent search volume".
-const FABRICATION_PATTERNS = [
+// Unambiguously bad regardless of who wrote them, anywhere in the row.
+const HARD_PATTERNS = [
   { id: "placeholder", re: /\{\{[A-Za-z0-9_]+\}\}/g },
   { id: "benchmark-cpc", re: /Benchmark CPC/gi },
   { id: "volume-tier", re: /Search Volume Tier/gi },
+];
+
+// Metric assertions that are only a problem when the ASSISTANT invents them,
+// i.e. the value is not traceable to the user/system text it was given.
+const ASSISTANT_METRIC_PATTERNS = [
   { id: "currency", re: /\$\s?\d[\d,]*(?:\.\d+)?/g },
   { id: "percent", re: /\b\d+(?:\.\d+)?\s?%/g },
   { id: "search-volume-value", re: /search volume\s*(?:of|is|was|[:=])\s*[\d$]/gi },
@@ -60,9 +64,24 @@ function contentKey(messages) {
 
 function scanText(text) {
   const hits = [];
-  for (const { id, re } of FABRICATION_PATTERNS) {
+  for (const { id, re } of HARD_PATTERNS) {
     const matches = text.match(re);
     if (matches) hits.push(`${id}: ${[...new Set(matches)].slice(0, 3).join(", ")}`);
+  }
+  return hits;
+}
+
+/** Metrics the assistant states that are not traceable to the given text. */
+function scanAssistantForInventedMetrics(assistant, supplied) {
+  const hits = [];
+  const suppliedNorm = norm(supplied);
+  for (const { id, re } of ASSISTANT_METRIC_PATTERNS) {
+    const invented = new Set();
+    for (const match of assistant.matchAll(re)) {
+      const value = norm(match[0]);
+      if (!suppliedNorm.includes(value)) invented.add(match[0].trim());
+    }
+    if (invented.size) hits.push(`${id}: ${[...invented].slice(0, 3).join(", ")}`);
   }
   return hits;
 }
@@ -113,6 +132,10 @@ async function main() {
       const joined = msgs.map((m) => m.content ?? "").join("\n");
       for (const hit of scanText(joined)) {
         errors.push(`${where}: fabricated/unresolved content -> ${hit}`);
+      }
+      const supplied = `${msgs[0].content ?? ""}\n${msgs[1].content ?? ""}`;
+      for (const hit of scanAssistantForInventedMetrics(msgs[2].content ?? "", supplied)) {
+        errors.push(`${where}: assistant invented metric -> ${hit}`);
       }
 
       const meta = row.meta ?? {};
