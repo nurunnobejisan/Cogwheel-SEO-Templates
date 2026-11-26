@@ -6,10 +6,14 @@ import type {
   ApprovalRequest,
   AuditLogEntry,
   AuditReport,
+  ChangeEvent,
   CmsPlatform,
   DeploymentHistoryEntry,
   HealingRunResult,
   HealthResponse,
+  JudgmentReport,
+  OutcomeRecord,
+  OutcomesOverview,
   PatchTriage,
   PublicCredential,
   RiskTier,
@@ -29,6 +33,8 @@ export interface ConsoleData {
   schedules: ScheduleView[];
   events: Array<{ type: string; at: string }>;
   alerts: Array<{ type: string; at: string }>;
+  outcomes: OutcomesOverview | null;
+  judgment: JudgmentReport | null;
 }
 
 const RISK_ORDER: Record<RiskTier, number> = { low: 0, medium: 1, high: 2 };
@@ -764,6 +770,215 @@ export function HealPanel({
           )}
         </Card>
       )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------ outcomes -- */
+
+function provenanceBadge(provenance: string) {
+  const variant = provenance === "measured" ? "success" : provenance === "estimated" ? "info" : "neutral";
+  return <Badge variant={variant} size="sm" title={provenance === "measured" ? "From Search Console rows" : "Not measured"}>{provenance}</Badge>;
+}
+
+function confidenceBadge(confidence: string) {
+  const variant = confidence === "high" ? "success" : confidence === "medium" ? "warning" : "neutral";
+  return <Badge variant={variant} size="sm">{confidence} confidence</Badge>;
+}
+
+function signed(value: number | null | undefined, unit = ""): string {
+  if (value === null || value === undefined) return "—";
+  const sign = value > 0 ? "+" : "";
+  return `${sign}${value}${unit}`;
+}
+
+/** Latest recorded outcome for a change (by measurement time). */
+function latestOutcome(outcomes: OutcomeRecord[], changeId: string): OutcomeRecord | null {
+  const matches = outcomes.filter((outcome) => outcome.changeId === changeId);
+  if (matches.length === 0) return null;
+  return matches.sort((a, b) => a.measuredAt.localeCompare(b.measuredAt))[matches.length - 1]!;
+}
+
+function ChangeRow({ change, outcome }: { change: ChangeEvent; outcome: OutcomeRecord | null }) {
+  const delta = outcome?.changed.delta;
+  const controlDelta = outcome?.control?.delta;
+  return (
+    <li className="rounded-xl border border-slate-200/70 bg-slate-50/60 px-3 py-2.5 dark:border-slate-800 dark:bg-slate-800/40">
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <div className="min-w-0">
+          <p className="truncate font-medium text-slate-800 dark:text-slate-200">{shortUrl(change.pageUrl)}</p>
+          <p className="text-caption text-slate-400">
+            <span className="font-mono text-brand-dark dark:text-brand">{change.kind}</span> · applied {time(change.appliedAt)}
+            {change.fixRef ? ` · ${change.fixRef}` : ""}
+          </p>
+        </div>
+        <div className="flex shrink-0 items-center gap-2">
+          {outcome ? provenanceBadge(outcome.provenance) : <Badge variant="neutral" size="sm">not measured</Badge>}
+          {outcome?.afterComplete === false && <Badge variant="warning" size="sm">filling</Badge>}
+        </div>
+      </div>
+
+      {outcome?.provenance === "measured" && outcome.changed.before && outcome.changed.after ? (
+        <div className="mt-2 grid grid-cols-2 gap-2 text-caption sm:grid-cols-4">
+          <div>
+            <span className="text-slate-400">Clicks</span>
+            <p className="nums font-semibold text-slate-800 dark:text-slate-100">
+              {outcome.changed.before.clicks} → {outcome.changed.after.clicks}{" "}
+              <span className={delta && delta.clicks >= 0 ? "text-emerald-600" : "text-rose-600"}>({signed(delta?.clicks)})</span>
+            </p>
+          </div>
+          <div>
+            <span className="text-slate-400">Impressions</span>
+            <p className="nums font-semibold text-slate-800 dark:text-slate-100">
+              {outcome.changed.before.impressions} → {outcome.changed.after.impressions}{" "}
+              <span className={delta && delta.impressions >= 0 ? "text-emerald-600" : "text-rose-600"}>({signed(delta?.impressions)})</span>
+            </p>
+          </div>
+          <div>
+            <span className="text-slate-400">Position</span>
+            <p className="nums font-semibold text-slate-800 dark:text-slate-100">
+              {outcome.changed.before.position} → {outcome.changed.after.position}
+            </p>
+          </div>
+          <div>
+            <span className="text-slate-400">Control Δ clicks</span>
+            <p className="nums font-semibold text-slate-800 dark:text-slate-100">
+              {controlDelta ? signed(controlDelta.clicks) : "—"}
+              {outcome.control ? <span className="ml-1 text-slate-400">({outcome.control.pages.length} pages)</span> : null}
+            </p>
+          </div>
+        </div>
+      ) : (
+        <p className="mt-1.5 text-caption text-slate-400">
+          {outcome?.reason ?? "No outcome recorded yet — run a measurement."}
+        </p>
+      )}
+    </li>
+  );
+}
+
+export function OutcomesPanel({
+  data,
+  busy,
+  onMeasure,
+  onJudge,
+}: {
+  data: ConsoleData;
+  busy: boolean;
+  onMeasure: () => void;
+  onJudge: () => void;
+}) {
+  const overview = data.outcomes;
+  const report = data.judgment;
+  const changes = overview?.changes ?? [];
+  const outcomes = overview?.outcomes ?? [];
+
+  return (
+    <div className="space-y-5">
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <Stat label="Tracked changes" value={overview?.counts.changes ?? 0} subtext="every applied fix" />
+        <Stat
+          label="Measured"
+          value={overview?.counts.measured ?? 0}
+          tone={overview && overview.counts.measured > 0 ? "good" : "default"}
+          subtext="real Search Console rows"
+        />
+        <Stat
+          label="Unavailable"
+          value={overview?.counts.unavailable ?? 0}
+          tone={overview && overview.counts.unavailable > 0 ? "warn" : "default"}
+          subtext="no GSC / no rows / filling"
+        />
+        <Stat label="Effect kinds" value={report?.kinds.length ?? 0} subtext="with evidence" />
+      </div>
+
+      <Card
+        title="Tracked changes"
+        subtitle="Each applied fix with its latest Search Console before/after"
+        actions={
+          <Button size="sm" variant="secondary" disabled={busy || changes.length === 0} onClick={onMeasure}>
+            Measure all
+          </Button>
+        }
+      >
+        {!overview ? (
+          <p className="text-body text-slate-400">Outcome log unreachable.</p>
+        ) : changes.length === 0 ? (
+          <EmptyState
+            title="No changes tracked yet"
+            description="Deploying a fix through the console records it here automatically. Outcomes are then measured from Google Search Console — never estimated."
+          />
+        ) : (
+          <ul className="space-y-2.5">
+            {changes
+              .slice()
+              .sort((a, b) => b.appliedAt.localeCompare(a.appliedAt))
+              .map((change) => (
+                <ChangeRow key={change.id} change={change} outcome={latestOutcome(outcomes, change.id)} />
+              ))}
+          </ul>
+        )}
+      </Card>
+
+      <Card
+        title="Effect estimates (judgment)"
+        subtitle="Control-adjusted (difference-in-differences) by change kind — estimated, not causal"
+        actions={
+          <Button size="sm" variant="secondary" disabled={busy || changes.length === 0} onClick={onJudge}>
+            Recompute
+          </Button>
+        }
+      >
+        {!report || report.kinds.length === 0 ? (
+          <p className="text-body text-slate-400">
+            No qualifying measured changes yet. Effects appear once outcomes have a complete after-window and a control set.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            <ul className="space-y-2">
+              {report.kinds.map((kind) => (
+                <li key={kind.kind} className="rounded-xl border border-slate-200/70 px-3 py-2.5 dark:border-slate-800">
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="font-mono text-caption font-semibold text-slate-700 dark:text-slate-200">{kind.kind}</span>
+                    <span className="flex items-center gap-2">
+                      {provenanceBadge(kind.provenance)}
+                      {confidenceBadge(kind.confidence)}
+                    </span>
+                  </div>
+                  <div className="mt-2 grid grid-cols-2 gap-2 text-caption sm:grid-cols-4">
+                    <div>
+                      <span className="text-slate-400">Net clicks (median)</span>
+                      <p className="nums font-semibold text-slate-800 dark:text-slate-100">{signed(kind.medianNetClicks)}</p>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Positive share</span>
+                      <p className="nums font-semibold text-slate-800 dark:text-slate-100">
+                        {kind.positiveClickShare === null ? "—" : `${Math.round(kind.positiveClickShare * 100)}%`}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Sample</span>
+                      <p className="nums font-semibold text-slate-800 dark:text-slate-100">
+                        {kind.sampleSize}
+                        {kind.excluded > 0 ? <span className="ml-1 text-slate-400">(+{kind.excluded} excl.)</span> : null}
+                      </p>
+                    </div>
+                    <div>
+                      <span className="text-slate-400">Median position gain</span>
+                      <p className="nums font-semibold text-slate-800 dark:text-slate-100">{signed(kind.medianPositionGain)}</p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <ul className="space-y-1 rounded-xl bg-amber-50 px-3 py-2 text-caption text-amber-800 dark:bg-amber-950/30 dark:text-amber-300">
+              {report.notes.map((note) => (
+                <li key={note}>· {note}</li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </Card>
     </div>
   );
 }

@@ -69,7 +69,7 @@ Both require an authenticated principal.
 
 ## Not yet done
 
-- **Auto-measurement cadence.** Measuring is on-demand; a scheduled pass (as the
-  after-window fills) should re-measure tracked changes.
+- **Auto-measurement cadence.** Measuring is on-demand (or "Measure all" in the
+  console); a scheduled pass should re-measure tracked changes as the after-window
+  fills.
 - **Control matching** by template/traffic band rather than raw impressions.
-- **Surfacing** the records in the operator console.

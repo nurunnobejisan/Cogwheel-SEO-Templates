@@ -55,12 +55,15 @@ const { patch, validation, deferred } = await generateFixPatch(report, {
 
 | Tier | Tasks | Providers |
 | --- | --- | --- |
-| **Tier 1** (fast/cheap) | `structured_extraction`, `metadata_generation`, `alt_text_generation`, `schema_generation` | Gemini Flash, Groq Llama 3.3, Cogwheel tuned model |
-| **Tier 2** (frontier) | `semantic_reasoning`, `rag_synthesis`, `intent_mapping`, `entity_gap_analysis` | Claude, OpenRouter |
+| **Tier 1** (fast/cheap) | `structured_extraction`, `metadata_generation`, `alt_text_generation`, `schema_generation` | Gemini Flash, Groq Llama, Cogwheel tuned model |
+| **Tier 2** (frontier) | `semantic_reasoning`, `rag_synthesis`, `intent_mapping`, `entity_gap_analysis` | Claude (if key), OpenRouter |
 
-`loadProviders()` reads the same env credentials as `src/core/claude.ts`. When no
-provider is configured the router reports it and the deterministic synthesizer
-runs alone, so the pipeline never hard-fails.
+Model ids and provider defaults live in `src/core/ai/models.ts` and are **free-first**:
+with no paid key the pipeline runs on free tiers (Gemini → Groq → OpenRouter →
+Pollinations) and every id is env-overridable. `loadProviders()` reads the same
+env credentials as `src/core/claude.ts`. When no provider is configured the
+router reports it and the deterministic synthesizer runs alone, so the pipeline
+never hard-fails.
 
 ### 2. RAG knowledge base (`rag/`)
 

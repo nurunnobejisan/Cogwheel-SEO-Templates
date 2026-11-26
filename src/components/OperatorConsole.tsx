@@ -8,6 +8,7 @@ import {
   ApprovalsPanel,
   HealPanel,
   HistoryPanel,
+  OutcomesPanel,
   OverviewPanel,
   TargetsPanel,
   canApprove,
@@ -24,7 +25,7 @@ import {
   type SessionStatus,
 } from "@/lib/platform/client";
 
-type Tab = "overview" | "approvals" | "history" | "audit" | "targets" | "heal";
+type Tab = "overview" | "approvals" | "history" | "audit" | "targets" | "heal" | "outcomes";
 
 const TABS: Array<{ id: Tab; label: string }> = [
   { id: "overview", label: "Overview" },
@@ -33,6 +34,7 @@ const TABS: Array<{ id: Tab; label: string }> = [
   { id: "audit", label: "Audit log" },
   { id: "targets", label: "Targets" },
   { id: "heal", label: "Self-heal" },
+  { id: "outcomes", label: "Outcomes" },
 ];
 
 const EMPTY_DATA: ConsoleData = {
@@ -45,6 +47,8 @@ const EMPTY_DATA: ConsoleData = {
   schedules: [],
   events: [],
   alerts: [],
+  outcomes: null,
+  judgment: null,
 };
 
 const client = createPlatformClient();
@@ -101,7 +105,7 @@ export function OperatorConsole() {
       return;
     }
     setLoading(true);
-    const [health, approvals, history, audit, events, schedules, connectors, credentials] =
+    const [health, approvals, history, audit, events, schedules, connectors, credentials, outcomes, judgment] =
       await Promise.allSettled([
         client.health(),
         client.listApprovals(),
@@ -111,6 +115,8 @@ export function OperatorConsole() {
         client.listSchedules(),
         client.listConnectors(),
         client.listCredentials(),
+        client.outcomes(),
+        client.judge(),
       ]);
 
     setData({
@@ -123,6 +129,8 @@ export function OperatorConsole() {
       schedules: schedules.status === "fulfilled" ? schedules.value.schedules : [],
       connectors: connectors.status === "fulfilled" ? connectors.value.targets : [],
       credentials: credentials.status === "fulfilled" ? credentials.value.credentials : [],
+      outcomes: outcomes.status === "fulfilled" ? outcomes.value : null,
+      judgment: judgment.status === "fulfilled" ? judgment.value.report : null,
     });
     setLoading(false);
   }, [actor.id]);
@@ -394,6 +402,15 @@ export function OperatorConsole() {
                 onHeal={async (report, opts) => {
                   return run("heal", () => client.heal({ report, ...opts }));
                 }}
+              />
+            )}
+
+            {tab === "outcomes" && (
+              <OutcomesPanel
+                data={data}
+                busy={busyId !== null}
+                onMeasure={() => void run("outcomes-measure", () => client.measureOutcomes())}
+                onJudge={() => void run("outcomes-judge", () => client.judge())}
               />
             )}
           </>
