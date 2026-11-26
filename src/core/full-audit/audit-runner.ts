@@ -26,6 +26,8 @@ import { validateTargetUrl } from "../crawler/url.ts";
 import { isGoogleConfigured, UnifiedGscClient } from "../gsc/client.ts";
 import { checkAlgorithmImpact } from "../claude-seo/index.ts";
 import { isSimulatedDataAllowed } from "../data-policy.ts";
+import { collectGeoAudit } from "../../rules/geo/index.ts";
+import { loadLatestGeoSnapshot, saveGeoSnapshot } from "../geo/drift-store.ts";
 import {
   analyzeContentGaps,
   generateAiVisibilityReport,
@@ -170,6 +172,33 @@ function buildActionPlan(issues: AuditIssue[], totalUrls: number): ActionItem[] 
   return plan;
 }
 
+function buildGeoActionPlan(geoAudit: NonNullable<FullWebsiteAuditReport["geoAudit"]>): ActionItem[] {
+  const priority = (severity: "critical" | "high" | "medium" | "low" | "info"): ActionItem["priority"] => {
+    if (severity === "critical") return "P0";
+    if (severity === "high") return "P1";
+    if (severity === "medium") return "P2";
+    return "P3";
+  };
+  return geoAudit.issues
+    .filter((issue) => issue.severity !== "info")
+    .map((issue) => ({
+      id: issue.id,
+      priority: priority(issue.severity),
+      category: "geo" as const,
+      title: issue.title,
+      description: issue.description,
+      impact:
+        issue.severity === "high"
+          ? "High — materially affects whether AI answer engines can discover and cite this page"
+          : issue.severity === "medium"
+          ? "Medium — GEO readiness improvement"
+          : "Low — polish",
+      effort: "low" as const,
+      affectedUrlsCount: 1,
+      remediationGuide: issue.remediation,
+    }));
+}
+
 /** Transparent on-page GEO readiness heuristic (not an AI-citation measurement). */
 function computeGeoReadiness(input: {
   schemaTypes: string[];
@@ -287,6 +316,9 @@ export async function runFullWebsiteAudit(
   // 3. robots.txt + sitemap discovery (probed, not assumed).
   let hasRobotsTxt = false;
   const discoveredSitemaps: string[] = [];
+  let robotsTxt = "";
+  let robotsStatusCode: number | null = null;
+  let robotsError = offline ? "offline audit — robots.txt not fetched" : undefined;
   if (!offline) {
     const robotsProbe = await egressFetch(
       `${urlObj.origin}/robots.txt`,
@@ -294,13 +326,17 @@ export async function runFullWebsiteAudit(
       { timeoutMs: 10_000, maxRedirects: 3 },
     ).catch(() => null);
     const robotsRes = robotsProbe?.response ?? null;
-    if (robotsRes && robotsRes.ok) {
-      hasRobotsTxt = true;
-      const txt = await readTextCapped(robotsRes, 500_000).catch(() => "");
-      for (const line of txt.split(/\r?\n/)) {
-        const m = /^\s*sitemap:\s*(\S+)/i.exec(line);
-        if (m) discoveredSitemaps.push(m[1]);
-      }
+    if (robotsRes) {
+      robotsStatusCode = robotsRes.status;
+      hasRobotsTxt = robotsRes.ok;
+      robotsTxt = await readTextCapped(robotsRes, 500_000).catch(() => "");
+      if (!robotsRes.ok) robotsError = `HTTP ${robotsRes.status}`;
+    } else {
+      robotsError = "robots.txt could not be fetched";
+    }
+    for (const line of robotsTxt.split(/\r?\n/)) {
+      const m = /^\s*sitemap:\s*(\S+)/i.exec(line);
+      if (m) discoveredSitemaps.push(m[1]);
     }
     if (discoveredSitemaps.length === 0) {
       for (const candidate of [`${urlObj.origin}/sitemap.xml`, `${urlObj.origin}/sitemap_index.xml`]) {
@@ -311,6 +347,26 @@ export async function runFullWebsiteAudit(
         ).catch(() => null);
         if (probe?.response.ok) discoveredSitemaps.push(candidate);
       }
+    }
+  }
+
+  // 3b. llms.txt — same measured treatment as robots.txt.
+  let llmsTxt = "";
+  let llmsStatusCode: number | null = null;
+  let llmsError = offline ? "offline audit — llms.txt not fetched" : undefined;
+  if (!offline) {
+    const llmsProbe = await egressFetch(
+      `${urlObj.origin}/llms.txt`,
+      { method: "GET", headers: { "User-Agent": USER_AGENT } },
+      { timeoutMs: 10_000, maxRedirects: 3 },
+    ).catch(() => null);
+    const llmsRes = llmsProbe?.response ?? null;
+    if (llmsRes) {
+      llmsStatusCode = llmsRes.status;
+      llmsTxt = await readTextCapped(llmsRes, 512_000).catch(() => "");
+      if (!llmsRes.ok) llmsError = `HTTP ${llmsRes.status}`;
+    } else {
+      llmsError = "llms.txt could not be fetched";
     }
   }
 
@@ -394,6 +450,34 @@ export async function runFullWebsiteAudit(
     wordCount: snapshot.wordCount,
   });
 
+  // Deterministic GEO audit: llms.txt, AI-crawler access, citability, drift.
+  let geoAudit: ReturnType<typeof collectGeoAudit> | null = null;
+  if (includeGeo) {
+    const baseline = offline ? null : await loadLatestGeoSnapshot(domain);
+    geoAudit = collectGeoAudit({
+      url: targetUrl,
+      domain,
+      snapshot,
+      capturedAt: new Date().toISOString(),
+      robots: {
+        url: `${urlObj.origin}/robots.txt`,
+        statusCode: robotsStatusCode,
+        text: robotsTxt,
+        error: robotsError,
+      },
+      llms: {
+        url: `${urlObj.origin}/llms.txt`,
+        statusCode: llmsStatusCode,
+        text: llmsTxt,
+        error: llmsError,
+      },
+      baseline,
+    });
+    if (!offline) {
+      await saveGeoSnapshot(geoAudit.snapshot);
+    }
+  }
+
   if (includeGeo) {
     if (simulated) {
       const geoReport = await generateAiVisibilityReport({
@@ -413,20 +497,29 @@ export async function runFullWebsiteAudit(
         recommendations: geoReport.recommendations,
       };
     } else {
+      const citability = geoAudit?.citability;
+      const entityScore =
+        citability?.components.find((component) => component.id === "entity_signals")?.score ?? readiness.score;
+      const citationScore =
+        citability?.components.find((component) => component.id === "citations")?.score ?? 0;
       geo = {
         ...geo,
-        visibilityScore: readiness.score,
-        brandEntityClarity: readiness.score,
-        methodology:
-          "On-page GEO readiness heuristic derived from the page's own structured data and " +
-          "metadata (schema, canonical, headings, content depth). No AI engine was queried, so " +
-          "this is NOT a measurement of citations in ChatGPT, Perplexity, Claude or Google AI Overviews.",
-        keyEntityStrengths: readiness.strengths,
-        recommendations: [
-          "Publish concise 40–60 word factual answer blocks under primary H2 headings.",
-          "Add FAQPage and Organization/LodgingBusiness JSON-LD with consistent NAP data.",
-          "Keep the brand entity consistent across Wikidata, Google Business Profile and the site.",
-        ],
+        visibilityScore: citability?.score ?? readiness.score,
+        brandEntityClarity: entityScore,
+        factDensityScore: citationScore,
+        methodology: citability
+          ? `On-page GEO readiness heuristic. Formula: ${citability.formula}. Inputs are measured from the page; no AI engine was queried, so this is NOT a measurement of citations in ChatGPT, Perplexity, Claude or Google AI Overviews.`
+          : "On-page GEO readiness heuristic derived from the page's own structured data and metadata. No AI engine was queried.",
+        keyEntityStrengths: citability
+          ? citability.components.filter((component) => component.score >= 60).map((component) => `${component.label} ${component.score}/100`)
+          : readiness.strengths,
+        recommendations: geoAudit
+          ? geoAudit.issues.map((issue) => `${issue.title}: ${issue.remediation}`)
+          : [
+              "Publish concise 40–60 word factual answer blocks under primary H2 headings.",
+              "Add FAQPage and Organization/LodgingBusiness JSON-LD with consistent NAP data.",
+              "Keep the brand entity consistent across Wikidata, Google Business Profile and the site.",
+            ],
       };
     }
   }
@@ -490,13 +583,23 @@ export async function runFullWebsiteAudit(
     measured: [
       "technicalHealth (status, response time, server, compression, security headers)",
       "crawlability (robots.txt, sitemaps, canonical, indexability signals, link counts)",
+      ...(geoAudit
+        ? [
+            "geoAudit.llmsTxt (llms.txt HTTP status, structure, links, size)",
+            "geoAudit.aiCrawlers (robots.txt rules for GPTBot, ClaudeBot, PerplexityBot, Google-Extended, …)",
+            "geoAudit.citability.inputs (schema, heading, word, link, statistic and quotation counts)",
+          ]
+        : []),
       "onPage (title, meta description, word count, viewport)",
       "headings",
       "images (counts, alt text, formats, lazy-loading)",
       "schemaValidation (JSON-LD types parsed from the page)",
     ],
     estimated: includeGeo
-      ? ["aiGeoVisibility.visibilityScore (on-page GEO readiness heuristic)"]
+      ? [
+          "aiGeoVisibility.visibilityScore / geoAudit.citability.score (documented on-page heuristic)",
+          "geoAudit.drift (comparison against the previous local snapshot)",
+        ]
       : [],
     unavailable: [
       ...(gscConnected && includeGsc ? [] : ["searchConsole (Google Search Console not connected)"]),
@@ -633,7 +736,8 @@ export async function runFullWebsiteAudit(
       ),
       riskRating: algoImpact.riskRating,
     },
-    actionPlan: buildActionPlan(issues, 1),
+    actionPlan: [...buildActionPlan(issues, 1), ...(geoAudit ? buildGeoActionPlan(geoAudit) : [])],
+    geoAudit,
     dataProvenance: provenance,
   };
 }

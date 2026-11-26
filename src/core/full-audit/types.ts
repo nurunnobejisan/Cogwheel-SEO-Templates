@@ -15,6 +15,8 @@
  * 11. Prioritized Action Plan (P0-P3)
  */
 
+import type { GeoAuditReport } from "../../../rules/geo/types.ts";
+
 export type SeverityLevel = "critical" | "high" | "medium" | "low" | "info";
 
 export interface ActionItem {
@@ -209,6 +211,8 @@ export interface FullWebsiteAuditReport {
   keywordsAndGaps: KeywordContentGapSummary;
   schemaValidation: SchemaValidationSummary;
   aiGeoVisibility: AiGeoVisibilitySummary;
+  /** Deterministic llms.txt / AI-crawler / citability / drift checks (null when GEO is disabled). */
+  geoAudit?: GeoAuditReport | null;
   algorithmImpact: AlgorithmImpactSummary;
   actionPlan: ActionItem[];
   /** Where each section's data came from (measured / estimated / unavailable). */

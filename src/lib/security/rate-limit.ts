@@ -111,6 +111,7 @@ const CRAWL_ROUTES = [
   "/api/property-autofill",
   "/api/sitemap-audit",
   "/api/seo-visibility-report",
+  "/api/geo/check",
   "/api/tasks/site-crawl",
 ];
 
