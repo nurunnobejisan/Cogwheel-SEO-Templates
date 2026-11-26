@@ -49,7 +49,16 @@ Every sentence in the interpretation must either:
 Sentences that explicitly declare a dimension unavailable are allowed (they are honesty statements). If an LLM answer fails the gate, the brain replaces it with the deterministic measured summary and re-checks. If that also fails, the API returns **422** with the failing claims rather than serving an unsupported answer.
 
 ## Training data
-Triples are `{ url, audit (measured), expertFix }` plus consent and a robots/ToS gate. Tiers are `raw`, `reviewed`, `gold`; only `reviewed` and `gold` are training-eligible. Raw captures are PII-stripped and deduplicated by URL and content hash. The extension training vault sets new captures to `tier: "raw"` and requires consent.
+Triples are `{ url, audit (measured), expertFix }` plus consent and a robots/ToS gate. Tiers are `raw`, `reviewed`, `gold`; only `reviewed` and `gold` are training-eligible. Each triple also carries `tenantId` (the operator's organisation, for per-tenant isolation) and a required `provenance` (`measured` | `estimated` | `unavailable`). Raw captures are PII-stripped and deduplicated by URL and content hash. The extension training vault sets new captures to `tier: "raw"` and requires consent.
+
+### Data-governance gate (`npm run train:validate`)
+CI fails if any row in `data/training/*.jsonl`:
+- contains an unresolved `{{placeholder}}`,
+- asserts an invented metric (currency, `%`, CPC, search volume, authority, rank, or counts of searches/backlinks/impressions/clicks) **that is not traceable to the user-supplied text**,
+- lacks a recognised `meta.category` or `meta.provenance`, or
+- duplicates another row's content.
+
+`scripts/clean-training-data.py` (`npm run train:clean`) is the deterministic, idempotent fixer: it instantiates placeholders from coherent hotel profiles and replaces fabricated `Benchmark CPC` / `Search Volume Tier` lines with an explicit “unavailable” line. Provenance is `unavailable` because the SFT rows carry guidance, not measured client metrics.
 
 ## Evals
 Gold set format: `data/brain-gold.example.json`. Each entry:
