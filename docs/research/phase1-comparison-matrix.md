@@ -104,7 +104,7 @@
 | `mdrifatcom/hotels-nearby` | `create-next-app` scaffold | `app/page.tsx` is the default Next scaffold; no data code | No hotel logic; empty scaffold. |
 | `mdrifatcom/formflow`, `wonderlust`, `probad`, `t3stack` | AI/form/travel scaffolds (Firebase AI, Prisma) | trees + manifests | **No LICENSE**; no SEO/crawl value. |
 | `mdrifatcom/aiwebapp`, `aiapp`, `aiapps`(empty), `cfworker-test` | Empty/skeleton | 1 file / empty tree | No code. |
-| `mdrifatcom/razibmarketing-hf-dnr`, `email-templates` | Single PHP/HTML file | 1 file each | Trivial, not reusable. |
+| `mdrifatcom` PHP/HTML templates (`*-hf-dnr`, `email-templates`) | Single PHP/HTML file | 1 file each | Trivial, not reusable. |
 | `mdrifatcom` licensed forks (`v1`/Midday MIT, `scrapyd-cluster` GPL-3.0, `pa11y-dashboard` GPL-3.0, `BLIP` BSD, `stablediffusion` MIT, `webiny-js`, `Darkmode.js`, `AccessibilityWebsiteComponents`, `acc_toolbar`, `necessary-public-apis`, `scrapyd`, `woocommerce`, `webiny-test`, `mdrifat.com`, `ResposiveBackgroundVideo`) | Forks of third-party projects | `fork=True` | Forks (not original); some copyleft. Reuse the upstream project directly if ever needed. |
 | `nurunnobejisan/marriott-scraper` | Node scaffold | root tree = README + `package.json` (only `puppeteer`); the rest is `node_modules` committed | No scraper code committed. |
 | `nurunnobejisan/email-template-builder` | Fork (MIT) of a DnD email editor | `fork=True` | Fork; irrelevant domain. |
