@@ -7,7 +7,7 @@
 **Hospitality SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace.**
 
 [![CI](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/live-seo-studio--seo--templates.vercel.app-0f172a?logo=vercel)](https://cogwheel-seo-templates.vercel.app)
+[![Live](https://img.shields.io/badge/live-app-0f172a?logo=vercel)](https://cogwheel-seo-templates.vercel.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e.svg)](LICENSE)
 [![Version](https://img.shields.io/badge/version-3.0.0-7c3aed.svg)](CHANGELOG.md)
 [![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs)](https://nextjs.org)
