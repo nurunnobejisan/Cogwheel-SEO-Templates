@@ -81,7 +81,7 @@ PROTECT: list[str] = [
     "razibmarketing-hf-dnr",
     # live deployment domain (functional links must keep resolving)
     "cogwheel-seo-templates.vercel.app",
-    "cogwheel-seo@example.com",
+    "seo-studio@example.com",
 ]
 
 # --- Ordered literal replacements (applied top-down) ---
