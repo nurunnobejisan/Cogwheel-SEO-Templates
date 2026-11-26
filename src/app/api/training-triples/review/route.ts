@@ -3,15 +3,18 @@ import { promises as fs } from "node:fs";
 import path from "node:path";
 import { isAuthenticatedPrincipal, principalFromRequest } from "@/lib/platform/auth";
 import { isTrainingEligible, type TrainingTriple, type TripleTier } from "@/core/training/dataset";
+import { cogwheelDataFile } from "@/lib/platform/data-dir";
 
 export const dynamic = "force-dynamic";
 
-const FILE = path.join(process.cwd(), "data", "training-triples.jsonl");
+function tripleFile(): string {
+  return cogwheelDataFile("training-triples.jsonl");
+}
 const TIERS: TripleTier[] = ["raw", "reviewed", "gold"];
 
 async function readAll(): Promise<TrainingTriple[]> {
   try {
-    const raw = await fs.readFile(FILE, "utf8");
+    const raw = await fs.readFile(tripleFile(), "utf8");
     return raw.split("\n").filter(Boolean).map((line) => JSON.parse(line) as TrainingTriple);
   } catch {
     return [];
@@ -69,8 +72,8 @@ export async function POST(req: NextRequest) {
     target.reviewedBy = principal.id;
     target.reviewedAt = new Date().toISOString();
 
-    await fs.mkdir(path.dirname(FILE), { recursive: true });
-    await fs.writeFile(FILE, `${triples.map((triple) => JSON.stringify(triple)).join("\n")}\n`, "utf8");
+    await fs.mkdir(path.dirname(tripleFile()), { recursive: true });
+    await fs.writeFile(tripleFile(), `${triples.map((triple) => JSON.stringify(triple)).join("\n")}\n`, "utf8");
     return NextResponse.json({
       success: true,
       id,

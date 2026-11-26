@@ -10,14 +10,26 @@ import {
   stripPii,
   type TrainingTriple,
 } from "@/core/training/dataset";
+import { cogwheelDataFile } from "@/lib/platform/data-dir";
 
 export const dynamic = "force-dynamic";
 
-const FILE = path.join(process.cwd(), "data", "training-triples.jsonl");
+function tripleFile(): string {
+  return cogwheelDataFile("training-triples.jsonl");
+}
+
+/** Temp-dir writes on serverless are ephemeral; surface that honestly. */
+function persistenceNote(): string | null {
+  if (process.env.COGWHEEL_DATA_DIR) return null;
+  if (process.env.VERCEL) {
+    return "Written to the serverless temp filesystem; set COGWHEEL_DATA_DIR (or back this with Supabase/KV) for durable training storage.";
+  }
+  return null;
+}
 
 async function readAll(): Promise<TrainingTriple[]> {
   try {
-    const raw = await fs.readFile(FILE, "utf8");
+    const raw = await fs.readFile(tripleFile(), "utf8");
     return raw.split("\n").filter(Boolean).map((line) => JSON.parse(line) as TrainingTriple);
   } catch {
     return [];
@@ -91,13 +103,14 @@ export async function POST(req: NextRequest) {
       consent: true,
       reviewedBy: undefined,
     };
-    await fs.mkdir(path.dirname(FILE), { recursive: true });
-    await fs.appendFile(FILE, `${JSON.stringify(record)}\n`, "utf8");
+    await fs.mkdir(path.dirname(tripleFile()), { recursive: true });
+    await fs.appendFile(tripleFile(), `${JSON.stringify(record)}\n`, "utf8");
     return NextResponse.json({
       success: true,
       id: record.id,
       quality: record.quality,
       trainingEligible: false,
+      persistenceNote: persistenceNote(),
     });
   } catch (err) {
     return NextResponse.json({ error: String(err) }, { status: 500 });
