@@ -14,6 +14,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import type { HttpMethod, PlatformRequest } from "../../../../../platform/index.ts";
 import { isAuthenticatedPrincipal, principalFromRequest } from "../../../../lib/platform/auth.ts";
 import { getPlatformRuntime } from "../../../../lib/platform/runtime.ts";
+import { recordChange } from "../../../../core/outcomes/record.ts";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -76,6 +77,29 @@ async function forward(req: NextRequest, context: RouteContext): Promise<NextRes
 
   const { platform } = await getPlatformRuntime();
   const response = await platform.gateway.handle(platformRequest);
+
+  // Outcome logging: a successful deployment is a tracked page change, so its
+  // Search Console before/after can be measured later. Best-effort only — a
+  // tracking failure must never affect the deployment response.
+  if (method === "POST" && subPath === "v1/deployments" && response.status < 300) {
+    const deployment = (response.body as { deployment?: { targetUrl?: string; timestamp?: string; patchId?: string } } | null)
+      ?.deployment;
+    if (deployment?.targetUrl) {
+      try {
+        await recordChange({
+          pageUrl: deployment.targetUrl,
+          appliedAt: deployment.timestamp ?? new Date().toISOString(),
+          fixRef: deployment.patchId,
+          tenantId: principal.organizationId,
+          kind: "deployment",
+          summary: `Deployed fix${deployment.patchId ? ` ${deployment.patchId}` : ""} to ${deployment.targetUrl}`,
+          provenance: "measured",
+        });
+      } catch {
+        // Advisory telemetry; ignore.
+      }
+    }
+  }
 
   return NextResponse.json(response.body, {
     status: response.status,

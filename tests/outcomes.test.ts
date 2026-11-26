@@ -66,9 +66,9 @@ describe("page matching and aggregation", () => {
   });
 
   it("finds a page metric by full URL", () => {
-    const found = findPageMetric([row("/rooms", 3, 30, 8)], "https://example.com/rooms/");
-    expect(found?.clicks).toBe(3);
-    expect(findPageMetric([row("/rooms", 3, 30, 8)], "https://example.com/suites")).toBeNull();
+    const rows = [row("https://example.com/rooms", 3, 30, 8)];
+    expect(findPageMetric(rows, "https://www.example.com/rooms/")?.clicks).toBe(3);
+    expect(findPageMetric(rows, "https://example.com/suites")).toBeNull();
   });
 });
 

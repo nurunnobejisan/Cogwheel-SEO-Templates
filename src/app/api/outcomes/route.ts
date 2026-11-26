@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAuthenticatedPrincipal, principalFromRequest } from "@/lib/platform/auth";
 import { getGscSearchAnalytics, isGoogleConfigured } from "@/core/gsc/client";
 import {
-  changeEventFromDeployment,
   measureChange,
   type MeasureDeps,
   type OutcomeRecord,
 } from "@/core/outcomes";
-import { appendChange, readChanges, readOutcomes, upsertOutcome } from "@/core/outcomes/store";
+import { recordChange } from "@/core/outcomes/record";
+import { readChanges, readOutcomes, upsertOutcome } from "@/core/outcomes/store";
 
 export const dynamic = "force-dynamic";
 
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
     if (action === "record") {
       const pageUrl = typeof body.pageUrl === "string" ? body.pageUrl.trim() : "";
       if (!pageUrl) return NextResponse.json({ error: "pageUrl is required" }, { status: 400 });
-      const change = changeEventFromDeployment({
+      const { change, duplicate } = await recordChange({
         pageUrl,
         appliedAt: typeof body.appliedAt === "string" ? body.appliedAt : new Date().toISOString(),
         siteUrl: typeof body.siteUrl === "string" ? body.siteUrl : undefined,
@@ -69,12 +69,7 @@ export async function POST(req: NextRequest) {
         fixRef: typeof body.fixRef === "string" ? body.fixRef : undefined,
         tenantId: principal.organizationId,
       });
-      const changes = await readChanges();
-      if (changes.some((entry) => entry.id === change.id)) {
-        return NextResponse.json({ success: true, change, duplicate: true });
-      }
-      await appendChange(change);
-      return NextResponse.json({ success: true, change });
+      return NextResponse.json({ success: true, change, duplicate });
     }
 
     if (action === "measure") {
