@@ -107,8 +107,8 @@ export default function TemplateDetailPage({ params }: PageProps) {
     },
     publisher: {
       "@type": "Organization",
-      name: "SEO Studio Marketing",
-      url: "https://cogwheelmarketing.com",
+      name: "Nurunnobe Jisan",
+      url: "https://github.com/nurunnobejisan",
     },
     mainEntityOfPage: {
       "@type": "WebPage",

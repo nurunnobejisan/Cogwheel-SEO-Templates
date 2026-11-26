@@ -20,7 +20,7 @@
   { "name": "(Milford Hospitality Group) Hotel Fauchere", "url": "https://hotelfauchere.com/", "propertyType": "Independent", "managementGroup": "Milford Hospitality Group", "city": "Milford", "state": "PA", "seo": true, "hm": "Yes", "builtByUs": true, "seoAssignee": "Medul" },
   { "name": "Jive Bar lounge", "url": "https://jivebarlounge.com/", "propertyType": "Restaurant", "seo": true, "hm": "Yes", "builtByUs": false, "seoAssignee": "Medul" },
   { "name": "Milford Hospitality Group", "url": "https://milfordhospitalitygroup.com/", "propertyType": "Other", "city": "Milford", "state": "PA", "seo": true, "hm": "Yes", "builtByUs": false, "seoAssignee": "Medul" },
-  { "name": "Nurunnobe Jisan", "url": "http://github.com/nurunnobejisan/", "propertyType": "Other", "seo": true, "hm": "Yes", "builtByUs": false, "seoAssignee": "Taion" },
+  { "name": "Nurunnobe Jisan", "url": "https://github.com/nurunnobejisan", "propertyType": "Other", "seo": true, "hm": "Yes", "builtByUs": false, "seoAssignee": "Taion" },
   { "name": "TCRM Services", "url": "https://tcrmservices.com/", "propertyType": "Other", "seo": true, "hm": "Yes", "builtByUs": false, "seoAssignee": "Medul" },
   { "name": "Milford Theater", "url": "https://themilfordtheater.com/", "propertyType": "Other", "city": "Milford", "state": "PA", "seo": true, "hm": "Yes", "builtByUs": false, "seoAssignee": "Medul" },
   { "name": "Tom Quick Inn", "url": "https://tomquickinnmilford.com/", "propertyType": "Independent", "city": "Milford", "state": "PA", "seo": true, "hm": "Yes", "builtByUs": true, "seoAssignee": "Sabbir" },

@@ -52,7 +52,7 @@ export function SiteFooter() {
 
         <div className="mt-8 flex flex-col gap-2 border-t border-slate-200/60 pt-6 text-tiny text-slate-500 dark:border-slate-800/60 dark:text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} SEO Studio Marketing &amp;{" "}
+            &copy; {new Date().getFullYear()} Nurunnobe Jisan &amp;{" "}
             <a
               href="https://github.com/nurunnobejisan/SEO-Studio/graphs/contributors"
               target="_blank"
