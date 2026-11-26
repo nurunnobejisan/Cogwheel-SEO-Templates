@@ -45,21 +45,27 @@ function missing(names: string[]): string {
 }
 
 async function guardedQuery(
-  adapter: Pick<ProviderAdapter, "id" | "estimatedCostUsd">,
+  id: ProviderId,
+  estimatedCostUsd: number,
+  isConfigured: boolean,
+  unavailableReason: string,
   context: QueryContext,
   model: string,
   call: () => Promise<{ answer: string; citations: Array<{ url: string; title?: string }> }>
 ): Promise<ProviderAnswer> {
-  const cost = adapter.estimatedCostUsd();
+  if (!isConfigured) {
+    return unavailableAnswer(id, context.prompt.id, unavailableReason, model);
+  }
+  const cost = estimatedCostUsd;
   const budget = await canUseVisibilityProvider(cost);
   if (!budget.allowed) {
-    return unavailableAnswer(adapter.id, context.prompt.id, budget.reason ?? "daily cap reached", model);
+    return unavailableAnswer(id, context.prompt.id, budget.reason ?? "daily cap reached", model);
   }
   try {
     const result = await call();
     await recordVisibilityUsage(cost);
     return analyzeAnswer({
-      provider: adapter.id,
+      provider: id,
       promptId: context.prompt.id,
       brand: context.promptSet.brand,
       targetDomain: context.promptSet.domain,
@@ -71,7 +77,7 @@ async function guardedQuery(
     });
   } catch (error) {
     return unavailableAnswer(
-      adapter.id,
+      id,
       context.prompt.id,
       `Provider request failed: ${error instanceof Error ? error.message : String(error)}`,
       model
@@ -106,7 +112,10 @@ export function createChatGptAdapter(): ProviderAdapter {
     estimatedCostUsd: () => envCost("OPENAI_VISIBILITY_COST_USD", 0.01),
     query: (context) =>
       guardedQuery(
-        { id: "chatgpt", estimatedCostUsd: () => envCost("OPENAI_VISIBILITY_COST_USD", 0.01) },
+        "chatgpt",
+        envCost("OPENAI_VISIBILITY_COST_USD", 0.01),
+        configured("OPENAI_API_KEY"),
+        missing(["OPENAI_API_KEY"]),
         context,
         model,
         async () => {
@@ -174,7 +183,10 @@ export function createClaudeAdapter(): ProviderAdapter {
     estimatedCostUsd: () => envCost("ANTHROPIC_VISIBILITY_COST_USD", 0.02),
     query: (context) =>
       guardedQuery(
-        { id: "claude", estimatedCostUsd: () => envCost("ANTHROPIC_VISIBILITY_COST_USD", 0.02) },
+        "claude",
+        envCost("ANTHROPIC_VISIBILITY_COST_USD", 0.02),
+        configured("ANTHROPIC_API_KEY"),
+        missing(["ANTHROPIC_API_KEY"]),
         context,
         model,
         async () => {
@@ -240,7 +252,10 @@ export function createPerplexityAdapter(): ProviderAdapter {
     estimatedCostUsd: () => envCost("PERPLEXITY_VISIBILITY_COST_USD", 0.005),
     query: (context) =>
       guardedQuery(
-        { id: "perplexity", estimatedCostUsd: () => envCost("PERPLEXITY_VISIBILITY_COST_USD", 0.005) },
+        "perplexity",
+        envCost("PERPLEXITY_VISIBILITY_COST_USD", 0.005),
+        configured("PERPLEXITY_API_KEY"),
+        missing(["PERPLEXITY_API_KEY"]),
         context,
         model,
         async () => {
@@ -300,7 +315,10 @@ export function createGeminiAdapter(): ProviderAdapter {
     estimatedCostUsd: () => envCost("GEMINI_VISIBILITY_COST_USD", 0.002),
     query: (context) =>
       guardedQuery(
-        { id: "gemini", estimatedCostUsd: () => envCost("GEMINI_VISIBILITY_COST_USD", 0.002) },
+        "gemini",
+        envCost("GEMINI_VISIBILITY_COST_USD", 0.002),
+        Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY),
+        missing(["GEMINI_API_KEY", "GOOGLE_AI_API_KEY"]),
         context,
         model,
         async () => {

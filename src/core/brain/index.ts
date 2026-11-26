@@ -1,7 +1,20 @@
 import "server-only";
 
 import { runFullWebsiteAudit } from "@/core/full-audit";
-import { fullAuditTool, schemaCheckTool, keywordResearchTool, searchConsoleTool, serpDataTool, type ToolResult } from "./tools";
+import {
+  fullAuditTool,
+  schemaCheckTool,
+  keywordResearchTool,
+  searchConsoleTool,
+  serpDataTool,
+  llmsCheckTool,
+  citabilityTool,
+  driftTool,
+  visibilityTrackerTool,
+  gapDetectorTool,
+  type ToolResult,
+} from "./tools";
+import { latestVisibilityRun } from "@/core/visibility/store";
 import { loadRepoCorpus } from "./corpus";
 import { canUseLlm, recordLlmUsage } from "./usage";
 import { createRagPipeline, type RagPipeline } from "../../../ai/rag";
@@ -18,11 +31,14 @@ HARD CONSTRAINTS (non-negotiable):
    revenue figures, or benchmark scores.
 2. If a dimension is unavailable or unmeasured, say so plainly; do not fill gaps
    with plausible-sounding numbers.
-3. Every claim must trace to a measured field in the audit report or to a
-   retrieved knowledge-base chunk. Cite the chunk id in brackets when you rely on
-   it, e.g. [kc-title-tag].
+3. Every factual claim must map to a measured field in the audit/tool data or to
+   a retrieved knowledge-base chunk. Cite the chunk id in brackets when you rely
+   on it, e.g. [kc-title-tag]. Unmapped claims are rejected by a deterministic
+   gate and replaced with the measured summary.
 4. Prefer "not measured" over guessing. "Measure, label, or leave blank."
-5. Output structured JSON only when asked for JSON; otherwise concise markdown.`;
+5. Distinguish "measured", "estimated", and "unavailable" exactly as the tool
+   results do. Never describe an unavailable surface as if it were measured.
+6. Output structured JSON only when asked for JSON; otherwise concise markdown.`;
 
 export interface BrainRequest {
   targetUrl: string;
@@ -37,6 +53,8 @@ export interface BrainResult {
   interpretation: string;
   provider: string;
   generatedAt: string;
+  tools: Array<{ name: string; available: boolean; provenance: string; reason?: string }>;
+  provenanceCheck: ClaimProvenanceResult;
 }
 
 let cachedPipeline: RagPipeline | null = null;
@@ -60,7 +78,19 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
   const keywordResult = keywordResearchTool(new URL(targetUrl).hostname);
   const gscResult = searchConsoleTool(audit);
   const serpResult = serpDataTool(audit);
-  const toolResults = [auditResult, schemaResult, keywordResult, gscResult, serpResult];
+  const latestVisibility = await latestVisibilityRun(targetUrl).catch(() => null);
+  const toolResults = [
+    auditResult,
+    schemaResult,
+    keywordResult,
+    gscResult,
+    serpResult,
+    llmsCheckTool(audit),
+    citabilityTool(audit),
+    driftTool(audit),
+    await visibilityTrackerTool(targetUrl),
+    gapDetectorTool(latestVisibility),
+  ];
 
   const pipeline = await getPipeline();
   const query =
@@ -74,15 +104,54 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
     overallScore: audit.overallScore,
     scores: audit.scores,
     provenance: audit.dataProvenance,
+    geo: audit.geoAudit
+      ? {
+          llmsTxt: {
+            status: audit.geoAudit.llmsTxt.status,
+            score: audit.geoAudit.llmsTxt.score,
+            failedChecks: audit.geoAudit.llmsTxt.checks.filter((check) => !check.pass).map((check) => check.label),
+          },
+          aiCrawlers: {
+            status: audit.geoAudit.aiCrawlers.status,
+            blockedBots: audit.geoAudit.aiCrawlers.blockedBots,
+            unmentionedBots: audit.geoAudit.aiCrawlers.unmentionedBots,
+          },
+          citability: {
+            score: audit.geoAudit.citability.score,
+            formula: audit.geoAudit.citability.formula,
+            components: audit.geoAudit.citability.components.map((component) => ({
+              id: component.id,
+              score: component.score,
+              weight: component.weight,
+            })),
+          },
+          drift: {
+            status: audit.geoAudit.drift.status,
+            scoreDelta: audit.geoAudit.drift.scoreDelta,
+            regressions: audit.geoAudit.drift.regressions,
+          },
+        }
+      : null,
     topActions: (audit.actionPlan ?? []).slice(0, 15).map((a) => ({ priority: a.priority, title: a.title, category: a.category })),
-    tools: toolResults.map((t) => ({ name: t.name, available: t.available, reason: t.reason })),
+    tools: toolResults.map((t) => ({ name: t.name, available: t.available, reason: t.reason, provenance: t.provenance })),
   };
   const auditJson = JSON.stringify(compactAudit, null, 2);
   const contextText = retrieved
     .map((c) => `[${c.id}] ${c.title} (${c.source}, score ${c.score})\n${c.text}`)
     .join("\n\n");
 
-  const toolJson = JSON.stringify(toolResults.map((t) => ({ name: t.name, available: t.available, reason: t.reason, data: t.available ? t.data : null })), null, 2).slice(0, 8000);
+  const toolJson = JSON.stringify(
+    toolResults.map((t) => ({
+      name: t.name,
+      available: t.available,
+      provenance: t.provenance,
+      reason: t.reason,
+      // The full audit is already represented by compactAudit; avoid duplicating it.
+      data: t.name === "full_audit" ? null : t.available ? t.data : null,
+    })),
+    null,
+    2
+  ).slice(0, 14_000);
   const prompt = `TOOLS (unconnected tools return "unavailable" — do not fabricate):\n${toolJson}\n\nAUDIT REPORT (measured facts only):\n${auditJson}\n\nRETRIEVED KNOWLEDGE:\n${contextText}\n\nUSER QUESTION:\n${request.question?.trim() || "Summarise the top issues and the safest next actions."}\n\nRespond with a concise, grounded summary. Mark any unavailable dimension explicitly. Cite source doc/rule ids in brackets.`;
 
   let interpretation: string;
@@ -112,10 +181,11 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
     provider = "deterministic";
   }
 
-  const provenance = verifyProvenance(interpretation, audit, retrieved);
+  let provenance = verifyClaimProvenance(interpretation, audit, retrieved);
   if (!provenance.ok && provider === "llm") {
     interpretation = deterministicInterpretation(audit, retrieved);
-    provider = "deterministic (provenance gate)";
+    provider = "deterministic (claim provenance gate)";
+    provenance = verifyClaimProvenance(interpretation, audit, retrieved);
   }
 
   return {
@@ -125,6 +195,8 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
     interpretation,
     provider,
     generatedAt: new Date().toISOString(),
+    tools: toolResults.map((t) => ({ name: t.name, available: t.available, provenance: t.provenance, reason: t.reason })),
+    provenanceCheck: provenance,
   };
 }
 
@@ -135,6 +207,19 @@ function deterministicInterpretation(audit: Awaited<ReturnType<typeof runFullWeb
   lines.push("");
   lines.push(`- Overall score: ${audit.overallScore}/100`);
   lines.push(`- Action items: ${plan.length}`);
+  if (audit.geoAudit) {
+    const geo = audit.geoAudit;
+    lines.push(
+      `- llms.txt: ${geo.llmsTxt.status}${geo.llmsTxt.score !== null ? ` (${geo.llmsTxt.score}/100)` : ""}`
+    );
+    lines.push(
+      `- AI crawler access: ${geo.aiCrawlers.status}; blocked: ${geo.aiCrawlers.blockedBots.length > 0 ? geo.aiCrawlers.blockedBots.join(", ") : "none"}`
+    );
+    lines.push(`- Citability: ${geo.citability.score}/100 (estimated; ${geo.citability.formula})`);
+    lines.push(
+      `- Drift: ${geo.drift.status}${geo.drift.scoreDelta !== null ? ` (${geo.drift.scoreDelta >= 0 ? "+" : ""}${geo.drift.scoreDelta} points)` : ""}`
+    );
+  }
   for (const item of plan.slice(0, 12)) {
     lines.push(`- [${item.priority}] ${item.title} (${item.category})`);
   }
@@ -168,4 +253,106 @@ export function verifyProvenance(
   const numbers = Array.from(new Set(text.match(/\b\d+(?:\.\d+)?\b/g) ?? []));
   const untraced = numbers.filter((n) => !haystack.includes(n));
   return { ok: untraced.length === 0, untracedNumbers: untraced };
+}
+
+export interface ClaimProvenanceResult {
+  ok: boolean;
+  /** Numbers that do not appear in the audit or a retrieved chunk. */
+  untracedNumbers: string[];
+  /** Sentences whose content cannot be traced to the audit or a retrieved chunk. */
+  unmappedClaims: string[];
+  checkedClaims: number;
+}
+
+const CLAIM_STOPWORDS = new Set([
+  "the", "and", "for", "with", "that", "this", "from", "your", "you", "are", "was", "were", "will",
+  "have", "has", "had", "not", "but", "can", "could", "should", "would", "may", "might", "must",
+  "into", "than", "then", "them", "they", "their", "there", "here", "what", "when", "where", "which",
+  "who", "why", "how", "all", "any", "each", "more", "most", "other", "some", "such", "only", "also",
+  "about", "above", "after", "before", "between", "under", "over", "very", "just", "using", "use",
+  "page", "site", "audit", "measured", "measure", "data", "result", "results", "report", "search",
+]);
+
+const META_CLAIM =
+  /(not measured|unavailable|no knowledge-base|measure, label|presence only|does not verify|reported as unavailable|dimensions not measured)/i;
+
+function claimSentences(text: string): string[] {
+  return text
+    .replace(/```[\s\S]*?```/g, " ")
+    .split(/\n+/)
+    .flatMap((line) => line.replace(/^\s*(?:[#>*+-]|\d+[.)])\s*/, "").trim().split(/(?<=[.!?])\s+(?=[A-Z0-9“"(])/))
+    .map((sentence) => sentence.trim())
+    .filter((sentence) => sentence.length >= 12 && /[a-z]/i.test(sentence));
+}
+
+function claimWords(sentence: string): string[] {
+  return [...new Set(
+    sentence
+      .toLowerCase()
+      .replace(/\[[^\]]*\]/g, " ")
+      .replace(/https?:\/\/\S+/g, " ")
+      .split(/[^a-z0-9]+/)
+      .filter((word) => word.length >= 4 && !/^\d+$/.test(word) && !CLAIM_STOPWORDS.has(word))
+  )];
+}
+
+function stem(word: string): string {
+  return word.replace(/(?:ing|ed|es|s)$/, "");
+}
+
+/**
+ * Claim-to-field provenance.
+ *
+ * Every sentence in the interpretation must either cite a retrieved chunk id,
+ * or share enough content words with the measured audit/retrieved corpus to be
+ * traceable. Numbers must appear verbatim in that source material. Sentences
+ * that explicitly declare a dimension unavailable are allowed: they are honesty
+ * statements, not unsupported claims.
+ */
+export function verifyClaimProvenance(
+  text: string,
+  audit: Awaited<ReturnType<typeof runFullWebsiteAudit>>,
+  retrieved: Array<{ id?: string; title?: string; text?: string }>,
+): ClaimProvenanceResult {
+  const sourceText = `${JSON.stringify(audit)} ${retrieved.map((chunk) => `${chunk.id ?? ""} ${chunk.title ?? ""} ${chunk.text ?? ""}`).join(" ")}`;
+  const sourceLower = sourceText.toLowerCase();
+  const sourceTokens = new Set(sourceLower.split(/[^a-z0-9]+/).filter((word) => word.length >= 3));
+  const retrievedIds = new Set(retrieved.map((chunk) => chunk.id).filter((id): id is string => Boolean(id)));
+
+  const untracedNumbers: string[] = [];
+  const unmappedClaims: string[] = [];
+  let checkedClaims = 0;
+
+  for (const sentence of claimSentences(text)) {
+    if (META_CLAIM.test(sentence)) continue;
+
+    const citations = [...sentence.matchAll(/\[([a-z0-9][a-z0-9_#.-]{2,})\](?!\()/gi)].map((match) => match[1]!);
+    if (citations.length > 0 && citations.every((id) => retrievedIds.has(id))) continue;
+
+    checkedClaims += 1;
+    const numbers = Array.from(new Set(sentence.match(/\b\d+(?:\.\d+)?\b/g) ?? []));
+    const missingNumbers = numbers.filter((number) => !sourceText.includes(number));
+    if (missingNumbers.length > 0) {
+      untracedNumbers.push(...missingNumbers);
+      unmappedClaims.push(sentence);
+      continue;
+    }
+
+    const words = claimWords(sentence);
+    if (words.length === 0) continue;
+    const matched = words.filter((word) => {
+      return sourceTokens.has(word) || sourceTokens.has(stem(word)) || sourceLower.includes(word);
+    });
+    const coverage = matched.length / words.length;
+    if (coverage < 0.55 && words.length - matched.length > 1) {
+      unmappedClaims.push(sentence);
+    }
+  }
+
+  return {
+    ok: untracedNumbers.length === 0 && unmappedClaims.length === 0,
+    untracedNumbers: [...new Set(untracedNumbers)],
+    unmappedClaims: unmappedClaims.slice(0, 8),
+    checkedClaims,
+  };
 }
