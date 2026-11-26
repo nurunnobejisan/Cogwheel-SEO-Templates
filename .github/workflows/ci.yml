@@ -43,6 +43,10 @@ jobs:
         run: npm run brain:eval data/brain-gold.example.json
       - name: Production build (next build)
         run: npm run build
+        env:
+          # next build is the memory peak; give Node a firm heap ceiling so a
+          # constrained runner cannot OOM near the default cap.
+          NODE_OPTIONS: --max-old-space-size=4096
 
   python:
     name: Python · Analyzer & Generators
