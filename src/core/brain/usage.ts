@@ -2,13 +2,16 @@ import "server-only";
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-
-const FILE = path.join(process.cwd(), "data", "brain-usage.json");
+import { cogwheelDataFile } from "@/lib/platform/data-dir";
 
 interface Usage {
   date: string;
   calls: number;
   estimatedCostUsd: number;
+}
+
+function usageFile(): string {
+  return cogwheelDataFile("brain-usage.json");
 }
 
 function today(): string {
@@ -17,7 +20,7 @@ function today(): string {
 
 async function readUsage(): Promise<Usage> {
   try {
-    const raw = await fs.readFile(FILE, "utf8");
+    const raw = await fs.readFile(usageFile(), "utf8");
     const parsed = JSON.parse(raw) as Usage;
     if (parsed.date !== today()) {
       return { date: today(), calls: 0, estimatedCostUsd: 0 };
@@ -29,8 +32,14 @@ async function readUsage(): Promise<Usage> {
 }
 
 async function writeUsage(usage: Usage): Promise<void> {
-  await fs.mkdir(path.dirname(FILE), { recursive: true });
-  await fs.writeFile(FILE, JSON.stringify(usage, null, 2), "utf8");
+  try {
+    const file = usageFile();
+    await fs.mkdir(path.dirname(file), { recursive: true });
+    await fs.writeFile(file, JSON.stringify(usage, null, 2), "utf8");
+  } catch (err) {
+    // Best-effort: a read-only filesystem must not break the brain.
+    console.warn("[brain:usage] usage write skipped:", err instanceof Error ? err.message : String(err));
+  }
 }
 
 const DEFAULT_CALL_CAP = 100;

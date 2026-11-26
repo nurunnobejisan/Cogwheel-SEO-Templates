@@ -34,7 +34,7 @@ export async function recordClientUsage(clientId: string): Promise<void> {
     prev.lastUsedAt = new Date().toISOString();
     meter[clientId] = prev;
     const file = meterFile();
-    await fs.mkdir(file.slice(0, file.lastIndexOf("/")) || ".", { recursive: true });
+    await fs.mkdir(path.dirname(file), { recursive: true });
     await fs.writeFile(file, JSON.stringify(meter, null, 2), "utf8");
   } catch (err) {
     // Metering is best-effort and must never fail the measured request.
