@@ -19,6 +19,7 @@ describe("Dataset Builder & Supervised Fine-Tuning Exporter", () => {
   const sampleRecord: TrainingPairRecord = {
     id: "sample_hotel_hash_123",
     schemaVersion: "3.0.0",
+    tier: "raw",
     canonicalUrlHash: "sample_hotel_hash_123",
     contentHash: "ch_sample123",
     version: 1,
