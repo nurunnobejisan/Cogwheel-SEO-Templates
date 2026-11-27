@@ -22,3 +22,4 @@
 
 ### Operational Log
 - `15:05` [Phase 0] Vendored `xlsx` 0.20.3 (Apache-2.0, packed from the installed copy) to `vendor/xlsx-0.20.3.tgz`; `package.json` now uses `file:vendor/xlsx-0.20.3.tgz` and `package-lock.json` regenerated (3-line diff, integrity `sha512-IeNUd19…` verified against the tarball bytes). Verified a true clean `npm ci` in a fresh temp dir installs xlsx 0.20.3 with zero network to `cdn.sheetjs.com`. Added `tests/vendor-dependencies.test.ts` (manifests, tarball presence + sha512 ↔ lock integrity, installed version). Updated `CHANGELOG.md` and marked M5's xlsx clause fixed in `docs/REPOSITORY_AUDIT.md`. Removes the whole class of tsc failures from the missing xlsx install (M5 first, per the run plan).
+- `15:20` [Phase 0] Merged as PR #21 (`55bbe74`, CI run 45971427736 all green incl. Vercel). Local gates on the branch: typecheck, lint, vitest 605/605, test:seo, test:ts, train:validate, next build, build:extension, pytest 375, ruff `python/`.
