@@ -279,6 +279,13 @@
           <text x="10" y="18" fill="#e4e4e7" font-size="10" font-weight="700">Live Remediation &amp; Inline Code Diff Engine</text>
           <text x="10" y="32" fill="#a1a1aa" font-size="9">SERP Desktop &amp; Mobile Preview • Social OG Cards • 1-Click Patch</text>
         </g>
+
+        <!-- Vertical Packs Registry -->
+        <g transform="translate(0, 318)">
+          <rect width="310" height="42" rx="4" fill="#1a1a24" stroke="#8b5cf6"/>
+          <text x="10" y="18" fill="#c084fc" font-size="10" font-weight="700">Vertical Packs Registry (src/packs/)</text>
+          <text x="10" y="32" fill="#a1a1aa" font-size="9">Typed Pack Interface • validatePack/registerPack • Page-Type Classifier (0-100)</text>
+        </g>
       </g>
     </g>
 

@@ -363,3 +363,14 @@ src/schemas/validation.ts (TypeScript Zod Canonical Source)
 - **Credential & API Key Isolation**: Inference API keys and bearer tokens are stored strictly within the user's local `chrome.storage.local` environment and are never transmitted to analytics or telemetry endpoints.
 - **Read-Only DOM Boundaries**: The DOM inspector performs non-mutating page queries; visual overlays use isolated elements that cannot manipulate host page form inputs or capture keystrokes.
 - **Network Permissions**: Restricted to explicit endpoints (`raw.githubusercontent.com`, `api.github.com`, configured custom inference hosts, and user-specified API sync endpoints).
+
+---
+
+## 11. Vertical Pack System (`src/packs/`)
+
+Packs are the unit that tells the audit engine how to score one vertical. They are **data, not code**: adding a vertical means adding a `Pack` object, never a new branch in the rules engine.
+
+- **Typed interface** (`src/packs/types.ts`): nine required fields — `id`, `name`, `description`, `pageTypes`, `scoringWeights`, `checklist`, `schemaRules`, `keywordMatrix`, `brandGuardrails`, `aiPrompts`. `pageTypes` draws from the eight-value `PackPageType` set; `scoringWeights` (`onPage` + `schema` + `geoAi`) must sum to 1.
+- **Registry** (`src/packs/index.ts`): `validatePack` returns the full list of problems (kebab-case id, non-empty checklist, ≥1 keyword, ≥1 brand, unique prompt ids, weight sum) rather than failing on the first; `registerPack` additionally refuses duplicate ids. `getPack` / `listPacks` / `unregisterPack` expose the module-global `Map`.
+- **Page-type classifier** (`src/packs/classifier.ts`): deterministic rule-based classification of a `PageSnapshot` into one of the eight `PackPageType` values with a 0–100 confidence. Signals: URL path, JSON-LD `@type`, title, DOM (reservation widgets, booking-engine script signatures), and copy patterns. Confidence combines absolute evidence (saturating at 60 points) with a winner margin so ambiguous pages are reported as uncertain rather than certain. No signal → `other` at confidence 0. This is distinct from `classifyPageType()` in `src/storage/training-vault.ts`, which emits the ML training vocabulary (`dining`, `spa`, …).
+- **Status**: the interface, registry, and classifier are implemented and tested (`tests/packs-registry.test.ts`, `tests/packs-classifier.test.ts`); no pack has been extracted into `src/packs/<id>/` yet (Task 2.2), and the hotel data still lives in `src/data/` and `src/schemas/`. See [`docs/PACKS.md`](PACKS.md) for the authoring guide.
