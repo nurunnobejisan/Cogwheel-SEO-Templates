@@ -6,6 +6,7 @@ import { isAuthenticatedPrincipal, principalFromRequest } from "@/lib/platform/a
 import { assertEgressAllowed, readTextCapped, safeFetch } from "@/lib/security/egress";
 import {
   contentHash,
+  deriveTripleProvenance,
   hasDuplicateContent,
   isTrainingEligible,
   stripPii,
@@ -81,6 +82,8 @@ export async function POST(req: NextRequest) {
     // callers may pass an explicit value from the allowed set.
     const ALLOWED_PROVENANCE = new Set(["measured", "estimated", "unavailable"]);
     const provenance = ALLOWED_PROVENANCE.has(body.provenance) ? (body.provenance as "measured" | "estimated" | "unavailable") : "measured";
+    // Provenance (Task 5.1): pack + pageType on every exported record.
+    const { pack, pageType } = deriveTripleProvenance(url, body);
     await assertEgressAllowed(url);
 
     const allowed = await robotsAllowed(url);
@@ -108,6 +111,8 @@ export async function POST(req: NextRequest) {
       consent: true,
       tenantId: principal.organizationId,
       provenance,
+      pack,
+      pageType,
       reviewedBy: undefined,
     };
     await fs.mkdir(path.dirname(tripleFile()), { recursive: true });

@@ -71,6 +71,12 @@ export interface TrainingPairRecord {
   version: number;
   source: TrainingSourceType;
   pageType: PageTypeLabel;
+  /**
+   * Vertical pack this record belongs to (Task 5.1 provenance). Derived from
+   * detected JSON-LD types when absent on legacy records; `"hotel"` for
+   * lodging schemas, `"unclassified"` when no pack signal exists.
+   */
+  pack: string;
   extractionConfidence: number; // 0 - 100
   canonicalUrl: string;
   domain: string;
@@ -254,6 +260,47 @@ export function classifyPageType(url: string, raw: RawWebInput): PageTypeLabel {
   return "hotel_homepage";
 }
 
+/** JSON-LD `@type` values that identify the hotel & hospitality vertical. */
+export const HOTEL_JSONLD_TYPES: readonly string[] = [
+  "LodgingBusiness",
+  "Hotel",
+  "Resort",
+  "Motel",
+  "Hostel",
+  "BedAndBreakfast",
+  "ExtendedStayHotel",
+  "SkiResort",
+  "Campground",
+  "Inn",
+];
+
+/** Page-type labels that only occur on hotel properties. */
+const HOTEL_PAGE_TYPES: ReadonlySet<string> = new Set<PageTypeLabel>([
+  "hotel_homepage",
+  "room_details",
+  "amenities",
+  "dining",
+  "spa",
+  "offers",
+  "meetings_events",
+]);
+
+/**
+ * Derive the provenance `pack` for a record (Task 5.1).
+ *
+ * Signals, in order: detected JSON-LD hotel types, then a hotel-only page
+ * type. `"unclassified"` means no pack signal was present — never guessed.
+ */
+export function derivePack(detectedSchemas: string[] = [], pageType?: PageTypeLabel): string {
+  if (detectedSchemas.some((t) => HOTEL_JSONLD_TYPES.includes(t))) {
+    return "hotel";
+  }
+  if (pageType && HOTEL_PAGE_TYPES.has(pageType)) {
+    return "hotel";
+  }
+  return "unclassified";
+}
+
 /**
  * Computes extraction confidence score (0-100).
  */
@@ -348,6 +395,7 @@ function migrateRecordToV3(rawRecord: unknown): TrainingPairRecord {
   const rawInput = (r.rawInput || {}) as RawWebInput;
   const canonicalUrl = (r.canonicalUrl as string) || (rawInput.url as string) || "";
   const canonicalUrlHash = (r.canonicalUrlHash as string) || (r.id as string) || "hash_legacy";
+  const pageType = (r.pageType as PageTypeLabel) || classifyPageType(canonicalUrl, rawInput);
 
   return {
     id: (r.id as string) || canonicalUrlHash,
@@ -357,7 +405,8 @@ function migrateRecordToV3(rawRecord: unknown): TrainingPairRecord {
     contentHash: (r.contentHash as string) || canonicalUrlHash,
     version: typeof r.version === "number" ? r.version : 1,
     source: (r.source as TrainingSourceType) || "manual",
-    pageType: (r.pageType as PageTypeLabel) || classifyPageType(canonicalUrl, rawInput),
+    pageType,
+    pack: (r.pack as string) || derivePack(rawInput.detectedSchemas || [], pageType),
     extractionConfidence:
       typeof r.extractionConfidence === "number"
         ? r.extractionConfidence
@@ -487,6 +536,7 @@ export async function saveTrainingPair(params: {
           version,
           source,
           pageType,
+          pack: derivePack(params.rawInput.detectedSchemas, pageType),
           extractionConfidence,
           canonicalUrl,
           domain: rawInput.domain,
@@ -527,6 +577,7 @@ export async function saveTrainingPair(params: {
     version,
     source,
     pageType,
+    pack: derivePack(params.rawInput.detectedSchemas, pageType),
     extractionConfidence,
     canonicalUrl,
     domain: rawInput.domain,

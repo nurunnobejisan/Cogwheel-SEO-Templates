@@ -7,8 +7,52 @@
 
 import crypto from "node:crypto";
 import type { DataProvenance } from "../data-policy.ts";
+import { classifyPageType, derivePack, type PageTypeLabel, type RawWebInput } from "../../storage/training-vault.ts";
+import { MlPageTypeLabels } from "../../../schemas/ml-example.ts";
 
 export type TripleTier = "raw" | "reviewed" | "gold";
+
+/** URL-only raw input for server-side page-type classification (no page body). */
+function emptyRawInput(url: string): RawWebInput {
+  return {
+    url,
+    canonicalUrl: url,
+    domain: "",
+    rawTitle: "",
+    rawMetaDesc: "",
+    rawH1: [],
+    rawH2: [],
+    rawBodyText: "",
+    detectedSchemas: [],
+    wordCount: 0,
+  };
+}
+
+const PACK_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+
+/**
+ * Resolve `pack` / `pageType` provenance for a triple capture (Task 5.1).
+ *
+ * Client-supplied values win when well-formed (page type must be a known
+ * `PageTypeLabel`, pack must be a kebab-case slug); otherwise the server
+ * derives them — URL-only page-type classification, since the request
+ * carries no page body, then pack from the resulting hotel-only label.
+ */
+export function deriveTripleProvenance(
+  url: string,
+  body: { pack?: unknown; pageType?: unknown },
+): { pack: string; pageType: string } {
+  const pageType =
+    typeof body.pageType === "string" &&
+    (MlPageTypeLabels as readonly string[]).includes(body.pageType)
+      ? body.pageType
+      : classifyPageType(url, emptyRawInput(url));
+  const pack =
+    typeof body.pack === "string" && PACK_SLUG.test(body.pack)
+      ? body.pack
+      : derivePack([], pageType as PageTypeLabel);
+  return { pack, pageType };
+}
 
 export const TRAINING_ELIGIBLE_TIERS: TripleTier[] = ["reviewed", "gold"];
 export const MIN_REVIEWED_PAIRS_FOR_TRAINING = 2000;
@@ -26,6 +70,10 @@ export interface TrainingTriple {
   tenantId?: string;
   /** Provenance of the measured/estimated values in the audit and fix. */
   provenance: DataProvenance;
+  /** Vertical pack provenance (Task 5.1) — derived server-side when absent. */
+  pack: string;
+  /** Page-type provenance in the `PageTypeLabel` vocabulary. */
+  pageType: string;
   reviewedBy?: string;
   reviewedAt?: string;
 }
@@ -94,6 +142,10 @@ export interface LoraExample {
     quality: TripleTier;
     tenantId: string | null;
     provenance: DataProvenance;
+    /** Vertical pack provenance (Task 5.1). */
+    pack: string;
+    /** Page-type provenance in the `PageTypeLabel` vocabulary. */
+    pageType: string;
     /** Always `true`: TrainingTriple is captured with consent, and the
      *  licence gate downstream (ml/train) refuses first-party rows whose
      *  exported metadata lost it. Additive so older exports stay parseable. */
@@ -119,6 +171,8 @@ export function buildLoraExample(triple: TrainingTriple): LoraExample {
       quality: triple.quality,
       tenantId: triple.tenantId ?? null,
       provenance: triple.provenance,
+      pack: triple.pack,
+      pageType: triple.pageType,
       consent: triple.consent,
     },
   };
