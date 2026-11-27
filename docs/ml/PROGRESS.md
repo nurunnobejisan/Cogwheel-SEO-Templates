@@ -291,8 +291,9 @@ build:extension, pytest 344, ruff (new files).
 
 - [x] Local CI green
 - [ ] CI green on the PR
-- [ ] D-021 isolation: branch cut from `origin/main` in worktree
-      `ml-phase-3`, no shared history rewritten
+- [x] D-021 isolation: branch cut from `origin/main` in worktree
+      `ml-phase-3`, no shared history rewritten (fast-forward merge of
+      `origin/main` at `8c7f247`, no force-push)
 
 ---
 
