@@ -129,6 +129,8 @@ data/sft-dataset.jsonl
 data/sft-dataset.manifest.json
 data/golden-requests.jsonl
 data/patch-pairs.jsonl
+# Daily Session runtime state (NDJSON) — regenerable, may contain session history
+data/daily-session/
 
 .vercel
 .env*
