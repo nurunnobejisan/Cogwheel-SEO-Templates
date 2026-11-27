@@ -53,5 +53,5 @@
 ### Phase 6: Universal Naming & Documentation
 - [ ] **Task 6.1: Universal Studio Branding & Manifest Update** (Est: 15m)
   - *Done-Criterion*: User-facing text updated from hotel-only to Universal SEO & GEO Studio with hotel as Pack #1. Extension manifest name & description updated.
-- [ ] **Task 6.2: Comprehensive Documentation & Pack Guide** (Est: 20m)
+- [x] **Task 6.2: Comprehensive Documentation & Pack Guide** (Est: 20m)
   - *Done-Criterion*: `README.md`, `docs/ARCHITECTURE.md`, `docs/assets/system-architecture.svg` updated, and new `docs/PACKS.md` created detailing how to author a custom vertical pack.

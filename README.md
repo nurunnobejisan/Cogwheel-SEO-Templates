@@ -67,7 +67,7 @@ The core rule is simple: **measure, label, or leave blank.** Rankings, search vo
 - Per-instance rate limits, CSRF origin checks, and security headers.
 - Signed `cw_session` cookies; platform APIs return `401` without a valid session.
 - Synthetic data is gated behind `ALLOW_SIMULATED_DATA` and **off by default**.
-- CI runs typecheck, lint, Vitest, SEO gates, integration tests, pytest, and a production build.
+- CI runs typecheck, lint, Vitest, SEO gates, integration tests, pytest, ruff, and a production build.
 
 ## Architecture
 
@@ -209,6 +209,9 @@ The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT
 | [Documentation index](docs/README.md) | Start here for the full docs map |
 | [Architecture](docs/ARCHITECTURE.md) | System topology, extension, platform, and data contracts |
 | [Technical specification](docs/SPEC.md) | Detailed behavior and interfaces |
+| [Testing](docs/TESTING.md) | Test suites, husky hooks, and local CI reproduction |
+| [API reference](docs/API_REFERENCE.md) | Every HTTP route, auth mechanisms, and error shape |
+| [Vertical packs](docs/PACKS.md) | How to author a custom vertical pack |
 | [Security](docs/SECURITY.md) | Auth, SSRF, rate limits, local bridges, data integrity |
 | [Platform runtime](docs/PLATFORM_RUNTIME.md) | Operator console, durable storage, approvals |
 | [Reporting](docs/REPORTING.md) | HTML/PDF/CSV/PPTX export behavior and provenance |
@@ -234,7 +237,7 @@ Contributions are welcome. Read [`CONTRIBUTING.md`](CONTRIBUTING.md) and the [`C
 
 ## Security
 
-Do not report vulnerabilities in public issues. See [`SECURITY.md`](SECURITY.md) for the private reporting process and supported versions.
+Do not report vulnerabilities in public issues. See [`docs/SECURITY.md`](docs/SECURITY.md) for the private reporting process and supported versions.
 
 ## License
 
