@@ -9,7 +9,7 @@ Status values: `not started` · `in progress` · `done`.
 | 1 | Data registry & datasets | done | [#4](https://github.com/nurunnobejisan/SEO-Studio/pull/4) |
 | 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
 | 3 | LoRA fine-tunes | done | [#7](https://github.com/nurunnobejisan/SEO-Studio/pull/7) |
-| 4 | Ship to app & extension | in progress | [#10](https://github.com/nurunnobejisan/SEO-Studio/pull/10) |
+| 4 | Ship to app & extension | done | [#10](https://github.com/nurunnobejisan/SEO-Studio/pull/10) |
 
 ---
 
@@ -253,7 +253,7 @@ produced.
 
 ## Phase 4 — Ship to app & extension
 
-**Implementation complete; PR open.** Shipped:
+**Merged (PR #10).** Shipped:
 
 - **`ml/serve/`** — stdlib-only OpenAI-compatible gateway (D-014):
   `registry.py` (alias migration `seo-studio-*` → persisted `cogwheel-*` on
@@ -290,7 +290,7 @@ vitest 533/533, brain:eval fabrication 0.0000, test:seo, next build,
 build:extension, pytest 344, ruff (new files).
 
 - [x] Local CI green
-- [ ] CI green on the PR
+- [x] CI green on the PR — run 45953114827 on `5c6d813`, merged as `67fa605`
 - [x] D-021 isolation: branch cut from `origin/main` in worktree
       `ml-phase-3`, no shared history rewritten (fast-forward merge of
       `origin/main` at `8c7f247`, no force-push)
@@ -307,3 +307,4 @@ was not produced by `ml/eval/run_eval.py`.
 | 2026-11-27 | 0 | (baseline — golden set frozen) | — | — | — | — | — | 52 cases, no model run yet |
 | 2026-11-27 | 2 | (runner shipped, no model outputs yet) | — | — | — | — | — | 106 checks reported `skipped`, never `passed`; no number until a real run |
 | 2026-11-27 | 3 | (training layer shipped, no GPU run yet) | — | — | — | — | — | dry-run manifests only — no adapter trained, so no score exists to report |
+| 2026-11-27 | 4 | (serving shipped, no model run yet) | — | — | — | — | — | gateway serves only `ready` registry entries; with no adapter there is nothing to number |
