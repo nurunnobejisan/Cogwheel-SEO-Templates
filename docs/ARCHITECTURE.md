@@ -166,7 +166,7 @@ sequenceDiagram
     Note over Extension,GitHub: Layer A: Silent Over-the-Air (OTA) Live Sync
     Extension->>GitHub: GET /data/ota-config.json
     GitHub-->>Extension: 200 OK (Weights, Pixel Limits, URLs)
-    Extension->>GitHub: GET /data/78-keyword-strategy-matrix.json
+    Extension->>GitHub: GET /src/packs/hotel/keywords.json
     GitHub-->>Extension: 200 OK (78 Strategy Keywords)
     Extension->>Storage: Store cached payload with otaSyncedAt timestamp
     Extension-->>Extension: Apply updated rules in memory immediately

@@ -59,15 +59,6 @@ except ImportError:
 # 1. 78-KEYWORD STRATEGY MATRIX MODELS
 # ==============================================================================
 
-KeywordCategory = Literal[
-    "Brand/Direct Booking",
-    "Local/Neighborhood",
-    "Airport/Transit",
-    "Meetings/Weddings",
-    "Extended Stay",
-    "Conversational AI Prompts",
-]
-
 SearchIntent = Literal[
     "Navigational",
     "Informational",
@@ -78,16 +69,28 @@ SearchIntent = Literal[
 SearchVolumeTier = Literal["High", "Medium", "Low", "Long-Tail / Conversational"]
 
 
+class CpcEstimate(BaseModel):
+    """CPC planning figure with a mandatory provenance marker.
+
+    Only ``source="illustrative"`` is accepted: no measured CPC data exists
+    for these datasets, and widening the literal is a deliberate schema
+    change rather than a data entry.
+    """
+
+    value: str
+    source: Literal["illustrative"]
+
+
 class KeywordItem(BaseModel):
-    """Individual hospitality keyword strategy specification."""
+    """Individual vertical-pack keyword strategy specification."""
 
     id: str
     keyword: str
-    category: KeywordCategory
+    category: str
     subCategory: str
     searchIntent: SearchIntent
     searchVolumeTier: SearchVolumeTier
-    cpcEstimate: str
+    cpcEstimate: CpcEstimate
     targetPageType: str
     recommendedSchema: str
     geoEngineRelevance: list[str]
@@ -96,7 +99,7 @@ class KeywordItem(BaseModel):
 
 
 class KeywordMetadata(BaseModel):
-    """Metadata header for the 78-keyword strategy matrix."""
+    """Metadata header for a vertical-pack keyword strategy matrix."""
 
     version: str
     datasetName: str
@@ -105,13 +108,14 @@ class KeywordMetadata(BaseModel):
     author: str
     targetIndustries: list[str]
     categorySummary: dict[str, int]
+    notes: Optional[str] = None
 
 
 class KeywordStrategyMatrix(BaseModel):
     """Complete 78-keyword strategy matrix dataset."""
 
     metadata: KeywordMetadata
-    categories: list[KeywordCategory]
+    categories: list[str]
     keywords: list[KeywordItem]
 
 
@@ -119,7 +123,7 @@ class KeywordStrategyMatrix(BaseModel):
 # 2. HOTEL BRAND GUARDRAILS MODELS
 # ==============================================================================
 
-BrandName = Literal["Marriott", "Hilton", "IHG", "Hyatt", "Independent"]
+BrandName = Literal["Marriott", "Hilton", "IHG", "Hyatt", "Independent", "Generic"]
 
 
 class ForbiddenTerm(BaseModel):
@@ -135,6 +139,7 @@ class BrandRule(BaseModel):
 
     name: BrandName
     loyaltyProgram: str
+    mandatorySuffix: Optional[str] = None
     maxTitleChars: int
     maxMetaChars: int
     maxH1Chars: int

@@ -168,7 +168,9 @@ def generate_keyword_strategy_examples(matrix_path: Path) -> list[dict[str, Any]
         sub_cat = item.get("subCategory", "Brand Strategy")
         intent = item.get("searchIntent", "Commercial")
         vol_tier = item.get("searchVolumeTier", "Medium")
-        cpc = item.get("cpcEstimate", "$2.50")
+        cpc_info = item.get("cpcEstimate") or {}
+        cpc_value = cpc_info.get("value", "n/a")
+        cpc_source = cpc_info.get("source", "unlabelled")
         target_page = item.get("targetPageType", "Homepage")
         recommended_schema = item.get("recommendedSchema", "Hotel")
         entity_prompt = item.get("targetEntityPrompt", "")
@@ -183,7 +185,7 @@ def generate_keyword_strategy_examples(matrix_path: Path) -> list[dict[str, Any]
             f"- **Category:** {category} > {sub_cat}\n"
             f"- **Search Intent:** {intent}\n"
             f"- **Search Volume Tier:** {vol_tier}\n"
-            f"- **Benchmark CPC:** {cpc}\n"
+            f"- **Benchmark CPC:** {cpc_value} ({cpc_source} planning figure, not measured)\n"
             f"- **Target Landing Page:** {target_page}\n"
             f"- **Recommended Schema:** `https://schema.org/{recommended_schema}`\n\n"
             f"**Competitive Context & Defense:**\n{comp_context}\n\n"
@@ -306,8 +308,8 @@ def main() -> int:
     print(f"[+] Loaded {len(agent_examples)} examples from 20 Specialized SEO Agents ({AGENTS_DIR})")
     all_examples.extend(agent_examples)
 
-    # 3. 78-Keyword Strategy Matrix
-    matrix_path = DATA_DIR / "78-keyword-strategy-matrix.json"
+    # 3. 78-Keyword Strategy Matrix (hotel pack dataset)
+    matrix_path = PROJECT_ROOT / "src" / "packs" / "hotel" / "keywords.json"
     kw_examples = generate_keyword_strategy_examples(matrix_path)
     print(f"[+] Loaded {len(kw_examples)} examples from 78-Keyword Matrix ({matrix_path.name})")
     all_examples.extend(kw_examples)

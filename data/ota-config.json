@@ -10,6 +10,6 @@
     "schema": 0.35,
     "geoAi": 0.30
   },
-  "keywordMatrixUrl": "https://raw.githubusercontent.com/nurunnobejisan/SEO-Studio/main/data/78-keyword-strategy-matrix.json",
+  "keywordMatrixUrl": "https://raw.githubusercontent.com/nurunnobejisan/SEO-Studio/main/src/packs/hotel/keywords.json",
   "brandGuardrailsUrl": "https://raw.githubusercontent.com/nurunnobejisan/SEO-Studio/main/data/ota-config.json"
 }

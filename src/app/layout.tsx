@@ -15,18 +15,18 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://seo-studio-one.vercel.app"),
   title: {
-    default: "SEO & GEO Audit Studio — Hotel Search Engine Suite",
+    default: "SEO & GEO Studio — Universal SEO & GEO Auditing Suite",
     template: "%s",
   },
   description:
-    "Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.",
+    "Universal search and generative engine optimization suite with six vertical packs, hotel first: pixel budgeting, brand guardrails, and client-ready reporting.",
   icons: {
     icon: "/nurunnobe-logo.png",
   },
   openGraph: {
-    title: "SEO & GEO Audit Studio — Hotel Search Engine Suite",
+    title: "SEO & GEO Studio — Universal SEO & GEO Auditing Suite",
     description:
-      "Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.",
+      "Universal search and generative engine optimization suite with six vertical packs, hotel first: pixel budgeting, brand guardrails, and client-ready reporting.",
     type: "website",
     siteName: "SEO & GEO Studio",
   },

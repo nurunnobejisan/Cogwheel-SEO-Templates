@@ -17,8 +17,10 @@ import {
   Heading,
 } from "lucide-react";
 import { PageAuditData } from "../types/extension";
-import { calculateSeoScores } from "../data/seoStudioTemplates";
+import { calculateSeoScores, DEFAULT_COMPOSITE_WEIGHTS } from "../data/seoStudioTemplates";
 import { checkPageRestriction } from "../utils/urlSecurity";
+import { getActiveScoringWeights } from "../utils/activePack";
+import type { ScoringWeights } from "../../../src/schemas/validation";
 import {
   calculatePixelWidth,
   TITLE_PIXEL_LIMIT,
@@ -41,6 +43,22 @@ export function PopupApp() {
     missingAlts: false,
     schemas: false,
   });
+
+  // Composite weights of the active vertical pack (Tasks 2.4 / 3.2).
+  const [packWeights, setPackWeights] = useState<ScoringWeights>(DEFAULT_COMPOSITE_WEIGHTS);
+  useEffect(() => {
+    let cancelled = false;
+    getActiveScoringWeights()
+      .then((w) => {
+        if (!cancelled) setPackWeights(w);
+      })
+      .catch(() => {
+        // Storage unavailable → keep the default pack weights.
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const auditTab = (targetTabId: number) => {
     setLoading(true);
@@ -156,7 +174,7 @@ export function PopupApp() {
   };
 
   const scores = pageData
-    ? calculateSeoScores(pageData)
+    ? calculateSeoScores(pageData, packWeights)
     : {
         overall: isRestricted ? 100 : 0,
         onPage: isRestricted ? 100 : 0,

@@ -5,7 +5,7 @@ import {
   TEMPLATES_DATA,
   getTemplateBySlug,
   getRelatedTemplates,
-} from "@/data/templates";
+} from "@/packs/hotel/templates";
 import { TemplateCustomizerView } from "@/components/TemplateCustomizerView";
 
 interface PageProps {
@@ -36,6 +36,10 @@ export function generateMetadata({ params }: PageProps): Metadata {
   return {
     title: template.metaTitle,
     description: template.metaDescription,
+    // Task 4.4: customization templates are starting points, not unique
+    // ranking content — keep them out of the index while still letting
+    // crawlers follow links out of the page.
+    robots: { index: false, follow: true },
     alternates: {
       canonical: canonicalUrl,
     },

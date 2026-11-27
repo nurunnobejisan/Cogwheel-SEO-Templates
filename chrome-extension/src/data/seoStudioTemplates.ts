@@ -1,4 +1,18 @@
 import { SeoStudioTemplate, ClientProfile, PageAuditData, ScoreBreakdown, QuickWinItem } from "../types/extension";
+import type { ScoringWeights } from "../../../src/schemas/validation";
+import { DEFAULT_PACK_ID, getPackMeta } from "../../../src/packs/catalog";
+
+/**
+ * Default composite weights (Task 3.2): the active pack's weights, read from
+ * the pack catalog so this file never owns a second copy of 35/35/30. The
+ * literal fallback below only fires if the catalog itself regressed — which
+ * the pack tests fail first — and repeats the hotel triple that has always
+ * shipped here, not a new number.
+ */
+const defaultPackMeta = getPackMeta(DEFAULT_PACK_ID);
+export const DEFAULT_COMPOSITE_WEIGHTS: ScoringWeights = defaultPackMeta
+  ? defaultPackMeta.scoringWeights
+  : { onPage: 0.35, schema: 0.35, geoAi: 0.3 };
 
 export const SEO_STUDIO_TEMPLATES: SeoStudioTemplate[] = [
   // ── 1. Landing Pages ──
@@ -1097,7 +1111,10 @@ export function resolveTemplateContent(
   return resolved;
 }
 
-export function calculateSeoScores(data: PageAuditData): ScoreBreakdown {
+export function calculateSeoScores(
+  data: PageAuditData,
+  weights: ScoringWeights = DEFAULT_COMPOSITE_WEIGHTS
+): ScoreBreakdown {
   const quickWins: QuickWinItem[] = [];
 
   // 1. On-Page Structure (0 - 100)
@@ -1245,8 +1262,12 @@ export function calculateSeoScores(data: PageAuditData): ScoreBreakdown {
     });
   }
 
-  // Overall Score (Weighted: 35% On-Page, 35% Schema/Tech, 30% GEO AI)
-  const overall = Math.round(onPage * 0.35 + schemaTechnical * 0.35 + geoAiReadiness * 0.3);
+  // Overall Score — weighted by the active pack's `scoringWeights`
+  // (docs/TASKS.md Task 3.2). Default: hotel pack 35% On-Page / 35%
+  // Schema-Tech / 30% GEO AI (data/ota-config.json).
+  const overall = Math.round(
+    onPage * weights.onPage + schemaTechnical * weights.schema + geoAiReadiness * weights.geoAi
+  );
 
   let grade: ScoreBreakdown["grade"] = "NEEDS AUDIT";
   let gradeColor = "#ef4444";

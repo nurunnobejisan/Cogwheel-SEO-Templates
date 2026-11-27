@@ -24,7 +24,7 @@ from python.scripts.models import KeywordStrategyMatrix, OtaConfig
 REPO_OWNER = "nurunnobejisan"
 REPO_NAME = "SEO-Studio"
 RAW_BASE = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/main"
-REMOTE_MATRIX_URL = f"{RAW_BASE}/data/78-keyword-strategy-matrix.json"
+REMOTE_MATRIX_URL = f"{RAW_BASE}/src/packs/hotel/keywords.json"
 REMOTE_OTA_URL = f"{RAW_BASE}/data/ota-config.json"
 
 

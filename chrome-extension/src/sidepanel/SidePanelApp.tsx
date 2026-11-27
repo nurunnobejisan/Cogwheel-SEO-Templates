@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   LayoutDashboard,
   Layers,
@@ -38,6 +38,9 @@ import { SiteBundleModal } from "../components/SiteBundleModal";
 import { ExtensionSiteBundle } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
+import { useActivePack } from "../utils/useActivePack";
+import { getActiveScoringWeights } from "../utils/activePack";
+import { suggestPack } from "../../../src/packs/suggest";
 import { generateSeoAutoFix } from "../engine/custom-model-client";
 import {
   FAQ_REQUIRES_VERIFIED_ANSWERS,
@@ -114,6 +117,11 @@ export function SidePanelApp() {
   const [needsReload, setNeedsReload] = useState(false);
   const [isBundleModalOpen, setIsBundleModalOpen] = useState(false);
   const [siteBundle, setSiteBundle] = useState<ExtensionSiteBundle | null>(null);
+
+  // Active vertical pack (Task 2.4): the stored selection and its catalog
+  // scoring weights, which every calculateSeoScores call in this panel uses
+  // for the composite (Task 3.2).
+  const { activePack, weights: packWeights, setActivePack } = useActivePack();
 
   // Default fallback mock data containing the 6 baseline unoptimized audit issues
   // Neutral empty state — real data is always fetched from the active tab on mount
@@ -217,11 +225,12 @@ export function SidePanelApp() {
                   });
                   setTimeout(() => {
                     if (!tab.id) return;
-                    chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, (retryRes) => {
+                    chrome.tabs.sendMessage(tab.id, { type: "EXTRACT_PAGE_DATA" }, async (retryRes) => {
                       if (!chrome.runtime.lastError && retryRes && retryRes.data) {
                         setPageData(retryRes.data);
                         setNeedsReload(false);
-                        const sc = calculateSeoScores(retryRes.data);
+                        // Task 3.2: composite weighted by the active pack.
+                        const sc = calculateSeoScores(retryRes.data, await getActiveScoringWeights());
                         chrome.runtime.sendMessage({
                           type: "UPDATE_BADGE",
                           tabId: tab.id,
@@ -249,8 +258,8 @@ export function SidePanelApp() {
             if (res && res.data) {
               setPageData(res.data);
               setNeedsReload(false);
-              // Update badge
-              const sc = calculateSeoScores(res.data);
+              // Update badge — Task 3.2: active pack's scoringWeights.
+              const sc = calculateSeoScores(res.data, await getActiveScoringWeights());
               chrome.runtime.sendMessage({
                 type: "UPDATE_BADGE",
                 tabId: tab.id,
@@ -327,7 +336,27 @@ export function SidePanelApp() {
     }
   }, []);
 
-  const scores = calculateSeoScores(pageData);
+  const scores = calculateSeoScores(pageData, packWeights);
+
+  /**
+   * Task 2.4 auto-suggestion: deterministic catalog-signal match over the
+   * audited page. Rendered as a one-click switch when it disagrees with the
+   * stored pack; never overrides the operator's choice by itself.
+   */
+  const packSuggestion = useMemo(() => {
+    if (!pageData.url) return null;
+    const schemaTypes: string[] = [];
+    for (const node of pageData.schemas || []) {
+      const t = node["@type"];
+      if (Array.isArray(t)) schemaTypes.push(...t.map(String));
+      else if (t !== undefined && t !== null) schemaTypes.push(String(t));
+    }
+    return suggestPack({
+      url: pageData.url,
+      schemaTypes,
+      text: [pageData.title, pageData.metaDesc, ...(pageData.h1Elements || [])].join(" "),
+    });
+  }, [pageData]);
 
   const handleFixWithTemplate = (templateId: string) => {
     setTargetTemplateId(templateId);
@@ -899,6 +928,36 @@ export function SidePanelApp() {
                 </div>
               )}
 
+              {/* Page-Type Confidence Pill & Pack Suggestion (Tasks 3.2 / 2.4) */}
+              {!isRestrictedTab && pageData.pageType && (
+                <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-[#27272A] bg-[#111113] px-3 py-2">
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="rounded-full border border-sky-500/30 bg-sky-500/10 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-sky-300"
+                      title={
+                        (pageData.pageTypeSignals || []).join(" · ") ||
+                        "No classifier signal matched"
+                      }
+                    >
+                      {pageData.pageType} · {pageData.pageTypeConfidence ?? 0}%
+                    </span>
+                    <span className="text-[10px] text-slate-400">
+                      page-type confidence — rule-based heuristic, not a measurement
+                    </span>
+                  </div>
+                  {packSuggestion && packSuggestion.packId !== activePack && (
+                    <button
+                      type="button"
+                      onClick={() => void setActivePack(packSuggestion.packId)}
+                      className="rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 text-[10px] font-bold text-emerald-300 transition hover:bg-emerald-500/20"
+                      title={`Signals: ${packSuggestion.reasons.join(", ") || "none"}`}
+                    >
+                      Suggested pack: {packSuggestion.name} ({packSuggestion.confidence}%) — switch
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* SERP & Social Card Preview */}
               <SerpSocialPreview data={pageData} />
 
@@ -987,6 +1046,10 @@ export function SidePanelApp() {
               onSelectProfile={(p) => setActiveProfile(p)}
               isDarkMode={isDarkMode}
               onToggleTheme={() => setIsDarkMode(!isDarkMode)}
+              activePack={activePack}
+              onSelectPack={setActivePack}
+              scoringWeights={packWeights}
+              packSuggestion={packSuggestion && packSuggestion.packId !== activePack ? packSuggestion : null}
             />
           )}
 

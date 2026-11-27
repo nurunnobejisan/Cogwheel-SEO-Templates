@@ -2,6 +2,7 @@ import { PageAuditData, CmsAutoFillResult } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { SEO_STUDIO_OPTIMAL_AUDIT_DATA } from "../data/seoStudioTemplates";
 import { extractCapturedWebSample } from "../../../shared/ts/training-capture";
+import { classifyPageTypeForAudit } from "../utils/pageTypeClassification";
 
 function isTopLevelWindow(): boolean {
   try {
@@ -475,6 +476,22 @@ function extractEcommerceData(): PageAuditData["ecommerce"] {
 }
 
 // Comprehensive Universal 1-Click Page Context Extractor
+/**
+ * DOM presence of reservation widgets / booking date pickers — the same
+ * signals `rules/html-snapshot.ts` checks in raw HTML, evaluated on the
+ * live DOM so the page-type classifier can award the `booking` type.
+ */
+function detectReservationWidgets(): boolean {
+  const namedField = document.querySelector(
+    'input[name="checkin"], input[name="check-in"], input[name="checkout"], input[name="check-out"], input[name="arrival"], input[name="departure"]'
+  );
+  if (namedField) return true;
+  const widget = document.querySelector(
+    '[class*="booking"], [id*="booking"], [class*="reservation"], [id*="reservation"], [class*="book-now"], [id*="book-now"]'
+  );
+  return Boolean(widget && document.querySelector('input[type="date"]'));
+}
+
 function extractComprehensivePageData(): PageAuditData {
   const title = document.title || "";
   const metaDesc = document.querySelector('meta[name="description"]')?.getAttribute("content") || "";
@@ -688,6 +705,30 @@ function extractComprehensivePageData(): PageAuditData {
   const twDesc = document.querySelector('meta[name="twitter:description"]')?.getAttribute("content") || undefined;
   const twImg = document.querySelector('meta[name="twitter:image"]')?.getAttribute("content") || undefined;
 
+  // Page-type classification for the sidepanel confidence pill
+  // (docs/TASKS.md Task 3.2): shared rule-based classifier, no model.
+  const pageTypeResult = classifyPageTypeForAudit(
+    {
+      url: window.location.href,
+      hostname: window.location.hostname,
+      title,
+      metaDesc,
+      metaRobots,
+      language,
+      canonical,
+      words,
+      schemas,
+      hasViewport: !!document.querySelector('meta[name="viewport"]'),
+    },
+    {
+      textContent: bodyText,
+      scriptSrcs: Array.from(document.querySelectorAll("script[src]")).map(
+        (s) => (s as HTMLScriptElement).src
+      ),
+      reservationWidgets: detectReservationWidgets(),
+    }
+  );
+
   return {
     url: window.location.href,
     origin: window.location.origin,
@@ -744,6 +785,9 @@ function extractComprehensivePageData(): PageAuditData {
       email: detectedEmail,
     },
     socialLinks,
+    pageType: pageTypeResult.pageType,
+    pageTypeConfidence: pageTypeResult.confidence,
+    pageTypeSignals: pageTypeResult.signals,
   };
 }
 

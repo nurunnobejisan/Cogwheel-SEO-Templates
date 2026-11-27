@@ -3,9 +3,9 @@ import Link from "next/link";
 import { TemplatesHubClient } from "./TemplatesHubClient";
 
 export const metadata: Metadata = {
-  title: "Hospitality SEO & GEO Templates — SEO Studio Platform",
+  title: "SEO & GEO Template Catalog — Hotel Pack #1 — SEO Studio",
   description:
-    "Production-ready on-page, lodging schema, GEO AI visibility, and GBP UNAP audit templates tailored for Marriott, Hilton, IHG, Hyatt, and luxury hotels.",
+    "Catalog of 12 SEO & GEO templates from the Hotel & Hospitality pack, Pack #1 of six verticals, with placeholders resolved by the template engine.",
 };
 
 export default function TemplatesPage() {

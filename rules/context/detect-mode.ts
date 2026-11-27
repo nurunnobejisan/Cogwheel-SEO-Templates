@@ -7,8 +7,10 @@
  * Universal Mode without altering any hotel workflow.
  */
 
-import type { AuditMode, ModeDetection, ModeOverrideStoreLike, PageSnapshot } from "../types.ts";
-import { createMemoryOverrideStore } from "./mode-override.ts";
+// Extensionless specifiers: the pack classifier (src/packs/classifier.ts) is
+// compiled by the Chrome extension's tsconfig as well as the root program.
+import type { AuditMode, ModeDetection, ModeOverrideStoreLike, PageSnapshot } from "../types";
+import { createMemoryOverrideStore } from "./mode-override";
 
 /**
  * Schema.org types that identify a hospitality property. Covers LodgingBusiness

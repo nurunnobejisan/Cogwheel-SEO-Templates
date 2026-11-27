@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
-import { CATEGORIES, TEMPLATES_DATA, type SeoTemplate } from "@/data/templates";
+import { CATEGORIES, TEMPLATES_DATA, type SeoTemplate } from "@/packs/hotel/templates";
 
 export function TemplatesHubClient() {
   const [searchQuery, setSearchQuery] = useState("");

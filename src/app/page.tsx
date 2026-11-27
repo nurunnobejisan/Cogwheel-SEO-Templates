@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import PropertyDashboard from "@/components/PropertyDashboard";
 
 export const metadata: Metadata = {
-  title: "SEO & GEO Audit Studio — Hotel Search Engine Suite",
+  title: "SEO & GEO Audit Studio — Universal SEO & GEO Workspace",
   description:
-    "Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.",
+    "Universal SEO and generative engine optimization suite with six vertical packs, hotel first: pixel budgeting, brand guardrails, and client-ready reporting.",
 };
 
 export default function Home() {

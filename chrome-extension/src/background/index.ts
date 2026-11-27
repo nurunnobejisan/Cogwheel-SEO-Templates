@@ -2,6 +2,7 @@
 import { checkPageRestriction, isRestrictedUrl } from "../utils/urlSecurity";
 import { initAutoUpdater } from "./auto-updater";
 import { calculateSeoScores } from "../data/seoStudioTemplates";
+import { getActiveScoringWeights } from "../utils/activePack";
 import { PageAuditData } from "../types/extension";
 
 // Initialize GitHub Auto-Update & Silent OTA Live Sync Engine
@@ -110,12 +111,13 @@ async function triggerPageDataExtraction(tabId: number, url?: string): Promise<v
   const ok = await ensureContentScriptInjected(tabId);
   if (!ok) return;
 
-  chrome.tabs.sendMessage(tabId, { type: "EXTRACT_PAGE_DATA" }, (res) => {
+  chrome.tabs.sendMessage(tabId, { type: "EXTRACT_PAGE_DATA" }, async (res) => {
     if (!chrome.runtime.lastError && res && res.data) {
       latestTabAuditData.set(tabId, res.data);
 
       try {
-        const scores = calculateSeoScores(res.data);
+        // Task 3.2: composite weighted by the active pack's scoringWeights.
+        const scores = calculateSeoScores(res.data, await getActiveScoringWeights());
         if (scores && typeof scores.overall === "number") {
           chrome.action.setBadgeText({ tabId, text: `${scores.overall}` });
           const color =
