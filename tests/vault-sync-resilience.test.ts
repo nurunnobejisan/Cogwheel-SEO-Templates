@@ -95,7 +95,9 @@ describe("Task 1.3 — Vault Migration (v1/v2 → v3.0)", () => {
     expect(migrated.status).toBe("pending");
     expect(migrated.brand).toBe("Independent");
     expect(migrated.qualityScore).toBe(75);
-    expect(migrated.pageType).toBe("hotel_homepage");
+    // No pageType on v1 records → classifyPageType derives it; the fixture
+    // body mentions "rooms", so it lands on landing_page.
+    expect(migrated.pageType).toBe("landing_page");
     expect(migrated.createdAt).toBeTruthy();
     expect(migrated.updatedAt).toBeTruthy();
   });
