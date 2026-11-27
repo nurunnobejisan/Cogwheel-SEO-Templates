@@ -96,6 +96,8 @@ def prepare(
 
     for position, pair in enumerate(pairs):
         metadata = pair.get("metadata")
+        if not isinstance(metadata, Mapping):
+            metadata = pair.get("meta")
         metadata = metadata if isinstance(metadata, Mapping) else {}
 
         reason: Optional[str] = None

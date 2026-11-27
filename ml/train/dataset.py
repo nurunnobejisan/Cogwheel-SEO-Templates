@@ -168,6 +168,10 @@ def _gate_row(
     registry.assert_trainable(source, split)
 
     metadata = row.get("metadata")
+    if not isinstance(metadata, Mapping):
+        # Unified training files store their fields under `meta`; exported
+        # LoRA rows (buildLoraExample) use `metadata`. Accept both.
+        metadata = row.get("meta")
     metadata = metadata if isinstance(metadata, Mapping) else {}
 
     if metadata.get("synthetic") is True:
