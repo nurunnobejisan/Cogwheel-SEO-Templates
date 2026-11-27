@@ -10,7 +10,7 @@ Status values: `not started` · `in progress` · `done`.
 | 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
 | 3 | LoRA fine-tunes | done | [#7](https://github.com/nurunnobejisan/SEO-Studio/pull/7) |
 | 4 | Ship to app & extension | done | [#10](https://github.com/nurunnobejisan/SEO-Studio/pull/10) |
-| 5 | First adapter run (playbook, promotion, endpoint eval) | in progress | [#20](https://github.com/nurunnobejisan/SEO-Studio/pull/20) |
+| 5 | First adapter run (playbook, promotion, endpoint eval) | done | [#20](https://github.com/nurunnobejisan/SEO-Studio/pull/20) |
 
 ---
 
@@ -300,7 +300,7 @@ build:extension, pytest 344, ruff (new files).
 
 ## Phase 5 — First adapter run (playbook, promotion, endpoint eval)
 
-**Implementation complete; PR open.** Closes the loop between training,
+**Merged (PR #20).** Closes the loop between training,
 serving and evaluation so the first real GPU run can be executed and
 honestly recorded:
 
@@ -332,9 +332,10 @@ brain:eval, test:seo, next build, build:extension, pytest 371, ruff (new
 files clean; `run_eval`'s three pre-existing SIM/C416 hits unchanged).
 
 - [x] Local CI green
-- [ ] CI green on the PR
-- [ ] D-021 isolation: branch cut from `origin/main` in worktree
-      `ml-phase-3`, no shared history rewritten
+- [x] CI green on the PR — run 45966963618 on `ea6b6d6`, merged as `2a7e0e7`
+- [x] D-021 isolation: branch cut from `origin/main` in worktree
+      `ml-phase-3`, no shared history rewritten (merged `origin/main` at
+      `6a5be86`, no force-push)
 
 ---
 
@@ -349,3 +350,4 @@ was not produced by `ml/eval/run_eval.py`.
 | 2026-11-27 | 2 | (runner shipped, no model outputs yet) | — | — | — | — | — | 106 checks reported `skipped`, never `passed`; no number until a real run |
 | 2026-11-27 | 3 | (training layer shipped, no GPU run yet) | — | — | — | — | — | dry-run manifests only — no adapter trained, so no score exists to report |
 | 2026-11-27 | 4 | (serving shipped, no model run yet) | — | — | — | — | — | gateway serves only `ready` registry entries; with no adapter there is nothing to number |
+| 2026-11-27 | 5 | (runbook + promotion + endpoint eval shipped, no model run yet) | — | — | — | — | — | score log stays untouched until a real `run_eval` report exists |
