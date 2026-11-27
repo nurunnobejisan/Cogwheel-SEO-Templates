@@ -6,7 +6,13 @@
  * - Safe fallback substitution
  * - Multi-syntax placeholder resolution ({{var}}, {var}, ${var}, %var%)
  * - Post-render scanning to prevent unresolved placeholders (undefined, null, NaN, {{raw}})
+ *
+ * Substitution itself lives in the single shared renderer
+ * (`shared/ts/template-render.ts`, Phase E); this module owns the validation
+ * layers around it: pre-render required-variable checks and the post-render
+ * leak scan.
  */
+import { substituteExactPlaceholders } from "../shared/ts/template-render.ts";
 
 export interface VariableDefinition {
   name: string;
@@ -122,23 +128,12 @@ export function resolveTemplate(
     );
   }
 
-  let rendered = templateStr;
+  // Substitute through the single shared renderer (Phase E — one renderer).
+  const rendered = substituteExactPlaceholders(templateStr, preCheck.resolvedContext);
   const warnings: string[] = [];
 
   if (preCheck.missing.length > 0) {
     warnings.push(`Rendered with missing optional variables: ${preCheck.missing.join(", ")}`);
-  }
-
-  // Replace double curly {{key}} and single curly {key}
-  for (const [key, val] of Object.entries(preCheck.resolvedContext)) {
-    const stringVal = String(val ?? "");
-    const doubleCurly = new RegExp(`\\{\\{\\s*${key}\\s*\\}\\}`, "g");
-    const singleCurly = new RegExp(`\\{${key}\\}`, "g");
-    const templateLiteral = new RegExp(`\\$\\{\\s*${key}\\s*\\}`, "g");
-
-    rendered = rendered.replace(doubleCurly, () => stringVal);
-    rendered = rendered.replace(singleCurly, () => stringVal);
-    rendered = rendered.replace(templateLiteral, () => stringVal);
   }
 
   // Scan for any leftover unresolved patterns
