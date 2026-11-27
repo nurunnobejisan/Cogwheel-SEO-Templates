@@ -1,9 +1,10 @@
 import { describe, it, expect } from "vitest";
 import { metadata as homeMeta } from "../src/app/page";
 import { metadata as templatesMeta } from "../src/app/templates/page";
-import { metadata as matrixMeta } from "../src/app/strategy-matrix/page";
+import { generateMetadata as generateMatrixMetadata } from "../src/app/strategy-matrix/page";
 import { metadata as archMeta } from "../src/app/architecture/page";
 import { TEMPLATES_DATA } from "../src/packs/hotel/templates";
+import { PACK_CATALOG } from "../src/packs/catalog";
 import sitemap from "../src/app/sitemap";
 import robots from "../src/app/robots";
 
@@ -11,8 +12,14 @@ describe("GEMINI.md Rules Enforcement — Route Metadata & SEO Standards", () =>
   const routes = [
     { route: "/", meta: homeMeta, name: "Home Dashboard" },
     { route: "/templates", meta: templatesMeta, name: "Templates Catalog" },
-    { route: "/strategy-matrix", meta: matrixMeta, name: "78-Keyword Strategy Matrix" },
     { route: "/architecture", meta: archMeta, name: "System Architecture" },
+    // Task 4.2: /strategy-matrix metadata is generated per pack — every
+    // vertical must satisfy the same title/description rules as static routes.
+    ...PACK_CATALOG.map((pack) => ({
+      route: `/strategy-matrix?pack=${pack.id}`,
+      meta: generateMatrixMetadata({ searchParams: { pack: pack.id } }),
+      name: `${pack.name} Strategy Matrix`,
+    })),
   ];
 
   it("enforces unique meta titles on all routes", () => {

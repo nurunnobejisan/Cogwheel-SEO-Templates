@@ -2,6 +2,11 @@ import { defineConfig } from "vitest/config";
 import path from "node:path";
 
 export default defineConfig({
+  // Components under src/ use the automatic JSX runtime (Next/SWC style);
+  // esbuild's default is classic, which breaks renderToStaticMarkup tests.
+  esbuild: {
+    jsx: "automatic",
+  },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "src"),
