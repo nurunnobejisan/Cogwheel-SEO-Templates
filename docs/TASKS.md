@@ -7,13 +7,13 @@
   - *Done-Criterion*: Comprehensive negative (prices, years, ZIP codes, order numbers) and positive (phones with separators/+, emails, JWTs, API keys, card-like numbers) tests passing 100% in `tests/sanitizer.test.ts`.
 - [x] **Task 1.2: Training-Capture Extractor Tests with Local Fixtures** (Est: 20m)
   - *Done-Criterion*: HTML fixtures for static page, shadow DOM, same-origin iframe, SPA route change, cookie banner, and password field (must not capture) passing in `tests/training-capture-fixtures.test.ts`.
-- [ ] **Task 1.3: Vault Migration, ContentHash Dedupe, and Sync Client Resilience Tests** (Est: 20m)
+- [x] **Task 1.3: Vault Migration, ContentHash Dedupe, and Sync Client Resilience Tests** (Est: 20m)
   - *Done-Criterion*: Unit tests verifying v1/v2/v3 vault migrations, contentHash versioning & dedupe, and mock API client exponential backoff and idempotency passing in `tests/vault-sync-resilience.test.ts`.
 - [ ] **Task 1.4: Fix Real Bugs Exposed by Phase 1 Tests** (Est: 15m)
   - *Done-Criterion*: Any edge cases or regressions found in extractors/sanitizers fixed, verified, and logged in `PROGRESS.md`.
 
 ### Phase 2: Core Plus Vertical Packs
-- [ ] **Task 2.1: Create Packs Core Interface & Registry (`packs/`)** (Est: 20m)
+- [x] **Task 2.1: Create Packs Core Interface & Registry (`packs/`)** (Est: 20m)
   - *Done-Criterion*: Typed `Pack` interface defined (`id`, `name`, `pageTypes`, `scoringWeights`, `checklist`, `schemaRules`, `keywordMatrix`, `brandGuardrails`, `aiPrompts`) in `src/packs/types.ts` and exported via `src/packs/index.ts`.
 - [ ] **Task 2.2: Extract Hotel Pack (`packs/hotel/`)** (Est: 20m)
   - *Done-Criterion*: Hotel brand guardrails, schema rules, OTA config, and templates modularized into `src/packs/hotel/`. All existing hotel tests pass without regression.
@@ -23,7 +23,7 @@
   - *Done-Criterion*: Side panel and options UI allow manual pack selection, stored in extension settings; heuristics auto-suggest pack based on schema types, URL patterns, and keywords.
 
 ### Phase 3: Page-Type Detection and Scoring
-- [ ] **Task 3.1: Rule-Based Page-Type Classifier with Confidence** (Est: 20m)
+- [x] **Task 3.1: Rule-Based Page-Type Classifier with Confidence** (Est: 20m)
   - *Done-Criterion*: Page-type classifier categorizes `home`, `product`, `category`, `article`, `location`, `booking/checkout`, `contact`, `other` with numerical confidence (0-100) and unit test verification.
 - [ ] **Task 3.2: Per-Page-Type Dynamic Scoring** (Est: 20m)
   - *Done-Criterion*: Audit scores calculated dynamically using selected pack's page-type weights. UI displays detected page type and confidence pill.
