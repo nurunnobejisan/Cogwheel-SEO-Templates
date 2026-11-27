@@ -350,4 +350,8 @@ autopush stays paused for the duration of a phase.)
 one commit per phase with a coordinated force-push — not recommended while
 any session is active. Prevention instead: keep the automation paused from
 the first file write of a phase until the phase's docs commit lands, and
-verify `automation.list` shows `paused` before writing anything.
+verify `automation.list` shows `paused` before writing anything. (Note:
+during this collision the autopush automation was deleted outright rather
+than paused and `automation.list` came back empty — it must be recreated
+explicitly, and only when no session has uncommitted work in the shared
+checkout.)

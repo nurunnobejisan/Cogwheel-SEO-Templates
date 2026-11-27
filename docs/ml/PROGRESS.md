@@ -8,7 +8,7 @@ Status values: `not started` · `in progress` · `done`.
 | 0 | Foundations | done | [#3](https://github.com/nurunnobejisan/SEO-Studio/pull/3) |
 | 1 | Data registry & datasets | done | [#4](https://github.com/nurunnobejisan/SEO-Studio/pull/4) |
 | 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
-| 3 | LoRA fine-tunes | in progress | — |
+| 3 | LoRA fine-tunes | done | [#7](https://github.com/nurunnobejisan/SEO-Studio/pull/7) |
 | 4 | Ship to app & extension | not started | — |
 
 ---
@@ -190,7 +190,7 @@ network path.
 
 ## Phase 3 — LoRA fine-tunes
 
-**Implementation complete; PR open.** `ml/train/` — QLoRA SFT and DPO for
+**Merged (PR #7).** `ml/train/` — QLoRA SFT and DPO for
 the schema writer, meta writer, audit explainer and GEO gap finder, plus
 the golden-set harness that scores them. Qwen3 / Qwen3.5 small,
 Apache-2.0. Training itself is operator-side on a GPU box (D-020): what
@@ -247,8 +247,7 @@ produced.
       Task 1.3 work, failing identically on `origin/main` without this branch —
       verified by stash; see D-021), lint:seo 10/10, test:seo, test:ts,
       brain:eval fabrication 0.0000, next build, pytest 324, build:extension
-- [ ] CI green on the PR — Python + secret scan pass on run 45944564702;
-      Node blocked by the same pre-existing `main` failure until PR #6 lands
+- [x] CI green on the PR — run 45944977507 on `0509253`, merged as `ee4d9db`
 - [x] D-021 isolation: worktree `ml-phase-3`, branch cut from
       `origin/main`, no shared history rewritten
 
@@ -270,3 +269,4 @@ was not produced by `ml/eval/run_eval.py`.
 |---|---|---|---|---|---|---|---|---|
 | 2026-11-27 | 0 | (baseline — golden set frozen) | — | — | — | — | — | 52 cases, no model run yet |
 | 2026-11-27 | 2 | (runner shipped, no model outputs yet) | — | — | — | — | — | 106 checks reported `skipped`, never `passed`; no number until a real run |
+| 2026-11-27 | 3 | (training layer shipped, no GPU run yet) | — | — | — | — | — | dry-run manifests only — no adapter trained, so no score exists to report |
