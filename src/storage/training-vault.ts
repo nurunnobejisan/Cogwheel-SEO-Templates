@@ -47,7 +47,17 @@ export type PageTypeLabel =
   | "location"
   | "article"
   | "landing_page"
-  | "other";
+  | "other"
+  // Additive Phase 4 labels (D-008) — superset converges with
+  // `MlPageTypeLabels` in schemas/ml-example.ts. Never remove a member:
+  // old IndexedDB records keep their original values either way.
+  | "dining"
+  | "spa"
+  | "offers"
+  | "meetings_events"
+  | "faq"
+  | "gallery"
+  | "contact";
 
 export interface TrainingPairRecord {
   id: string; // Unique primary key derived from canonical URL hash
@@ -144,16 +154,53 @@ export function classifyPageType(url: string, raw: RawWebInput): PageTypeLabel {
   const lowerUrl = (url || "").toLowerCase();
   const lowerBody = (raw.rawBodyText || "").toLowerCase();
 
+  // Additive Phase 4 labels (D-008): checked before the broader hotel rules
+  // so a specific URL gets the specific label. Existing labels below are
+  // untouched for URLs they already claimed.
+  if (
+    lowerUrl.includes("/dining") ||
+    lowerUrl.includes("/restaurant") ||
+    lowerUrl.includes("/menu")
+  ) {
+    return "dining";
+  }
+  if (lowerUrl.includes("/spa") || lowerUrl.includes("/wellness")) {
+    return "spa";
+  }
+  if (lowerUrl.includes("/contact")) {
+    return "contact";
+  }
+  if (lowerUrl.includes("/faq") || lowerUrl.includes("/faqs")) {
+    return "faq";
+  }
+  if (lowerUrl.includes("/gallery") || lowerUrl.includes("/photos")) {
+    return "gallery";
+  }
+  if (
+    lowerUrl.includes("/offers") ||
+    lowerUrl.includes("/deals") ||
+    lowerUrl.includes("/specials")
+  ) {
+    return "offers";
+  }
+  if (
+    lowerUrl.includes("/meetings") ||
+    lowerUrl.includes("/events") ||
+    lowerUrl.includes("/weddings")
+  ) {
+    return "meetings_events";
+  }
+
   if (lowerUrl.includes("/rooms") || lowerUrl.includes("/suites") || lowerUrl.includes("guest-rooms")) {
     return "room_details";
   }
-  if (lowerUrl.includes("/amenities") || lowerUrl.includes("/dining") || lowerUrl.includes("/pool") || lowerUrl.includes("/spa")) {
+  if (lowerUrl.includes("/amenities") || lowerUrl.includes("/pool")) {
     return "amenities";
   }
   if (lowerUrl.includes("/reservation") || lowerUrl.includes("/book") || lowerUrl.includes("/checkout")) {
     return "booking";
   }
-  if (lowerUrl.includes("/location") || lowerUrl.includes("/map") || lowerUrl.includes("/directions") || lowerUrl.includes("/contact")) {
+  if (lowerUrl.includes("/location") || lowerUrl.includes("/map") || lowerUrl.includes("/directions")) {
     return "location";
   }
   if (lowerUrl.includes("/blog") || lowerUrl.includes("/article") || lowerUrl.includes("/guide")) {

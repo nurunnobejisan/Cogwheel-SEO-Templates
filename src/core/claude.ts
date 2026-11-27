@@ -2,6 +2,11 @@ import "server-only";
 import Anthropic from "@anthropic-ai/sdk";
 import { formatTrainingContext } from "@/core/training";
 import { modelFor } from "@/core/ai/models";
+import {
+  callCustomModel,
+  getCustomModelSettings,
+  isCustomModelConfigured,
+} from "@/core/ai/custom-model";
 
 /** Pinned temperature for all grounded SEO/GEO drafting calls. */
 export const CLAUDE_TEMPERATURE = 0.2 as const;
@@ -16,6 +21,10 @@ export const DEFAULT_CLAUDE_MODEL = modelFor("anthropic");
 let client: Anthropic | null = null;
 
 export function getActiveAiProviderLabel(): string {
+  if (isCustomModelConfigured()) {
+    const { model } = getCustomModelSettings();
+    return `SEO Studio fine-tuned (${model})`;
+  }
   if (process.env.ANTHROPIC_API_KEY) return `Claude (${DEFAULT_CLAUDE_MODEL})`;
   if (process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY) return `Gemini (${modelFor("gemini")}) — free tier`;
   if (process.env.GROQ_API_KEY) return `Groq (${modelFor("groq")}) — free`;
@@ -26,6 +35,7 @@ export function getActiveAiProviderLabel(): string {
 
 export function isClaudeConfigured(): boolean {
   if (
+    isCustomModelConfigured() ||
     process.env.ANTHROPIC_API_KEY ||
     process.env.GEMINI_API_KEY ||
     process.env.GOOGLE_AI_API_KEY ||
@@ -125,6 +135,22 @@ export async function generateClaudeText(opts: {
   const fullSystem = `${opts.system}${trainingAppendix}`;
   const maxTokens = opts.maxTokens ?? 2048;
   const errors: string[] = [];
+
+  // Phase 4 — the SEO Studio fine-tuned model goes first when configured.
+  // Any failure (guard, transport, shape) falls through to the providers
+  // below, so an unset or unreachable endpoint never breaks drafting.
+  if (isCustomModelConfigured()) {
+    try {
+      return await callCustomModel({
+        system: fullSystem,
+        prompt: opts.prompt,
+        maxTokens,
+      });
+    } catch (err) {
+      const { model } = getCustomModelSettings();
+      errors.push(`Fine-tuned (${model}): ${(err as Error).message}`);
+    }
+  }
 
   if (process.env.ANTHROPIC_API_KEY) {
     try {

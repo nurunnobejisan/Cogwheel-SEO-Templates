@@ -357,3 +357,25 @@ explicitly, and only when no session has uncommitted work in the shared
 checkout.) Confirmed by the user on 2026-11-27: **leave it deleted** while
 multiple sessions are active — manual pushes are the safe mode until only
 one session is working; recreate the scheduled sweep only then.
+
+### D-022 — The serving gateway refuses to fabricate output
+
+**Decision.** `ml/serve/` (Phase 4) serves only registry entries with
+`status: ready`; legacy `unverified` entries (D-013) are refused unless the
+operator passes `--allow-unverified`, and `/health` reports which mode is
+active. With no upstream or adapter configured every `POST
+/v1/chat/completions` answers `503 upstream_not_configured` — the gateway
+never emits a stand-in completion. `seo-studio-*` model ids migrate to the
+persisted `cogwheel-*` ids on read only; `/v1/models` advertises both
+spellings. `SERVE_API_KEY` (optional) requires a bearer on `/v1/*`, and logs
+carry ids, status and latency only — never prompts.
+
+**Reason.** The measured/suggested distinction collapses if a gateway can
+silently answer with something other than the model. Unverified registry
+entries must not be reachable in a default run (D-013), and the de-brand
+rule allows alias-on-read but forbids rewriting persisted ids.
+
+**Reverse.** `--allow-unverified` already exists as the operator-local
+override; dropping the alias table is one dict entry in
+`ml/serve/registry.py`; removing the bearer check means not setting
+`SERVE_API_KEY`.

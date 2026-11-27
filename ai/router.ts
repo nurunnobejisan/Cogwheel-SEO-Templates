@@ -13,6 +13,7 @@
 
 import type { ProviderDescriptor, RouteDecision, TaskKind } from "./types.ts";
 import { modelFor } from "../src/core/ai/models.ts";
+import { isCustomModelConfigured } from "../src/core/ai/custom-model.ts";
 
 export const TIER1_TASKS: readonly TaskKind[] = [
   "structured_extraction",
@@ -77,7 +78,9 @@ export function loadProviders(env: NodeJS.ProcessEnv = process.env): ProviderDes
       label: "SEO Studio fine-tuned model",
       tier: "tier1",
       model: env.CUSTOM_MODEL_ID || "cogwheel-seo-unified",
-      configured: Boolean(env.CUSTOM_MODEL_ENDPOINT),
+      // Guard-aware: an endpoint that fails the SSRF check reports as
+      // unconfigured so routing falls back instead of calling it (fail closed).
+      configured: isCustomModelConfigured(env),
     },
   ];
 }
@@ -98,12 +101,21 @@ export function routeTask(
   providers: ProviderDescriptor[] = loadProviders()
 ): RouteDecision {
   const tier = classifyTask(task);
-  const primary = providers.find((p) => p.configured && p.tier === tier) ?? null;
+  // Phase 4: when the fine-tuned model is configured it owns its tier —
+  // it is the purpose-built model for these tasks; otherwise fall back to
+  // the first configured provider on the tier, then to any configured one.
+  const primary =
+    providers.find((p) => p.configured && p.tier === tier && p.id === "cogwheel-tuned") ??
+    providers.find((p) => p.configured && p.tier === tier) ??
+    null;
   const sameTier = providers.filter((p) => p.configured && p.tier === tier && p.id !== primary?.id);
   const otherTier = providers.filter((p) => p.configured && p.tier !== tier);
   const fallback = [...sameTier, ...otherTier];
 
   let rationale = TIER_RATIONALE[tier];
+  if (primary?.id === "cogwheel-tuned") {
+    rationale = `${rationale} The fine-tuned SEO Studio model is configured and handles this tier.`;
+  }
   if (!primary) {
     rationale = fallback.length
       ? `${rationale} No ${tier} provider configured — using a configured fallback.`

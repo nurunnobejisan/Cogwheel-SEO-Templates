@@ -9,7 +9,7 @@ Status values: `not started` · `in progress` · `done`.
 | 1 | Data registry & datasets | done | [#4](https://github.com/nurunnobejisan/SEO-Studio/pull/4) |
 | 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
 | 3 | LoRA fine-tunes | done | [#7](https://github.com/nurunnobejisan/SEO-Studio/pull/7) |
-| 4 | Ship to app & extension | not started | — |
+| 4 | Ship to app & extension | in progress | — |
 
 ---
 
@@ -253,10 +253,46 @@ produced.
 
 ## Phase 4 — Ship to app & extension
 
-**Not started.** Planned: `ml/serve/` OpenAI-compatible endpoint, the
-`cogwheel-tuned` provider behind `CUSTOM_MODEL_*`, additive `PageTypeLabel`
-extension in `src/storage/training-vault.ts` and the extension copy, router
-fallback when the endpoint is unset.
+**Implementation complete; PR open.** Shipped:
+
+- **`ml/serve/`** — stdlib-only OpenAI-compatible gateway (D-014):
+  `registry.py` (alias migration `seo-studio-*` → persisted `cogwheel-*` on
+  read, storage never rewritten; servability gate: `ready` only, `unverified`
+  needs `--allow-unverified` per D-013) and `server.py` (`/health`,
+  `/v1/models`, `/v1/chat/completions`; optional `SERVE_API_KEY` bearer;
+  **fail-closed** — no upstream ⇒ `503 upstream_not_configured`, never a
+  fabricated completion; `--adapter` lazy-imports heavy deps →
+  `HeavyDepsError` without `ml/requirements-ml.txt`; logs ids/latency only,
+  never prompts).
+- **App** — `src/core/ai/custom-model.ts`: `CUSTOM_MODEL_*` reader +
+  OpenAI-shaped call behind the SSRF guard (`isSafeEmbeddingsEndpoint`,
+  then DNS-aware `safeFetch` — loopback/private refused). Wired as the
+  **first** attempt in `generateClaudeText` with fall-through to the existing
+  providers; `getActiveAiProviderLabel` / `isClaudeConfigured` report it;
+  router `cogwheel-tuned` descriptor is now guard-aware and owns its tier
+  when configured, falling back when the endpoint is unset.
+- **Extension copy** — `chrome-extension/src/engine/custom-model-client.ts`
+  already routed Auto-Fix / GEO Summary to `CUSTOM_MODEL_*` with rules-engine
+  fallback; unchanged.
+- **`PageTypeLabel` +7 (D-008)** — `dining`, `spa`, `offers`,
+  `meetings_events`, `faq`, `gallery`, `contact` added to
+  `src/storage/training-vault.ts` **and** the extension copy;
+  `classifyPageType` produces them (specific-URL rules first; `/dining`,
+  `/spa`, `/contact` moved from the broader `amenities`/`location` rules —
+  URL-classification output for those three shifts, stored records never
+  change). Vocabulary now equals `MlPageTypeLabels` (15 labels).
+- **Tests** — `tests/custom-model-provider.test.ts` (13),
+  `tests/page-type-labels.test.ts` (4), `tests/python/test_ml_serve.py` (20):
+  Python **344**, vitest **533/533**.
+
+Local CI: typecheck, next lint, train:validate, lint:seo 10/10, test:ts,
+vitest 533/533, brain:eval fabrication 0.0000, test:seo, next build,
+build:extension, pytest 344, ruff (new files).
+
+- [x] Local CI green
+- [ ] CI green on the PR
+- [ ] D-021 isolation: branch cut from `origin/main` in worktree
+      `ml-phase-3`, no shared history rewritten
 
 ---
 
