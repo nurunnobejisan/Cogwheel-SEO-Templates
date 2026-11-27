@@ -21,6 +21,7 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SCRIPT_DIR.parent.parent
 sys.path.insert(0, str(ROOT_DIR))
 
+from python.scraper.hotel_extractor import HotelExtractor
 from python.scripts.models import (
     AuditGrade,
     AuditPayload,
@@ -229,7 +230,7 @@ def audit_property_url(url: str, property_name: str | None = None) -> AuditPaylo
         ) or soup.find("meta", attrs={"name": re.compile(r"^og:image$", re.I)})
         has_og = isinstance(og_title_tag, Tag) and isinstance(og_image_tag, Tag)
 
-        title = facts.property.title
+        title = facts.property.title or property_name or ""
         meta_desc = facts.property.metaDescription
         h1 = tech.h1_tags
         has_canonical = tech.has_canonical
@@ -244,7 +245,7 @@ def audit_property_url(url: str, property_name: str | None = None) -> AuditPaylo
         og_image = str(og_image_tag.get("content", "")) if isinstance(og_image_tag, Tag) else ""
     else:
         # Unfetched page → explicit empty audit, never invented values.
-        title = ""
+        title = property_name or ""
         meta_desc = ""
         h1 = []
         has_canonical = False
