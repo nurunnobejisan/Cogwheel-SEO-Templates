@@ -240,3 +240,45 @@ Years, prices and ZIP codes remain unaffected (verified before the change).
 **Reverse.** Revert the three regex lines — but this reintroduces the leak, so
 reversal is not recommended; fix forward instead.
 
+### D-017 — Classifier ships as trainable infrastructure, not a pre-trained model
+
+**Decision.** `ml/retrieve/classifier.py` ships with train/eval/save/load and
+a CLI that licence-gates every row, but **no trained weights and no committed
+training file**. Training happens operator-side from `data/build/` labels
+(Phase 1 pipeline output); `ml/eval/run_eval.py` reports `classifier_macro_f1`
+as `skipped` when `--model` is absent — never as a number.
+
+**Reason.** No licence-clean, non-synthetic page-type training data exists in
+the repo: crawled HTML cannot be committed (rule 4), synthetic rows are
+banned from train splits (rule 6), and the frozen golden set is eval-only.
+Fabricating a training file or reporting a default F1 would violate the
+no-invented-metrics rule. The honest Phase 2 deliverable is the machinery —
+features, trainer, gate, metric — proven by tests on fixtures, with the score
+filled in only after an operator trains on real labels.
+
+**Reverse.** When an operator-side labelled corpus exists, commit (or
+CI-fetch from `ML_PRIVATE_DATASET_REPO`) a train file, run
+`python3 -m ml.retrieve.classifier train`, and record the real macro-F1 in
+`docs/ml/PROGRESS.md` — no code change required, only data.
+
+### D-018 — Embedding failures fail closed; vector spaces are never mixed
+
+**Decision.** With `EMBEDDINGS_ENDPOINT` set, `createEmbedderFromEnv` /
+`embedder_from_env` throw on an unsafe endpoint and `HttpEmbedder` throws on
+any transport/shape/width error — there is **no per-request fallback to the
+hashing embedder**. The async embedder's synchronous `embed`/`embedBatch`
+(and the knowledge base's sync `search`) throw instead of returning vectors,
+and a failed `upsert` stays sticky: `searchAsync`/`ready` rethrow until a
+later upsert succeeds.
+
+**Reason.** Hashing vectors and HTTP vectors live in different spaces;
+silently answering a query with a hashing query-vector against HTTP
+chunk-vectors corrupts retrieval with no visible failure, and an empty/partial
+index served after an endpoint error would look like "no relevant results".
+Fail-closed surfaces the outage instead. This also matches the Phase 0 rule
+that CI and the extension keep working with the offline hashing embedder when
+the endpoint is *unset* — unset is the only fallback path.
+
+**Reverse.** Revert the `EmbeddingError` throws to a caught fallback in
+`createEmbedderFromEnv` — not recommended; if a degraded mode is ever needed,
+make it explicit (e.g. `EMBEDDINGS_FALLBACK=hashing`) rather than implicit.

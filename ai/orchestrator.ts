@@ -70,11 +70,17 @@ async function resolveViaModel(
   const task: TaskKind = classifyIssueTask(issue);
   const route: RouteDecision = routeTask(task, options.providers);
   const question = buildRagQuery(issue, report);
-  const retrieved = knowledgeBase.search(question, { topK: 4, tags: [issue.category] });
+  let retrieved = await knowledgeBase.searchAsync(question, {
+    topK: 4,
+    tags: [issue.category],
+  });
+  if (retrieved.length === 0) {
+    retrieved = await knowledgeBase.searchAsync(question, { topK: 4 });
+  }
   const prompt: BuiltPrompt = buildPatchPrompt({
     issue,
     report,
-    retrieved: retrieved.length > 0 ? retrieved : knowledgeBase.search(question, { topK: 4 }),
+    retrieved,
     tier: route.tier,
     task,
     pageContext,

@@ -33,8 +33,11 @@ HARD CONSTRAINTS (non-negotiable):
    with plausible-sounding numbers.
 3. Every factual claim must map to a measured field in the audit/tool data or to
    a retrieved knowledge-base chunk. Cite the chunk id in brackets when you rely
-   on it, e.g. [kc-title-tag]. Unmapped claims are rejected by a deterministic
-   gate and replaced with the measured summary.
+   on it, e.g. [kc-title-tag]. When the retrieved context shows a source URL for
+   a chunk, cite that URL directly for any claim you take from it, e.g.
+   https://developers.google.com/search/docs/... — the evaluation gate checks
+   for it. Unmapped claims are rejected by a deterministic gate and replaced
+   with the measured summary.
 4. Prefer "not measured" over guessing. "Measure, label, or leave blank."
 5. Distinguish "measured", "estimated", and "unavailable" exactly as the tool
    results do. Never describe an unavailable surface as if it were measured.
@@ -57,7 +60,7 @@ export class BrainProvenanceError extends Error {
 export interface BrainResult {
   targetUrl: string;
   audit: Awaited<ReturnType<typeof runFullWebsiteAudit>>;
-  retrieved: Array<{ id: string; title: string; source: string; score: number }>;
+  retrieved: Array<{ id: string; title: string; source: string; url?: string; score: number }>;
   interpretation: string;
   provider: string;
   generatedAt: string;
@@ -104,7 +107,7 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
   const query =
     request.question?.trim() ||
     `SEO audit findings for ${targetUrl}: ${audit.actionPlan?.map((i) => i.title).join(" ") ?? ""}`;
-  const retrieved = pipeline.knowledgeBase.search(query, { topK: 6 });
+  const retrieved = await pipeline.knowledgeBase.searchAsync(query, { topK: 6 });
 
   const compactAudit = {
     targetUrl: audit.targetUrl,
@@ -145,7 +148,10 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
   };
   const auditJson = JSON.stringify(compactAudit, null, 2);
   const contextText = retrieved
-    .map((c) => `[${c.id}] ${c.title} (${c.source}, score ${c.score})\n${c.text}`)
+    .map(
+      (c) =>
+        `[${c.id}] ${c.title} (${c.source}${c.url ? ` — ${c.url}` : ""}, score ${c.score})\n${c.text}`,
+    )
     .join("\n\n");
 
   const toolJson = JSON.stringify(
@@ -207,7 +213,7 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
   return {
     targetUrl,
     audit,
-    retrieved: retrieved.map((c: { id: string; title: string; source: string; score: number }) => ({ id: c.id, title: c.title, source: c.source, score: c.score })),
+    retrieved: retrieved.map((c: { id: string; title: string; source: string; url?: string; score: number }) => ({ id: c.id, title: c.title, source: c.source, url: c.url, score: c.score })),
     interpretation,
     provider,
     generatedAt: new Date().toISOString(),

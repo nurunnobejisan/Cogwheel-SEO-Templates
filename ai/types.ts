@@ -72,6 +72,15 @@ export interface Embedder {
   dimensions: number;
   embed(text: string): number[];
   embedBatch(texts: string[]): number[][];
+  /**
+   * Optional async path (Phase 2) for network-backed embedders such as
+   * `HttpEmbedder`. An embedder that implements these MUST throw from the
+   * synchronous pair rather than silently returning vectors from a different
+   * space — mixing a hashing query vector with HTTP chunk vectors would
+   * corrupt retrieval without any error.
+   */
+  embedAsync?(text: string): Promise<number[]>;
+  embedBatchAsync?(texts: string[]): Promise<number[][]>;
 }
 
 export interface KnowledgeBaseSearchOptions {
@@ -83,6 +92,16 @@ export interface KnowledgeBaseSearchOptions {
 export interface KnowledgeBase {
   upsert(chunks: RagChunk[]): void;
   search(query: string, options?: KnowledgeBaseSearchOptions): ScoredChunk[];
+  /**
+   * Async search (Phase 2): awaits any embeddings still queued by `upsert`,
+   * then ranks. For a synchronous embedder it resolves immediately, so call
+   * sites can migrate without behaviour change; with an HTTP embedder the
+   * synchronous `search` throws instead of returning wrong-space vectors.
+   */
+  searchAsync(
+    query: string,
+    options?: KnowledgeBaseSearchOptions,
+  ): Promise<ScoredChunk[]>;
   size(): number;
 }
 
