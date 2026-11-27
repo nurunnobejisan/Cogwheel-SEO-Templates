@@ -15,7 +15,7 @@ import {
   Filter,
 } from "lucide-react";
 import { PageAuditData, ClientProfile } from "../types/extension";
-import { SEO_STUDIO_TEMPLATES, resolveTemplateContent } from "../data/seoStudioTemplates";
+import { buildUnifiedPacket, collectPacketSources } from "../engine/unified-packet";
 import {
   BATCH_AUDIT_CONCURRENCY,
   gradeForOverall,
@@ -82,89 +82,14 @@ export function AutomationBulkRunner({ pageData, activeProfile }: Props) {
     setWorkflowRunning(true);
 
     setTimeout(() => {
-      const hotelName = activeProfile?.name || pageData?.title.split("|")[0].trim() || "Luxury Beachfront Hotel";
-      const cityName = activeProfile?.city || "Panama City Beach";
-      const stateCode = activeProfile?.state || "FL";
-      const canonical = pageData?.canonical || pageData?.url || "https://example.com";
-      const targetKw = activeProfile?.primaryKeywords?.[0] || "Beachfront Hotels Panama City Beach";
-
-      const vars: Record<string, string> = {
-        hotelName,
-        cityName,
-        stateCode,
-        targetKeyword: targetKw,
-        canonicalUrl: canonical,
-        originUrl: pageData?.origin || "https://example.com",
-        metaDescription: `Stay at ${hotelName} in ${cityName}. Enjoy luxury accommodations, oceanfront suites, free breakfast, and direct beach access. Book direct & save.`,
-        primaryH1: `${hotelName} in ${cityName}`,
-        uspSubhead: `Direct beach access, resort-style pools, and luxury suites minutes from top ${cityName} attractions.`,
-        phoneNumber: activeProfile?.phone || "+1-850-230-6004",
-        streetAddress: activeProfile?.address || "12513 Front Beach Road",
-        postalCode: activeProfile?.postalCode || "32407",
-        starRating: "4.5",
-        latitude: "30.1983",
-        longitude: "-85.8335",
-        question1: `What are the check-in and check-out policies at ${hotelName}?`,
-        answer1: `Check-in starts at 4:00 PM and check-out is until 11:00 AM. Early check-in is available upon request.`,
-        question2: `Does ${hotelName} offer on-site parking and Wi-Fi?`,
-        answer2: `Yes, complimentary high-speed Wi-Fi and secure on-site parking with EV vehicle chargers are provided.`,
-      };
-
-      const titleMetaTpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "title-meta-suite")?.content || "";
-      const h1Tpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "usp-headline-hero")?.content || "";
-      const schemaTpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "schema-hotel-graph")?.content || "";
-      const faqTpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "hotel-faq-amenities")?.content || "";
-      const aiGeoTpl = SEO_STUDIO_TEMPLATES.find((t) => t.id === "prompt-geo-ai-citation")?.content || "";
-
-      const resTitleMeta = resolveTemplateContent(titleMetaTpl, vars);
-      const resH1 = resolveTemplateContent(h1Tpl, vars);
-      const resSchema = resolveTemplateContent(schemaTpl, vars);
-      const resFaq = resolveTemplateContent(faqTpl, vars);
-      const resGeo = resolveTemplateContent(aiGeoTpl, vars);
-
-      const packetMarkdown = `# SEO Studio & GEO Production Deliverable Packet
-**Property:** ${hotelName} (${cityName}, ${stateCode})  
-**Target URL:** ${canonical}  
-**Primary Target Keyword:** ${targetKw}  
-**Date Generated:** ${new Date().toLocaleDateString()}
-
----
-
-## 1. On-Page Title Tag & Meta Description
-\`\`\`html
-${resTitleMeta}
-\`\`\`
-
----
-
-## 2. H1 Headline & Above-the-Fold USP Banner
-\`\`\`html
-${resH1}
-\`\`\`
-
----
-
-## 3. Validated JSON-LD Schema (@graph Hotel + Breadcrumbs)
-\`\`\`json
-${resSchema}
-\`\`\`
-
----
-
-## 4. On-Page FAQ & Amenities Section
-\`\`\`html
-${resFaq}
-\`\`\`
-
----
-
-## 5. GEO & AI Citation Optimization Prompt (Perplexity, ChatGPT Search, Gemini)
-\`\`\`markdown
-${resGeo}
-\`\`\`
-`;
-
-      setUnifiedPacket(packetMarkdown);
+      // Template defaults overlaid with profile/page-sourced values only —
+      // no invented copy (see engine/unified-packet.ts).
+      setUnifiedPacket(
+        buildUnifiedPacket(
+          collectPacketSources(activeProfile, pageData),
+          new Date().toLocaleDateString()
+        )
+      );
       setWorkflowRunning(false);
     }, 600);
   };
