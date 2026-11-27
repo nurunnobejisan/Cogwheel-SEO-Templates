@@ -4,6 +4,12 @@ import { resolve } from "path";
 
 export default defineConfig({
   plugins: [react()],
+  server: {
+    fs: {
+      // `shared/ts/` lives outside this package root; allow serving it in dev.
+      allow: [resolve(__dirname, "..")],
+    },
+  },
   build: {
     outDir: "dist",
     emptyOutDir: true,

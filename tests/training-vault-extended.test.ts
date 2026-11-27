@@ -9,7 +9,7 @@ import {
   clearTrainingVault,
   RawWebInput,
   TargetOptimizedOutput,
-} from "../src/storage/training-vault";
+} from "../shared/ts/training-vault";
 
 describe("Training Vault - Extended Management & Status Capabilities", () => {
   beforeEach(async () => {

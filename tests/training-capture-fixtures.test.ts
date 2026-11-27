@@ -3,7 +3,7 @@ import {
   extractCapturedWebSample,
   querySelectorAllDeep,
   extractMainContentText,
-} from "../chrome-extension/src/content/training-capture";
+} from "../shared/ts/training-capture";
 import { createMockDocument, createMockElement, MockNode } from "./ts/test-dom-helper";
 
 describe("Phase 1.2: Training-Capture Extractor Tests with HTML Fixtures", () => {

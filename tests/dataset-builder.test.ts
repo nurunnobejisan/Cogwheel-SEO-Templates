@@ -12,8 +12,8 @@ import {
   syncRecordToApi,
   syncBatchToApi,
   ApiSyncConfig,
-} from "../src/engine/dataset-builder";
-import { TrainingPairRecord } from "../src/storage/training-vault";
+} from "../shared/ts/dataset-builder";
+import { TrainingPairRecord } from "../shared/ts/training-vault";
 
 describe("Dataset Builder & Supervised Fine-Tuning Exporter", () => {
   const sampleRecord: TrainingPairRecord = {

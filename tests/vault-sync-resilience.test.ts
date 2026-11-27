@@ -21,13 +21,13 @@ import {
   RawWebInput,
   TargetOptimizedOutput,
   TrainingPairRecord,
-} from "../src/storage/training-vault";
+} from "../shared/ts/training-vault";
 import {
   syncRecordToApi,
   syncBatchToApi,
   recordToRawJsonl,
   ApiSyncConfig,
-} from "../src/engine/dataset-builder";
+} from "../shared/ts/dataset-builder";
 
 const baseRawInput: RawWebInput = {
   url: "https://www.hilton.com/hotel/denver-downtown/",

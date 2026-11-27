@@ -153,7 +153,7 @@ export default function ArchitecturePage() {
               Read-only DOM extractor that strips emails, telephone numbers, and URL auth query tokens into SHA-256 deduplicated IndexedDB records with 0-100 quality scoring.
             </p>
             <div className="mt-3 font-mono text-tiny text-slate-500">
-              <code>src/content/training-capture.ts &bull; src/storage/training-vault.ts</code>
+              <code>shared/ts/training-capture.ts &bull; shared/ts/training-vault.ts</code>
             </div>
           </article>
 

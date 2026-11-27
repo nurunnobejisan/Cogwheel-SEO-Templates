@@ -9,7 +9,7 @@ import {
   exportVaultAsJsonl,
   RawWebInput,
   TargetOptimizedOutput,
-} from "../src/storage/training-vault";
+} from "../shared/ts/training-vault";
 
 describe("Training Data Vault (IndexedDB / Local Store)", () => {
   beforeEach(async () => {

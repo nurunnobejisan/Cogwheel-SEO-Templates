@@ -5,7 +5,7 @@
  * downstream scoring (Task 3.2) can weight by page type and the UI can show a
  * confidence pill. Purely rule-based and deterministic: no network, no model.
  *
- * Deliberately separate from `classifyPageType()` in `src/storage/training-vault.ts`,
+ * Deliberately separate from `classifyPageType()` in `shared/ts/training-vault.ts`,
  * which emits the *training* vocabulary (`dining`, `spa`, `room_details`, …).
  * That one labels captured samples for the ML pipeline; this one labels a page
  * for scoring. The vocabularies are not interchangeable.

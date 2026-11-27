@@ -6,6 +6,11 @@
  * with optimized targets (Title, Meta Description, JSON-LD, and GEO entity blocks),
  * computes dataset quality scores (0-100), extraction confidence (0-100),
  * classifies pageType, tracks contentHash versioning, and deduplicates by canonical URL.
+ *
+ * Single source of truth for both the Next.js app and the Chrome extension
+ * (`shared/ts/` — see docs/TASKS.md Phase B). Hosts that must reject writes
+ * before they happen (the extension's consent/allow-list gate) register a
+ * `TrainingPersistGate`; the app leaves it unset.
  */
 
 export interface RawWebInput {
@@ -86,6 +91,34 @@ export interface TrainingPairRecord {
   status: TrainingRecordStatus;
   createdAt: string;
   updatedAt: string;
+}
+
+const PII_EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
+const PII_SECRET = /\b(?:sk|pk|ghp|gho|xox[baprs])[-_][A-Za-z0-9_-]{12,}\b/g;
+// Same shape as PHONE in src/core/training/dataset.ts: the old `\+\d...` form
+// only caught numbers written with a leading `+`, so `(503) 555 0123` was
+// persisted unredacted. Keep in step with ml/clean/pii.py.
+const PII_PHONE = /(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{2,4}\)|\b\d{2,4})[-.\s]\d{3,4}[-.\s]\d{3,4}\b/g;
+
+/** Recursively redacts PII before a capture is persisted or exported. */
+export function stripTrainingPii<T>(value: T): T {
+  if (typeof value === "string") {
+    return value
+      .replace(PII_EMAIL, "[REDACTED_EMAIL]")
+      .replace(PII_SECRET, "[REDACTED_SECRET]")
+      .replace(PII_PHONE, "[REDACTED_PHONE]") as unknown as T;
+  }
+  if (Array.isArray(value)) {
+    return value.map((entry) => stripTrainingPii(entry)) as unknown as T;
+  }
+  if (value && typeof value === "object") {
+    const out: Record<string, unknown> = {};
+    for (const [key, entry] of Object.entries(value as Record<string, unknown>)) {
+      out[key] = stripTrainingPii(entry);
+    }
+    return out as T;
+  }
+  return value;
 }
 
 export interface TrainingVaultStats {
@@ -359,7 +392,6 @@ const inMemoryVault = new Map<string, TrainingPairRecord>();
 
 /**
  * Migration helper to ensure legacy records conform to v3.0 schema.
- * Exported for resilience tests (see tests/vault-sync-resilience.test.ts).
  */
 export function migrateRecordToV3(rawRecord: unknown): TrainingPairRecord {
   const r = rawRecord as Record<string, unknown>;
@@ -446,6 +478,21 @@ export async function openTrainingVaultDb(): Promise<IDBDatabase | null> {
 }
 
 /**
+ * Optional persistence gate invoked with the canonical URL before any pair is
+ * written. Ephemeral module configuration — a single function reference set
+ * once at import time by the host, never a data store. The Chrome extension
+ * registers its consent/allow-list check in
+ * `chrome-extension/src/storage/training-vault.ts`; the app leaves it unset.
+ */
+export type TrainingPersistGate = (canonicalUrl: string) => void | Promise<void>;
+
+let trainingPersistGate: TrainingPersistGate | undefined;
+
+export function setTrainingPersistGate(gate: TrainingPersistGate | undefined): void {
+  trainingPersistGate = gate;
+}
+
+/**
  * Saves or updates a paired training sample.
  * Features contentHash versioning: dedupes identical content, increments version when content updates.
  */
@@ -458,20 +505,24 @@ export async function saveTrainingPair(params: {
   status?: TrainingRecordStatus;
 }): Promise<TrainingPairRecord> {
   const canonicalUrl = params.rawInput.canonicalUrl || params.rawInput.url;
+
+  if (trainingPersistGate) {
+    await trainingPersistGate(canonicalUrl);
+  }
+
+  const rawInput = stripTrainingPii(params.rawInput);
+  const targetOutput = stripTrainingPii(params.targetOutput);
   const canonicalHash = await computeCanonicalHash(canonicalUrl);
-  const contentString = `${params.rawInput.rawTitle}:::${params.rawInput.rawMetaDesc}:::${params.rawInput.rawH1.join("|")}:::${params.rawInput.rawBodyText}`;
+  const contentString = `${rawInput.rawTitle}:::${rawInput.rawMetaDesc}:::${rawInput.rawH1.join("|")}:::${rawInput.rawBodyText}`;
   const contentHash = await computeContentHash(contentString);
   const now = new Date().toISOString();
 
-  const { qualityScore, breakdown } = computeDatasetQualityScore(
-    params.rawInput,
-    params.targetOutput
-  );
+  const { qualityScore, breakdown } = computeDatasetQualityScore(rawInput, targetOutput);
 
-  const brand = params.brand || params.targetOutput.brandGuardrail || "Independent";
+  const brand = params.brand || targetOutput.brandGuardrail || "Independent";
   const source = params.source || "manual";
-  const pageType = params.pageType || classifyPageType(canonicalUrl, params.rawInput);
-  const extractionConfidence = computeExtractionConfidence(params.rawInput);
+  const pageType = params.pageType || classifyPageType(canonicalUrl, rawInput);
+  const extractionConfidence = computeExtractionConfidence(rawInput);
 
   const db = await openTrainingVaultDb();
 
@@ -504,10 +555,10 @@ export async function saveTrainingPair(params: {
           pack: derivePack(params.rawInput.detectedSchemas, pageType),
           extractionConfidence,
           canonicalUrl,
-          domain: params.rawInput.domain,
+          domain: rawInput.domain,
           brand,
-          rawInput: params.rawInput,
-          targetOutput: params.targetOutput,
+          rawInput,
+          targetOutput,
           qualityScore,
           scoreBreakdown: breakdown,
           status,
@@ -545,10 +596,10 @@ export async function saveTrainingPair(params: {
     pack: derivePack(params.rawInput.detectedSchemas, pageType),
     extractionConfidence,
     canonicalUrl,
-    domain: params.rawInput.domain,
+    domain: rawInput.domain,
     brand,
-    rawInput: params.rawInput,
-    targetOutput: params.targetOutput,
+    rawInput,
+    targetOutput,
     qualityScore,
     scoreBreakdown: breakdown,
     status,
