@@ -354,4 +354,6 @@ verify `automation.list` shows `paused` before writing anything. (Note:
 during this collision the autopush automation was deleted outright rather
 than paused and `automation.list` came back empty — it must be recreated
 explicitly, and only when no session has uncommitted work in the shared
-checkout.)
+checkout.) Confirmed by the user on 2026-11-27: **leave it deleted** while
+multiple sessions are active — manual pushes are the safe mode until only
+one session is working; recreate the scheduled sweep only then.
