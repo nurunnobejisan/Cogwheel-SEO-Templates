@@ -6,7 +6,7 @@ Status values: `not started` · `in progress` · `done`.
 | Phase | Title | Status | PR |
 |---|---|---|---|
 | 0 | Foundations | done | [#3](https://github.com/nurunnobejisan/SEO-Studio/pull/3) |
-| 1 | Data registry & datasets | in progress | — |
+| 1 | Data registry & datasets | done | [#4](https://github.com/nurunnobejisan/SEO-Studio/pull/4) |
 | 2 | Retrieval explainer + classifier | not started | — |
 | 3 | LoRA fine-tunes | not started | — |
 | 4 | Ship to app & extension | not started | — |
@@ -126,7 +126,7 @@ corpora — stdlib-first so CI can verify it with only the root
       vitest 468/468, lint:seo 10/10, test:seo 67, test:ts 34,
       brain:eval fabrication 0.0000, next build, pytest 185,
       build:extension
-- [ ] CI green on the PR (run link added after merge)
+- [x] CI green on the PR — run 45934113623 on `add7b45`, merged as `b29868e`
 
 ## Phase 2 — Retrieval explainer + classifier
 
