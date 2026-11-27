@@ -3,7 +3,7 @@ import { metadata as homeMeta } from "../src/app/page";
 import { metadata as templatesMeta } from "../src/app/templates/page";
 import { metadata as matrixMeta } from "../src/app/strategy-matrix/page";
 import { metadata as archMeta } from "../src/app/architecture/page";
-import { TEMPLATES_DATA } from "../src/data/templates";
+import { TEMPLATES_DATA } from "../src/packs/hotel/templates";
 import sitemap from "../src/app/sitemap";
 import robots from "../src/app/robots";
 

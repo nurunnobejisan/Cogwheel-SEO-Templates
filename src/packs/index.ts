@@ -13,7 +13,7 @@ import type { Pack, PackPageType } from "./types.ts";
 export * from "./types.ts";
 
 /** Page types the classifier may emit — kept in sync with rules/types vocabulary. */
-const KNOWN_PAGE_TYPES: ReadonlySet<PackPageType> = new Set([
+export const KNOWN_PAGE_TYPES: ReadonlySet<PackPageType> = new Set([
   "home",
   "product",
   "category",

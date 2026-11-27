@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { type SeoTemplate, type TemplateVariables } from "@/data/templates";
+import { type SeoTemplate, type TemplateVariables } from "@/packs/hotel/templates";
 import {
   calculatePixelWidth,
   getTitlePixelStatus,

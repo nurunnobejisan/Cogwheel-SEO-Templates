@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { TEMPLATES_DATA } from "@/data/templates";
+import { TEMPLATES_DATA } from "@/packs/hotel/templates";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://seo-studio-one.vercel.app";

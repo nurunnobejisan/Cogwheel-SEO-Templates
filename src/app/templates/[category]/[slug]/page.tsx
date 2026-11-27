@@ -5,7 +5,7 @@ import {
   TEMPLATES_DATA,
   getTemplateBySlug,
   getRelatedTemplates,
-} from "@/data/templates";
+} from "@/packs/hotel/templates";
 import { TemplateCustomizerView } from "@/components/TemplateCustomizerView";
 
 interface PageProps {
