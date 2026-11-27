@@ -134,3 +134,6 @@ data/daily-session/
 
 .vercel
 .env*
+
+# Generated audit output
+output/
