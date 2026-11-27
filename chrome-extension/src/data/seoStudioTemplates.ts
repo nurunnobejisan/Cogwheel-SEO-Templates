@@ -1,6 +1,7 @@
 import { SeoStudioTemplate, ClientProfile, PageAuditData, ScoreBreakdown, QuickWinItem } from "../types/extension";
 import type { ScoringWeights } from "../../../src/schemas/validation";
 import { DEFAULT_PACK_ID, getPackMeta } from "../../../src/packs/catalog";
+import { substituteExactPlaceholders } from "../../../shared/ts/template-render";
 
 /**
  * Default composite weights (Task 3.2): the active pack's weights, read from
@@ -1103,12 +1104,15 @@ export function resolveTemplateContent(
   templateContent: string,
   variables: Record<string, string>
 ): string {
-  let resolved = templateContent;
+  // Single renderer: delegate to the shared exact-placeholder pass, which
+  // also resolves `${key}` and `{key}` (a scan of all 24 content blocks found
+  // no conflicting single-curly or ${} tokens in this catalog). Blank values
+  // keep the visible `[key]` fill-me marker.
+  const filled: Record<string, string> = {};
   Object.entries(variables).forEach(([key, val]) => {
-    const regex = new RegExp(`\\{\\{${key}\\}\\}`, "g");
-    resolved = resolved.replace(regex, val || `[${key}]`);
+    filled[key] = val || `[${key}]`;
   });
-  return resolved;
+  return substituteExactPlaceholders(templateContent, filled);
 }
 
 export function calculateSeoScores(

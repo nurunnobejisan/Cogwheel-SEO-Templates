@@ -1,19 +1,22 @@
 """Tests for the FastAPI Python service (`api/server.py`).
 
 Covers the fail-closed security model (bearer token, loopback-only peers,
-payload caps, upload allow-list), the measured content-engine endpoints, and a
-real end-to-end PPTX build through `/v1/reports/seo-visibility`.
+payload caps, upload allow-list), the measured content-engine endpoints, the
+content-model validation endpoint (`api/models.py` served at
+`/v1/content/validate`), and a real end-to-end PPTX build through
+`/v1/reports/seo-visibility`.
 """
 
 import sys
 from pathlib import Path
+from typing import get_args
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 import pytest
 from fastapi.testclient import TestClient
 
-from api.server import app
+from api.server import CONTENT_MODELS, ContentModelValidationRequest, app
 
 TOKEN = "test-token"
 
@@ -292,3 +295,103 @@ def test_report_endpoint_rejects_oversized_upload(client):
         headers=auth(),
     )
     assert resp.status_code == 413
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Content-model validation (api/models.py served at /v1/content/validate)
+# ─────────────────────────────────────────────────────────────────────────────
+
+VALID_DESTINATION_GUIDE = {
+    "hotelName": "The Curtis Denver",
+    "cityName": "Denver",
+    "destinationTitle": "Ultimate Denver Guide",
+    "destinationOverview": "Discover Denver culture and hospitality.",
+}
+
+MINIMAL_PAYLOADS = {
+    "destination-guide": VALID_DESTINATION_GUIDE,
+    "room-showcase": {
+        "hotelName": "The Curtis Denver",
+        "cityName": "Denver",
+        "roomTitle": "Pop Art King",
+        "roomDescription": "A bright king room.",
+    },
+    "hotel-faq": {"hotelName": "The Curtis Denver", "cityName": "Denver"},
+    "page-metadata": {
+        "title": "Boutique Hotels Denver | The Curtis",
+        "metaDescription": "Stay at The Curtis in Denver.",
+        "canonicalUrl": "https://thecurtis.com/rooms",
+    },
+    "site-manifest-item": {
+        "url": "https://thecurtis.com/rooms",
+        "primaryKeyword": "boutique hotels denver",
+    },
+}
+
+
+def _validate(client, kind, payload, headers=None):
+    return client.post(
+        "/v1/content/validate",
+        json={"kind": kind, "payload": payload},
+        headers=headers if headers is not None else auth(),
+    )
+
+
+def test_validate_content_model_returns_parsed_model_with_defaults(client):
+    resp = _validate(client, "destination-guide", VALID_DESTINATION_GUIDE)
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["valid"] is True
+    assert body["kind"] == "destination-guide"
+    assert body["data"]["hotelName"] == "The Curtis Denver"
+    # Defaults from api/models.py are filled in.
+    assert body["data"]["brand"] == "Independent Collection"
+    assert "lowest direct booking" in body["data"]["bookingPerks"]
+
+
+def test_validate_content_model_reports_missing_required_fields(client):
+    resp = _validate(client, "destination-guide", {"hotelName": "Only this"})
+    assert resp.status_code == 422
+    detail = resp.json()["detail"]
+    assert detail["valid"] is False
+    assert detail["kind"] == "destination-guide"
+    missing = {tuple(err["loc"]) for err in detail["errors"]}
+    assert ("cityName",) in missing
+    assert ("destinationTitle",) in missing
+
+
+def test_validate_content_model_rejects_unknown_kind(client):
+    resp = _validate(client, "not-a-model", {})
+    assert resp.status_code == 422
+
+
+def test_validate_content_model_accepts_every_registered_kind(client):
+    for kind, minimal in MINIMAL_PAYLOADS.items():
+        resp = _validate(client, kind, minimal)
+        assert resp.status_code == 200, (kind, resp.text)
+        assert resp.json()["valid"] is True
+
+
+def test_validate_content_model_ignores_extra_payload_keys(client):
+    payload = {**VALID_DESTINATION_GUIDE, "notAModelField": "x" * 100}
+    resp = _validate(client, "destination-guide", payload)
+    assert resp.status_code == 200
+    assert "notAModelField" not in resp.json()["data"]
+
+
+def test_validate_content_model_caps_field_count(client):
+    payload = {f"key{i}": "x" for i in range(65)}
+    resp = _validate(client, "destination-guide", payload)
+    assert resp.status_code == 413
+
+
+def test_validate_content_model_requires_bearer_when_token_is_configured(client):
+    resp = client.post("/v1/content/validate", json={"kind": "hotel-faq", "payload": {}})
+    assert resp.status_code == 401
+    resp = _validate(client, "hotel-faq", {}, headers=auth("wrong-token"))
+    assert resp.status_code == 401
+
+
+def test_content_model_kinds_match_the_models_registry():
+    kinds = get_args(ContentModelValidationRequest.model_fields["kind"].annotation)
+    assert set(kinds) == set(CONTENT_MODELS)
