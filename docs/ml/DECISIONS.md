@@ -169,8 +169,11 @@ every push. Left alone it would have swallowed each phase into an anonymous
 around the phase keeps the fast-push convenience for ordinary work while still
 giving every phase a real PR.
 
-**Reverse.** `tools.automation.resume` on `aut_2192c654d001133B6hUreuyudS`
+**Reverse.** `tools.automation.resume` on `aut_21b3d1096001nfcoxOJreSwYbU`
 restores the original behaviour; no repository state depends on the pause.
+(The automation was recreated on 2026-11-27 during Phase 2 after the original
+`aut_2192c654d001133B6hUreuyudS` was deleted instead of paused — same name,
+schedule and action, fresh id and run history.)
 
 ### D-013 — Old `tuned_gemini` registry entries marked `unverified`
 

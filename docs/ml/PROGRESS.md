@@ -7,7 +7,7 @@ Status values: `not started` · `in progress` · `done`.
 |---|---|---|---|
 | 0 | Foundations | done | [#3](https://github.com/nurunnobejisan/SEO-Studio/pull/3) |
 | 1 | Data registry & datasets | done | [#4](https://github.com/nurunnobejisan/SEO-Studio/pull/4) |
-| 2 | Retrieval explainer + classifier | in progress | — |
+| 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
 | 3 | LoRA fine-tunes | not started | — |
 | 4 | Ship to app & extension | not started | — |
 
@@ -179,14 +179,14 @@ network path.
 
 ### Gate
 
-- [ ] licence gate fires on corpora and classifier rows — covered by the
+- [x] licence gate fires on corpora and classifier rows — covered by the
       93 new Python tests (unknown/avoid/synthetic/attribution refusals)
-- [ ] golden set unchanged — sha256 `3d951412...6a3a84`, runner reports
+- [x] golden set unchanged — sha256 `3d951412...6a3a84`, runner reports
       52 cases / 106 checks, all `skipped` without model outputs
-- [ ] CI green locally — typecheck, lint, train:validate (5 gates), vitest,
-      lint:seo, test:seo, test:ts, brain:eval, next build, pytest 278,
-      build:extension
-- [ ] CI green on the PR
+- [x] CI green locally — typecheck, lint, train:validate (5 gates),
+      vitest 500/500, lint:seo 10/10, test:seo, test:ts, brain:eval
+      fabrication 0.0000, next build, pytest 278, build:extension
+- [x] CI green on the PR — run 45939702942 on `9ca9da7`, merged as `da88e73`
 
 ## Phase 3 — LoRA fine-tunes
 
