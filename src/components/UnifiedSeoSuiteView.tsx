@@ -186,6 +186,8 @@ export function UnifiedSeoSuiteView({
   // Training rules & change history (loaded from /api/ai-training)
   const [trainingData, setTrainingData] = useState<{
     provider: string;
+    /** True only when the keyless free-online AI fallback was explicitly enabled. */
+    providerIsFreeOnline: boolean;
     rules: Array<{
       id: string;
       taskId: string | null;
@@ -219,6 +221,7 @@ export function UnifiedSeoSuiteView({
         if (cancelled) return;
         setTrainingData({
           provider: typeof data.provider === "string" ? data.provider : "unknown",
+          providerIsFreeOnline: data.providerIsFreeOnline === true,
           rules: Array.isArray(data.rules) ? data.rules : [],
           history: Array.isArray(data.history) ? data.history : [],
         });
@@ -1071,6 +1074,12 @@ export function UnifiedSeoSuiteView({
                     <div className="mt-1 font-mono text-caption font-bold text-slate-900 dark:text-white truncate">
                       {trainingData.provider}
                     </div>
+                    {trainingData.providerIsFreeOnline && (
+                      <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-tiny font-semibold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
+                        Keyless free AI (Pollinations) is opted in — not a paid engine. Verify
+                        outputs before publishing.
+                      </div>
+                    )}
                   </div>
                   <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-800/40">
                     <span className="text-tiny font-bold uppercase text-slate-500">Stored Rules</span>

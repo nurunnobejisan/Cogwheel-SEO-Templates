@@ -13,12 +13,24 @@ export const CLAUDE_TEMPERATURE = 0.2 as const;
 
 /**
  * Default model for the paid Anthropic path. Only reached when
- * ANTHROPIC_API_KEY is set; otherwise the client uses the free providers. See
- * `src/core/ai/models.ts` — override with ANTHROPIC_MODEL.
+ * ANTHROPIC_API_KEY is set; otherwise the client walks the configured free
+ * providers, and the keyless online fallback only when
+ * ENABLE_FREE_ONLINE_AI=true. See `src/core/ai/models.ts` — override with
+ * ANTHROPIC_MODEL.
  */
 export const DEFAULT_CLAUDE_MODEL = modelFor("anthropic");
 
 let client: Anthropic | null = null;
+
+/**
+ * Keyless Pollinations fallback is strictly opt-in. Anything other than the
+ * literal string "true" (including `1`, `0`, `false` or unset) leaves it off,
+ * so an accidental value can never route SEO Studio traffic to an unvetted
+ * free endpoint.
+ */
+export function isFreeOnlineAiEnabled(): boolean {
+  return process.env.ENABLE_FREE_ONLINE_AI === "true";
+}
 
 export function getActiveAiProviderLabel(): string {
   if (isCustomModelConfigured()) {
@@ -29,7 +41,7 @@ export function getActiveAiProviderLabel(): string {
   if (process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY) return `Gemini (${modelFor("gemini")}) — free tier`;
   if (process.env.GROQ_API_KEY) return `Groq (${modelFor("groq")}) — free`;
   if (process.env.OPENROUTER_API_KEY) return `OpenRouter (${modelFor("openrouter")}) — free`;
-  if (process.env.ENABLE_FREE_ONLINE_AI !== "false") return `Free Online AI (Pollinations, keyless)`;
+  if (isFreeOnlineAiEnabled()) return `Free Online AI (Pollinations, keyless)`;
   return "Not Configured";
 }
 
@@ -44,7 +56,7 @@ export function isClaudeConfigured(): boolean {
   ) {
     return true;
   }
-  return process.env.ENABLE_FREE_ONLINE_AI !== "false" && process.env.NODE_ENV !== "test";
+  return isFreeOnlineAiEnabled() && process.env.NODE_ENV !== "test";
 }
 
 function getClient(): Anthropic {
@@ -122,8 +134,9 @@ async function callOpenAiCompatible(opts: {
 }
 
 /**
- * Shared multi-provider AI drafting client with automatic free online fallback.
- * Temperature is pinned to 0.2 and active AI training rules are always injected.
+ * Shared multi-provider AI drafting client. The keyless online fallback only
+ * runs when ENABLE_FREE_ONLINE_AI=true (opt-in). Temperature is pinned to 0.2
+ * and active AI training rules are always injected.
  */
 export async function generateClaudeText(opts: {
   system: string;
@@ -209,7 +222,7 @@ export async function generateClaudeText(opts: {
     }
   }
 
-  if (process.env.ENABLE_FREE_ONLINE_AI !== "false") {
+  if (isFreeOnlineAiEnabled()) {
     try {
       return await callOpenAiCompatible({
         endpoint: "https://text.pollinations.ai/openai",

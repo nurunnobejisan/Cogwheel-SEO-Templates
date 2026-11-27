@@ -23,7 +23,10 @@
           "serpBudgetAdherenceScore": 100.0,
           "structuredSchemaScore": 100.0,
           "hallucinationRate": 0.0
-        }
+        },
+        "provenance": "lexical-proxy",
+        "measured": false,
+        "note": "Lexical proxy computed from the eval file (format, grounding, SERP-budget and schema keyword checks) — not a model-quality measurement and not a golden-set run. A measured number requires ml/eval/run_eval.py --endpoint."
       },
       "capabilities": [
         "full_website_audit",
@@ -57,7 +60,10 @@
           "serpBudgetAdherenceScore": 100.0,
           "structuredSchemaScore": 100.0,
           "hallucinationRate": 0.0
-        }
+        },
+        "provenance": "lexical-proxy",
+        "measured": false,
+        "note": "Lexical proxy computed from the eval file (format, grounding, SERP-budget and schema keyword checks) — not a model-quality measurement and not a golden-set run. A measured number requires ml/eval/run_eval.py --endpoint."
       },
       "capabilities": [
         "full_website_audit",

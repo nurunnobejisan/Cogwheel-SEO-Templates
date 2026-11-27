@@ -119,7 +119,14 @@ export default function Studio({
         petFriendly: boolean | null;
         pages?: SitemapPage[];
         warnings: string[];
-      }>("/api/crawl-property", { url: property.url });
+        storage?: { persistent: boolean; label: string };
+      }>("/api/crawl-property", {
+        url: property.url,
+        // Owner scope: the server caches scans per client/property, not per URL alone.
+        scopeKey:
+          [property.name, property.city, property.state].map((v) => v.trim()).filter(Boolean).join("|") ||
+          undefined,
+      });
 
       setProperty((prev) => ({
         ...prev,
@@ -128,10 +135,11 @@ export default function Studio({
         petFriendly: res.petFriendly !== null ? res.petFriendly : prev.petFriendly,
       }));
       if (res.pages?.length) setPages(res.pages);
+      const cachedAs = res.storage ? ` (scan cached as: ${res.storage.label})` : "";
       setNotice(
         res.warnings.length > 0
-          ? `URL scan complete (${res.warnings.join(" ")})`
-          : `Auto-discovered ${res.city}, ${res.state} and active sitemap pages.`,
+          ? `URL scan complete (${res.warnings.join(" ")})${cachedAs}`
+          : `Auto-discovered ${res.city}, ${res.state} and active sitemap pages.${cachedAs}`,
       );
     } catch (e) {
       setError((e as Error).message);
@@ -482,6 +490,14 @@ export default function Studio({
 
         {step === 1 && (
           <>
+            <div className="rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-3 text-body text-slate-600 dark:border-slate-700 dark:bg-slate-900/60 dark:text-slate-400">
+              <strong className="font-semibold">Ephemeral storage:</strong> property profiles and
+              URL scans are held in this server instance&rsquo;s memory unless Supabase is
+              configured (<code className="font-mono">SUPABASE_URL</code> +{" "}
+              <code className="font-mono">SUPABASE_SERVICE_ROLE_KEY</code>), and are lost on every
+              deploy or restart. Saving a run requires Supabase — without it, &ldquo;Save
+              run&rdquo; reports that persistence is unavailable.
+            </div>
             <PropertySetup
               property={property}
               onChange={setProperty}

@@ -1,6 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
+import { storageDescriptor, type StorageDescriptor } from "@/core/storage";
 import type { Client, Property, SitemapPage } from "@/lib/types";
 
 export interface PropertyRecord extends Property {
@@ -26,6 +27,17 @@ const memoryClients: Map<string, Client> = new Map([
 ]);
 
 const memoryProperties: Map<string, PropertyRecord> = new Map();
+
+/**
+ * Where client/property records are actually kept right now.
+ *
+ * The maps above are per-instance: without Supabase, anything written there is
+ * gone on the next deploy or restart. Any surface that lists these records
+ * must show `label` rather than implying the data is durable.
+ */
+export function propertyStorageDescriptor(): StorageDescriptor {
+  return storageDescriptor(isSupabaseConfigured());
+}
 
 /**
  * List agency clients with property counts.

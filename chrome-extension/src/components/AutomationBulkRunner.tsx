@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
 import {
   Play,
   Download,
@@ -16,6 +16,14 @@ import {
 } from "lucide-react";
 import { PageAuditData, ClientProfile } from "../types/extension";
 import { SEO_STUDIO_TEMPLATES, resolveTemplateContent } from "../data/seoStudioTemplates";
+import {
+  BATCH_AUDIT_CONCURRENCY,
+  gradeForOverall,
+  runFullAudit,
+  runWithConcurrency,
+  type BatchAuditMeasurement,
+  type BatchGrade,
+} from "../engine/full-audit-client";
 
 interface Props {
   pageData?: PageAuditData;
@@ -26,19 +34,30 @@ export interface BatchAuditItem {
   id: string;
   propertyName: string;
   url: string;
-  status: "pending" | "running" | "done" | "error";
-  overallHealth: number;
-  onPageScore: number;
-  schemaScore: number;
-  geoScore: number;
+  status: "pending" | "running" | "done" | "error" | "cancelled";
+  /** null = not measured. Scores only exist after a successful /api/full-audit run. */
+  overallHealth: number | null;
+  onPageScore: number | null;
+  schemaScore: number | null;
+  geoScore: number | null;
   h1: string;
-  wordCount: number;
-  schemasFound: number;
-  grade: "A+ OPTIMAL" | "A STRONG" | "B NEEDS AUDIT" | "C CRITICAL";
+  wordCount: number | null;
+  schemasFound: number | null;
+  grade: BatchGrade | null;
+  /** Why a row has no numbers (shown instead of a score). */
+  unavailableReason?: string;
 }
 
 type SortField = "overallHealth" | "onPageScore" | "schemaScore" | "geoScore" | "propertyName";
 type SortDirection = "asc" | "desc";
+
+/** Badge tone per grade — single source so colour always matches the label. */
+const GRADE_TONE: Record<BatchGrade, string> = {
+  "A+ OPTIMAL": "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300",
+  "A STRONG": "bg-sky-100 text-sky-800 dark:bg-sky-950/80 dark:text-sky-300",
+  "B NEEDS AUDIT": "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300",
+  "C CRITICAL": "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300",
+};
 
 export function AutomationBulkRunner({ pageData, activeProfile }: Props) {
   // Workflow Unified Packet State
@@ -232,14 +251,40 @@ ${resGeo}
     }
   };
 
-  // Automated Batch URL Crawler & Scorer
-  const handleStartBatch = () => {
+  // Automated Batch URL Crawler & Scorer — real `/api/full-audit` runs, three
+  // at a time. No score is produced locally: a failed or cancelled audit stays
+  // blank and is labelled "unavailable" with the reason.
+  const batchAbortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => () => batchAbortRef.current?.abort(), []);
+
+  const applyMeasurement = (item: BatchAuditItem, m: BatchAuditMeasurement): BatchAuditItem => ({
+    ...item,
+    status: "done",
+    overallHealth: m.overall,
+    onPageScore: m.onPage,
+    schemaScore: m.schema,
+    geoScore: m.geo,
+    h1: m.h1,
+    wordCount: m.wordCount,
+    schemasFound: m.schemasFound,
+    grade: gradeForOverall(m.overall),
+  });
+
+  const handleStopBatch = () => {
+    batchAbortRef.current?.abort();
+  };
+
+  const handleStartBatch = async () => {
     const urls = urlsInput
       .split("\n")
       .map((u) => u.trim())
       .filter(Boolean);
 
-    if (urls.length === 0) return;
+    if (urls.length === 0 || isBatchRunning) return;
+
+    const controller = new AbortController();
+    batchAbortRef.current = controller;
 
     setIsBatchRunning(true);
     setProgress(0);
@@ -249,65 +294,58 @@ ${resGeo}
       propertyName: getPropertyNameFromUrl(u, i),
       url: u,
       status: "pending",
-      overallHealth: 0,
-      onPageScore: 0,
-      schemaScore: 0,
-      geoScore: 0,
+      overallHealth: null,
+      onPageScore: null,
+      schemaScore: null,
+      geoScore: null,
       h1: "",
-      wordCount: 0,
-      schemasFound: 0,
-      grade: "B NEEDS AUDIT",
+      wordCount: null,
+      schemasFound: null,
+      grade: null,
     }));
 
     setBatchResults(items);
 
     let completed = 0;
-    const interval = setInterval(() => {
+    await runWithConcurrency(urls, BATCH_AUDIT_CONCURRENCY, async (url, index) => {
+      if (controller.signal.aborted) return;
+
+      setBatchResults((prev) => prev.map((it, i) => (i === index ? { ...it, status: "running" as const } : it)));
+
+      const outcome = await runFullAudit(url, { signal: controller.signal });
       completed++;
-      const pct = Math.round((completed / urls.length) * 100);
-      setProgress(pct);
+      setProgress(Math.round((completed / urls.length) * 100));
 
       setBatchResults((prev) =>
-        prev.map((item, idx) => {
-          if (idx < completed) {
-            // Realistic hospitality scores
-            const onPage = Math.floor(Math.random() * 18) + 82;
-            const schema = Math.floor(Math.random() * 25) + 75;
-            const geo = Math.floor(Math.random() * 20) + 80;
-            // Composite weights (35% On-Page, 35% Schema, 30% GEO AI)
-            const overall = Math.round(onPage * 0.35 + schema * 0.35 + geo * 0.3);
-
-            let grade: BatchAuditItem["grade"] = "B NEEDS AUDIT";
-            if (overall >= 92) grade = "A+ OPTIMAL";
-            else if (overall >= 85) grade = "A STRONG";
-            else if (overall >= 75) grade = "B NEEDS AUDIT";
-            else grade = "C CRITICAL";
-
-            return {
-              ...item,
-              status: "done",
-              overallHealth: overall,
-              onPageScore: onPage,
-              schemaScore: schema,
-              geoScore: geo,
-              h1: `${item.propertyName} Headline`,
-              wordCount: Math.floor(Math.random() * 500) + 420,
-              schemasFound: Math.floor(Math.random() * 3) + 2,
-              grade,
-            };
-          }
-          if (idx === completed) {
-            return { ...item, status: "running" };
-          }
-          return item;
-        })
+        prev.map((it, i) => {
+          if (i !== index) return it;
+          if (outcome.ok) return applyMeasurement(it, outcome.measurement);
+          return {
+            ...it,
+            status: controller.signal.aborted ? ("cancelled" as const) : ("error" as const),
+            unavailableReason: outcome.reason,
+          };
+        }),
       );
+    });
 
-      if (completed >= urls.length) {
-        clearInterval(interval);
-        setIsBatchRunning(false);
-      }
-    }, 400);
+    // Anything still queued after a stop is cancelled, not "queued forever".
+    if (controller.signal.aborted) {
+      setBatchResults((prev) =>
+        prev.map((it) =>
+          it.status === "pending" || it.status === "running"
+            ? {
+                ...it,
+                status: "cancelled" as const,
+                unavailableReason: "Cancelled before the audit finished",
+              }
+            : it,
+        ),
+      );
+    }
+
+    batchAbortRef.current = null;
+    setIsBatchRunning(false);
   };
 
   // Sorting
@@ -328,18 +366,23 @@ ${resGeo}
         return (
           item.propertyName.toLowerCase().includes(q) ||
           item.url.toLowerCase().includes(q) ||
-          item.grade.toLowerCase().includes(q)
+          (item.grade ?? "").toLowerCase().includes(q)
         );
       })
       .sort((a, b) => {
-        let valA: any = a[sortField];
-        let valB: any = b[sortField];
+        const valA = a[sortField];
+        const valB = b[sortField];
 
-        if (typeof valA === "string") {
-          return sortDirection === "asc"
-            ? valA.localeCompare(valB)
-            : valB.localeCompare(valA);
+        if (typeof valA === "string" || typeof valB === "string") {
+          const strA = String(valA ?? "");
+          const strB = String(valB ?? "");
+          return sortDirection === "asc" ? strA.localeCompare(strB) : strB.localeCompare(strA);
         }
+
+        // Unmeasured rows sort last in both directions — a blank never beats a real score.
+        if (valA === null && valB === null) return 0;
+        if (valA === null) return 1;
+        if (valB === null) return -1;
 
         return sortDirection === "asc" ? valA - valB : valB - valA;
       });
@@ -358,21 +401,34 @@ ${resGeo}
       "Grade",
       "Schemas Detected",
       "Word Count",
+      "Score Status",
       "Audit Date",
     ];
 
-    const rows = batchResults.map((r) => [
-      `"${r.propertyName.replace(/"/g, '""')}"`,
-      `"${r.url.replace(/"/g, '""')}"`,
-      r.overallHealth,
-      r.onPageScore,
-      r.schemaScore,
-      r.geoScore,
-      `"${r.grade}"`,
-      r.schemasFound,
-      r.wordCount,
-      timestamp,
-    ]);
+    // Unmeasured cells stay empty — a blank is honest, a 0 would be a claim.
+    const rows = batchResults.map((r) => {
+      const scoreStatus =
+        r.status === "done"
+          ? "measured"
+          : r.status === "error"
+          ? `unavailable: ${r.unavailableReason || "audit failed"}`
+          : r.status === "cancelled"
+          ? "cancelled - not audited"
+          : "not run";
+      return [
+        `"${r.propertyName.replace(/"/g, '""')}"`,
+        `"${r.url.replace(/"/g, '""')}"`,
+        r.overallHealth ?? "",
+        r.onPageScore ?? "",
+        r.schemaScore ?? "",
+        r.geoScore ?? "",
+        r.grade ? `"${r.grade}"` : "",
+        r.schemasFound ?? "",
+        r.wordCount ?? "",
+        `"${scoreStatus.replace(/"/g, '""')}"`,
+        timestamp,
+      ];
+    });
 
     const csvContent = [headers.join(","), ...rows.map((row) => row.join(","))].join("\n");
     const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -386,17 +442,20 @@ ${resGeo}
   // Export JSON for Monthly Visibility Decks
   const handleExportJson = () => {
     const timestamp = new Date().toISOString();
+    const measured = batchResults.filter((r) => typeof r.overallHealth === "number");
     const payload = {
       report: "SEO Studio Monthly Visibility Deck Audit",
       timestamp,
       totalProperties: batchResults.length,
+      measuredProperties: measured.length,
+      unavailableProperties: batchResults.length - measured.length,
+      // null when nothing was measured: an average of no scores is not 0.
       averageOverallScore:
-        batchResults.length > 0
+        measured.length > 0
           ? Math.round(
-              batchResults.reduce((acc, curr) => acc + curr.overallHealth, 0) /
-                batchResults.length
+              measured.reduce((acc, curr) => acc + (curr.overallHealth as number), 0) / measured.length
             )
-          : 0,
+          : null,
       properties: batchResults,
     };
 
@@ -408,6 +467,23 @@ ${resGeo}
     a.href = url;
     a.download = `SEO_Studio_Visibility_Deck_${new Date().toISOString().split("T")[0]}.json`;
     a.click();
+  };
+
+  /** One score cell: a measured number, or an explicit "n/a"/blank. Never a fallback figure. */
+  const scoreCell = (item: BatchAuditItem, value: number | null, suffix = "") => {
+    if (item.status === "done" && value !== null) return `${value}${suffix}`;
+    if (item.status === "error") {
+      return (
+        <span
+          className="text-[10px] font-bold text-rose-500 dark:text-rose-400"
+          title={item.unavailableReason}
+        >
+          n/a
+        </span>
+      );
+    }
+    if (item.status === "running") return <span className="text-[10px] text-sky-500">…</span>;
+    return <span className="text-[10px] text-slate-400">-</span>;
   };
 
   return (
@@ -469,23 +545,41 @@ ${resGeo}
             className="w-full rounded-xl border border-slate-200 bg-white p-2.5 font-mono text-[11px] text-slate-800 shadow-xs focus:border-brand focus:outline-none dark:border-slate-800 dark:bg-slate-950 dark:text-slate-200"
           />
 
-          <button
-            type="button"
-            onClick={handleStartBatch}
-            disabled={isBatchRunning}
-            className="flex w-full items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-brand dark:text-slate-950 dark:hover:bg-brand-light disabled:opacity-50"
-          >
-            {isBatchRunning ? (
-              <Clock className="h-4 w-4 animate-spin" />
-            ) : (
-              <Play className="h-4 w-4" />
+          <div className="flex flex-col gap-1.5 sm:flex-row">
+            <button
+              type="button"
+              onClick={handleStartBatch}
+              disabled={isBatchRunning}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-brand dark:text-slate-950 dark:hover:bg-brand-light disabled:opacity-50"
+            >
+              {isBatchRunning ? (
+                <Clock className="h-4 w-4 animate-spin" />
+              ) : (
+                <Play className="h-4 w-4" />
+              )}
+              <span>
+                {isBatchRunning
+                  ? `Auditing Properties (${progress}% Complete)...`
+                  : "Run Automated SEO + GEO Batch Audits"}
+              </span>
+            </button>
+
+            {isBatchRunning && (
+              <button
+                type="button"
+                onClick={handleStopBatch}
+                className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
+              >
+                <span>Stop</span>
+              </button>
             )}
-            <span>
-              {isBatchRunning
-                ? `Auditing Properties (${progress}% Complete)...`
-                : "Run Automated SEO + GEO Batch Audits"}
-            </span>
-          </button>
+          </div>
+
+          <p className="text-[10px] leading-relaxed text-slate-500 dark:text-slate-400">
+            Each row is audited live against the SEO Studio rules engine (3 at a time). Rows that
+            fail or are stopped show <span className="font-bold">unavailable</span> — no score is
+            estimated locally.
+          </p>
         </div>
 
         {/* Progress Bar */}
@@ -609,43 +703,54 @@ ${resGeo}
                       </td>
 
                       <td className="px-2.5 py-2 text-right font-mono font-bold tabular-nums">
-                        {item.status === "done" ? (
+                        {item.status === "done" && item.overallHealth !== null ? (
                           <span className="text-slate-900 dark:text-white tabular-nums">
                             {item.overallHealth}/100
                           </span>
                         ) : item.status === "running" ? (
                           <span className="text-[10px] text-sky-500">Scanning...</span>
+                        ) : item.status === "error" ? (
+                          <span
+                            className="text-[10px] font-bold text-rose-500 dark:text-rose-400"
+                            title={item.unavailableReason}
+                          >
+                            unavailable
+                          </span>
+                        ) : item.status === "cancelled" ? (
+                          <span className="text-[10px] text-slate-400">cancelled</span>
                         ) : (
                           <span className="text-[10px] text-slate-400">Queued</span>
                         )}
                       </td>
 
                       <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell tabular-nums">
-                        {item.status === "done" ? `${item.onPageScore}%` : "-"}
+                        {scoreCell(item, item.onPageScore, "%")}
                       </td>
 
                       <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell tabular-nums">
-                        {item.status === "done" ? `${item.schemaScore}%` : "-"}
+                        {scoreCell(item, item.schemaScore, "%")}
                       </td>
 
-                      <td className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell tabular-nums">
-                        {item.status === "done" ? `${item.geoScore}%` : "-"}
+                      <td
+                        className="px-2.5 py-2 text-right font-mono text-slate-600 dark:text-slate-400 hidden sm:table-cell tabular-nums"
+                        title="GEO readiness is an on-page heuristic estimate from the audit report — not an AI-engine measurement."
+                      >
+                        {scoreCell(item, item.geoScore, "%")}
                       </td>
 
                       <td className="px-3 py-2 text-center">
-                        {item.status === "done" ? (
+                        {item.status === "done" && item.grade ? (
                           <span
-                            className={`inline-block rounded-md px-1.5 py-0.5 text-[9px] font-extrabold uppercase ${
-                              item.overallHealth >= 90
-                                ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/80 dark:text-emerald-300"
-                                : item.overallHealth >= 80
-                                ? "bg-sky-100 text-sky-800 dark:bg-sky-950/80 dark:text-sky-300"
-                                : item.overallHealth >= 70
-                                ? "bg-amber-100 text-amber-800 dark:bg-amber-950/80 dark:text-amber-300"
-                                : "bg-rose-100 text-rose-800 dark:bg-rose-950/80 dark:text-rose-300"
-                            }`}
+                            className={`inline-block rounded-md px-1.5 py-0.5 text-[9px] font-extrabold uppercase ${GRADE_TONE[item.grade]}`}
                           >
                             {item.grade}
+                          </span>
+                        ) : item.status === "error" ? (
+                          <span
+                            className="text-[10px] font-bold text-rose-500 dark:text-rose-400"
+                            title={item.unavailableReason}
+                          >
+                            n/a
                           </span>
                         ) : (
                           <span className="text-[10px] text-slate-400">-</span>

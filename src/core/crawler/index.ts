@@ -10,6 +10,7 @@ export * from "./url";
 import { fetchAndParseSitemaps } from "./sitemap";
 import { CRAWLER_USER_AGENT } from "./robots";
 import { assertEgressAllowed, readTextCapped, safeFetch } from "../../lib/security/egress";
+import { EPHEMERAL_STORAGE, type StorageDescriptor } from "../storage";
 
 export const SERVICE_PATTERNS: Record<string, RegExp> = {
   lodging: /\b(?:hotels?|inns?|motels?|lodging|stays?|places\s+to\s+stay|rooms?)\b/i,
@@ -113,6 +114,11 @@ export function extractHtmlCrawlText(html: string): { title: string; text: strin
 export interface CrawlOptions {
   fallbackText?: string;
   workbookUrls?: string[];
+  /**
+   * Client/property id that owns this crawl. It is part of the cache key so
+   * two clients or properties can never be served each other's cached result.
+   */
+  scopeKey?: string;
 }
 
 export interface CrawlResult {
@@ -140,10 +146,25 @@ export function clearCrawlCache(): void {
   crawlCache.clear();
 }
 
+/** The crawl cache only ever lives in this instance's memory. */
+export function crawlCacheDescriptor(): StorageDescriptor {
+  return EPHEMERAL_STORAGE;
+}
+
+/**
+ * Cache identity: owner scope (client/property id) first, then the target URL
+ * and the operator's fallback text. Scope leads the key so a cached entry can
+ * never be served to a different client or property.
+ */
+export function buildCrawlCacheKey(normalizedUrl: string, fallbackText: string, scopeKey?: string): string {
+  const scope = scopeKey?.trim().toLowerCase() || "global";
+  return `${scope}|${normalizedUrl.trim().toLowerCase()}|${fallbackText.trim().toLowerCase()}`;
+}
+
 export async function crawlTargetWebsite(targetUrl: string, options: CrawlOptions = {}): Promise<CrawlResult> {
   const normalizedUrl = await assertEgressAllowed(targetUrl);
   const fallbackText = (options.fallbackText ?? "").trim();
-  const cacheKey = `${normalizedUrl.toLowerCase()}|${fallbackText.toLowerCase()}`;
+  const cacheKey = buildCrawlCacheKey(normalizedUrl, fallbackText, options.scopeKey);
   const cached = crawlCache.get(cacheKey);
   if (cached && Date.now() - cached.timestamp < CRAWL_CACHE_TTL_MS) {
     return cached.result;
