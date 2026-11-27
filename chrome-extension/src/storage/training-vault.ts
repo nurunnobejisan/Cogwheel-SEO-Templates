@@ -76,7 +76,10 @@ export interface TrainingPairRecord {
 
 const PII_EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
 const PII_SECRET = /\b(?:sk|pk|ghp|gho|xox[baprs])[-_][A-Za-z0-9_-]{12,}\b/g;
-const PII_PHONE = /\+\d[\d\s().-]{7,}\d/g;
+// Same shape as PHONE in src/core/training/dataset.ts: the old `\+\d...` form
+// only caught numbers written with a leading `+`, so `(503) 555 0123` was
+// persisted unredacted. Keep in step with ml/clean/pii.py.
+const PII_PHONE = /(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{2,4}\)|\b\d{2,4})[-.\s]\d{3,4}[-.\s]\d{3,4}\b/g;
 
 /** Recursively redacts PII before a capture is persisted or exported. */
 export function stripTrainingPii<T>(value: T): T {

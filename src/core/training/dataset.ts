@@ -31,7 +31,11 @@ export interface TrainingTriple {
 }
 
 const EMAIL = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi;
-const PHONE = /\b(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{2,4}\)|\d{2,4})[-.\s]\d{3,4}[-.\s]\d{3,4}\b/g;
+// The word-boundary guard sits on the digit branch (`\b\d{2,4}`) rather than
+// at the start of the pattern: a leading `\b` cannot match before `(`, which
+// let `(503) 555 0123` through unredacted. The paren branch needs no guard —
+// `(` itself anchors it. Keep in step with PHONE_RE in ml/clean/pii.py.
+const PHONE = /(?:\+?\d{1,3}[-.\s]?)?(?:\(\d{2,4}\)|\b\d{2,4})[-.\s]\d{3,4}[-.\s]\d{3,4}\b/g;
 const BEARER = /\b(?:sk|pk|ghp|gho|xox[baprs])[-_][A-Za-z0-9_-]{12,}\b/g;
 
 export function stripPii(value: unknown): unknown {

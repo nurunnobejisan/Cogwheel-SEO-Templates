@@ -188,3 +188,55 @@ after a golden-set run.
 **Reverse.** Set `status` back to `ready` in the JSON, and revert the one line
 in `train_unified_model.py`.
 
+### D-014 — Phase 1 Python lives in `ml/`, not `python/`, and is stdlib-first
+
+**Decision.** The pipeline modules are `ml/collect/`, `ml/extract/`,
+`ml/clean/`, `ml/dataset/` (plus `ml/registry.py`), not
+`python/<module>/` as `docs/PROJECT_STRUCTURE.md` prescribes. Tests still go
+in `tests/python/`. Heavy dependencies (`cdx_toolkit`, `extruct`,
+`trafilatura`) are optional with `bs4`/stdlib fallbacks; `ml/README.md`
+(merged in Phase 0) already documents this layout.
+
+**Reason.** Phase 0 merged `ml/README.md` defining `ml/` as the pipeline home
+(`collect/extract/clean/retrieve/generate/train/serve/eval`); splitting the
+pipeline across `python/` and `ml/` would fragment it against its own
+documentation. The CI Python job installs only the root `requirements.txt`,
+so stdlib/`bs4`-first is the only way the pipeline is verifiable in CI at
+all — a module that cannot import in CI cannot be tested there.
+
+**Reverse.** Move `ml/*.py` under `python/ml/`, update the sys.path bootstrap
+and imports, and amend `ml/README.md` and this decision.
+
+### D-015 — `ml/sources.json` is a generated mirror of `ml/sources.yaml`
+
+**Decision.** `ml/sources.yaml` stays the single authored source of truth;
+`scripts/export-ml-sources.ts` renders `ml/sources.json` from it, and
+`npm run ml:sources:export --check` is chained into `npm run train:validate`.
+Python reads only the JSON mirror.
+
+**Reason.** The CI Python job installs the root `requirements.txt`, which has
+no PyYAML, so Python cannot read the YAML directly. `js-yaml` is already a
+devDependency for the Node validators, so the mirror is generated — never
+hand-edited — and the `--check` gate fails CI if either file changes without
+regenerating the other.
+
+**Reverse.** Add `PyYAML` to `requirements.txt`, point `ml/registry.py` at the
+YAML, and delete the exporter and the `ml:sources:*` scripts.
+
+### D-016 — Parenthesized phone numbers were unredacted; fixed in all three copies
+
+**Decision.** The phone pattern in `src/core/training/dataset.ts`,
+`PII_PHONE` in `chrome-extension/src/storage/training-vault.ts`, and `PHONE_RE`
+in `ml/clean/pii.py` now share one shape whose word-boundary guard sits on the
+digit branch (`\b\d{2,4}`) instead of the start of the pattern, so
+`(503) 555 0123` is redacted. Regression tests added on both sides.
+
+**Reason.** A leading `\b` cannot match between a space and `(`, so the old
+patterns silently passed parenthesized numbers through — a real PII leak in
+production redaction code, found while testing the Python twin. The vault copy
+was worse: `\+\d...` only ever matched numbers written with a leading `+`.
+Years, prices and ZIP codes remain unaffected (verified before the change).
+
+**Reverse.** Revert the three regex lines — but this reintroduces the leak, so
+reversal is not recommended; fix forward instead.
+

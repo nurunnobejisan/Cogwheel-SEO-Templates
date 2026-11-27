@@ -44,6 +44,15 @@ describe("training dataset gates", () => {
     expect(clean.count).toBe(3);
   });
 
+  it("redacts parenthesized phone numbers (regression: leading \\b cannot match before '(')", () => {
+    const clean = stripPii({
+      note: "tel (503) 555-0123 or (212) 555 0100",
+    }) as { note: string };
+    expect(clean.note).not.toContain("555-0123");
+    expect(clean.note).not.toContain("555 0100");
+    expect(clean.note).toContain("[REDACTED_PHONE]");
+  });
+
   it("hashes content deterministically regardless of key order", () => {
     const a = contentHash({ b: 2, a: 1 }, { fix: "x" });
     const b = contentHash({ a: 1, b: 2 }, { fix: "x" });
