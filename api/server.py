@@ -13,6 +13,7 @@ Endpoints
 GET  /health                   Liveness probe (no auth, no internals).
 POST /v1/content/similarity    Thin-content + duplicate audit (``content_engine``).
 POST /v1/content/link-graph    Internal link graph (``content_engine``).
+POST /v1/content/validate      Validate a payload against one of the five content models (``models``).
 POST /v1/reports/seo-visibility  Monthly PPTX build (``seo_visibility_report.build``).
 
 Security model (fail-closed):
@@ -42,7 +43,7 @@ import secrets
 import sys
 import tempfile
 from pathlib import Path
-from typing import Optional
+from typing import Any, Literal, Optional
 
 # Allow `python3 api/server.py` (repo root is then not on sys.path).
 if __package__ in (None, ""):
@@ -50,10 +51,17 @@ if __package__ in (None, ""):
 
 from fastapi import Depends, FastAPI, File, Form, Header, HTTPException, Request, UploadFile
 from fastapi.responses import JSONResponse, Response
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from starlette.concurrency import run_in_threadpool
 
 from api.content_engine import batch_similarity_audit, generate_internal_link_graph
+from api.models import (
+    DestinationGuideModel,
+    HotelFaqModel,
+    PageMetadataModel,
+    RoomShowcaseModel,
+    SiteManifestItemModel,
+)
 from api.seo_visibility_report import build as build_report
 
 logger = logging.getLogger("seo-studio.python")
@@ -110,6 +118,30 @@ class ManifestItem(BaseModel):
 class LinkGraphRequest(BaseModel):
     items: list[ManifestItem] = Field(min_length=1, max_length=MAX_MANIFEST_ITEMS)
     max_links_per_page: int = Field(default=5, ge=1, le=50)
+
+
+# Content-model validation (api/models.py served over HTTP).
+MAX_VALIDATION_FIELDS = 64
+
+
+class ContentModelValidationRequest(BaseModel):
+    kind: Literal[
+        "destination-guide",
+        "room-showcase",
+        "hotel-faq",
+        "page-metadata",
+        "site-manifest-item",
+    ]
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
+CONTENT_MODELS: dict[str, type[BaseModel]] = {
+    "destination-guide": DestinationGuideModel,
+    "room-showcase": RoomShowcaseModel,
+    "hotel-faq": HotelFaqModel,
+    "page-metadata": PageMetadataModel,
+    "site-manifest-item": SiteManifestItemModel,
+}
 
 
 app = FastAPI(
@@ -173,6 +205,38 @@ def content_link_graph(
         items,
         max_links_per_page=payload.max_links_per_page,
     )
+
+
+@app.post("/v1/content/validate")
+def validate_content_model(
+    payload: ContentModelValidationRequest,
+    _auth: None = Depends(require_bearer),
+) -> dict:
+    """Validate a payload against one of the five ``api/models.py`` models.
+
+    Pure validation — no file, network or scoring work. Returns the parsed
+    model (defaults filled in) on success, or 422 with the pydantic errors.
+    Unknown kinds are rejected by the ``Literal`` above; extra payload keys are
+    ignored, matching the model definitions.
+    """
+    if len(payload.payload) > MAX_VALIDATION_FIELDS:
+        raise HTTPException(
+            status_code=413,
+            detail=f"payload exceeds {MAX_VALIDATION_FIELDS} fields",
+        )
+    model_cls = CONTENT_MODELS[payload.kind]
+    try:
+        instance = model_cls.model_validate(payload.payload)
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail={
+                "valid": False,
+                "kind": payload.kind,
+                "errors": exc.errors(include_url=False, include_context=False),
+            },
+        ) from exc
+    return {"valid": True, "kind": payload.kind, "data": instance.model_dump()}
 
 
 async def _spool_upload(upload: UploadFile, suffix: str, dest_dir: Path) -> Path:

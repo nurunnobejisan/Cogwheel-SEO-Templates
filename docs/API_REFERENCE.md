@@ -129,7 +129,7 @@ library modules and one MCP server:
 | --- | --- |
 | `api/server.py` | **FastAPI service** — HTTP bridges over the libraries below. Run from the repo root: `uvicorn api.server:app --host 127.0.0.1 --port 8077` (or `python3 api/server.py`). |
 | `api/content_engine.py` | Library — batch thin-content detection, TF-IDF / Jaccard similarity (>70% duplicate blocker), internal-link graph manifest generator. Served at `POST /v1/content/similarity` and `POST /v1/content/link-graph`. |
-| `api/models.py` | Library — Pydantic models mirroring the TypeScript schemas in `validators/schemas/index.ts` and `shared/schemas/`. |
+| `api/models.py` | Library — Pydantic models mirroring the TypeScript schemas in `validators/schemas/index.ts` and `shared/schemas/`. Served at `POST /v1/content/validate`. |
 | `api/seo_visibility_report.py` | CLI/library — builds the monthly SEO visibility PowerPoint from a template plus Semrush PDF/XLSX. Served at `POST /v1/reports/seo-visibility` (multipart uploads in, pptx bytes out). |
 | `api/gsc_server.py` | **MCP server** (`FastMCP("gsc-server")`) exposing Google Search Console tools to MCP clients such as Claude Desktop. Requires Python 3.11+ and exits loudly on older versions (issue #19). Config lives in `GSC_CONFIG_DIR` (default: user config dir `mcp-gsc`). |
 
@@ -139,6 +139,7 @@ library modules and one MCP server:
 GET  /health                      liveness probe (no auth, status only)
 POST /v1/content/similarity       { pages[{id,url?,content}], max_similarity?, min_words? }
 POST /v1/content/link-graph       { items[{url,parentPage?,primaryKeyword?,...}], max_links_per_page? }
+POST /v1/content/validate         { kind, payload } → 200 { valid, data } | 413 field cap | 422 { detail: { valid: false, errors } }
 POST /v1/reports/seo-visibility   multipart: template (.pptx), xlsx (.xlsx), pdf? (.pdf) → pptx bytes
 ```
 
