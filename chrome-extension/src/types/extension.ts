@@ -1,3 +1,5 @@
+import type { PackPageType } from "../../../src/packs/types";
+
 export type UniversalSiteCategory =
   | "hospitality"
   | "ecommerce"
@@ -137,6 +139,17 @@ export interface PageAuditData {
   };
   socialLinks?: Array<{ platform: string; url: string }>;
   loadTimeMs?: number;
+  /**
+   * Rule-based page-type classification (docs/TASKS.md Task 3.2). Attached by
+   * the content script through `classifyPageTypeForAudit` and rendered as a
+   * confidence pill in the sidepanel. Additive and optional: audit payloads
+   * produced by older extension versions simply omit it.
+   */
+  pageType?: PackPageType;
+  /** 0-100 heuristic confidence; 0 = no signal matched. Not a measurement. */
+  pageTypeConfidence?: number;
+  /** Signals that fired (`"<type>: <why>"`), shown in the pill tooltip. */
+  pageTypeSignals?: string[];
 }
 
 export interface ScoreBreakdown {

@@ -18,6 +18,7 @@ import {
 import { PageAuditData, CompetitorTabData } from "../types/extension";
 import { calculateSeoScores } from "../data/seoStudioTemplates";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
+import { getActiveScoringWeights } from "../utils/activePack";
 
 interface Props {
   currentPageData: PageAuditData;
@@ -82,8 +83,15 @@ export function CompetitorCompareTab({
 
   // Initialize with current tab as Slot 1
   useEffect(() => {
-    if (pinnedTabs.length === 0) {
-      const initialScore = calculateSeoScores(currentPageData);
+    if (pinnedTabs.length !== 0) return;
+    let cancelled = false;
+    void (async () => {
+      // Task 3.2: composite weighted by the active pack's scoringWeights.
+      const initialScore = calculateSeoScores(
+        currentPageData,
+        await getActiveScoringWeights()
+      );
+      if (cancelled) return;
       setPinnedTabs([
         {
           tabId: activeTabId || 1,
@@ -96,7 +104,10 @@ export function CompetitorCompareTab({
           schemaTypes: (currentPageData.schemas || []).map((s) => String(s["@type"] || "")),
         },
       ]);
-    }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [currentPageData, activeTabId]);
 
   // Pin a competitor tab (max 3 slots)
@@ -118,10 +129,10 @@ export function CompetitorCompareTab({
     // Attempt to extract live data from the pinned tab
     if (typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.sendMessage && tabItem.id) {
       try {
-        chrome.tabs.sendMessage(tabItem.id, { type: "EXTRACT_PAGE_DATA" }, (res) => {
+        chrome.tabs.sendMessage(tabItem.id, { type: "EXTRACT_PAGE_DATA" }, async (res) => {
           if (res && res.data) {
             const auditData: PageAuditData = res.data;
-            const score = calculateSeoScores(auditData);
+            const score = calculateSeoScores(auditData, await getActiveScoringWeights());
             setPinnedTabs((current) =>
               current.map((item) =>
                 item.tabId === tabItem.id

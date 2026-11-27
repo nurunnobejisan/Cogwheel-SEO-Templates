@@ -24,9 +24,11 @@
  * than reported as certain. No signal at all → `other` at confidence 0, which
  * means "no evidence", not "certainly other".
  */
-import type { PageSnapshot } from "../../rules/types.ts";
-import { BOOKING_ENGINE_SIGNATURES } from "../../rules/context/detect-mode.ts";
-import type { PackPageType } from "./types.ts";
+// Extensionless specifiers: this module is also compiled by the Chrome
+// extension's tsconfig (allowImportingTsExtensions is false over there).
+import type { PageSnapshot } from "../../rules/types";
+import { BOOKING_ENGINE_SIGNATURES } from "../../rules/context/detect-mode";
+import type { PackPageType } from "./types";
 
 /** Score at which a page type stops gaining absolute strength. */
 const SATURATION = 60;

@@ -7,7 +7,7 @@
  * the Node backend use the in-memory store.
  */
 
-import type { AuditMode, ModeOverrideStoreLike } from "../types.ts";
+import type { AuditMode, ModeOverrideStoreLike } from "../types";
 
 export interface ModeOverrideStore extends ModeOverrideStoreLike {
   /** Remove an override, restoring automatic detection for the domain. */

@@ -19,9 +19,13 @@ import {
   CheckCircle2,
   AlertCircle,
   Globe,
+  Layers,
 } from "lucide-react";
 import { PRESET_CLIENT_PROFILES } from "../data/seoStudioTemplates";
 import { ClientProfile } from "../types/extension";
+import { PACK_CATALOG } from "../../../src/packs/catalog";
+import type { ScoringWeights } from "../../../src/schemas/validation";
+import type { PackSuggestion } from "../../../src/packs/suggest";
 import {
   CustomModelConfig,
   DEFAULT_CUSTOM_MODEL_CONFIG,
@@ -36,6 +40,14 @@ interface Props {
   onSelectProfile: (profile: ClientProfile) => void;
   isDarkMode: boolean;
   onToggleTheme: () => void;
+  /** Active vertical pack id (docs/TASKS.md Task 2.4). */
+  activePack: string;
+  /** Persist a pack selection into ExtensionOptions (Task 2.4). */
+  onSelectPack: (packId: string) => Promise<void>;
+  /** The active pack's composite weights (Task 3.2) — displayed, not edited. */
+  scoringWeights: ScoringWeights;
+  /** Catalog auto-suggestion when it disagrees with the stored pack (2.4). */
+  packSuggestion: PackSuggestion | null;
 }
 
 export type BrandRuleOption = "Marriott" | "Hilton" | "IHG" | "Hyatt" | "Independent";
@@ -91,18 +103,37 @@ export function SettingsBrandProfiles({
   onSelectProfile,
   isDarkMode,
   onToggleTheme,
+  activePack,
+  onSelectPack,
+  scoringWeights,
+  packSuggestion,
 }: Props) {
   const [profileForm, setProfileForm] = useState<ClientProfile>(activeProfile);
   const [saved, setSaved] = useState(false);
+  const [packSaving, setPackSaving] = useState(false);
 
   // Pixel Limits Configuration State
   const [titlePixelLimit, setTitlePixelLimit] = useState(580);
   const [metaDescPixelLimit, setMetaDescPixelLimit] = useState(920);
 
-  // Composite Gauge Weights State (Default: 35% On-Page, 35% Schema, 30% GEO AI)
-  const [onPageWeight, setOnPageWeight] = useState(35);
-  const [schemaWeight, setSchemaWeight] = useState(35);
-  const [geoWeight, setGeoWeight] = useState(30);
+  // Composite weights come from the active pack's catalog entry (Task 3.2).
+  // They are read-only here: the pack owns them, this panel only displays
+  // what the gauge actually uses.
+  const weightPct = {
+    onPage: Math.round(scoringWeights.onPage * 100),
+    schema: Math.round(scoringWeights.schema * 100),
+    geoAi: Math.round(scoringWeights.geoAi * 100),
+  };
+  const activePackMeta = PACK_CATALOG.find((p) => p.id === activePack);
+
+  const handleSelectPack = async (packId: string) => {
+    setPackSaving(true);
+    try {
+      await onSelectPack(packId);
+    } finally {
+      setPackSaving(false);
+    }
+  };
 
   // Default Hotel Brand Rules State
   const [selectedBrandRule, setSelectedBrandRule] = useState<BrandRuleOption>(() => {
@@ -117,9 +148,6 @@ export function SettingsBrandProfiles({
   // llms.txt Generator State
   const [copiedLlms, setCopiedLlms] = useState(false);
   const activeBrandConfig = BRAND_PRESETS[selectedBrandRule];
-
-  const totalWeight = onPageWeight + schemaWeight + geoWeight;
-  const isWeightValid = totalWeight === 100;
 
   const handleSave = () => {
     onSelectProfile(profileForm);
@@ -211,6 +239,71 @@ export function SettingsBrandProfiles({
 
   return (
     <div className="space-y-4">
+      {/* 0. ACTIVE VERTICAL PACK SELECTOR (docs/TASKS.md Task 2.4) */}
+      <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70 space-y-3">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
+          <div className="flex items-center gap-1.5">
+            <Layers className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              ACTIVE VERTICAL PACK
+            </span>
+          </div>
+          <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+            {activePackMeta?.name ?? activePack}
+          </span>
+        </div>
+
+        <p className="text-[11px] text-slate-500 dark:text-slate-400">
+          The pack drives the composite gauge weights, brand guardrails and the strategy
+          matrix. Saved to extension settings, so popup and sidepanel stay in sync.
+        </p>
+
+        <div className="grid gap-2 sm:grid-cols-3">
+          {PACK_CATALOG.map((pack) => {
+            const isSelected = pack.id === activePack;
+            return (
+              <button
+                key={pack.id}
+                type="button"
+                disabled={packSaving}
+                onClick={() => void handleSelectPack(pack.id)}
+                title={pack.description}
+                className={`rounded-xl border p-2.5 text-left transition shadow-xs disabled:opacity-60 ${
+                  isSelected
+                    ? "border-emerald-500 bg-emerald-50/80 dark:border-emerald-700 dark:bg-emerald-950/40"
+                    : "border-slate-200 bg-white hover:border-slate-300 dark:border-slate-800 dark:bg-slate-950"
+                }`}
+              >
+                <div className="font-display text-xs font-bold text-slate-900 dark:text-white">
+                  {pack.name}
+                </div>
+                <div className="mt-0.5 text-[10px] leading-snug text-slate-500 dark:text-slate-400">
+                  {pack.description}
+                </div>
+                <div className="mt-1 font-mono text-[9px] text-slate-400 dark:text-slate-500">
+                  {Math.round(pack.scoringWeights.onPage * 100)}/
+                  {Math.round(pack.scoringWeights.schema * 100)}/
+                  {Math.round(pack.scoringWeights.geoAi * 100)} · {pack.pageTypes.join(", ")}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+
+        {packSuggestion && (
+          <button
+            type="button"
+            disabled={packSaving}
+            onClick={() => void handleSelectPack(packSuggestion.packId)}
+            className="w-full rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-700 transition hover:bg-emerald-500/20 dark:text-emerald-300"
+            title={`Signals: ${packSuggestion.reasons.join(", ") || "none"}`}
+          >
+            Suggested for this page: {packSuggestion.name} ({packSuggestion.confidence}% heuristic
+            confidence) — switch
+          </button>
+        )}
+      </div>
+
       {/* 1. BRAND PROFILES CARD */}
       <div className="rounded-2xl border border-slate-200/90 bg-white/70 p-4 shadow-xs backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/70">
         <div className="flex items-center justify-between border-b border-slate-100 pb-2.5 dark:border-slate-800">
@@ -308,22 +401,21 @@ export function SettingsBrandProfiles({
           </div>
         </div>
 
-        {/* Composite Gauge Weights */}
+        {/* Composite Gauge Weights — owned by the active pack (Task 3.2) */}
         <div className="border-t border-slate-100 pt-3 dark:border-slate-800 space-y-2">
           <div className="flex items-center justify-between text-xs">
             <label className="text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-              COMPOSITE HEALTH GAUGE WEIGHTS
+              COMPOSITE HEALTH GAUGE WEIGHTS — {activePackMeta?.name ?? activePack}
             </label>
-            <span
-              className={`rounded px-1.5 py-0.5 text-[10px] font-bold ${
-                isWeightValid
-                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
-                  : "bg-rose-50 text-rose-700 dark:bg-rose-950/60 dark:text-rose-300"
-              }`}
-            >
-              Total: {totalWeight}% {isWeightValid ? "(Valid)" : "(Must equal 100%)"}
+            <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
+              Total: {weightPct.onPage + weightPct.schema + weightPct.geoAi}% (pack-owned)
             </span>
           </div>
+
+          <p className="text-[10px] text-slate-500 dark:text-slate-400">
+            Read-only: these weights come from the active pack's catalog entry and are exactly
+            what the composite gauge uses. Switch packs above to change them.
+          </p>
 
           <div className="grid gap-2.5 sm:grid-cols-3">
             <div>
@@ -331,14 +423,9 @@ export function SettingsBrandProfiles({
                 On-Page Structure
               </div>
               <div className="mt-1 flex items-center gap-1.5">
-                <input
-                  type="number"
-                  min={10}
-                  max={70}
-                  value={onPageWeight}
-                  onChange={(e) => setOnPageWeight(Number(e.target.value) || 0)}
-                  className="h-7 w-16 rounded-lg border border-slate-200 bg-white px-2 font-mono text-xs text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-                />
+                <span className="h-7 w-16 rounded-lg border border-slate-200 bg-slate-50 px-2 font-mono text-xs leading-7 text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white">
+                  {weightPct.onPage}
+                </span>
                 <span className="text-xs text-slate-500">%</span>
               </div>
             </div>
@@ -348,14 +435,9 @@ export function SettingsBrandProfiles({
                 Schema &amp; Technical
               </div>
               <div className="mt-1 flex items-center gap-1.5">
-                <input
-                  type="number"
-                  min={10}
-                  max={70}
-                  value={schemaWeight}
-                  onChange={(e) => setSchemaWeight(Number(e.target.value) || 0)}
-                  className="h-7 w-16 rounded-lg border border-slate-200 bg-white px-2 font-mono text-xs text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-                />
+                <span className="h-7 w-16 rounded-lg border border-slate-200 bg-slate-50 px-2 font-mono text-xs leading-7 text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white">
+                  {weightPct.schema}
+                </span>
                 <span className="text-xs text-slate-500">%</span>
               </div>
             </div>
@@ -365,14 +447,9 @@ export function SettingsBrandProfiles({
                 GEO AI Readiness
               </div>
               <div className="mt-1 flex items-center gap-1.5">
-                <input
-                  type="number"
-                  min={10}
-                  max={70}
-                  value={geoWeight}
-                  onChange={(e) => setGeoWeight(Number(e.target.value) || 0)}
-                  className="h-7 w-16 rounded-lg border border-slate-200 bg-white px-2 font-mono text-xs text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white"
-                />
+                <span className="h-7 w-16 rounded-lg border border-slate-200 bg-slate-50 px-2 font-mono text-xs leading-7 text-slate-800 dark:border-slate-800 dark:bg-slate-950 dark:text-white">
+                  {weightPct.geoAi}
+                </span>
                 <span className="text-xs text-slate-500">%</span>
               </div>
             </div>

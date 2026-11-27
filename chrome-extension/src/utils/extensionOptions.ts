@@ -2,6 +2,8 @@
  * SEO & GEO Studio - Extension Options & Training Guardrails
  */
 
+import { DEFAULT_PACK_ID } from "../../../src/packs/catalog";
+
 export interface ExtensionOptions {
   consent: boolean;
   captureMode: "manual" | "auto";
@@ -10,6 +12,12 @@ export interface ExtensionOptions {
   blocklistPaths: string[];
   apiUrl: string;
   apiToken: string;
+  /**
+   * Active vertical pack id (docs/TASKS.md Task 2.4). Added in Phase C;
+   * `loadExtensionOptions` merges stored settings over the defaults, so
+   * settings saved before this field existed load as the default pack.
+   */
+  activePack: string;
 }
 
 export const DEFAULT_BLOCKLIST_DOMAINS = [
@@ -51,6 +59,7 @@ export const DEFAULT_OPTIONS: ExtensionOptions = {
   blocklistPaths: DEFAULT_BLOCKLIST_PATHS,
   apiUrl: "https://seo-studio-one.vercel.app/api/ai-training",
   apiToken: "",
+  activePack: DEFAULT_PACK_ID,
 };
 
 import { encryptSecret, decryptSecret } from "./secureStorage";

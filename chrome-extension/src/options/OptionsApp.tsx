@@ -9,7 +9,9 @@ import {
   Database,
   Radio,
   ExternalLink,
+  Layers,
 } from "lucide-react";
+import { PACK_CATALOG } from "../../../src/packs/catalog";
 import {
   ExtensionOptions,
   DEFAULT_OPTIONS,
@@ -237,11 +239,53 @@ export function OptionsApp() {
           </div>
         </article>
 
-        {/* Section 2: Allowlist & Blocklist */}
+        {/* Section 2: Active Vertical Pack (docs/TASKS.md Task 2.4) */}
+        <article className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl space-y-4">
+          <h2 className="text-base font-semibold text-white flex items-center gap-2">
+            <Layers className="h-4 w-4 text-emerald-400" />
+            2. Active Vertical Pack
+          </h2>
+          <p className="text-xs text-slate-400">
+            Chooses the pack that drives the composite scoring weights, brand guardrails and
+            strategy matrix shown in the popup and side panel. Saved with the button above.
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {PACK_CATALOG.map((pack) => (
+              <div
+                key={pack.id}
+                onClick={() => setOptions({ ...options, activePack: pack.id })}
+                className={`p-3.5 rounded-xl border cursor-pointer transition-all ${
+                  options.activePack === pack.id
+                    ? "border-emerald-500 bg-emerald-500/10"
+                    : "border-slate-800 bg-slate-950/50 hover:border-slate-700"
+                }`}
+              >
+                <div className="flex items-center gap-2 font-medium text-sm text-white mb-1">
+                  <input
+                    type="radio"
+                    name="activePack"
+                    checked={options.activePack === pack.id}
+                    onChange={() => setOptions({ ...options, activePack: pack.id })}
+                    className="text-emerald-500"
+                  />
+                  {pack.name}
+                </div>
+                <p className="text-xs text-slate-400 pl-5">{pack.description}</p>
+                <p className="mt-1.5 pl-5 font-mono text-[10px] text-slate-500">
+                  weights {Math.round(pack.scoringWeights.onPage * 100)}/
+                  {Math.round(pack.scoringWeights.schema * 100)}/
+                  {Math.round(pack.scoringWeights.geoAi * 100)} · {pack.pageTypes.join(", ")}
+                </p>
+              </div>
+            ))}
+          </div>
+        </article>
+
+        {/* Section 3: Allowlist & Blocklist */}
         <article className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl space-y-5">
           <h2 className="text-base font-semibold text-white flex items-center gap-2">
             <Shield className="h-4 w-4 text-sky-400" />
-            2. Domain Guardrails (Allowlist & Blocklist)
+            3. Domain Guardrails (Allowlist & Blocklist)
           </h2>
 
           {/* Allowlist */}
@@ -330,11 +374,11 @@ export function OptionsApp() {
           </div>
         </article>
 
-        {/* Section 3: API Sync Configuration */}
+        {/* Section 4: API Sync Configuration */}
         <article className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl space-y-4">
           <h2 className="text-base font-semibold text-white flex items-center gap-2">
             <ExternalLink className="h-4 w-4 text-emerald-400" />
-            3. Web App API Synchronization
+            4. Web App API Synchronization
           </h2>
           <p className="text-xs text-slate-400">
             Configure the endpoint to push curated training records to the SEO Studio Web App API with Bearer token authentication.
@@ -366,12 +410,12 @@ export function OptionsApp() {
           </div>
         </article>
 
-        {/* Section 4: Vault Storage & Domain Deletion */}
+        {/* Section 5: Vault Storage & Domain Deletion */}
         <article className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-xl">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-base font-semibold text-white flex items-center gap-2">
               <Database className="h-4 w-4 text-purple-400" />
-              4. Local Vault Management & Privacy
+              5. Local Vault Management & Privacy
             </h2>
             <button
               onClick={handleDeleteAll}
