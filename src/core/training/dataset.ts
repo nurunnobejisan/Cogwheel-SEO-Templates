@@ -88,7 +88,17 @@ export function isTrainingEligible(quality: TripleTier): boolean {
 
 export interface LoraExample {
   messages: Array<{ role: "system" | "user" | "assistant"; content: string }>;
-  metadata: { tripleId: string; url: string; quality: TripleTier; tenantId: string | null; provenance: DataProvenance };
+  metadata: {
+    tripleId: string;
+    url: string;
+    quality: TripleTier;
+    tenantId: string | null;
+    provenance: DataProvenance;
+    /** Always `true`: TrainingTriple is captured with consent, and the
+     *  licence gate downstream (ml/train) refuses first-party rows whose
+     *  exported metadata lost it. Additive so older exports stay parseable. */
+    consent: true;
+  };
 }
 
 const SYSTEM_PROMPT =
@@ -103,6 +113,13 @@ export function buildLoraExample(triple: TrainingTriple): LoraExample {
       { role: "user", content: JSON.stringify(triple.audit) },
       { role: "assistant", content: JSON.stringify(triple.expertFix) },
     ],
-    metadata: { tripleId: triple.id, url: triple.url, quality: triple.quality, tenantId: triple.tenantId ?? null, provenance: triple.provenance },
+    metadata: {
+      tripleId: triple.id,
+      url: triple.url,
+      quality: triple.quality,
+      tenantId: triple.tenantId ?? null,
+      provenance: triple.provenance,
+      consent: triple.consent,
+    },
   };
 }

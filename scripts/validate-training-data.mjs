@@ -95,6 +95,9 @@ const HARD_PATTERNS = [
   { id: "placeholder", re: /\{\{[A-Za-z0-9_]+\}\}/g },
   { id: "benchmark-cpc", re: /Benchmark CPC/gi },
   { id: "volume-tier", re: /Search Volume Tier/gi },
+  // De-brand guard: the retired product name must never re-enter training
+  // data — a model trained on it would reintroduce the old brand in output.
+  { id: "legacy-brand", re: /\bCogwheel\b/g },
 ];
 
 // Metric assertions that are only a problem when the ASSISTANT invents them,
