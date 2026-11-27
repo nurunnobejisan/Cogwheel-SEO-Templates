@@ -2,10 +2,15 @@
  * SEO Studio Templates — HTML5 CMS Exporter
  * 
  * Generates standards-compliant HTML5 output with complete metadata,
- * canonical links, environment-aware robots directives, and serialized JSON-LD.
+ * canonical links, robots directives (override via `robotsDirective`), and
+ * serialized JSON-LD. Every export is passed through
+ * `deduplicateHeadTags` (validators/robotsGuardrails) so raw fields
+ * (body content, JSON-LD) can never smuggle a second title, description or
+ * canonical into the document head.
  */
 
 import { escapeHtml, escapeHtmlAttribute } from "../validators/xssProtection.ts";
+import { deduplicateHeadTags } from "../validators/robotsGuardrails.ts";
 
 export interface HtmlExportPayload {
   title: string;
@@ -53,5 +58,7 @@ export function exportToHtml(payload: HtmlExportPayload, options: HtmlExportOpti
       .trim();
   }
 
-  return html;
+  // Guardrail: exactly one <title>, meta description and canonical survives,
+  // regardless of what the raw body/JSON-LD fields contain.
+  return deduplicateHeadTags(html);
 }
