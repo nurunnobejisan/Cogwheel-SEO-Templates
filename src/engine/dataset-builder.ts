@@ -45,6 +45,8 @@ export interface ChatMlRecord {
     qualityScore: number;
     brand: string;
     id: string;
+    pack: string;
+    pageType: string;
   };
 }
 
@@ -235,6 +237,8 @@ export function recordToChatMl(
       qualityScore: record.qualityScore,
       brand: record.brand,
       id: record.id,
+      pack: record.pack,
+      pageType: record.pageType,
     };
   }
 

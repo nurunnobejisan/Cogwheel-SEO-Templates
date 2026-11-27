@@ -20,6 +20,8 @@ function triple(overrides: Partial<TrainingTriple> = {}): TrainingTriple {
     contentHash: "hash",
     consent: true,
     provenance: "measured",
+    pack: "hotel",
+    pageType: "hotel_homepage",
     ...overrides,
   };
 }

@@ -6,6 +6,13 @@
  * Core Web Vitals, and tech stacks while guaranteeing strict security redaction.
  */
 
+import {
+  classifyPageType,
+  derivePack,
+  type PageTypeLabel,
+  type RawWebInput,
+} from "../storage/training-vault";
+
 export interface HeadingNode {
   level: number;
   tag: string;
@@ -89,6 +96,10 @@ export interface SanitizationMetrics {
 
 export interface CapturedWebSample {
   schemaVersion: "3.0.0";
+  /** Provenance: vertical pack, derived from detected schemas (Task 5.1). */
+  pack: string;
+  /** Provenance: page type in the vault's `PageTypeLabel` vocabulary. */
+  pageType: PageTypeLabel;
   url: string;
   domain: string;
   canonicalUrl: string;
@@ -797,8 +808,27 @@ export function extractCapturedWebSample(doc?: Document, frameId = 0): CapturedW
     ? sanitizedBody.sanitized.split(/\s+/).filter(Boolean).length
     : 0;
 
+  // Provenance (Task 5.1): classify page type with the same vocabulary the
+  // vault uses, and derive the vertical pack from the detected JSON-LD types.
+  const classifyInput: RawWebInput = {
+    url: rawUrl,
+    canonicalUrl: cleanCanonical,
+    domain: cleanDomain,
+    rawTitle,
+    rawMetaDesc,
+    rawH1: headings.h1,
+    rawH2: headings.h2,
+    rawBodyText: sanitizedBody.sanitized || "",
+    detectedSchemas: jsonLdTypes,
+    wordCount,
+  };
+  const pageType = classifyPageType(rawUrl, classifyInput);
+  const pack = derivePack(jsonLdTypes, pageType);
+
   return {
     schemaVersion: "3.0.0",
+    pack,
+    pageType,
     url: rawUrl,
     domain: cleanDomain,
     canonicalUrl: cleanCanonical,

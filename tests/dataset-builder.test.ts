@@ -20,6 +20,7 @@ describe("Dataset Builder & Supervised Fine-Tuning Exporter", () => {
     id: "sample_hotel_hash_123",
     schemaVersion: "3.0.0",
     tier: "raw",
+    pack: "hotel",
     canonicalUrlHash: "sample_hotel_hash_123",
     contentHash: "ch_sample123",
     version: 1,
