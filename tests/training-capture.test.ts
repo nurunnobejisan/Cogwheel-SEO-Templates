@@ -5,7 +5,7 @@ import {
   extractMainContentText,
   extractCapturedWebSample,
   CapturedWebSample,
-} from "../src/content/training-capture";
+} from "../shared/ts/training-capture";
 
 describe("Training Data Capture & PII Sanitization Module", () => {
   describe("PII Redaction Engine", () => {

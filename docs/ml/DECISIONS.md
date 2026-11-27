@@ -108,7 +108,7 @@ the data card already flags this as the known limitation.
 ### D-008 — `page_classification` joins the task vocabulary as a superset
 
 **Decision.** `MlPageTypeLabels` in `schemas/ml-example.ts` is a superset of
-`PageTypeLabel` in `src/storage/training-vault.ts`: the eight existing labels
+`PageTypeLabel` in `shared/ts/training-vault.ts`: the eight existing labels
 plus seven additive ones (dining, spa, offers, meetings_events, faq, gallery,
 contact). The vault is extended to match in Phase 4.
 
@@ -229,7 +229,7 @@ YAML, and delete the exporter and the `ml:sources:*` scripts.
 ### D-016 — Parenthesized phone numbers were unredacted; fixed in all three copies
 
 **Decision.** The phone pattern in `src/core/training/dataset.ts`,
-`PII_PHONE` in `chrome-extension/src/storage/training-vault.ts`, and `PHONE_RE`
+`PII_PHONE` in `shared/ts/training-vault.ts`, and `PHONE_RE`
 in `ml/clean/pii.py` now share one shape whose word-boundary guard sits on the
 digit branch (`\b\d{2,4}`) instead of the start of the pattern, so
 `(503) 555 0123` is redacted. Regression tests added on both sides.

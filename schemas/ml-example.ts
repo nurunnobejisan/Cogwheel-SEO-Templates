@@ -23,7 +23,7 @@ import { z } from "zod";
 
 /**
  * Forward-looking page-type vocabulary for ML rows. This is a SUPERSET of
- * `PageTypeLabel` in `src/storage/training-vault.ts`: the seven additive
+ * `PageTypeLabel` in `shared/ts/training-vault.ts`: the seven additive
  * labels (dining, spa, offers, meetings_events, faq, gallery, contact) land in
  * the vault in Phase 4 (rule 9 — additive, backward-compatible on read), at
  * which point the two lists converge. Old IndexedDB records keep their

@@ -24,7 +24,7 @@ import {
   ApiSyncConfig,
   syncBatchToApi,
   BatchSyncSummary,
-} from "../engine/dataset-builder";
+} from "../../../shared/ts/dataset-builder";
 
 export interface ExportDatasetModalProps {
   isOpen: boolean;

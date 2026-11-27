@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import {
   sanitizeTextAndRedactPii,
   sanitizeUrlString,
-} from "../chrome-extension/src/content/training-capture";
+} from "../shared/ts/training-capture";
 
 describe("Phase 1.1: Comprehensive PII Sanitizer Test Suite", () => {
   describe("Negative Cases (Must NOT be redacted or altered)", () => {

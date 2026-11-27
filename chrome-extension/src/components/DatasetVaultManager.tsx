@@ -37,7 +37,7 @@ import { ExportDatasetModal } from "./ExportDatasetModal";
 import {
   ApiSyncConfig,
   syncRecordToApi,
-} from "../engine/dataset-builder";
+} from "../../../shared/ts/dataset-builder";
 import { isRestrictedUrl } from "../utils/urlSecurity";
 
 export interface DatasetVaultManagerProps {

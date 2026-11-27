@@ -2,26 +2,25 @@
  * Task 5.1 — pack & page-type provenance tagging.
  *
  * Every captured web sample, vault record, and JSONL export record must carry
- * `pack` and `pageType`. Covers all four surfaces plus the app/extension copy
- * parity that the page-type-labels suite established for `classifyPageType`.
+ * `pack` and `pageType`. Covers all four surfaces plus the Phase B proof that
+ * the extension's vault wrapper re-exports the shared classifier unchanged.
  *
- *   1. CapturedWebSample (app copy and extension copy)
+ *   1. CapturedWebSample (shared single source, `shared/ts/training-capture.ts`)
  *   2. TrainingPairRecord via migration + derivePack
  *   3. ChatML JSONL export metadata + LoRA example metadata
  *   4. Triple capture provenance (deriveTripleProvenance)
  */
 import { describe, it, expect } from "vitest";
-import { extractCapturedWebSample } from "../src/content/training-capture";
-import { extractCapturedWebSample as extractExtSample } from "../chrome-extension/src/content/training-capture";
+import { extractCapturedWebSample } from "../shared/ts/training-capture";
 import { createMockDocument } from "./ts/test-dom-helper";
 import {
   derivePack,
   migrateRecordToV3,
   type RawWebInput,
-} from "../src/storage/training-vault";
-import { derivePack as derivePackExt } from "../chrome-extension/src/storage/training-vault";
-import { recordToChatMl } from "../src/engine/dataset-builder";
-import type { TrainingPairRecord } from "../src/storage/training-vault";
+} from "../shared/ts/training-vault";
+import { derivePack as derivePackViaExtension } from "../chrome-extension/src/storage/training-vault";
+import { recordToChatMl } from "../shared/ts/dataset-builder";
+import type { TrainingPairRecord } from "../shared/ts/training-vault";
 import { buildLoraExample, deriveTripleProvenance } from "../src/core/training/dataset";
 import { MlPageTypeLabels } from "../schemas/ml-example";
 
@@ -105,7 +104,7 @@ function sampleRecord(overrides: Partial<TrainingPairRecord> = {}): TrainingPair
 }
 
 describe("Task 5.1 — captured web sample provenance", () => {
-  it("tags a hotel page with pack=hotel and a known pageType (app copy)", () => {
+  it("tags a hotel page with pack=hotel and a known pageType", () => {
     const doc = createMockDocument(HOTEL_HTML, "https://luxuryresort.com/miami");
     const sample = extractCapturedWebSample(doc);
 
@@ -121,23 +120,13 @@ describe("Task 5.1 — captured web sample provenance", () => {
     expect(sample.pageType).toBe("article");
     expect(sample.pack).toBe("unclassified");
   });
-
-  it("extension copy derives identical provenance (copy parity)", () => {
-    const appDoc = createMockDocument(HOTEL_HTML, "https://luxuryresort.com/miami");
-    const extDoc = createMockDocument(HOTEL_HTML, "https://luxuryresort.com/miami");
-    const appSample = extractCapturedWebSample(appDoc);
-    const extSample = extractExtSample(extDoc);
-
-    expect(extSample.pack).toBe(appSample.pack);
-    expect(extSample.pageType).toBe(appSample.pageType);
-  });
 });
 
 describe("Task 5.1 — vault record provenance", () => {
   it("derivePack: hotel JSON-LD wins regardless of page type", () => {
     expect(derivePack(["Hotel"], "article")).toBe("hotel");
     expect(derivePack(["LodgingBusiness"])).toBe("hotel");
-    expect(derivePackExt(["Hotel"], "article")).toBe("hotel");
+    expect(derivePackViaExtension(["Hotel"], "article")).toBe("hotel");
   });
 
   it("derivePack: hotel-only page type is a fallback signal", () => {
@@ -148,7 +137,7 @@ describe("Task 5.1 — vault record provenance", () => {
   it("derivePack: no signal is unclassified, never guessed", () => {
     expect(derivePack([], "article")).toBe("unclassified");
     expect(derivePack([])).toBe("unclassified");
-    expect(derivePackExt([], "article")).toBe("unclassified");
+    expect(derivePackViaExtension([], "article")).toBe("unclassified");
   });
 
   it("migration stamps pack from detected schemas on legacy records", () => {

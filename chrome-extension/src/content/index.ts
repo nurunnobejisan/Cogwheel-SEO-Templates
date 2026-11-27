@@ -1,7 +1,7 @@
 import { PageAuditData, CmsAutoFillResult } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { SEO_STUDIO_OPTIMAL_AUDIT_DATA } from "../data/seoStudioTemplates";
-import { extractCapturedWebSample } from "./training-capture";
+import { extractCapturedWebSample } from "../../../shared/ts/training-capture";
 
 function isTopLevelWindow(): boolean {
   try {

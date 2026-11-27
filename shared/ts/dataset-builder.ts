@@ -13,7 +13,7 @@ import {
   RawWebInput,
   TargetOptimizedOutput,
   TrainingPairRecord,
-} from "../storage/training-vault";
+} from "./training-vault";
 
 export interface GeminiContentPart {
   text: string;

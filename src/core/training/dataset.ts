@@ -7,7 +7,7 @@
 
 import crypto from "node:crypto";
 import type { DataProvenance } from "../data-policy.ts";
-import { classifyPageType, derivePack, type PageTypeLabel, type RawWebInput } from "../../storage/training-vault.ts";
+import { classifyPageType, derivePack, type PageTypeLabel, type RawWebInput } from "../../../shared/ts/training-vault.ts";
 import { MlPageTypeLabels } from "../../../schemas/ml-example.ts";
 
 export type TripleTier = "raw" | "reviewed" | "gold";

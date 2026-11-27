@@ -4,17 +4,21 @@
  * The vault's label set converges with `MlPageTypeLabels`
  * (schemas/ml-example.ts): the eight original labels stay, the seven
  * additive ones (dining, spa, offers, meetings_events, faq, gallery,
- * contact) become producible by `classifyPageType`, and the app copy and
- * the extension copy of `training-vault.ts` classify identically.
+ * contact) become producible by `classifyPageType`.
+ *
+ * Phase B: the app and extension copies of `training-vault.ts` were merged
+ * into `shared/ts/training-vault.ts`. The extension keeps a thin wrapper at
+ * its old path (consent gate only), so this suite also proves the wrapper
+ * re-exports the *identical* shared classifier rather than a fork.
  */
 
 import { describe, expect, it } from "vitest";
 import {
-  classifyPageType as classifyApp,
+  classifyPageType as classifyShared,
   type PageTypeLabel,
   type RawWebInput,
-} from "../src/storage/training-vault";
-import { classifyPageType as classifyExt } from "../chrome-extension/src/storage/training-vault";
+} from "../shared/ts/training-vault";
+import { classifyPageType as classifyViaExtension } from "../chrome-extension/src/storage/training-vault";
 import { MlPageTypeLabels } from "../schemas/ml-example";
 
 const raw: RawWebInput = {
@@ -53,26 +57,26 @@ const ORIGINAL_LABELS: Array<[string, PageTypeLabel]> = [
 ];
 
 describe("Phase 4 — PageTypeLabel extension (D-008)", () => {
-  it("classifies the seven additive labels in the app copy", () => {
+  it("classifies the seven additive labels", () => {
     for (const [url, expected] of NEW_LABELS) {
-      expect(classifyApp(url, raw), url).toBe(expected);
+      expect(classifyShared(url, raw), url).toBe(expected);
     }
   });
 
-  it("classifies identically in the extension copy", () => {
+  it("the extension wrapper re-exports the identical shared classifier", () => {
+    expect(classifyViaExtension).toBe(classifyShared);
     for (const [url, expected] of [...NEW_LABELS, ...ORIGINAL_LABELS]) {
-      expect(classifyExt(url, raw), url).toBe(expected);
-      expect(classifyExt(url, raw), url).toBe(classifyApp(url, raw));
+      expect(classifyViaExtension(url, raw), url).toBe(expected);
     }
   });
 
   it("keeps every original classification behaviour", () => {
     for (const [url, expected] of ORIGINAL_LABELS) {
-      expect(classifyApp(url, raw), url).toBe(expected);
+      expect(classifyShared(url, raw), url).toBe(expected);
     }
     // the migration fixture from Task 1.3 still lands where it always did
     expect(
-      classifyApp("https://www.marriott.com/hotels/travel/ecpsb/", {
+      classifyShared("https://www.marriott.com/hotels/travel/ecpsb/", {
         ...raw,
         rawBodyText: "book a room with a rate",
       }),
