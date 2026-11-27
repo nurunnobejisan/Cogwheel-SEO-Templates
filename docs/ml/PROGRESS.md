@@ -5,7 +5,7 @@ Status values: `not started` · `in progress` · `done`.
 
 | Phase | Title | Status | PR |
 |---|---|---|---|
-| 0 | Foundations | in progress | — |
+| 0 | Foundations | done | [#3](https://github.com/nurunnobejisan/SEO-Studio/pull/3) |
 | 1 | Data registry & datasets | not started | — |
 | 2 | Retrieval explainer + classifier | not started | — |
 | 3 | LoRA fine-tunes | not started | — |
@@ -46,9 +46,11 @@ drift.
 
 ### Gate
 
-- [ ] registry reviewed
-- [ ] golden set frozen (hash in `DATA_CARD.md`, `npm run ml:golden:check` green)
-- [ ] CI green
+- [x] registry reviewed — 17 sources, four `use` values, every licence copied
+      from the upstream terms; `avoid`/`eval_only` entries documented with why
+- [x] golden set frozen — 52 cases, sha256 `3d951412…6a3a84` in
+      `docs/ml/DATA_CARD.md`, enforced by `npm run ml:golden:check`
+- [x] CI green — run 45891405087 on `b33c82b`, and run 45929399674 on PR #3
 
 ### Evaluation checks (section 9)
 

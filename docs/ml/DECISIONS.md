@@ -155,3 +155,36 @@ cases or if any of the five tasks has zero.
 number in a doc decays; the same number in the checker does not.
 
 **Reverse.** Change `MIN_CASES` / `ALL_TASKS` in the script.
+
+### D-012 — Phase PRs are cut from a branch, with autopush paused
+
+**Decision.** For each phase: pause the 5-minute autopush automation, commit on
+`ml/phase-N`, open a PR titled `ml(phase-N): …`, wait for green CI, merge, then
+resume autopush. Phase 0 had to be retrofitted this way (branch off `b33c82b`,
+`--force-with-lease` main back to `3752029`, PR #3, merge).
+
+**Reason.** Autopush commits and pushes straight to `main`, which deploys on
+every push. Left alone it would have swallowed each phase into an anonymous
+`auto: update` commit with no review point and no per-phase gate. Pausing it
+around the phase keeps the fast-push convenience for ordinary work while still
+giving every phase a real PR.
+
+**Reverse.** `tools.automation.resume` on `aut_2192c654d001133B6hUreuyudS`
+restores the original behaviour; no repository state depends on the pause.
+
+### D-013 — Old `tuned_gemini` registry entries marked `unverified`
+
+**Decision.** Both entries in `data/models/model_registry.json` moved from
+`status: "ready"` to `status: "unverified"` with a `statusReason`, and
+`python/scripts/train_unified_model.py` now registers new checkpoints as
+`unverified` rather than `ready`.
+
+**Reason.** Their `evaluationBenchmark` values are lexical proxies computed
+from the eval file (the function's own docstring says so), the base model
+`gemini-1.5-flash-002` is retired, and no serving endpoint was ever confirmed.
+Calling that "ready" was an unverified claim. A checkpoint becomes `ready` only
+after a golden-set run.
+
+**Reverse.** Set `status` back to `ready` in the JSON, and revert the one line
+in `train_unified_model.py`.
+
