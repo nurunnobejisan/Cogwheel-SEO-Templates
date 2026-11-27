@@ -5,7 +5,7 @@
 Order is fixed; one phase = one PR; PR links land in `docs/PROGRESS.md`.
 
 - [x] **Phase 0 — vendor `xlsx`** (PR #21): `file:vendor/xlsx-0.20.3.tgz` + `tests/vendor-dependencies.test.ts`.
-- [x] **Phase A — trust fixes**: batch audits call the real `/api/full-audit` (no `Math.random()` scores, `unavailable` on failure), `ENABLE_FREE_ONLINE_AI` is opt-in with a UI warning, auto-fix writes only page/profile-sourced copy (blank + flagged otherwise), in-memory stores are labelled ephemeral with client/property-scoped crawl cache keys, and the model-registry benchmark is labelled a lexical proxy.
+- [x] **Phase A — trust fixes** (PR #30): batch audits call the real `/api/full-audit` (no `Math.random()` scores, `unavailable` on failure), `ENABLE_FREE_ONLINE_AI` is opt-in with a UI warning, auto-fix writes only page/profile-sourced copy (blank + flagged otherwise), in-memory stores are labelled ephemeral with client/property-scoped crawl cache keys, and the model-registry benchmark is labelled a lexical proxy.
 - [ ] **Phase B — shared TS package and dedupe**
 - [ ] **Phase C — packs + universal engine**
 - [ ] **Phase D — Python service (FastAPI `api/server.py`, HTTP bridges)**
