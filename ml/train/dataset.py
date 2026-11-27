@@ -304,6 +304,7 @@ def assemble(
             source_report["exported"] += 1
 
     manifest["exported"] = len(rows)
+    manifest["read"] = sum(source["read"] for source in manifest["sources"])
     gate_ready = manifest["clientDerivedRows"] >= MIN_REVIEWED_PAIRS_FOR_TRAINING
     manifest["gate"] = {
         "minimum": MIN_REVIEWED_PAIRS_FOR_TRAINING,

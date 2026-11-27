@@ -38,7 +38,12 @@ from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 from ml.clean.pii import strip_pii
 from ml.registry import LicenceError, load_registry
 
-from .config import FIRST_PARTY_SOURCES, MIN_REVIEWED_PAIRS_FOR_TRAINING, DpoConfig, resolve_base_model
+from .config import (
+    FIRST_PARTY_SOURCES,
+    MIN_REVIEWED_PAIRS_FOR_TRAINING,
+    DpoConfig,
+    resolve_base_model,
+)
 from .dataset import DEFAULT_GOLDEN, _refuses_golden, golden_fingerprints
 from .errors import ConfigError, DatasetError, HeavyDepsError
 
@@ -94,7 +99,7 @@ def prepare(
     pii_stripped = 0
     first_party = source in FIRST_PARTY_SOURCES
 
-    for position, pair in enumerate(pairs):
+    for pair in pairs:
         metadata = pair.get("metadata")
         if not isinstance(metadata, Mapping):
             metadata = pair.get("meta")
@@ -299,11 +304,16 @@ def train(config: DpoConfig, pairs: Sequence[Mapping[str, Any]]) -> Dict[str, An
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="DPO training (dry-run by default)")
     parser.add_argument("--pairs", type=Path, required=True, help="JSONL of prompt/chosen/rejected")
-    parser.add_argument("--source", required=True, help="registry id (e.g. patches, repo-synthetic)")
+    parser.add_argument(
+        "--source", required=True, help="registry id (e.g. patches, repo-synthetic)"
+    )
     parser.add_argument("--config", type=Path, default=None, help="DpoConfig JSON")
     parser.add_argument("--golden", type=Path, default=DEFAULT_GOLDEN)
     parser.add_argument("--train", action="store_true", help="actually train (GPU + ML deps)")
-    parser.add_argument("--require-ready", action="store_true", help="exit 1 if the 2000-pair gate is blocked")
+    parser.add_argument(
+        "--require-ready", action="store_true",
+        help="exit 1 if the 2000-pair gate is blocked",
+    )
     parser.add_argument("--manifest", type=Path, default=None)
     args = parser.parse_args(list(argv) if argv is not None else None)
 

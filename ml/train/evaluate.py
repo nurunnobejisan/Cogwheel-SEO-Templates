@@ -30,8 +30,8 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence
 
-from .errors import DatasetError, HeavyDepsError
 from .dataset import DEFAULT_GOLDEN
+from .errors import DatasetError, HeavyDepsError
 
 __all__ = ["TEMPLATE_VERSION", "build_requests", "parse_output", "write_outputs"]
 
@@ -102,7 +102,8 @@ def _user_prompt(case: Mapping[str, Any], labels: Sequence[str]) -> str:
     if task == "rag_synthesis":
         findings = json.dumps(case_input.get("findings") or [], sort_keys=True)
         return (
-            f"Audit findings for {url}:\n{findings}\n"
+            f"URL: {url}\n"
+            f"Audit findings:\n{findings}\n"
             f"Measured fields: {measured}\n"
             f"Page text:\n{text}\n"
             "Explain the highest-severity finding in plain language. Cite the "
@@ -197,8 +198,8 @@ def generate(
         raise DatasetError("no requests to generate")
     try:
         import torch
-        from transformers import AutoModelForCausalLM, AutoTokenizer
         from peft import PeftModel
+        from transformers import AutoModelForCausalLM, AutoTokenizer
     except ImportError as exc:
         raise HeavyDepsError() from exc
 

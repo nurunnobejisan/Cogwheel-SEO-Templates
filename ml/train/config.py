@@ -18,10 +18,9 @@ Standard library only (D-014).
 from __future__ import annotations
 
 import json
-import re
 from dataclasses import asdict, dataclass, field, fields
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any, Dict, List, Mapping
 
 from .errors import ConfigError
 
@@ -78,7 +77,7 @@ def resolve_base_model(model_id: str) -> Dict[str, str]:
     for entry in BASE_MODELS:
         pattern = entry["pattern"]
         if "*" in pattern:
-            prefix = pattern.split("*", 1)[0]
+            prefix = pattern.split("*", 1)[0].rstrip("/").split("/")[-1]
             if segment.startswith(prefix):
                 return dict(entry)
         elif segment == pattern.split("/")[-1] or model_id == pattern:
@@ -150,6 +149,9 @@ class SftConfig:
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> "SftConfig":
         known = {f.name for f in fields(cls)}
+        # baseModelLicence is derived by to_dict()/save(); it is not a
+        # constructor field, so it must not count as unknown.
+        payload = {k: v for k, v in payload.items() if k != "baseModelLicence"}
         unknown = sorted(set(payload) - known)
         if unknown:
             raise ConfigError(f"unknown SftConfig field(s): {', '.join(unknown)}")
@@ -173,7 +175,8 @@ class SftConfig:
     def save(self, path: Path) -> None:
         self.validate()
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        payload = json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
+        path.write_text(payload, encoding="utf-8")
 
 
 @dataclass
@@ -229,6 +232,8 @@ class DpoConfig:
     @classmethod
     def from_dict(cls, payload: Mapping[str, Any]) -> "DpoConfig":
         known = {f.name for f in fields(cls)}
+        # Derived by to_dict()/save(); not a constructor field.
+        payload = {k: v for k, v in payload.items() if k != "baseModelLicence"}
         unknown = sorted(set(payload) - known)
         if unknown:
             raise ConfigError(f"unknown DpoConfig field(s): {', '.join(unknown)}")
@@ -252,4 +257,5 @@ class DpoConfig:
     def save(self, path: Path) -> None:
         self.validate()
         path.parent.mkdir(parents=True, exist_ok=True)
-        path.write_text(json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        payload = json.dumps(self.to_dict(), indent=2, sort_keys=True) + "\n"
+        path.write_text(payload, encoding="utf-8")
