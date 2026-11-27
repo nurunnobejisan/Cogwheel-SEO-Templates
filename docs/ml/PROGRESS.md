@@ -9,7 +9,7 @@ Status values: `not started` · `in progress` · `done`.
 | 1 | Data registry & datasets | done | [#4](https://github.com/nurunnobejisan/SEO-Studio/pull/4) |
 | 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
 | 3 | LoRA fine-tunes | done | [#7](https://github.com/nurunnobejisan/SEO-Studio/pull/7) |
-| 4 | Ship to app & extension | in progress | — |
+| 4 | Ship to app & extension | in progress | [#10](https://github.com/nurunnobejisan/SEO-Studio/pull/10) |
 
 ---
 
