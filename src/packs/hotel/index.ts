@@ -26,6 +26,7 @@ import type { Pack } from "../types";
 import type { ChecklistItem } from "./templates";
 import { TEMPLATES_DATA } from "./templates";
 import { BRAND_GUARDRAILS as HOTEL_BRAND_GUARDRAILS } from "./brand-guardrails";
+import { GENERIC_BRAND_GUARDRAILS } from "../generic-guardrails";
 import { HOTEL_SCHEMA_RULES } from "./schema-rules";
 import keywordsJson from "./keywords.json";
 
@@ -60,7 +61,9 @@ function buildHotelPack(): Pack {
     checklist: HOTEL_CHECKLIST,
     schemaRules: HOTEL_SCHEMA_RULES,
     keywordMatrix,
-    brandGuardrails: HOTEL_BRAND_GUARDRAILS,
+    // Five franchise rulebooks plus the universal Generic rule, so hotel
+    // copy gets the same unsubstantiated-claim checks every other pack has.
+    brandGuardrails: { ...HOTEL_BRAND_GUARDRAILS, ...GENERIC_BRAND_GUARDRAILS },
     aiPrompts: [],
   };
 }

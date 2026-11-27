@@ -17,6 +17,7 @@ import {
   BRAND_GUARDRAILS,
   validateBrandCompliance as movedValidateBrandCompliance,
 } from "../src/packs/hotel/brand-guardrails";
+import { GENERIC_BRAND_GUARDRAILS } from "../src/packs/generic-guardrails";
 import * as extensionBrandGuardrails from "../chrome-extension/src/utils/brandGuardrails";
 import { getPackMeta } from "../src/packs/catalog";
 import { KNOWN_PAGE_TYPES } from "../src/packs/index";
@@ -69,8 +70,9 @@ describe("Task 2.2 — hotel pack modularized into src/packs/hotel/", () => {
     ).toBe(true);
   });
 
-  it("carries the five hotel brand guardrails with franchise suffixes", () => {
+  it("carries the five hotel brand guardrails plus the Generic rule", () => {
     expect(Object.keys(hotelPack.brandGuardrails).sort()).toEqual([
+      "Generic",
       "Hilton",
       "Hyatt",
       "IHG",
@@ -78,9 +80,16 @@ describe("Task 2.2 — hotel pack modularized into src/packs/hotel/", () => {
       "Marriott",
     ]);
     for (const rule of Object.values(hotelPack.brandGuardrails)) {
+      if (rule.name === "Generic") {
+        // Editorial guardrail: no franchise suffix, but flagged claims.
+        expect(rule.forbiddenTerms.length).toBeGreaterThan(0);
+        continue;
+      }
       expect(rule.mandatorySuffix).toBeTruthy();
       expect(rule.forbiddenTerms.length).toBeGreaterThan(0);
     }
+    // Single source: the Generic entry IS the shared one.
+    expect(hotelPack.brandGuardrails.Generic).toBe(GENERIC_BRAND_GUARDRAILS.Generic);
   });
 
   it("re-exports the identical guardrails through the old extension path", () => {

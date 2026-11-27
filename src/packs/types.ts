@@ -20,6 +20,9 @@ import type {
 } from "../schemas/validation";
 import type { ChecklistItem } from "./hotel/templates";
 
+/** Re-exported so pack modules never reach into the hotel directory for a type. */
+export type { ChecklistItem };
+
 /** Page types the classifier can assign (docs/TASKS.md Task 3.1 vocabulary). */
 export type PackPageType =
   | "home"
