@@ -4,7 +4,7 @@
 
 # SEO & GEO Studio
 
-**Hospitality SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace.**
+**Universal SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace, with six vertical packs (Hotel &amp; Hospitality as Pack #1).**
 
 [![CI](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml)
 [![Live](https://img.shields.io/badge/live-app-0f172a?logo=vercel)](https://seo-studio-one.vercel.app)
@@ -26,13 +26,13 @@
 
 ## Overview
 
-SEO Studio is a production-oriented SEO platform for hospitality portfolios. It combines a Next.js operator workspace, a Manifest V3 Chrome extension, a measured audit engine, and a Python analysis layer.
+SEO Studio is a production-oriented SEO & GEO platform for any vertical. It combines a Next.js operator workspace, a Manifest V3 Chrome extension, a measured audit engine, and a Python analysis layer — organized around six vertical packs, starting with Hotel &amp; Hospitality as Pack #1.
 
 The core rule is simple: **measure, label, or leave blank.** Rankings, search volumes, AI citations, and competitor positions are never invented. When a data source is not connected, the product says so instead of showing a plausible-looking number.
 
 | Studio workspace | Template library |
 | --- | --- |
-| ![SEO Studio](docs/assets/app-home.jpg) | ![Hospitality templates](docs/assets/templates-catalog.jpg) |
+| ![SEO Studio](docs/assets/app-home.jpg) | ![Template catalog](docs/assets/templates-catalog.jpg) |
 
 ## What it does
 

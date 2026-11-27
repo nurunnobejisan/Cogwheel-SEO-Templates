@@ -169,7 +169,7 @@ export function OptionsApp() {
             1. Safe Training Data Collection Consent
           </h2>
           <p className="text-xs text-slate-400 mb-4 leading-relaxed">
-            SEO Studio can extract clean, anonymized webpage structures (H1-H6, JSON-LD, metadata, and Core Web Vitals) to build high-quality fine-tuning datasets for hotel search optimization. Personal identifiable information, credit cards, JWTs, and passwords are strictly excluded.
+            SEO Studio can extract clean, anonymized webpage structures (H1-H6, JSON-LD, metadata, and Core Web Vitals) to build high-quality fine-tuning datasets across every vertical pack. Personal identifiable information, credit cards, JWTs, and passwords are strictly excluded.
           </p>
 
           <label className="flex items-center gap-3 p-3.5 rounded-xl border border-slate-800 bg-slate-950/70 cursor-pointer mb-4">
@@ -233,7 +233,7 @@ export function OptionsApp() {
                 Auto-Capture on Allowlisted Domains
               </div>
               <p className="text-xs text-slate-400 pl-5">
-                Automatically extracts and versions samples on navigation when on allowlisted hotel domains. Shows "REC" badge.
+                Automatically extracts and versions samples on navigation when on allowlisted domains. Shows "REC" badge.
               </p>
             </div>
           </div>
