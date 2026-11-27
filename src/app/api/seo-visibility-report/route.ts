@@ -6,6 +6,7 @@ import path from "path";
 import os from "os";
 import * as XLSX from "xlsx";
 import { safeFetch, readTextCapped, assertEgressAllowed } from "@/lib/security/egress";
+import { PythonServiceError, callPythonService, pythonServiceConfig } from "@/lib/python/service";
 
 const execFileAsync = promisify(execFile);
 
@@ -308,10 +309,60 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // PowerPoint generation runs the local Python builder (python-pptx). That is
-    // a host-process execution path, so it is disabled unless an operator
-    // explicitly opts in on a trusted machine. It is never available on
-    // serverless deployments (no python3/python-pptx).
+    const propertyNameMatch = (xlsxFile.name || "Report").replace(/\.[^/.]+$/, "");
+    const safeName = propertyNameMatch.replace(/[^a-zA-Z0-9_-]+/g, "_");
+
+    // Generation chain — first configured branch wins, nothing runs by default:
+    //  1. PYTHON_SERVICE_URL set → POST the uploads to api/server.py over HTTP.
+    //     The URL is server env only (never request-derived) and configuring it
+    //     is the operator's explicit opt-in, so no local process is spawned and
+    //     COGWHEEL_ALLOW_LOCAL_PYTHON does not apply to this branch.
+    //  2. COGWHEEL_ALLOW_LOCAL_PYTHON=1 → spawn the local python-pptx builder
+    //     via execFile (argument array, no shell) on a trusted self-hosted
+    //     machine. Never available on serverless deployments.
+    //  3. Otherwise → 501 with instructions.
+    let bridgeConfigured = false;
+    try {
+      bridgeConfigured = pythonServiceConfig() !== null;
+    } catch (err) {
+      return NextResponse.json(
+        { error: (err as Error).message, code: "python_service_misconfigured" },
+        { status: 500 }
+      );
+    }
+
+    if (bridgeConfigured) {
+      try {
+        const bridgeBody = new FormData();
+        bridgeBody.append("template", templateFile);
+        bridgeBody.append("xlsx", xlsxFile);
+        if (pdfFile) bridgeBody.append("pdf", pdfFile);
+        const upstream = await callPythonService("/v1/reports/seo-visibility", {
+          formData: bridgeBody,
+          timeoutMs: 55_000,
+        });
+        const deck = Buffer.from(await upstream.arrayBuffer());
+        return new Response(deck, {
+          status: 200,
+          headers: {
+            "Content-Type": "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            "Content-Disposition": `attachment; filename="seo_visibility_report_${safeName}.pptx"`,
+          },
+        });
+      } catch (err) {
+        const mapped = err instanceof PythonServiceError ? err : null;
+        return NextResponse.json(
+          {
+            error: mapped ? mapped.message : "Report generation failed",
+            code: "python_service_error",
+          },
+          { status: mapped ? mapped.status : 502 }
+        );
+      }
+    }
+
+    // Local builder (python-pptx): a host-process execution path, so it is
+    // disabled unless an operator explicitly opts in on a trusted machine.
     if (process.env.COGWHEEL_ALLOW_LOCAL_PYTHON !== "1") {
       return NextResponse.json(
         {
@@ -377,9 +428,6 @@ export async function POST(req: NextRequest) {
 
     const outputBuffer = await fs.readFile(outputPath);
     await fs.rm(tempDir, { recursive: true, force: true }).catch(() => {});
-
-    const propertyNameMatch = (xlsxFile.name || "Report").replace(/\.[^/.]+$/, "");
-    const safeName = propertyNameMatch.replace(/[^a-zA-Z0-9_-]+/g, "_");
 
     return new Response(outputBuffer, {
       status: 200,
