@@ -6,14 +6,14 @@
 
 **Universal SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace, with six vertical packs (Hotel &amp; Hospitality as Pack #1).**
 
-[![CI](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml)
-[![Live](https://img.shields.io/badge/live-app-0f172a?logo=vercel)](https://seo-studio-one.vercel.app)
-[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e.svg)](LICENSE)
-[![Version](https://img.shields.io/badge/version-3.0.0-7c3aed.svg)](CHANGELOG.md)
-[![Next.js](https://img.shields.io/badge/Next.js-14-000000?logo=nextdotjs)](https://nextjs.org)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776ab?logo=python&logoColor=white)](https://www.python.org)
-[![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285f4?logo=googlechrome&logoColor=white)](chrome-extension/)
+[![CI](https://img.shields.io/github/actions/workflow/status/nurunnobejisan/SEO-Studio/ci.yml?style=flat-square&logo=githubactions&logoColor=white)](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml)
+[![Live](https://img.shields.io/badge/live-app-0f172a?style=flat-square&logo=vercel&logoColor=white)](https://seo-studio-one.vercel.app)
+[![License: MIT](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square&logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![Version](https://img.shields.io/badge/version-3.0.0-7c3aed?style=flat-square&logo=github&logoColor=white)](CHANGELOG.md)
+[![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Python](https://img.shields.io/badge/Python-3.11+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org)
+[![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285f4?style=flat-square&logo=googlechrome&logoColor=white)](chrome-extension/)
 
 [Live application](https://seo-studio-one.vercel.app) ·
 [Download extension](https://seo-studio-one.vercel.app/cogwheel-seo-studio.zip) ·
