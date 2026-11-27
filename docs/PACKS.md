@@ -8,12 +8,12 @@ in the rules engine.
 
 This is Task 6.2 of [`TASKS.md`](./TASKS.md) (Comprehensive Documentation & Pack Guide).
 
-> **Status:** the `Pack` type and registry are implemented and tested
-> (`src/packs/`, `tests/packs-registry.test.ts`), but no pack has been
-> extracted into `src/packs/<id>/` yet and nothing in `src/` imports the
-> registry. The hotel data still lives in `src/data/` and `src/schemas/`.
-> This guide documents the interface as it exists today so the first pack
-> extraction (Task 2.2) has a target to hit.
+> **Status:** all six packs are implemented and tested (Tasks 2.2–2.3).
+> `src/packs/hotel/` holds the extracted hotel data (guardrails, templates,
+> schema rules, checklist, `keywords.json`), and `ecommerce`,
+> `local-business`, `saas`, `publisher` and `finance` each ship the same
+> three-file contract. `tests/packs-parity.test.ts` fails the moment the
+> light catalog and the full pack modules drift apart.
 
 ---
 
@@ -21,10 +21,22 @@ This is Task 6.2 of [`TASKS.md`](./TASKS.md) (Comprehensive Documentation & Pack
 
 ```
 src/packs/
-├── types.ts      # Pack, PackPageType, PackSchemaRule, PackAiPrompt
-├── index.ts      # validatePack, registerPack, getPack, listPacks, unregisterPack
-└── <pack-id>/    # one directory per vertical (Task 2.2+)
-    └── index.ts  # exports the Pack object and registers it
+├── types.ts               # Pack, PackPageType, PackSchemaRule, ChecklistItem re-export
+├── index.ts               # validatePack, registerPack, getPack, listPacks, KNOWN_PAGE_TYPES
+├── catalog.ts             # PACK_CATALOG light projection (id/name/pageTypes/weights/signals)
+│                          #   ← the ONLY pack module the extension may import
+├── all.ts                 # ALL_PACKS / findPack — full packs for server + tests
+├── matrices.ts            # getPackMatrix / resolveMatrixPackId — all six keywords.json,
+│                          #   validated at module load (server-side, /strategy-matrix)
+├── clusters.ts            # clusterByTargetPageType — target-page cluster view (Task 4.3)
+├── suggest.ts             # suggestPack() heuristics (Task 2.4)
+├── classifier.ts          # rule-based page-type classifier (Task 3.1)
+├── generic-guardrails.ts  # GENERIC_BRAND_GUARDRAILS shared by every pack
+└── <pack-id>/             # one directory per vertical — six exist today
+    ├── index.ts           # exports the Pack, guarded: if (!getPack(id)) registerPack(pack)
+    ├── keywords.json      # 78-row / 6-category × 13 strategy matrix (Task 4.1)
+    └── schema-rules.ts    # PackSchemaRule[] for the vertical
+    # hotel additionally owns brand-guardrails.ts and templates.ts
 ```
 
 Import everything from the barrel:
@@ -33,6 +45,14 @@ Import everything from the barrel:
 import { registerPack, getPack, listPacks, validatePack } from "@/packs";
 import type { Pack, PackPageType } from "@/packs";
 ```
+
+Product surfaces must pick the cheapest correct view:
+
+| Surface | Import |
+| --- | --- |
+| Extension (popup, sidepanel, options, background) | `src/packs/catalog.ts` (+ `suggest.ts`, `classifier.ts`, `generic-guardrails.ts`) — never `matrices.ts`/`all.ts` (≈360 KB of JSON) |
+| Server routes (`/strategy-matrix`) | `src/packs/matrices.ts` |
+| Tests and server-side tooling | `src/packs/all.ts` |
 
 ---
 
@@ -156,28 +176,44 @@ for the volume tiers in plain words.
 
 ## Writing a pack
 
-Create `src/packs/<pack-id>/index.ts`:
+Create `src/packs/<pack-id>/index.ts` (mirror an existing pack —
+`src/packs/finance/index.ts` is a clean reference):
 
 ```ts
-import { registerPack } from "../index.ts";
-import type { Pack } from "../types.ts";
+import { getPack, registerPack } from "../index";
+import { getPackMeta } from "../catalog";
+import { GENERIC_BRAND_GUARDRAILS } from "../generic-guardrails";
+import { validateKeywordMatrix } from "../../schemas/validation";
+import type { Pack, ChecklistItem } from "../types";
+import { MY_SCHEMA_RULES } from "./schema-rules";
+import keywordsJson from "./keywords.json";
+
+export const MY_CHECKLIST: ChecklistItem[] = [ /* 6-10 real items */ ];
 
 const pack: Pack = {
-  id: "hotel",
-  name: "Hotel & Hospitality",
-  description: "Scoring, schema and keywords for hotel and hospitality sites.",
-  pageTypes: ["home", "location", "booking"],
-  scoringWeights: { onPage: 0.5, schema: 0.3, geoAi: 0.2 },
-  checklist: [ /* … */ ],
-  schemaRules: [ /* … */ ],
-  keywordMatrix: { /* … */ },
-  brandGuardrails: { /* … */ },
-  aiPrompts: [ /* … */ ],
+  id: "my-pack",
+  name: getPackMeta("my-pack")?.name ?? "My Pack",
+  description: getPackMeta("my-pack")?.description ?? "",
+  pageTypes: getPackMeta("my-pack")?.pageTypes ?? ["home"],
+  // NEVER hardcode weights: the catalog (and data/ota-config.json for hotel)
+  // is the single source, so the selector, the gauge and the composite can
+  // never disagree with the pack.
+  scoringWeights: getPackMeta("my-pack")?.scoringWeights ?? { onPage: 0.35, schema: 0.35, geoAi: 0.3 },
+  checklist: MY_CHECKLIST,
+  schemaRules: MY_SCHEMA_RULES,
+  keywordMatrix: validateKeywordMatrix(keywordsJson),
+  brandGuardrails: GENERIC_BRAND_GUARDRAILS,
+  aiPrompts: [],
 };
 
-registerPack(pack);
+// Guarded so HMR / vitest module reuse never trips the duplicate-id check.
+if (!getPack(pack.id)) registerPack(pack);
 export default pack;
 ```
+
+A new pack also joins three shared registries (all locked by
+`tests/packs-parity.test.ts`): `PACK_CATALOG` in `catalog.ts`, `ALL_PACKS`
+in `all.ts`, and the `MATRIX_JSON` map in `matrices.ts`.
 
 ### Validate before you register
 
@@ -226,25 +262,30 @@ The registry is a module-level `Map`, so tests should `unregisterPack` in
 
 ## Where pack data comes from today
 
-The hotel vertical's data is not yet in a pack directory. Until Task 2.2
-lands, the existing sources are:
+All six packs live under `src/packs/<id>/` (Task 2.2/2.3 done). The shared
+sources they build on:
 
 | Data | Location |
 | --- | --- |
-| Strategy matrices (per property) | `src/data/trained-keyword-matrices.ts` |
-| Checklists / templates | `src/data/templates.ts` |
-| Guardrails & matrix schemas | `src/schemas/validation.ts` |
-| OTA config, pixel limits, weights | `OtaConfigSchema` in `src/schemas/validation.ts` |
+| Per-pack matrices | `src/packs/<id>/keywords.json` (server view: `src/packs/matrices.ts`) |
+| Hotel checklists / templates | `src/packs/hotel/templates.ts` |
+| Guardrails | `src/packs/hotel/brand-guardrails.ts` (five franchise rulebooks) + `src/packs/generic-guardrails.ts` (shared `Generic`) |
+| Matrix & pack schemas | `src/schemas/validation.ts` |
+| OTA config, pixel limits, hotel weights | `data/ota-config.json` (`OtaConfigSchema`) |
+| Pack identity/weights/signals | `src/packs/catalog.ts` |
 | Rule engine (mode-aware) | `rules/` — `runAudit(snapshot, options)` |
+| Contextual schema rules (Task 3.3) | `rules/universal/schema-context.ts` |
 | Mode detection | `rules/context/detect-mode.ts` |
 
 ## Checklist for a new pack PR
 
-1. [ ] `src/packs/<id>/index.ts` exports a `Pack` and registers it.
+1. [ ] `src/packs/<id>/index.ts` exports a `Pack` and registers it **guarded** (`if (!getPack(id))`).
 2. [ ] `validatePack(pack)` returns `[]`.
-3. [ ] Weights sum to 1; every `pageType` is in the `PackPageType` set.
+3. [ ] Weights come from `getPackMeta(<id>)` — never a hardcoded triple; every `pageType` is in the `PackPageType` set.
 4. [ ] `aiPrompts` IDs are unique; `{{placeholders}}` resolve via the variable resolver.
-5. [ ] `keywordMatrix.cpcEstimate` is marked `source: "illustrative"`.
-6. [ ] A test registers the pack and asserts `getPack(<id>)`.
-7. [ ] `npm test`, `npm run typecheck`, `npm run lint` all pass.
-8. [ ] This guide's table is updated if you add or change a `Pack` field.
+5. [ ] `keywordMatrix` is `keywords.json` with `cpcEstimate` marked `source: "illustrative"` and a `metadata.notes` provenance sentence.
+6. [ ] The pack is added to `PACK_CATALOG`, `ALL_PACKS` and `matrices.ts`'s `MATRIX_JSON`.
+7. [ ] `brandGuardrails` is `GENERIC_BRAND_GUARDRAILS` (or spreads it alongside vertical-specific rules).
+8. [ ] A test registers the pack and asserts `getPack(<id>)`; `tests/packs-parity.test.ts` passes unchanged.
+9. [ ] `npm test`, `npm run typecheck`, `npm run lint` all pass.
+10. [ ] This guide's table is updated if you add or change a `Pack` field.
