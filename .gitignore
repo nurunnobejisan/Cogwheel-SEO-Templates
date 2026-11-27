@@ -124,6 +124,11 @@ ml/**/.venv*/
 *.bin
 data/lora-dataset.jsonl
 data/training-triples.jsonl
+# Derived ML training artefacts (regenerate with ml/train CLIs; never commit)
+data/sft-dataset.jsonl
+data/sft-dataset.manifest.json
+data/golden-requests.jsonl
+data/patch-pairs.jsonl
 
 .vercel
 .env*
