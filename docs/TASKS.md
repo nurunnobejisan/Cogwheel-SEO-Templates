@@ -6,7 +6,7 @@ Order is fixed; one phase = one PR; PR links land in `docs/PROGRESS.md`.
 
 - [x] **Phase 0 — vendor `xlsx`** (PR #21): `file:vendor/xlsx-0.20.3.tgz` + `tests/vendor-dependencies.test.ts`.
 - [x] **Phase A — trust fixes** (PR #30): batch audits call the real `/api/full-audit` (no `Math.random()` scores, `unavailable` on failure), `ENABLE_FREE_ONLINE_AI` is opt-in with a UI warning, auto-fix writes only page/profile-sourced copy (blank + flagged otherwise), in-memory stores are labelled ephemeral with client/property-scoped crawl cache keys, and the model-registry benchmark is labelled a lexical proxy.
-- [ ] **Phase B — shared TS package and dedupe**
+- [x] **Phase B — shared TS package and dedupe** (PR #32): `shared/ts/` (`training-vault`, `dataset-builder`, `training-capture`) is now the single source for both trees; the extension keeps a thin consent-gate wrapper at its old vault path, the dead app copies of `background/auto-updater.ts`/`types/updater.types.ts` are deleted (extension survivors unchanged), parity tests assert function identity, and `tests/shared-ts-single-source.test.ts` + gate/PII suites guard the split.
 - [ ] **Phase C — packs + universal engine**
 - [ ] **Phase D — Python service (FastAPI `api/server.py`, HTTP bridges)**
 - [ ] **Phase E — one template renderer + validators wired**
