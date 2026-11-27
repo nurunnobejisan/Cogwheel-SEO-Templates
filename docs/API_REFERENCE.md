@@ -1,7 +1,8 @@
 # API Reference
 
-HTTP surface of SEO Studio: **37 Next.js App Router routes** under `src/app/api/`,
-plus the Python modules in `api/` (library code and an MCP server, not HTTP routes).
+HTTP surface of SEO Studio: **40 Next.js App Router routes** under `src/app/api/`,
+plus the FastAPI Python service (`api/server.py`) and the remaining Python modules in
+`api/` (library code and an MCP server).
 
 Base path for all routes: `/api/…` — served by the Next.js app (`npm run dev`, port 3000),
 or production on Vercel.
@@ -35,6 +36,7 @@ publicly without putting the platform principal in front of them.
 | --- | --- |
 | `SEMRUSH_API_KEY` | direct Semrush Analytics pull (`/semrush-pull`) |
 | `COGWHEEL_ALLOW_LOCAL_PYTHON` | routes that shell out to local Python |
+| `PYTHON_SERVICE_URL` + `SEO_PY_SERVICE_TOKEN` | HTTP bridge to the Python service (`api/server.py`) — enables `/api/content-similarity` and HTTP report generation for `/api/seo-visibility-report` |
 | `COGWHEEL_ALLOW_LOCAL_MAIL_CLI` + `COGWHEEL_MAIL_CLI_PATH` + `COGWHEEL_MAIL_ACCOUNT` | local mail send for `/client-email` |
 | `COGWHEEL_DATA_DIR` | override the local data directory |
 | `VERCEL` | set automatically; routes behave differently on serverless (see `/training-triples`) |
@@ -63,6 +65,7 @@ publicly without putting the platform principal in front of them.
 | `POST` | `/api/generate-hc` | Headline/content generation — thin wrapper over the registered `usp-headline-optimization` task. |
 | `POST` | `/api/generate-kr` | Keyword research — thin wrapper over the registered `keyword-research` task. |
 | `POST` | `/api/templates/inspect` | Inspect a template for placeholders and guardrail violations. |
+| `POST` | `/api/content-similarity` | Thin-content / duplicate audit via the Python service (`TF-IDF`/`Jaccard`). zod-capped like `api/server.py`; `501` when `PYTHON_SERVICE_URL` is unset. |
 | `POST` | `/api/semrush-pull` | Direct Semrush Analytics API pull (requires `SEMRUSH_API_KEY`). |
 | `POST` | `/api/drive-sync` | Import Semrush CSV/XLSX from a property's Google Drive folder (`01-semrush/`). |
 
@@ -103,7 +106,7 @@ publicly without putting the platform principal in front of them.
 | `GET`, `POST` | `/api/visibility` | Visibility state. Reviewable only — nothing is applied without operator approval. |
 | `GET`, `POST` | `/api/visibility/gaps` | Keyword gap analysis. |
 | `POST` | `/api/visibility-suite` | Suite actions (`export_payload` \| `sync_api` \| `import_report`). |
-| `POST` | `/api/seo-visibility-report` | Monthly visibility report (15-minute in-memory cache). |
+| `POST` | `/api/seo-visibility-report` | Monthly visibility report (15-minute in-memory cache). Generation chain: HTTP bridge to `api/server.py` when `PYTHON_SERVICE_URL` is set → local `execFile` builder behind `COGWHEEL_ALLOW_LOCAL_PYTHON=1` → `501` with instructions. Nothing runs by default. |
 
 ### Platform gateway
 
@@ -119,14 +122,41 @@ publicly without putting the platform principal in front of them.
 
 ## Python side (`api/`)
 
-These are **not** HTTP routes. The directory holds library modules and one MCP server:
+`api/server.py` is a **FastAPI HTTP service**; the rest of the directory holds
+library modules and one MCP server:
 
 | File | What it is |
 | --- | --- |
-| `api/content_engine.py` | Library — batch thin-content detection, TF-IDF / Jaccard similarity (>70% duplicate blocker), internal-link graph manifest generator. |
+| `api/server.py` | **FastAPI service** — HTTP bridges over the libraries below. Run from the repo root: `uvicorn api.server:app --host 127.0.0.1 --port 8077` (or `python3 api/server.py`). |
+| `api/content_engine.py` | Library — batch thin-content detection, TF-IDF / Jaccard similarity (>70% duplicate blocker), internal-link graph manifest generator. Served at `POST /v1/content/similarity` and `POST /v1/content/link-graph`. |
 | `api/models.py` | Library — Pydantic models mirroring the TypeScript schemas in `validators/schemas/index.ts` and `shared/schemas/`. |
-| `api/seo_visibility_report.py` | CLI/library — builds the monthly SEO visibility PowerPoint from a template plus Semrush PDF/XLSX. |
+| `api/seo_visibility_report.py` | CLI/library — builds the monthly SEO visibility PowerPoint from a template plus Semrush PDF/XLSX. Served at `POST /v1/reports/seo-visibility` (multipart uploads in, pptx bytes out). |
 | `api/gsc_server.py` | **MCP server** (`FastMCP("gsc-server")`) exposing Google Search Console tools to MCP clients such as Claude Desktop. Requires Python 3.11+ and exits loudly on older versions (issue #19). Config lives in `GSC_CONFIG_DIR` (default: user config dir `mcp-gsc`). |
+
+### Python service contract
+
+```
+GET  /health                      liveness probe (no auth, status only)
+POST /v1/content/similarity       { pages[{id,url?,content}], max_similarity?, min_words? }
+POST /v1/content/link-graph       { items[{url,parentPage?,primaryKeyword?,...}], max_links_per_page? }
+POST /v1/reports/seo-visibility   multipart: template (.pptx), xlsx (.xlsx), pdf? (.pdf) → pptx bytes
+```
+
+Security (fail-closed): with `SEO_PY_SERVICE_TOKEN` set, every `/v1/*` call must
+send `Authorization: Bearer <token>` (constant-time compare). Without a token the
+service only answers loopback peers — the HTTP layer 403s non-loopback peers on
+`/v1/*`, and the CLI refuses a non-loopback bind unless `SEO_PY_SERVICE_TOKEN`
+and `SEO_PY_SERVICE_ALLOW_REMOTE=1` are both set. Payload caps (50 pages,
+200k chars/document, 500 manifest items, 25MB uploads, extension allow-list)
+reject oversized input with 413/422 before any work starts; uploads land under
+server-generated names; no shell is involved anywhere; the service is stateless
+(env read per request, no module-level mutable state).
+
+The Node bridges read `PYTHON_SERVICE_URL` (base URL) and `SEO_PY_SERVICE_TOKEN`
+from server env only — never from a request — so a caller cannot steer those
+fetches. Unset `PYTHON_SERVICE_URL` disables the bridge entirely: `/api/content-similarity`
+answers `501` and report generation falls through to the local `execFile` path
+(behind `COGWHEEL_ALLOW_LOCAL_PYTHON=1`), then `501`.
 
 ---
 
