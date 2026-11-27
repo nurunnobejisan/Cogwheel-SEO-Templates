@@ -265,8 +265,9 @@ const inMemoryVault = new Map<string, TrainingPairRecord>();
 
 /**
  * Migration helper to ensure legacy records conform to v3.0 schema.
+ * Exported for resilience tests (see tests/vault-sync-resilience.test.ts).
  */
-function migrateRecordToV3(rawRecord: unknown): TrainingPairRecord {
+export function migrateRecordToV3(rawRecord: unknown): TrainingPairRecord {
   const r = rawRecord as Record<string, unknown>;
   const rawInput = (r.rawInput || {}) as RawWebInput;
   const canonicalUrl = (r.canonicalUrl as string) || (rawInput.url as string) || "";
