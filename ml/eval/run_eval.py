@@ -58,6 +58,16 @@ ALL_CHECKS = (
     "human_review",
 )
 
+#: Output-row fields aggregated into ``outputsMeta`` (Phase 5): provenance of
+#: *what generated* the outputs — never a score.
+OUTPUT_META_FIELDS = (
+    "templateVersion",
+    "baseModel",
+    "adapter",
+    "endpoint",
+    "requestedModel",
+)
+
 #: Schema.org types we accept as a valid ``@type``. A type outside this set is
 #: either misspelled or not something this pipeline validates against.
 KNOWN_SCHEMA_TYPES = frozenset(
@@ -372,6 +382,18 @@ def run(
 
     model = load_model(model_path) if model_path else None
 
+    # Provenance of the outputs file (additive, Phase 5): which template,
+    # base model, adapter or endpoint produced these rows — never a score.
+    outputs_meta: Dict[str, List[Any]] = {}
+    for row in outputs.values():
+        for field in OUTPUT_META_FIELDS:
+            value = row.get(field)
+            if value is None:
+                continue
+            values = outputs_meta.setdefault(field, [])
+            if value not in values:
+                values.append(value)
+
     results: List[Dict[str, Any]] = []
     failures: List[Dict[str, str]] = []
     y_true: List[str] = []
@@ -451,6 +473,7 @@ def run(
         "cases": len(cases),
         "outputsProvided": len(outputs),
         "model": str(model_path) if model_path else None,
+        "outputsMeta": outputs_meta or None,
         "summary": summary,
         "classifier": classifier_report,
         "failures": failures,

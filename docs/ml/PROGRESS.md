@@ -10,6 +10,7 @@ Status values: `not started` · `in progress` · `done`.
 | 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
 | 3 | LoRA fine-tunes | done | [#7](https://github.com/nurunnobejisan/SEO-Studio/pull/7) |
 | 4 | Ship to app & extension | done | [#10](https://github.com/nurunnobejisan/SEO-Studio/pull/10) |
+| 5 | First adapter run (playbook, promotion, endpoint eval) | in progress | — |
 
 ---
 
@@ -294,6 +295,46 @@ build:extension, pytest 344, ruff (new files).
 - [x] D-021 isolation: branch cut from `origin/main` in worktree
       `ml-phase-3`, no shared history rewritten (fast-forward merge of
       `origin/main` at `8c7f247`, no force-push)
+
+---
+
+## Phase 5 — First adapter run (playbook, promotion, endpoint eval)
+
+**Implementation complete; PR open.** Closes the loop between training,
+serving and evaluation so the first real GPU run can be executed and
+honestly recorded:
+
+- **`docs/ml/GPU_RUNBOOK.md`** — end-to-end operator path: isolated venv +
+  pin verification, dataset gates, Kaggle/Colab dry-run → `--train` (< 9 h
+  sessions), adapter off-box to `ML_PRIVATE_DATASET_REPO` (never git),
+  endpoint-mode evaluation with before/after rows, promotion, app wiring,
+  honest score-log recording, rollback, and the never-list.
+- **Endpoint generation (D-024)** — `ml/train/evaluate.py --endpoint URL`
+  POSTs each frozen golden request to any OpenAI-compatible server (the
+  `ml/serve` gateway) at temperature 0, stdlib only: the eval host needs
+  **no GPU and no ML deps**. Fail-closed — HTTP/shape/empty failures abort
+  naming the case and write no output file; `--generate` (local GPU) stays
+  mutually exclusive. `run_eval` reports gain `outputsMeta` (template,
+  baseModel, adapter, endpoint, requestedModel — provenance only).
+- **Promotion CLI (D-023)** — `python3 -m ml.serve.register` earns
+  `status: ready` through an eleven-gate chain (real train run, allow-listed
+  base + licence, golden sha agreement across manifest/report/file, data
+  sha + rows, adapter named with weights uncommitted, git sha, full 52/52
+  coverage, failures ≤ `--allow-failures`, `outputsMeta` cross-check).
+  Atomic write with `.bak`, idempotent, `--force` for conflicts, legacy
+  entries untouched, `--dry-run` prints the chain.
+- **Tests** — `tests/python/test_ml_register.py` (15) and
+  `tests/python/test_ml_evaluate_endpoint.py` (12, real stub HTTP server
+  incl. end-to-end endpoint → `run_eval` → `outputsMeta`): Python **371**.
+
+Local CI: typecheck, next lint, train:validate, lint:seo, test:ts, vitest,
+brain:eval, test:seo, next build, build:extension, pytest 371, ruff (new
+files clean; `run_eval`'s three pre-existing SIM/C416 hits unchanged).
+
+- [x] Local CI green
+- [ ] CI green on the PR
+- [ ] D-021 isolation: branch cut from `origin/main` in worktree
+      `ml-phase-3`, no shared history rewritten
 
 ---
 

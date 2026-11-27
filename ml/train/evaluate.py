@@ -5,11 +5,19 @@ Three stages, two of them CI-safe:
 1. **build requests** (stdlib) — turn every frozen golden case into a chat
    request with a deterministic, versioned prompt template. One request per
    case, keyed by the golden ``caseId``.
-2. **generate** (GPU, lazy imports) — run a base model ± LoRA adapter over
-   the requests and write ``{caseId, output}`` rows.
+2. **generate** — two paths, both fail-closed (an ungenerated case is an
+   error, never an invented output):
+   - ``--endpoint URL`` (Phase 5, stdlib) — call any OpenAI-compatible
+     server, e.g. the ``ml/serve`` gateway in front of the adapter. The eval
+     host needs **no GPU and no ML dependencies**.
+   - ``--generate`` (GPU, lazy imports) — run a base model ± LoRA adapter
+     locally over the requests.
+   Both write ``{caseId, output}`` rows plus provenance fields.
 3. **score** — hand the outputs to the existing runner:
    ``python3 ml/eval/run_eval.py --outputs <file>``. Golden-set numbers in
-   ``docs/ml/PROGRESS.md`` come from that command and nowhere else.
+   ``docs/ml/PROGRESS.md`` come from that command and nowhere else; the
+   report's ``outputsMeta`` records which template/model/adapter/endpoint
+   produced the rows.
 
 The templates ask for exactly the golden output shape per task (JSON-LD
 object, metadata object, explanation + citedUrl, one label, missing entity
@@ -26,14 +34,24 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence
 
 from .dataset import DEFAULT_GOLDEN
 from .errors import DatasetError, HeavyDepsError
 
-__all__ = ["TEMPLATE_VERSION", "build_requests", "parse_output", "write_outputs"]
+__all__ = [
+    "TEMPLATE_VERSION",
+    "build_requests",
+    "parse_output",
+    "write_outputs",
+    "generate",
+    "generate_via_endpoint",
+]
 
 TEMPLATE_VERSION = 1
 
@@ -242,6 +260,81 @@ def generate(
     return rows
 
 
+def generate_via_endpoint(
+    requests: Sequence[Mapping[str, Any]],
+    *,
+    endpoint: str,
+    api_key: str = "",
+    model: str = "",
+    max_new_tokens: int = 1024,
+    temperature: float = 0.0,
+    timeout_s: float = 120.0,
+) -> List[Dict[str, Any]]:
+    """Generate over the requests through an OpenAI-compatible endpoint.
+
+    This is the eval path that needs **no GPU and no ML dependencies** on the
+    eval host: point it at the Phase 4 gateway (``ml/serve``) or any
+    OpenAI-compatible server. Deterministic by default (temperature 0).
+
+    Fail-closed: any HTTP, transport or shape failure raises ``DatasetError``
+    naming the case — no partial output file is ever written, and no output is
+    ever invented for a case that could not be generated.
+    """
+    if not requests:
+        raise DatasetError("no requests to generate")
+    url = (endpoint or "").strip()
+    if not url:
+        raise DatasetError("endpoint mode needs an endpoint (--endpoint)")
+    headers = {"content-type": "application/json"}
+    key = (api_key or os.environ.get("SERVE_API_KEY", "")).strip()
+    if key:
+        headers["authorization"] = f"Bearer {key}"
+
+    rows: List[Dict[str, Any]] = []
+    for request in requests:
+        case_id = str(request.get("caseId") or "?")
+        payload: Dict[str, Any] = {
+            "temperature": temperature,
+            "max_tokens": max_new_tokens,
+            "messages": list(request["messages"]),
+        }
+        if model:
+            payload["model"] = model
+        http_request = urllib.request.Request(  # noqa: S310 - operator-supplied endpoint
+            url,
+            data=json.dumps(payload).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        try:
+            with urllib.request.urlopen(http_request, timeout=timeout_s) as handle:  # noqa: S310
+                status = handle.status
+                raw = handle.read()
+        except urllib.error.HTTPError as exc:
+            raise DatasetError(f"endpoint HTTP {exc.code} while generating {case_id}") from exc
+        except (urllib.error.URLError, OSError, TimeoutError) as exc:
+            raise DatasetError(f"endpoint unreachable while generating {case_id}: {exc}") from exc
+        if status < 200 or status >= 300:
+            raise DatasetError(f"endpoint HTTP {status} while generating {case_id}")
+        try:
+            body = json.loads(raw.decode("utf-8"))
+            content = body["choices"][0]["message"]["content"]
+        except (UnicodeDecodeError, json.JSONDecodeError, KeyError, IndexError, TypeError) as exc:
+            raise DatasetError(f"endpoint returned an unusable body for {case_id}") from exc
+        if not isinstance(content, str) or not content.strip():
+            raise DatasetError(f"endpoint returned empty content for {case_id}")
+        rows.append(
+            {
+                "caseId": case_id,
+                "output": parse_output(str(request.get("task") or ""), content),
+                "templateVersion": TEMPLATE_VERSION,
+                "endpoint": url,
+                "requestedModel": model or None,
+            }
+        )
+    return rows
+
+
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="Golden-set request builder / generator")
     parser.add_argument("--golden", type=Path, default=DEFAULT_GOLDEN)
@@ -252,11 +345,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         help="write request JSONL here (default action when --generate is absent)",
     )
     parser.add_argument("--generate", action="store_true", help="run a model (GPU + ML deps)")
+    parser.add_argument(
+        "--endpoint",
+        default=None,
+        help="generate via an OpenAI-compatible URL instead of local GPU "
+        "(e.g. $CUSTOM_MODEL_ENDPOINT pointing at ml/serve) — no ML deps needed",
+    )
+    parser.add_argument(
+        "--api-key",
+        default=None,
+        help="bearer for --endpoint (default $SERVE_API_KEY)",
+    )
     parser.add_argument("--base", default="Qwen/Qwen3-4B", help="base model id")
     parser.add_argument("--adapter", type=Path, default=None)
     parser.add_argument("--out", type=Path, default=None, help="outputs JSONL for run_eval")
     parser.add_argument("--max-new-tokens", type=int, default=1024)
     args = parser.parse_args(list(argv) if argv is not None else None)
+
+    if args.endpoint is not None and args.generate:
+        print("error: choose --generate (local GPU) or --endpoint, not both", file=sys.stderr)
+        return 1
 
     try:
         requests = build_requests(args.golden)
@@ -268,7 +376,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         json.dumps(requests, sort_keys=True).encode("utf-8")
     ).hexdigest()
 
-    if not args.generate:
+    if not args.generate and args.endpoint is None:
         target = args.requests or Path("data/golden-requests.jsonl")
         target.parent.mkdir(parents=True, exist_ok=True)
         payload = "\n".join(json.dumps(r, ensure_ascii=False, sort_keys=True) for r in requests)
@@ -279,22 +387,34 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         )
         print(
             "next: python3 -m ml.train.evaluate --generate --requests "
-            f"{target} --base {args.base} --out <run>-outputs.jsonl, then "
+            f"{target} --base {args.base} --out <run>-outputs.jsonl, or "
+            "--endpoint $CUSTOM_MODEL_ENDPOINT (no GPU needed), then "
             "python3 ml/eval/run_eval.py --outputs <run>-outputs.jsonl"
         )
         return 0
 
     if args.out is None:
-        print("error: --generate requires --out <run>-outputs.jsonl", file=sys.stderr)
+        print("error: generation requires --out <run>-outputs.jsonl", file=sys.stderr)
         return 1
+
     try:
-        rows = generate(
-            requests,
-            base_model=args.base,
-            adapter=args.adapter,
-            max_new_tokens=args.max_new_tokens,
-        )
-    except HeavyDepsError as exc:
+        if args.endpoint is not None:
+            model_id = os.environ.get("CUSTOM_MODEL_ID", "")
+            rows = generate_via_endpoint(
+                requests,
+                endpoint=args.endpoint,
+                api_key=args.api_key or "",
+                model=model_id,
+                max_new_tokens=args.max_new_tokens,
+            )
+        else:
+            rows = generate(
+                requests,
+                base_model=args.base,
+                adapter=args.adapter,
+                max_new_tokens=args.max_new_tokens,
+            )
+    except (DatasetError, HeavyDepsError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 1
     write_outputs(rows, args.out)

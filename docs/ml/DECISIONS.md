@@ -379,3 +379,51 @@ rule allows alias-on-read but forbids rewriting persisted ids.
 override; dropping the alias table is one dict entry in
 `ml/serve/registry.py`; removing the bearer check means not setting
 `SERVE_API_KEY`.
+
+### D-023 — `ready` is earned: promotion runs an eleven-gate chain
+
+**Decision.** An entry may carry `status: ready` only through
+`python3 -m ml.serve.register`, which refuses unless: the manifest is a
+real `mode: train` run (dry-run manifests can never promote), the base model
+resolves through the Phase 3 allow-list with a matching licence, the frozen
+golden sha agrees across manifest, run_eval report and the on-disk file,
+training data sha + rows are recorded, the adapter artifact is named with
+`weightsCommitted: false`, a git sha is present, the report covers every
+golden case (skips are not passes), failures are within `--allow-failures`
+(default 0, any allowance recorded in `statusReason`), and the report's
+`outputsMeta` (when present) matches the manifest's adapter/base model. The
+registry write is atomic (tmp + replace) with a `.bak`, is idempotent for
+the same manifest, refuses a conflicting entry under the same modelId
+without `--force`, and never touches legacy entries.
+
+**Reason.** The two legacy entries reached `unverified` precisely because
+their `ready` was typed rather than earned (D-013). The chain ties a
+`ready` claim to the frozen golden set and to a real training run, so a
+registry status can always be re-derived from artifacts, not trusted on
+sight.
+
+**Reverse.** `--allow-failures` and `--force` already exist as recorded
+overrides; deleting `ml/serve/register.py` returns promotion to manual
+registry edits (not recommended — that is how D-013 happened).
+
+### D-024 — Golden-set generation gains an endpoint mode; the eval host needs no GPU
+
+**Decision.** `ml/train/evaluate.py` gains `--endpoint URL` (with
+`--api-key`, default `$SERVE_API_KEY`): each frozen request is POSTed to an
+OpenAI-compatible server — typically `ml/serve` in front of the adapter —
+at temperature 0, using only the standard library. Any HTTP, transport or
+shape failure aborts with the case id and writes no output file. The
+existing `--generate` local-GPU path is unchanged and mutually exclusive.
+`ml/eval/run_eval.py` reports add an `outputsMeta` block (template version,
+base model, adapter, endpoint, requested model — provenance only, never a
+score).
+
+**Reason.** Before this, scoring an adapter required torch + transformers
+on the machine running `run_eval`, which pushed eval onto the GPU box and
+made the "before" (base model) run awkward. Endpoint mode lets any host
+score any served model, keeps the fail-closed rule (no invented outputs for
+unreachable cases), and `outputsMeta` lets the promotion chain prove which
+model produced a report.
+
+**Reverse.** Delete the `--endpoint` branch and `OUTPUT_META_FIELDS`;
+`--generate` and plain `run_eval --outputs` behave exactly as before.
