@@ -221,6 +221,7 @@ The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT
 | [AI SEO brain](docs/AI_SEO_BRAIN.md) | Agents, tools, and routing |
 | [SEO expert guide](docs/SEO_EXPERT_GUIDE.md) | Operator workflow |
 | [Repository audit](docs/REPOSITORY_AUDIT.md) | Findings, remediation status, and known limitations |
+| [Daily Session](docs/DAILY_SESSION.md) | Learn · Build · Community routine, agents, and GitHub permissions |
 | [Roadmap](docs/ROADMAP_UNIVERSAL_AUDIT_AND_CMS_AUTOFIX.md) | Phases and remaining work |
 | [Changelog](CHANGELOG.md) | Release history |
 
