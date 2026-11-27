@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- **`xlsx` no longer installs from a CDN** (`package.json`, `vendor/xlsx-0.20.3.tgz`): the dependency now points at a vendored Apache-2.0 tarball committed to the repo (`file:vendor/xlsx-0.20.3.tgz`), so a clean clone and any sandbox without access to `cdn.sheetjs.com` install and build green. `tests/vendor-dependencies.test.ts` locks the manifests, the tarball's sha512 and the installed version together.
+
 ### Added
 - **Operator console · Outcomes tab** (`src/components/PlatformPanels.tsx`, `OperatorConsole.tsx`): surfaces the outcome log and L2 judgment. Shows tracked changes with their latest Search Console before/after (clicks/impressions/position + control delta, each tagged `measured`/`unavailable`), and per-change-kind effect estimates with confidence, sample size, positive share and caveats. "Measure all" and "Recompute" act through `/api/outcomes`. Read-only evidence — nothing is fabricated or attributed to a page.
 - **Free-first, centralized AI model config** (`src/core/ai/models.ts`): one env-overridable table for every provider/model, defaulting to free tiers and never requiring a paid key. `claude.ts`, `ai/router.ts` and the visibility adapters now read from it; stale ids (`claude-sonnet-4-5`, `gemini-2.0-flash`) refreshed to current ones (`gemini-3.8-flash`, etc.). `.env.example` documents the free provider chain (Gemini → Groq → OpenRouter → Pollinations).
