@@ -6,8 +6,8 @@
  * Pinecone or Qdrant adapter by keeping the same `KnowledgeBase` interface.
  */
 
-import type { KnowledgeBase, RagChunk } from "../types.ts";
-import { createHashingEmbedder } from "./embedder.ts";
+import type { Embedder, KnowledgeBase, RagChunk } from "../types.ts";
+import { createEmbedderFromEnv, createHashingEmbedder } from "./embedder.ts";
 import { createKnowledgeBase, chunkDocument, type KnowledgeBaseHandle } from "./knowledge-base.ts";
 import { SEED_KNOWLEDGE } from "./seed-knowledge.ts";
 import { GEO_KNOWLEDGE } from "./geo-knowledge.ts";
@@ -22,6 +22,12 @@ export interface RagPipelineOptions {
   extraChunks?: RagChunk[];
   /** Vector dimensions for the default hashing embedder. */
   dimensions?: number;
+  /**
+   * Embedder override. Defaults to `createEmbedderFromEnv()`: an SSRF-checked
+   * `HttpEmbedder` when `EMBEDDINGS_ENDPOINT` is set, the deterministic
+   * hashing embedder otherwise (Phase 2).
+   */
+  embedder?: Embedder;
 }
 
 export interface RagPipeline {
@@ -30,13 +36,20 @@ export interface RagPipeline {
   /** Convenience: chunk + ingest a long document. */
   ingestDocument(input: Parameters<typeof chunkDocument>[0]): RagChunk[];
   size(): number;
+  /** Resolves once the seed corpus (and any queued ingest) is embedded. */
+  ready(): Promise<void>;
 }
 
 /**
  * Build the default RAG pipeline with the curated SEO knowledge base loaded.
+ *
+ * Construction stays synchronous: with an async embedder the seed corpus is
+ * queued and embedded in the background — `await pipeline.ready()` (or the
+ * knowledge base's `searchAsync`) before reading.
  */
 export function createRagPipeline(options: RagPipelineOptions = {}): RagPipeline {
-  const embedder = createHashingEmbedder(options.dimensions ?? 256);
+  const embedder =
+    options.embedder ?? createEmbedderFromEnv({ dimensions: options.dimensions ?? 256 });
   const knowledgeBase = createKnowledgeBase(embedder);
   const fingerprints = new Set<string>();
 
@@ -69,6 +82,7 @@ export function createRagPipeline(options: RagPipelineOptions = {}): RagPipeline
     ingest,
     ingestDocument,
     size: () => knowledgeBase.size(),
+    ready: () => knowledgeBase.ready(),
   };
 }
 

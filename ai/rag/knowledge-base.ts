@@ -40,46 +40,112 @@ function cosineSimilarity(a: number[], b: number[]): number {
 export interface KnowledgeBaseHandle extends KnowledgeBase {
   remove(id: string): void;
   all(): RagChunk[];
+  /** Resolves when every queued `upsert` has been embedded; throws if one failed. */
+  ready(): Promise<void>;
 }
 
 export function createKnowledgeBase(embedder: Embedder): KnowledgeBaseHandle {
   const index = new Map<string, IndexedChunk>();
+  const asyncMode = typeof embedder.embedBatchAsync === "function";
+
+  // Embedding queue for async embedders (Phase 2): `upsert` never blocks — it
+  // appends here, and `searchAsync`/`ready` await the chain. A failure is
+  // captured in `ingestError` and stays sticky: serving vectors that never
+  // arrived would return silently wrong results, so every read rethrows it
+  // until a later upsert succeeds (fail-closed, D-018).
+  let queue: Promise<void> = Promise.resolve();
+  let ingestError: Error | null = null;
+
+  const store = (chunks: RagChunk[], vectors: number[][]): void => {
+    chunks.forEach((chunk, position) => {
+      const vector = vectors[position];
+      if (vector) {
+        index.set(chunk.id, { chunk, vector });
+      }
+    });
+  };
+
+  const embedFor = (chunk: RagChunk): string => `${chunk.title}. ${chunk.text}`;
+
+  const rank = (
+    queryVector: number[],
+    query: string,
+    options: KnowledgeBaseSearchOptions = {},
+  ): ScoredChunk[] => {
+    const { topK = 4, tags, minScore = 0 } = options;
+    const queryTokens = query.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+    const scored: ScoredChunk[] = [];
+
+    for (const { chunk, vector } of index.values()) {
+      if (tags && tags.length > 0 && !chunk.tags.some((tag) => tags.includes(tag))) {
+        continue;
+      }
+      const cos = cosineSimilarity(queryVector, vector);
+      const text = `${chunk.title} ${chunk.text}`.toLowerCase();
+      let kw = 0;
+      for (const t of queryTokens) {
+        if (text.includes(t)) kw += 1;
+      }
+      const kwScore = queryTokens.length ? kw / queryTokens.length : 0;
+      // Hybrid: embeddings + keyword overlap, reranked.
+      const score = Number((0.7 * cos + 0.3 * kwScore).toFixed(6));
+      if (score < minScore) {
+        continue;
+      }
+      scored.push({ ...chunk, score });
+    }
+
+    return scored.sort((a, b) => b.score - a.score).slice(0, topK);
+  };
 
   return {
     upsert(chunks: RagChunk[]): void {
-      for (const chunk of chunks) {
-        index.set(chunk.id, { chunk, vector: embedder.embed(`${chunk.title}. ${chunk.text}`) });
+      if (chunks.length === 0) {
+        return;
       }
+      if (asyncMode) {
+        queue = queue.then(async () => {
+          try {
+            const vectors = await embedder.embedBatchAsync!(chunks.map(embedFor));
+            store(chunks, vectors);
+            ingestError = null;
+          } catch (err) {
+            ingestError = err instanceof Error ? err : new Error(String(err));
+          }
+        });
+        return;
+      }
+      store(chunks, embedder.embedBatch(chunks.map(embedFor)));
     },
     remove(id: string): void {
       index.delete(id);
     },
     search(query: string, options: KnowledgeBaseSearchOptions = {}): ScoredChunk[] {
-      const { topK = 4, tags, minScore = 0 } = options;
-      const queryVector = embedder.embed(query);
-      const queryTokens = query.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-      const scored: ScoredChunk[] = [];
-
-      for (const { chunk, vector } of index.values()) {
-        if (tags && tags.length > 0 && !chunk.tags.some((tag) => tags.includes(tag))) {
-          continue;
-        }
-        const cos = cosineSimilarity(queryVector, vector);
-        const text = `${chunk.title} ${chunk.text}`.toLowerCase();
-        let kw = 0;
-        for (const t of queryTokens) {
-          if (text.includes(t)) kw += 1;
-        }
-        const kwScore = queryTokens.length ? kw / queryTokens.length : 0;
-        // Hybrid: embeddings + keyword overlap, reranked.
-        const score = Number((0.7 * cos + 0.3 * kwScore).toFixed(6));
-        if (score < minScore) {
-          continue;
-        }
-        scored.push({ ...chunk, score });
+      if (asyncMode) {
+        throw new Error(
+          "knowledge base uses an async embedder — await searchAsync() instead of search()",
+        );
       }
-
-      return scored.sort((a, b) => b.score - a.score).slice(0, topK);
+      return rank(embedder.embed(query), query, options);
+    },
+    async searchAsync(
+      query: string,
+      options: KnowledgeBaseSearchOptions = {},
+    ): Promise<ScoredChunk[]> {
+      await queue;
+      if (ingestError) {
+        throw ingestError;
+      }
+      const queryVector = asyncMode
+        ? await embedder.embedAsync!(query)
+        : embedder.embed(query);
+      return rank(queryVector, query, options);
+    },
+    async ready(): Promise<void> {
+      await queue;
+      if (ingestError) {
+        throw ingestError;
+      }
     },
     size(): number {
       return index.size;

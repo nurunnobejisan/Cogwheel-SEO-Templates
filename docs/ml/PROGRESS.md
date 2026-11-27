@@ -7,7 +7,7 @@ Status values: `not started` · `in progress` · `done`.
 |---|---|---|---|
 | 0 | Foundations | done | [#3](https://github.com/nurunnobejisan/SEO-Studio/pull/3) |
 | 1 | Data registry & datasets | done | [#4](https://github.com/nurunnobejisan/SEO-Studio/pull/4) |
-| 2 | Retrieval explainer + classifier | not started | — |
+| 2 | Retrieval explainer + classifier | in progress | — |
 | 3 | LoRA fine-tunes | not started | — |
 | 4 | Ship to app & extension | not started | — |
 
@@ -60,11 +60,11 @@ an unknown one.
 | Check | Applies to | Pass condition |
 |---|---|---|
 | `jsonld_valid` | schema_generation | Output parses as JSON-LD and validates against the schema.org type |
-| `grounding` | all generation jobs | Every value in the output appears in `input.text` or `input.measured` |
+| `grounding` | all generation jobs | Every content token in the output traces to `input.text`, `input.measured` or `input.findings` (URLs and closed labels exempt) |
 | `invented_metrics` | rag_synthesis, entity_gap_analysis | No ranking, volume, CPC, traffic or citation count unless `provenance: "measured"` |
 | `title_budget` | metadata_generation | Title ≤ 60 chars, description ≤ 160, exactly one H1 |
 | `classifier_macro_f1` | page_classification | Macro-F1 over the page-type labels, reported with the confusion matrix |
-| `explainer_citation` | rag_synthesis | The explanation cites a retrieved source URL |
+| `explainer_citation` | rag_synthesis | The explanation cites a source URL (from the retrieved set when one is provided) |
 | `human_review` | any | Operator signs off; used for release gating, not for scoring |
 
 ---
@@ -130,11 +130,63 @@ corpora — stdlib-first so CI can verify it with only the root
 
 ## Phase 2 — Retrieval explainer + classifier
 
-**Not started.** Planned: `ml/retrieve/` corpus → embeddings → `pgvector`,
-`HttpEmbedder` in `ai/rag/embedder.ts` behind `EMBEDDINGS_ENDPOINT` (falls back
-to the offline hashing embedder), audit explainer over the Google Search
-Central corpus with per-chunk source URLs, and the page classifier trained on
-the Phase 1 labels with `page_classification` wired into `TaskKind`.
+**Goal.** Retrieval that can be explained (every chunk carries its source
+URL, every citation traces back) and a page-type classifier that trains and
+evaluates inside CI — stdlib-first, licence-gated, fail-closed on the
+network path.
+
+### Deliverables
+
+- [x] `ai/rag/embedder.ts` — `HttpEmbedder` (OpenAI-compatible
+      `POST {input:[...]}`) behind `EMBEDDINGS_ENDPOINT`, syntactic SSRF
+      guard at construction + DNS-aware `safeFetch` per request, redirects
+      disabled, vector-width drift refused, bounded LRU text cache;
+      `createEmbedderFromEnv` picks it or the offline hashing embedder (D-018)
+- [x] `Embedder` / `KnowledgeBase` additive async path — `embedAsync` /
+      `embedBatchAsync` / `searchAsync` / `ready()`; sync `search` throws
+      under an async embedder instead of returning wrong-space vectors;
+      a failed ingest stays sticky until a later upsert succeeds (D-018)
+- [x] `src/lib/security/egress.ts` reused for the endpoint (the same
+      DNS-aware SSRF guard as crawl targets; no second guard implementation)
+- [x] `ml/retrieve/chunk.py` — sentence-aligned chunking, clamped overlap,
+      per-chunk `id`/`source`/`url`/`charStart`/`charEnd` so a citation can be
+      verified against the original document
+- [x] `ml/retrieve/corpus.py` — JSONL corpus behind the licence gate:
+      unknown source, `avoid`/`eval_only` in a train split, missing
+      attribution on `train_attribution` sources, duplicate ids and non-http
+      URLs all rejected; `build_from_html` gates before *and* after extraction
+- [x] `ml/retrieve/embed.py` — hashing embedder (blake2b, deterministic across
+      processes) + fail-closed `HttpEmbedder` with the same SSRF guard and
+      shape/width validation as the TypeScript twin (D-018)
+- [x] `ml/retrieve/store.py` — in-memory cosine index with the app's hybrid
+      ranking (0.7 embedding + 0.3 keyword), JSON persist, optional pgvector
+      export (lazy `psycopg`, D-014)
+- [x] `ml/retrieve/classifier.py` — one-vs-rest logistic regression over
+      measured-only features (jsonLdTypes / h1Count / booking widget /
+      word-count buckets / URL path / hashed text tokens), deterministic
+      weights, macro-F1 + confusion matrix, CLI that re-checks the licence
+      gate on every row (synthetic and non-trainable sources refused)
+- [x] `ml/eval/run_eval.py` — all seven section-9 checks as code; a check
+      with no inputs is `skipped`/`pending`, never `passed`; unknown checks
+      fail loudly; exit 1 only on a genuine failure; report carries the
+      golden sha256 so a run is attributable to the frozen set
+- [x] `src/core/brain/index.ts` — explainer prompt now requires citing the
+      retrieved chunk's source URL, and `contextText` includes it
+- [x] `tests/rag-embedder.test.ts` — 32 tests (SSRF cases, fail-closed
+      shapes, cache, sticky failure, async pipeline); `tests/python/
+      test_ml_{retrieve,eval}.py` — 93 tests
+- [x] D-017, D-018 logged with reversal paths
+
+### Gate
+
+- [ ] licence gate fires on corpora and classifier rows — covered by the
+      93 new Python tests (unknown/avoid/synthetic/attribution refusals)
+- [ ] golden set unchanged — sha256 `3d951412...6a3a84`, runner reports
+      52 cases / 106 checks, all `skipped` without model outputs
+- [ ] CI green locally — typecheck, lint, train:validate (5 gates), vitest,
+      lint:seo, test:seo, test:ts, brain:eval, next build, pytest 278,
+      build:extension
+- [ ] CI green on the PR
 
 ## Phase 3 — LoRA fine-tunes
 
@@ -161,3 +213,4 @@ was not produced by `ml/eval/run_eval.py`.
 | Date | Phase | Model | schema | meta | explainer | classifier | GEO | Notes |
 |---|---|---|---|---|---|---|---|---|
 | 2026-11-27 | 0 | (baseline — golden set frozen) | — | — | — | — | — | 52 cases, no model run yet |
+| 2026-11-27 | 2 | (runner shipped, no model outputs yet) | — | — | — | — | — | 106 checks reported `skipped`, never `passed`; no number until a real run |
