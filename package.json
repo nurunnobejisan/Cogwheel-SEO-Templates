@@ -20,8 +20,11 @@
     "extension:pack": "cd chrome-extension && npm run build && cd dist && rm -f ../../public/cogwheel-seo-studio.zip && zip -r ../../public/cogwheel-seo-studio.zip . -x '*.DS_Store'",
     "brain:eval": "tsx --conditions=react-server scripts/brain-eval.ts",
     "brain:export-lora": "tsx scripts/export-lora-dataset.ts",
-    "train:validate": "node scripts/validate-training-data.mjs && tsx scripts/validate-ml-examples.ts && tsx scripts/check-golden-set.ts",
+    "train:validate": "node scripts/validate-training-data.mjs && tsx scripts/validate-ml-examples.ts && tsx scripts/check-golden-set.ts && tsx scripts/export-ml-sources.ts --check && python3 ml/dataset/cards.py --check",
     "ml:golden:check": "tsx scripts/check-golden-set.ts",
+    "ml:sources:export": "tsx scripts/export-ml-sources.ts",
+    "ml:cards": "python3 ml/dataset/cards.py",
+    "ml:cards:check": "python3 ml/dataset/cards.py --check",
     "train:clean": "python3 scripts/clean-training-data.py",
     "geo:drift": "tsx scripts/geo-drift.ts"
   },
