@@ -9,14 +9,12 @@ import { z } from "zod";
 export const KeywordItemSchema = z.object({
   id: z.string(),
   keyword: z.string().min(1),
-  category: z.enum([
-    "Brand/Direct Booking",
-    "Local/Neighborhood",
-    "Airport/Transit",
-    "Meetings/Weddings",
-    "Extended Stay",
-    "Conversational AI Prompts",
-  ]),
+  /**
+   * Pack-defined category vocabulary. The hotel matrix keeps its six historic
+   * categories; every pack declares its own in `matrix.categories`, and
+   * `validatePack` rejects rows whose category is not declared there.
+   */
+  category: z.string().min(1),
   subCategory: z.string(),
   searchIntent: z.enum([
     "Navigational",
@@ -26,7 +24,15 @@ export const KeywordItemSchema = z.object({
     "Conversational/Generative",
   ]),
   searchVolumeTier: z.enum(["High", "Medium", "Low", "Long-Tail / Conversational"]),
-  cpcEstimate: z.string(),
+  /**
+   * Cost-per-click planning figure. Never measured for this dataset, so the
+   * source marker is required and only "illustrative" is accepted — widening
+   * it to "measured" is a deliberate schema change, not a data entry.
+   */
+  cpcEstimate: z.object({
+    value: z.string().min(1),
+    source: z.enum(["illustrative"]),
+  }),
   targetPageType: z.string(),
   recommendedSchema: z.string(),
   geoEngineRelevance: z.array(z.string()).min(1),
@@ -42,6 +48,11 @@ export const KeywordMetadataSchema = z.object({
   author: z.string(),
   targetIndustries: z.array(z.string()),
   categorySummary: z.record(z.string(), z.number()),
+  /**
+   * Provenance note shown with the dataset. Every pack states plainly which
+   * fields are planning aids rather than measurements.
+   */
+  notes: z.string().optional(),
 });
 
 export const KeywordStrategyMatrixSchema = z.object({
@@ -67,8 +78,10 @@ export const ForbiddenTermSchema = z.object({
 });
 
 export const BrandRuleSchema = z.object({
-  name: z.enum(["Marriott", "Hilton", "IHG", "Hyatt", "Independent"]),
+  name: z.enum(["Marriott", "Hilton", "IHG", "Hyatt", "Independent", "Generic"]),
   loyaltyProgram: z.string(),
+  /** Franchise suffix required after the brand name (hotel brands only). */
+  mandatorySuffix: z.string().optional(),
   maxTitleChars: z.number().int().min(30).max(100),
   maxMetaChars: z.number().int().min(80).max(250),
   maxH1Chars: z.number().int().min(20).max(120),
@@ -77,7 +90,7 @@ export const BrandRuleSchema = z.object({
 });
 
 export const AllBrandGuardrailsSchema = z.record(
-  z.enum(["Marriott", "Hilton", "IHG", "Hyatt", "Independent"]),
+  z.enum(["Marriott", "Hilton", "IHG", "Hyatt", "Independent", "Generic"]),
   BrandRuleSchema
 );
 

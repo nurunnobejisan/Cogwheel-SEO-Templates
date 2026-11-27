@@ -50,7 +50,7 @@ const keywordMatrix: KeywordStrategyMatrix = {
       subCategory: "Brand",
       searchIntent: "Transactional",
       searchVolumeTier: "Medium",
-      cpcEstimate: "3.20",
+      cpcEstimate: { value: "3.20", source: "illustrative" },
       targetPageType: "home",
       recommendedSchema: "Hotel",
       geoEngineRelevance: ["ChatGPT", "Gemini"],

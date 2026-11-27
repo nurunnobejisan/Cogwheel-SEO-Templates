@@ -1,4 +1,4 @@
-import matrixData from "../../data/78-keyword-strategy-matrix.json";
+import matrixData from "../packs/hotel/keywords.json";
 
 export function StrategyMatrixContent() {
   const { metadata: meta, categories, keywords } = matrixData;
@@ -83,7 +83,8 @@ export function StrategyMatrixContent() {
                         <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
                           <span>Est. CPC:</span>
                           <span className="font-semibold text-slate-800 dark:text-slate-200">
-                            {kw.cpcEstimate}
+                            {kw.cpcEstimate.value}
+                            <span className="ml-1 text-slate-400 dark:text-slate-500">(illustrative)</span>
                           </span>
                         </div>
                       </div>

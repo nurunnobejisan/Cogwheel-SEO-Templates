@@ -16,8 +16,8 @@ from python.scripts.validate_schemas import validate_keyword_matrix, validate_ot
 
 
 def test_keyword_strategy_matrix_validation():
-    """Verify 78-keyword matrix loads and parses cleanly into KeywordStrategyMatrix model."""
-    matrix_path = ROOT_DIR / "data" / "78-keyword-strategy-matrix.json"
+    """Verify the hotel pack matrix loads and parses cleanly into KeywordStrategyMatrix model."""
+    matrix_path = ROOT_DIR / "src" / "packs" / "hotel" / "keywords.json"
     assert matrix_path.exists(), "Matrix file must exist"
     assert validate_keyword_matrix(matrix_path) is True
 
@@ -28,6 +28,9 @@ def test_keyword_strategy_matrix_validation():
     assert matrix.metadata.totalKeywords == 78
     assert len(matrix.keywords) == 78
     assert len(matrix.categories) == 6
+    # Task 4.1: every CPC figure is explicitly labelled illustrative.
+    assert all(kw.cpcEstimate.source == "illustrative" for kw in matrix.keywords)
+    assert matrix.metadata.notes and "not measured search data" in matrix.metadata.notes
 
 
 def test_ota_config_validation():

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import matrixData from "../../../data/78-keyword-strategy-matrix.json";
+import matrixData from "../../packs/hotel/keywords.json";
 
 export const metadata: Metadata = {
   title: "78-Keyword Hospitality Strategy Matrix — SEO Studio Suite",
@@ -144,7 +144,10 @@ export default function StrategyMatrixPage() {
                           </div>
                           <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
                             <span>Est. CPC:</span>
-                            <span className="font-semibold text-slate-800 dark:text-slate-200">{kw.cpcEstimate}</span>
+                            <span className="font-semibold text-slate-800 dark:text-slate-200">
+                              {kw.cpcEstimate.value}
+                              <span className="ml-1 text-slate-400 dark:text-slate-500">(illustrative)</span>
+                            </span>
                           </div>
                         </div>
 

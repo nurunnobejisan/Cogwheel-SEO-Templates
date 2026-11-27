@@ -18,7 +18,8 @@
       "Meetings/Weddings": 13,
       "Extended Stay": 13,
       "Conversational AI Prompts": 13
-    }
+    },
+    "notes": "searchVolumeTier and cpcEstimate are illustrative planning bands authored for this pack, not measured search data. {{placeholders}} are resolved by the template engine."
   },
   "categories": [
     "Brand/Direct Booking",
@@ -36,7 +37,10 @@
       "subCategory": "Brand Defense & Ownership",
       "searchIntent": "Navigational",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$1.50 - $3.20",
+      "cpcEstimate": {
+        "value": "$1.50 - $3.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Homepage / Brand Overview",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -56,7 +60,10 @@
       "subCategory": "Rate Parity & Discounts",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.10 - $4.50",
+      "cpcEstimate": {
+        "value": "$2.10 - $4.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Direct Booking Guarantee Landing Page",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -75,7 +82,10 @@
       "subCategory": "Value Proposition",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$1.80 - $3.60",
+      "cpcEstimate": {
+        "value": "$1.80 - $3.60",
+        "source": "illustrative"
+      },
       "targetPageType": "Direct Booking Guarantee Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -94,7 +104,10 @@
       "subCategory": "OTA Comparison",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.40 - $5.10",
+      "cpcEstimate": {
+        "value": "$2.40 - $5.10",
+        "source": "illustrative"
+      },
       "targetPageType": "Direct Booking Guarantee Landing Page",
       "recommendedSchema": "FAQPage",
       "geoEngineRelevance": [
@@ -113,7 +126,10 @@
       "subCategory": "Loyalty & Rewards",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$1.90 - $3.80",
+      "cpcEstimate": {
+        "value": "$1.90 - $3.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Homepage / Brand Overview",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -131,7 +147,10 @@
       "subCategory": "Brand Portfolio Advantage",
       "searchIntent": "Informational",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.20 - $4.00",
+      "cpcEstimate": {
+        "value": "$2.20 - $4.00",
+        "source": "illustrative"
+      },
       "targetPageType": "Homepage / Brand Overview",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -149,7 +168,10 @@
       "subCategory": "Policy Transparency",
       "searchIntent": "Informational",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$1.10 - $2.30",
+      "cpcEstimate": {
+        "value": "$1.10 - $2.30",
+        "source": "illustrative"
+      },
       "targetPageType": "FAQ & Policies Page",
       "recommendedSchema": "FAQPage",
       "geoEngineRelevance": [
@@ -168,7 +190,10 @@
       "subCategory": "Package Perks",
       "searchIntent": "Transactional",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.50 - $4.80",
+      "cpcEstimate": {
+        "value": "$2.50 - $4.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Rooms/Suites Landing Page",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -186,7 +211,10 @@
       "subCategory": "Direct Contact / NAP",
       "searchIntent": "Navigational",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$0.90 - $1.80",
+      "cpcEstimate": {
+        "value": "$0.90 - $1.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Contact & Location Page",
       "recommendedSchema": "LocalBusiness",
       "geoEngineRelevance": [
@@ -205,7 +233,10 @@
       "subCategory": "Operational Info",
       "searchIntent": "Informational",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$0.80 - $1.50",
+      "cpcEstimate": {
+        "value": "$0.80 - $1.50",
+        "source": "illustrative"
+      },
       "targetPageType": "FAQ & Policies Page",
       "recommendedSchema": "FAQPage",
       "geoEngineRelevance": [
@@ -224,7 +255,10 @@
       "subCategory": "Price Assurance",
       "searchIntent": "Transactional",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.60 - $5.40",
+      "cpcEstimate": {
+        "value": "$2.60 - $5.40",
+        "source": "illustrative"
+      },
       "targetPageType": "Direct Booking Guarantee Landing Page",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -242,7 +276,10 @@
       "subCategory": "Date Flexibility",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$1.70 - $3.50",
+      "cpcEstimate": {
+        "value": "$1.70 - $3.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Rooms/Suites Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -260,7 +297,10 @@
       "subCategory": "Loyalty Accrual",
       "searchIntent": "Informational",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$1.40 - $2.80",
+      "cpcEstimate": {
+        "value": "$1.40 - $2.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Homepage / Brand Overview",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -278,7 +318,10 @@
       "subCategory": "Sub-Market Discovery",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.20 - $6.50",
+      "cpcEstimate": {
+        "value": "$3.20 - $6.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -298,7 +341,10 @@
       "subCategory": "Landmark Proximity",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.80 - $7.20",
+      "cpcEstimate": {
+        "value": "$3.80 - $7.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -317,7 +363,10 @@
       "subCategory": "Walkability / Spatial",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.90 - $5.80",
+      "cpcEstimate": {
+        "value": "$2.90 - $5.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -336,7 +385,10 @@
       "subCategory": "Historic / Heritage",
       "searchIntent": "Informational",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.60 - $5.10",
+      "cpcEstimate": {
+        "value": "$2.60 - $5.10",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -354,7 +406,10 @@
       "subCategory": "Conference Proximity",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$4.50 - $9.20",
+      "cpcEstimate": {
+        "value": "$4.50 - $9.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -373,7 +428,10 @@
       "subCategory": "Coastal / Waterfront",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.60 - $7.80",
+      "cpcEstimate": {
+        "value": "$3.60 - $7.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Homepage / Brand Overview",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -392,7 +450,10 @@
       "subCategory": "Sports & Entertainment",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$4.10 - $8.50",
+      "cpcEstimate": {
+        "value": "$4.10 - $8.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -411,7 +472,10 @@
       "subCategory": "Pet Friendly Amenity",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$2.80 - $5.50",
+      "cpcEstimate": {
+        "value": "$2.80 - $5.50",
+        "source": "illustrative"
+      },
       "targetPageType": "FAQ & Amenities Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -430,7 +494,10 @@
       "subCategory": "Luxury Tier",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$4.80 - $9.90",
+      "cpcEstimate": {
+        "value": "$4.80 - $9.90",
+        "source": "illustrative"
+      },
       "targetPageType": "Homepage / Brand Overview",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -449,7 +516,10 @@
       "subCategory": "Lifestyle & Nightlife",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.10 - $6.20",
+      "cpcEstimate": {
+        "value": "$3.10 - $6.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -468,7 +538,10 @@
       "subCategory": "Family Leisure",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.40 - $7.10",
+      "cpcEstimate": {
+        "value": "$3.40 - $7.10",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -487,7 +560,10 @@
       "subCategory": "Medical / University Proximity",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.20 - $4.40",
+      "cpcEstimate": {
+        "value": "$2.20 - $4.40",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -506,7 +582,10 @@
       "subCategory": "Scenic Tranquility",
       "searchIntent": "Informational",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.70 - $5.30",
+      "cpcEstimate": {
+        "value": "$2.70 - $5.30",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -524,7 +603,10 @@
       "subCategory": "Airport Shuttle",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.50 - $6.80",
+      "cpcEstimate": {
+        "value": "$3.50 - $6.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Airport Transit Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -543,7 +625,10 @@
       "subCategory": "Early Morning Flight",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.20 - $6.20",
+      "cpcEstimate": {
+        "value": "$3.20 - $6.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Airport Transit Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -561,7 +646,10 @@
       "subCategory": "24-Hour Shuttle",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.90 - $5.60",
+      "cpcEstimate": {
+        "value": "$2.90 - $5.60",
+        "source": "illustrative"
+      },
       "targetPageType": "Airport Transit Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -579,7 +667,10 @@
       "subCategory": "Rail Transit",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.80 - $5.40",
+      "cpcEstimate": {
+        "value": "$2.80 - $5.40",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -598,7 +689,10 @@
       "subCategory": "Flight Layover",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.60 - $5.10",
+      "cpcEstimate": {
+        "value": "$2.60 - $5.10",
+        "source": "illustrative"
+      },
       "targetPageType": "Airport Transit Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -616,7 +710,10 @@
       "subCategory": "Cruise Terminal Transit",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.60 - $7.30",
+      "cpcEstimate": {
+        "value": "$3.60 - $7.30",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -634,7 +731,10 @@
       "subCategory": "Park Sleep Fly",
       "searchIntent": "Transactional",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.90 - $7.90",
+      "cpcEstimate": {
+        "value": "$3.90 - $7.90",
+        "source": "illustrative"
+      },
       "targetPageType": "Airport Transit Landing Page",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -652,7 +752,10 @@
       "subCategory": "Acoustic Comfort",
       "searchIntent": "Informational",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.40 - $4.80",
+      "cpcEstimate": {
+        "value": "$2.40 - $4.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Rooms/Suites Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -670,7 +773,10 @@
       "subCategory": "Highway / Corridor",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$2.30 - $4.60",
+      "cpcEstimate": {
+        "value": "$2.30 - $4.60",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -688,7 +794,10 @@
       "subCategory": "Value Airport",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.10 - $4.20",
+      "cpcEstimate": {
+        "value": "$2.10 - $4.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Airport Transit Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -706,7 +815,10 @@
       "subCategory": "Airport Suites",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.80 - $5.50",
+      "cpcEstimate": {
+        "value": "$2.80 - $5.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Rooms/Suites Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -724,7 +836,10 @@
       "subCategory": "Multimodal Hub",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.70 - $5.30",
+      "cpcEstimate": {
+        "value": "$2.70 - $5.30",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -742,7 +857,10 @@
       "subCategory": "Long-Term Parking",
       "searchIntent": "Transactional",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.10 - $6.10",
+      "cpcEstimate": {
+        "value": "$3.10 - $6.10",
+        "source": "illustrative"
+      },
       "targetPageType": "Airport Transit Landing Page",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -760,7 +878,10 @@
       "subCategory": "Corporate Meetings",
       "searchIntent": "Transactional",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$6.50 - $14.20",
+      "cpcEstimate": {
+        "value": "$6.50 - $14.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -779,7 +900,10 @@
       "subCategory": "Capacity Targeting",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$5.80 - $12.50",
+      "cpcEstimate": {
+        "value": "$5.80 - $12.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -797,7 +921,10 @@
       "subCategory": "Wedding Room Blocks",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$5.20 - $11.00",
+      "cpcEstimate": {
+        "value": "$5.20 - $11.00",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -816,7 +943,10 @@
       "subCategory": "Corporate Retreats",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$5.90 - $13.00",
+      "cpcEstimate": {
+        "value": "$5.90 - $13.00",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -834,7 +964,10 @@
       "subCategory": "Ballroom Venues",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$6.10 - $13.50",
+      "cpcEstimate": {
+        "value": "$6.10 - $13.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -852,7 +985,10 @@
       "subCategory": "Boardroom Rentals",
       "searchIntent": "Transactional",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$5.40 - $11.50",
+      "cpcEstimate": {
+        "value": "$5.40 - $11.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -870,7 +1006,10 @@
       "subCategory": "Banquet Dining",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$5.60 - $12.00",
+      "cpcEstimate": {
+        "value": "$5.60 - $12.00",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -888,7 +1027,10 @@
       "subCategory": "Full Wedding Package",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$6.20 - $13.80",
+      "cpcEstimate": {
+        "value": "$6.20 - $13.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -907,7 +1049,10 @@
       "subCategory": "Workshop Facilities",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$5.10 - $10.80",
+      "cpcEstimate": {
+        "value": "$5.10 - $10.80",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -925,7 +1070,10 @@
       "subCategory": "Sports Team Travel",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.80 - $7.50",
+      "cpcEstimate": {
+        "value": "$3.80 - $7.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -943,7 +1091,10 @@
       "subCategory": "Social Groups",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.50 - $7.00",
+      "cpcEstimate": {
+        "value": "$3.50 - $7.00",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -961,7 +1112,10 @@
       "subCategory": "Outdoor Venues",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$5.70 - $12.20",
+      "cpcEstimate": {
+        "value": "$5.70 - $12.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -979,7 +1133,10 @@
       "subCategory": "Direct Sales RFP",
       "searchIntent": "Transactional",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$6.80 - $15.00",
+      "cpcEstimate": {
+        "value": "$6.80 - $15.00",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -997,7 +1154,10 @@
       "subCategory": "In-Suite Kitchens",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.80 - $7.60",
+      "cpcEstimate": {
+        "value": "$3.80 - $7.60",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1017,7 +1177,10 @@
       "subCategory": "Weekly Pricing",
       "searchIntent": "Transactional",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.20 - $6.50",
+      "cpcEstimate": {
+        "value": "$3.20 - $6.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -1035,7 +1198,10 @@
       "subCategory": "Relocation & Insurance",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$4.50 - $9.20",
+      "cpcEstimate": {
+        "value": "$4.50 - $9.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1053,7 +1219,10 @@
       "subCategory": "Medical Staff Housing",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.60 - $7.40",
+      "cpcEstimate": {
+        "value": "$3.60 - $7.40",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1071,7 +1240,10 @@
       "subCategory": "Kitchen Appliance Specs",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.10 - $6.30",
+      "cpcEstimate": {
+        "value": "$3.10 - $6.30",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1089,7 +1261,10 @@
       "subCategory": "Corporate Housing",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$4.80 - $10.00",
+      "cpcEstimate": {
+        "value": "$4.80 - $10.00",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1107,7 +1282,10 @@
       "subCategory": "Ancillary Amenities",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.30 - $6.70",
+      "cpcEstimate": {
+        "value": "$3.30 - $6.70",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1125,7 +1303,10 @@
       "subCategory": "Pet Friendly Long Term",
       "searchIntent": "Commercial",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$3.50 - $7.10",
+      "cpcEstimate": {
+        "value": "$3.50 - $7.10",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1144,7 +1325,10 @@
       "subCategory": "Tiered Length of Stay",
       "searchIntent": "Transactional",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.40 - $6.90",
+      "cpcEstimate": {
+        "value": "$3.40 - $6.90",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -1162,7 +1346,10 @@
       "subCategory": "Medical Long Term",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.70 - $7.50",
+      "cpcEstimate": {
+        "value": "$3.70 - $7.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1180,7 +1367,10 @@
       "subCategory": "Homeowner Displacement",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.90 - $7.90",
+      "cpcEstimate": {
+        "value": "$3.90 - $7.90",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1198,7 +1388,10 @@
       "subCategory": "Multi-Bedroom Layouts",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$4.60 - $9.40",
+      "cpcEstimate": {
+        "value": "$4.60 - $9.40",
+        "source": "illustrative"
+      },
       "targetPageType": "Rooms/Suites Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1217,7 +1410,10 @@
       "subCategory": "Remote Work / Tech",
       "searchIntent": "Commercial",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$4.20 - $8.60",
+      "cpcEstimate": {
+        "value": "$4.20 - $8.60",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1235,7 +1431,10 @@
       "subCategory": "Multi-Constraint Leisure Query",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.80 - $7.90",
+      "cpcEstimate": {
+        "value": "$3.80 - $7.90",
+        "source": "illustrative"
+      },
       "targetPageType": "GEO Entity Knowledge Base / FAQ",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1254,7 +1453,10 @@
       "subCategory": "Lifestyle Recommendation",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.40 - $6.90",
+      "cpcEstimate": {
+        "value": "$3.40 - $6.90",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1272,7 +1474,10 @@
       "subCategory": "Airport Transit Inquiry",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.10 - $6.40",
+      "cpcEstimate": {
+        "value": "$3.10 - $6.40",
+        "source": "illustrative"
+      },
       "targetPageType": "Airport Transit Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1290,7 +1495,10 @@
       "subCategory": "Extended Pet Stay Query",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.90 - $8.10",
+      "cpcEstimate": {
+        "value": "$3.90 - $8.10",
+        "source": "illustrative"
+      },
       "targetPageType": "Extended Stay Landing Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1308,7 +1516,10 @@
       "subCategory": "Direct Competitor Comparison",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.60 - $7.40",
+      "cpcEstimate": {
+        "value": "$3.60 - $7.40",
+        "source": "illustrative"
+      },
       "targetPageType": "Homepage / Brand Overview",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1326,7 +1537,10 @@
       "subCategory": "B2B Event Inquiry",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$5.80 - $12.50",
+      "cpcEstimate": {
+        "value": "$5.80 - $12.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Meetings & Events RFP Page",
       "recommendedSchema": "EventVenue",
       "geoEngineRelevance": [
@@ -1344,7 +1558,10 @@
       "subCategory": "Direct Policy Factoid",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$1.50 - $3.20",
+      "cpcEstimate": {
+        "value": "$1.50 - $3.20",
+        "source": "illustrative"
+      },
       "targetPageType": "FAQ & Policies Page",
       "recommendedSchema": "FAQPage",
       "geoEngineRelevance": [
@@ -1363,7 +1580,10 @@
       "subCategory": "Spatial Safety & Walkability",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.20 - $4.50",
+      "cpcEstimate": {
+        "value": "$2.20 - $4.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Destination Guide",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1381,7 +1601,10 @@
       "subCategory": "Remote Work & EV Triad",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$3.70 - $7.80",
+      "cpcEstimate": {
+        "value": "$3.70 - $7.80",
+        "source": "illustrative"
+      },
       "targetPageType": "FAQ & Amenities Page",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1399,7 +1622,10 @@
       "subCategory": "Seasonality & Fee Elimination",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$2.40 - $5.20",
+      "cpcEstimate": {
+        "value": "$2.40 - $5.20",
+        "source": "illustrative"
+      },
       "targetPageType": "Direct Booking Guarantee Landing Page",
       "recommendedSchema": "Offer",
       "geoEngineRelevance": [
@@ -1417,7 +1643,10 @@
       "subCategory": "Romantic Occasion Inquiry",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "Medium",
-      "cpcEstimate": "$4.90 - $10.50",
+      "cpcEstimate": {
+        "value": "$4.90 - $10.50",
+        "source": "illustrative"
+      },
       "targetPageType": "Homepage / Brand Overview",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [
@@ -1435,7 +1664,10 @@
       "subCategory": "Cancellation Flexibility",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$2.80 - $5.80",
+      "cpcEstimate": {
+        "value": "$2.80 - $5.80",
+        "source": "illustrative"
+      },
       "targetPageType": "FAQ & Policies Page",
       "recommendedSchema": "FAQPage",
       "geoEngineRelevance": [
@@ -1454,7 +1686,10 @@
       "subCategory": "Comprehensive Entity Summary",
       "searchIntent": "Conversational/Generative",
       "searchVolumeTier": "High",
-      "cpcEstimate": "$2.20 - $4.60",
+      "cpcEstimate": {
+        "value": "$2.20 - $4.60",
+        "source": "illustrative"
+      },
       "targetPageType": "GEO Entity Knowledge Base / FAQ",
       "recommendedSchema": "Hotel",
       "geoEngineRelevance": [

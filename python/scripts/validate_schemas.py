@@ -44,10 +44,11 @@ def load_json_file(file_path: Path) -> dict[str, Any]:
 
 
 def validate_keyword_matrix(data_path: Path) -> bool:
-    """Validate 78-keyword strategy matrix dataset.
+    """Validate a vertical-pack keyword strategy matrix dataset.
 
     Args:
-        data_path: Path to 78-keyword-strategy-matrix.json.
+        data_path: Path to a pack keyword matrix JSON
+            (default: src/packs/hotel/keywords.json).
 
     Returns:
         True if validation succeeds, False otherwise.
@@ -136,8 +137,8 @@ def main() -> int:
     parser.add_argument(
         "--matrix",
         type=Path,
-        default=ROOT_DIR / "data" / "78-keyword-strategy-matrix.json",
-        help="Path to 78-keyword-strategy-matrix.json",
+        default=ROOT_DIR / "src" / "packs" / "hotel" / "keywords.json",
+        help="Path to a pack keyword strategy matrix JSON (default: hotel pack)",
     )
     parser.add_argument(
         "--ota",

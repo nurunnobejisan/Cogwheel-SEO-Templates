@@ -119,17 +119,19 @@ Validated by `KeywordStrategyMatrixSchema` in `src/schemas/validation.ts`:
 ```ts
 {
   metadata: { version, datasetName, totalKeywords, lastUpdated, author,
-              targetIndustries, categorySummary },
-  categories: ["Brand/Direct Booking", ...],   // ≥1
+              targetIndustries, categorySummary, notes? },
+  categories: ["Brand/Direct Booking", ...],   // ≥1, pack-defined
   keywords: [ { id, keyword, category, subCategory, searchIntent,
-                searchVolumeTier, cpcEstimate, targetPageType,
-                recommendedSchema, geoEngineRelevance, targetEntityPrompt,
-                competitiveContext } ],         // ≥1
+                searchVolumeTier, cpcEstimate: { value, source: "illustrative" },
+                targetPageType, recommendedSchema, geoEngineRelevance,
+                targetEntityPrompt, competitiveContext } ],  // ≥1
 }
 ```
 
-Per Task 4.1, `cpcEstimate` values are illustrative and must be marked
-`source: "illustrative"`.
+Per Task 4.1, every `cpcEstimate` carries `{ value, source: "illustrative" }`
+— `source` only accepts the literal `"illustrative"`, because no measured CPC
+data exists for these datasets. `metadata.notes` states the same provenance
+for the volume tiers in plain words.
 
 ### `AllBrandGuardrails`
 
@@ -145,10 +147,10 @@ Per Task 4.1, `cpcEstimate` values are illustrative and must be marked
 }
 ```
 
-> **Known limitation:** `BrandRuleSchema.name` is currently the enum
-> `Marriott | Hilton | IHG | Hyatt | Independent`. A non-hotel pack cannot
-> declare its own brand keys until that enum is widened. Track this with
-> Task 2.3 (Universal Vertical Packs).
+> **Widened in Phase C:** `BrandRuleSchema.name` and the guardrail record keys
+> now include `Generic`, so non-hotel packs declare universal guardrails under
+> a single `Generic` key (Task 2.3). `mandatorySuffix` is optional — hotel
+> franchise brands use it, everyone else omits it.
 
 ---
 

@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "KeywordStrategyMatrix",
-  "description": "Standard JSON Schema for the SEO Studio 78-keyword hospitality strategy matrix.",
+  "description": "Standard JSON Schema for an SEO Studio vertical-pack keyword strategy matrix (78 keywords across 6 declared categories).",
   "$ref": "#/definitions/KeywordStrategyMatrix",
   "definitions": {
     "KeywordStrategyMatrix": {
@@ -37,6 +37,10 @@
               "additionalProperties": {
                 "type": "number"
               }
+            },
+            "notes": {
+              "type": "string",
+              "description": "Provenance note stating which fields are planning aids rather than measurements."
             }
           },
           "required": [
@@ -71,14 +75,8 @@
               },
               "category": {
                 "type": "string",
-                "enum": [
-                  "Brand/Direct Booking",
-                  "Local/Neighborhood",
-                  "Airport/Transit",
-                  "Meetings/Weddings",
-                  "Extended Stay",
-                  "Conversational AI Prompts"
-                ]
+                "minLength": 1,
+                "description": "Pack-defined category; must appear in the matrix's declared categories list."
               },
               "subCategory": {
                 "type": "string"
@@ -103,7 +101,25 @@
                 ]
               },
               "cpcEstimate": {
-                "type": "string"
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "string",
+                    "minLength": 1
+                  },
+                  "source": {
+                    "type": "string",
+                    "enum": [
+                      "illustrative"
+                    ],
+                    "description": "Only 'illustrative' is accepted: no measured CPC data exists for these datasets."
+                  }
+                },
+                "required": [
+                  "value",
+                  "source"
+                ],
+                "additionalProperties": false
               },
               "targetPageType": {
                 "type": "string"
