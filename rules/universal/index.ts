@@ -10,17 +10,20 @@ import { METADATA_RULES } from "./metadata.ts";
 import { CONTENT_RULES } from "./content.ts";
 import { MEDIA_RULES } from "./media.ts";
 import { TECHNICAL_RULES } from "./technical.ts";
+import { CONTEXTUAL_SCHEMA_RULES } from "./schema-context.ts";
 
 export * from "./metadata.ts";
 export * from "./content.ts";
 export * from "./media.ts";
 export * from "./technical.ts";
+export * from "./schema-context.ts";
 
 export const UNIVERSAL_RULES: AuditRule[] = [
   ...METADATA_RULES,
   ...CONTENT_RULES,
   ...MEDIA_RULES,
   ...TECHNICAL_RULES,
+  ...CONTEXTUAL_SCHEMA_RULES,
 ];
 
 /** Execute every universal rule against the snapshot and flatten the results. */
