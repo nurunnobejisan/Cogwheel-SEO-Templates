@@ -242,10 +242,13 @@ produced.
       assembly manifest and the new tests
 - [x] no score without `run_eval.py` — trainers write manifests only;
       `evaluate.py` is the sole path from a model to a scored row
-- [ ] CI green locally — typecheck, lint, train:validate (5 gates),
-      vitest, lint:seo 10/10, test:seo, test:ts, brain:eval
-      fabrication 0.0000, next build, pytest 324, build:extension
-- [ ] CI green on the PR
+- [x] CI green locally — typecheck, lint, train:validate (5 gates),
+      vitest 515/516 (the 1 failure is `tests/vault-sync-resilience.test.ts`,
+      Task 1.3 work, failing identically on `origin/main` without this branch —
+      verified by stash; see D-021), lint:seo 10/10, test:seo, test:ts,
+      brain:eval fabrication 0.0000, next build, pytest 324, build:extension
+- [ ] CI green on the PR — Python + secret scan pass on run 45944564702;
+      Node blocked by the same pre-existing `main` failure until PR #6 lands
 - [x] D-021 isolation: worktree `ml-phase-3`, branch cut from
       `origin/main`, no shared history rewritten
 
