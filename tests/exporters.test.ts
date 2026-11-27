@@ -27,6 +27,26 @@ describe("Day 8: Multi-CMS Export Adapters", () => {
     assert(html.includes("application/ld+json"));
   });
 
+  it("deduplicates head tags smuggled through raw fields (robotsGuardrails)", () => {
+    const html = exportToHtml({
+      title: "Clean Title",
+      metaDescription: "Clean description.",
+      canonicalUrl: "https://example.com/",
+      // Raw fields can try to inject a second title/description — the export
+      // passes through deduplicateHeadTags, so only the real tags survive.
+      bodyContent: "</body></html><title>Evil Second Title</title>",
+      jsonLdScript: '<meta name="description" content="injected">'
+    });
+
+    const titles = html.match(/<title>[\s\S]*?<\/title>/gi) || [];
+    assert.strictEqual(titles.length, 1);
+    assert.strictEqual(titles[0], "<title>Clean Title</title>");
+
+    const descriptions = html.match(/<meta[^>]+name=["']description["'][^>]*>/gi) || [];
+    assert.strictEqual(descriptions.length, 1);
+    assert(descriptions[0].includes("Clean description."));
+  });
+
   it("generates valid Shopify Liquid with object model mappings", () => {
     const liquid = exportToShopifyLiquid({
       scope: "product",

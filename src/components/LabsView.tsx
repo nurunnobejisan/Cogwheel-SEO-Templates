@@ -8,6 +8,7 @@ import { cleanContent, countWords, generateNgrams, calculateJaccardSimilarity } 
 import { normalizeCanonicalUrl } from "../../validators/canonicalNormalizer";
 import { GeoReadinessRadar } from "./GeoReadinessRadar";
 import { CompsetRankingMatrix } from "./CompsetRankingMatrix";
+import { InternalLinkLab } from "./InternalLinkLab";
 import dynamic from "next/dynamic";
 
 const TemplatesHubClient = dynamic(() =>
@@ -1229,6 +1230,9 @@ export function LabsView({
         </div>
 
       </div>
+
+      {/* 10. Internal Link Suggestions (validators/internalLinker) */}
+      <InternalLinkLab property={property} />
 
       {/* Roadmap Banner */}
       <div className="rounded-2xl border border-dashed border-violet-300 bg-violet-50/50 p-4 text-center dark:border-violet-800/60 dark:bg-violet-950/20">

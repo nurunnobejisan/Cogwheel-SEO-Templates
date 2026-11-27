@@ -10,6 +10,44 @@ import {
   TITLE_PIXEL_LIMIT,
   META_DESC_PIXEL_LIMIT,
 } from "@/engine/pixelCalculator";
+import {
+  resolveTemplate,
+  type ResolutionResult,
+  type TemplateSchema,
+} from "../../validators/variableResolver";
+import { escapeHtml } from "../../validators/xssProtection";
+import { renderBracketTokens } from "../../shared/ts/template-render";
+
+/**
+ * Schema every customizer render validates against (Phase E wiring of
+ * `validators/variableResolver`): all five catalog variables are required for
+ * a complete export — clearing any field surfaces it in the preview audit.
+ */
+const CUSTOMIZER_SCHEMA: TemplateSchema = {
+  id: "template-customizer",
+  name: "Template Customizer",
+  variables: {
+    brandName: { name: "brandName", required: true, description: "Property / brand name" },
+    primaryKeyword: { name: "primaryKeyword", required: true, description: "Primary keyword" },
+    targetUrl: { name: "targetUrl", required: true, description: "Target URL" },
+    locationNiche: { name: "locationNiche", required: true, description: "Location / niche" },
+    competitorDomain: { name: "competitorDomain", required: true, description: "Competitor domain" },
+  },
+};
+
+/** RFC-4180 field: wrap in quotes, double embedded quotes. */
+export function csvEscapeField(value: string): string {
+  return `"${String(value).replace(/"/g, '""')}"`;
+}
+
+/**
+ * Clipboard-ready HTML for the customizer export. Every interpolated field
+ * goes through `escapeHtml` (validators/xssProtection) — title and meta
+ * description previously reached the clipboard unescaped.
+ */
+export function buildCustomizerExportHtml(title: string, description: string, markdown: string): string {
+  return `<article>\n  <h1>${escapeHtml(title)}</h1>\n  <p>${escapeHtml(description)}</p>\n  <hr/>\n  <pre>${escapeHtml(markdown)}</pre>\n</article>`;
+}
 
 interface Props {
   template: SeoTemplate;
@@ -87,17 +125,25 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
     } catch {}
   };
 
-  // Replace placeholders helper
-  const replaceVars = useCallback((text: string): string => {
-    if (!text) return "";
-    return text
-      .replace(/\[Brand Name\]/g, vars.brandName || "[Brand Name]")
-      .replace(/\[Primary Keyword\]/g, vars.primaryKeyword || "[Primary Keyword]")
-      .replace(/\[Target URL\]/g, vars.targetUrl || "[Target URL]")
-      .replace(/\[Location\/Niche\]/g, vars.locationNiche || "[Location/Niche]")
-      .replace(/\[LocationNiche\]/g, vars.locationNiche || "[Location/Niche]")
-      .replace(/\[Competitor Domain\]/g, vars.competitorDomain || "[Competitor Domain]");
-  }, [vars]);
+  // One renderer (Phase E): bracket tokens from the shared engine, then the
+  // variableResolver validation layers (required-variable check + leak scan).
+  const renderText = useCallback(
+    (text: string): ResolutionResult => {
+      if (!text) {
+        return { success: true, output: "", missingVariables: [], unresolvedPlaceholders: [], warnings: [] };
+      }
+      const bracketed = renderBracketTokens(text, {
+        "[Brand Name]": vars.brandName || "[Brand Name]",
+        "[Primary Keyword]": vars.primaryKeyword || "[Primary Keyword]",
+        "[Target URL]": vars.targetUrl || "[Target URL]",
+        "[Location/Niche]": vars.locationNiche || "[Location/Niche]",
+        "[LocationNiche]": vars.locationNiche || "[Location/Niche]",
+        "[Competitor Domain]": vars.competitorDomain || "[Competitor Domain]",
+      });
+      return resolveTemplate(bracketed, CUSTOMIZER_SCHEMA, { ...vars }, { strict: false });
+    },
+    [vars]
+  );
 
   // Compute customized Title and Meta Description
   const customizedTitle = useMemo(() => {
@@ -112,10 +158,12 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
   const titlePixel = useMemo(() => getTitlePixelStatus(customizedTitle), [customizedTitle]);
   const descPixel = useMemo(() => getMetaDescPixelStatus(customizedDesc), [customizedDesc]);
 
-  // Customized Markdown
-  const customizedMarkdown = useMemo(() => {
-    return replaceVars(template.contentMarkdown);
-  }, [template.contentMarkdown, replaceVars]);
+  // Customized Markdown — full resolution (output + validation audit)
+  const markdownResolution = useMemo(
+    () => renderText(template.contentMarkdown),
+    [template.contentMarkdown, renderText]
+  );
+  const customizedMarkdown = markdownResolution.output;
 
   // Dynamic JSON-LD Schema
   const dynamicSchema = useMemo(() => {
@@ -189,7 +237,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
   };
 
   const handleCopyHtml = () => {
-    const html = `<article>\n  <h1>${customizedTitle}</h1>\n  <p>${customizedDesc}</p>\n  <hr/>\n  <pre>${customizedMarkdown.replace(/</g, "&lt;")}</pre>\n</article>`;
+    const html = buildCustomizerExportHtml(customizedTitle, customizedDesc, customizedMarkdown);
     navigator.clipboard.writeText(html);
     showToast("Clean HTML copied to clipboard!");
   };
@@ -202,11 +250,16 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
   const handleDownloadCsv = () => {
     const headers = "ID,Task,Priority,Status,Description\n";
     const rows = template.checklist
-      .map(
-        (c) =>
-          `"${c.id}","${replaceVars(c.task)}","${c.priority}","${
-            checkedTasks[c.id] ? "Completed" : "Pending"
-          }","${replaceVars(c.description)}"`
+      .map((c) =>
+        [
+          c.id,
+          renderText(c.task).output,
+          c.priority,
+          checkedTasks[c.id] ? "Completed" : "Pending",
+          renderText(c.description).output,
+        ]
+          .map(csvEscapeField)
+          .join(",")
       )
       .join("\n");
     const blob = new Blob([headers + rows], { type: "text/csv;charset=utf-8;" });
@@ -485,6 +538,22 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
                   {customizedMarkdown}
                 </pre>
               </div>
+              {(markdownResolution.missingVariables.length > 0 ||
+                markdownResolution.unresolvedPlaceholders.length > 0) && (
+                <div
+                  role="status"
+                  className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-tiny text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300"
+                >
+                  Unresolved:{" "}
+                  {Array.from(
+                    new Set([
+                      ...markdownResolution.missingVariables,
+                      ...markdownResolution.unresolvedPlaceholders,
+                    ])
+                  ).join(", ")}{" "}
+                  — fill the variable fields to complete substitution.
+                </div>
+              )}
             </div>
           </article>
 
@@ -529,7 +598,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
                                   : "text-slate-900 dark:text-white"
                               }`}
                             >
-                              {replaceVars(c.task)}
+                              {renderText(c.task).output}
                             </span>
                             <span
                               className={`rounded px-1.5 py-0.5 text-micro font-bold ${
@@ -542,7 +611,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
                             </span>
                           </div>
                           <p className="mt-1 text-tiny text-slate-500 dark:text-slate-400">
-                            {replaceVars(c.description)}
+                            {renderText(c.description).output}
                           </p>
                         </div>
                       </div>
