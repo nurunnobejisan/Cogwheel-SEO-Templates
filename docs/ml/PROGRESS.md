@@ -10,7 +10,7 @@ Status values: `not started` · `in progress` · `done`.
 | 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
 | 3 | LoRA fine-tunes | done | [#7](https://github.com/nurunnobejisan/SEO-Studio/pull/7) |
 | 4 | Ship to app & extension | done | [#10](https://github.com/nurunnobejisan/SEO-Studio/pull/10) |
-| 5 | First adapter run (playbook, promotion, endpoint eval) | in progress | — |
+| 5 | First adapter run (playbook, promotion, endpoint eval) | in progress | [#20](https://github.com/nurunnobejisan/SEO-Studio/pull/20) |
 
 ---
 
