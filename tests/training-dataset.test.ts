@@ -74,5 +74,8 @@ describe("training dataset gates", () => {
     expect(example.messages[0]?.content).toMatch(/Never invent rankings/);
     expect(example.messages[1]?.content).toContain("overallScore");
     expect(example.metadata.quality).toBe("reviewed");
+    // consent must survive the export — the licence gate downstream refuses
+    // first-party rows whose metadata lost it (ml/train/dataset.py).
+    expect(example.metadata.consent).toBe(true);
   });
 });

@@ -8,7 +8,7 @@ Status values: `not started` · `in progress` · `done`.
 | 0 | Foundations | done | [#3](https://github.com/nurunnobejisan/SEO-Studio/pull/3) |
 | 1 | Data registry & datasets | done | [#4](https://github.com/nurunnobejisan/SEO-Studio/pull/4) |
 | 2 | Retrieval explainer + classifier | done | [#5](https://github.com/nurunnobejisan/SEO-Studio/pull/5) |
-| 3 | LoRA fine-tunes | not started | — |
+| 3 | LoRA fine-tunes | in progress | — |
 | 4 | Ship to app & extension | not started | — |
 
 ---
@@ -190,11 +190,67 @@ network path.
 
 ## Phase 3 — LoRA fine-tunes
 
-**Not started.** Planned: `ml/train/` QLoRA on Qwen3 / Qwen3.5 small for the
-schema writer, meta writer, audit explainer and GEO gap finder; DPO on
-healing-approved vs rejected patches; SFT on reviewed/gold triples subject to
-`MIN_REVIEWED_PAIRS_FOR_TRAINING`. Golden-set scores recorded per run in this
-file before and after each tune.
+**Implementation complete; PR open.** `ml/train/` — QLoRA SFT and DPO for
+the schema writer, meta writer, audit explainer and GEO gap finder, plus
+the golden-set harness that scores them. Qwen3 / Qwen3.5 small,
+Apache-2.0. Training itself is operator-side on a GPU box (D-020): what
+ships here is everything that must be true *before* a weight is ever
+produced.
+
+### Shipped
+
+- [x] `ml/train/errors.py` — `HeavyDepsError` raised lazily so `ml.train`
+      stays importable (and testable in CI) with only the root
+      `requirements.txt` (D-014)
+- [x] `ml/train/config.py` — `BASE_MODELS` allow-list with per-model
+      licence (D-019), `SftConfig`/`DpoConfig` validation with
+      `trust_remote_code` pinned false, `MIN_REVIEWED_PAIRS_FOR_TRAINING`
+      mirrored from the TypeScript exporter (a test asserts no drift)
+- [x] `ml/train/dataset.py` — licence-gated SFT assembly: registry gate
+      (rule 3), synthetic ban (rule 6), first-party `consent` + `tenantId`
+      + reviewed/gold, golden-set content exclusion (eval never trains),
+      PII strip, dedupe, and the 2000-pair gate on client-derived sources
+      (`blocked` below threshold, `--require-ready` exits 1)
+- [x] `ml/train/sft.py` — QLoRA dry-run by default; `--train` lazily
+      imports torch/trl/peft; every run manifest records base model +
+      licence, data sha256, golden sha256, git sha and hyperparameters —
+      and never a score
+- [x] `ml/train/dpo.py` — same gates for `prompt/chosen/rejected` pairs,
+      plus `chosen == rejected` refused (no preference signal = noise);
+      no committed pair corpus (D-020)
+- [x] `ml/train/evaluate.py` — deterministic golden-set requests (one per
+      case, versioned templates) → generation with base ± adapter →
+      `{caseId, output}` rows for `ml/eval/run_eval.py`, so before/after
+      numbers in the score log are always runner-produced
+- [x] `data/training/unified_seo_*.jsonl` de-branded (268 occurrences) and
+      `legacy-brand` added to the validator's hard patterns so the retired
+      name can never re-enter training data
+- [x] `LoraExample.metadata.consent` carried through
+      `buildLoraExample` (additive; older exports stay parseable)
+- [x] `tests/python/test_ml_train.py` — 46 tests (config/allow-list,
+      every refusal path, gate arithmetic, dry-run manifests, lazy
+      heavy-deps errors, request determinism, golden round-trip into
+      `run_eval`); **324 Python tests total**
+- [x] D-019, D-020, D-021 logged with reversal paths
+
+### Gate
+
+- [x] licence gate fires on every train row — unknown / `avoid` / synthetic
+      / first-party-without-consent / golden-leaking rows all refused with
+      a recorded reason (covered by the 46 new tests)
+- [x] golden set unchanged — sha256 `3d951412...6a3a84` asserted by the
+      assembly manifest and the new tests
+- [x] no score without `run_eval.py` — trainers write manifests only;
+      `evaluate.py` is the sole path from a model to a scored row
+- [x] CI green locally — typecheck, lint, train:validate (5 gates),
+      vitest 515/516 (the 1 failure is `tests/vault-sync-resilience.test.ts`,
+      Task 1.3 work, failing identically on `origin/main` without this branch —
+      verified by stash; see D-021), lint:seo 10/10, test:seo, test:ts,
+      brain:eval fabrication 0.0000, next build, pytest 324, build:extension
+- [ ] CI green on the PR — Python + secret scan pass on run 45944564702;
+      Node blocked by the same pre-existing `main` failure until PR #6 lands
+- [x] D-021 isolation: worktree `ml-phase-3`, branch cut from
+      `origin/main`, no shared history rewritten
 
 ## Phase 4 — Ship to app & extension
 

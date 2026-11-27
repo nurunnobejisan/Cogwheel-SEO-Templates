@@ -285,3 +285,69 @@ the endpoint is *unset* — unset is the only fallback path.
 **Reverse.** Revert the `EmbeddingError` throws to a caught fallback in
 `createEmbedderFromEnv` — not recommended; if a degraded mode is ever needed,
 make it explicit (e.g. `EMBEDDINGS_FALLBACK=hashing`) rather than implicit.
+
+### D-019 — Base models are allow-listed with licences; `trust_remote_code` stays false
+
+**Decision.** `ml/train/config.py` carries a `BASE_MODELS` allow-list
+(Qwen3 0.6B/1.7B/4B, Qwen3.5 family — all Apache-2.0). Any other
+`base_model` is refused with instructions to verify the model card and add
+the entry; the matched licence is written into every run manifest.
+`trust_remote_code` is hard-rejected when set to anything but `false`.
+
+**Reason.** The licence-clean rule applies to weights, not just rows: an
+unverified base model is the remaining contamination vector in the
+pipeline, and its licence must travel with the artefact for provenance.
+Qwen-family models do not need remote code, so allowing it would buy
+arbitrary code execution during training for zero benefit.
+
+**Reverse.** To adopt a new model: verify its model card licence, then add
+a pattern entry to `BASE_MODELS`. Relaxing `trust_remote_code` means
+removing the validation check — not recommended without a model that
+proves it needs it.
+
+### D-020 — Trainers dry-run by default; no committed DPO pair corpus
+
+**Decision.** `ml/train/sft.py` and `ml/train/dpo.py` validate config,
+data and every governance gate and write a run manifest by default, and
+only train when `--train` is passed explicitly (which requires the
+isolated `ml/requirements-ml.txt` stack, else `HeavyDepsError`).
+**No `prompt/chosen/rejected` corpus is committed**: pair capture lives in
+the app, and client-derived pairs stay in `data/` / the private dataset
+repo (`ML_PRIVATE_DATASET_REPO`).
+
+**Reason.** Same posture as D-017 — no licence-clean, non-synthetic pair
+corpus exists in the repo, and committing a placeholder one would invite
+training on fabricated preferences. Dry-run keeps CI meaningful: it
+exercises the licence gate, the 2000-pair gate and manifest provenance
+(data + golden sha256, git sha, licence) without torch, so a broken
+config fails the build instead of the GPU box.
+
+**Reverse.** Once reviewed pairs exist operator-side, run with
+`--source patches --train`, then score before/after with
+`ml/train/evaluate.py` + `ml/eval/run_eval.py` and record both rows in the
+PROGRESS score log.
+
+### D-021 — Two sessions, one checkout: isolate in a worktree, never rewrite shared history
+
+**Decision.** When a second agent session was found working in the same
+checkout (branch `task/1.3-vault-sync-resilience`), autopush was paused
+immediately and Phase 3 was moved into a dedicated worktree
+(`ml-phase-3`), with `ml/phase-3` cut from `origin/main`. History already
+pushed by either session — including the `auto: update` commits that swept
+Phase 3 files onto `main` and onto the task branch — was **left untouched**;
+this phase's PR therefore carries only the delta that was still uncommitted
+when the collision was found.
+
+**Reason.** The D-012 soft-reset pattern requires force-pushing `main`,
+which would destroy commits the other session has already pushed and may
+be building a PR on. Two actors sharing one working tree also make branch
+switches destructive. Isolating my work in a worktree is reversible and
+harmless; rewriting shared history is neither. (The earlier mistake that
+caused this — resuming autopush while other work was in flight — is why
+autopush stays paused for the duration of a phase.)
+
+**Reverse.** After both sessions have merged, optionally re-cut `main` into
+one commit per phase with a coordinated force-push — not recommended while
+any session is active. Prevention instead: keep the automation paused from
+the first file write of a phase until the phase's docs commit lands, and
+verify `automation.list` shows `paused` before writing anything.
