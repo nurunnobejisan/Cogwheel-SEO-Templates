@@ -39,6 +39,13 @@ import { ExtensionSiteBundle } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
 import { generateSeoAutoFix } from "../engine/custom-model-client";
+import {
+  FAQ_REQUIRES_VERIFIED_ANSWERS,
+  buildHotelSchema,
+  buildOrganizationSchema,
+  buildSocialSnippet,
+  withFlags,
+} from "../engine/auto-fix-copy";
 
 export function SidePanelApp() {
   const [activeTab, setActiveTab] = useState<
@@ -328,6 +335,14 @@ export function SidePanelApp() {
   };
 
   // Interactive Auto-Fix Handler
+  /** Label for copy the local rules engine drafted from a template (not a measurement). */
+  const suggestionFlags = (source: "custom_tuned_model" | "default_rules_engine") =>
+    source === "default_rules_engine"
+      ? [
+          "suggested copy — drafted by the local rules engine from a template, not measured from the page; review before publishing",
+        ]
+      : [];
+
   const handleFixIssue = async (win: QuickWinItem) => {
     const siteName = pageData.h1Elements[0] || (pageData.hostname ? pageData.hostname.replace(/^www\./, "") : activeProfile.name) || "Official Website";
     const hotelName = siteName;
@@ -344,7 +359,21 @@ export function SidePanelApp() {
     });
 
     if (win.id === "title-len") {
-      const optimalTitle = fixResult.optimalTitle || "Beachfront Hotel Panama City Beach | SpringHill Suites";
+      const optimalTitle = fixResult.optimalTitle?.trim();
+      if (!optimalTitle) {
+        // No source produced a title — leave the page alone and say so.
+        setFixedDrawer({
+          isOpen: true,
+          issueTitle: fixResult.issueTitle,
+          issueCategory: fixResult.issueCategory,
+          description: withFlags(fixResult.description, [
+            "title — no suggestion was produced, the page title was left unchanged",
+          ]),
+          codeSnippet: fixResult.codeSnippet,
+          language: fixResult.language,
+        });
+        return;
+      }
       const px = calculatePixelWidth(optimalTitle);
       setPageData((prev) => ({
         ...prev,
@@ -355,12 +384,25 @@ export function SidePanelApp() {
         isOpen: true,
         issueTitle: fixResult.issueTitle,
         issueCategory: fixResult.issueCategory,
-        description: fixResult.description,
+        description: withFlags(fixResult.description, suggestionFlags(fixResult.source)),
         codeSnippet: fixResult.codeSnippet,
         language: fixResult.language,
       });
     } else if (win.id === "meta-len") {
-      const optimalMeta = fixResult.optimalMeta || "Book direct at SpringHill Suites Panama City Beach for oceanfront suites, lazy river pool, free hot breakfast, and lowest rates guaranteed on Gulf Coast.";
+      const optimalMeta = fixResult.optimalMeta?.trim();
+      if (!optimalMeta) {
+        setFixedDrawer({
+          isOpen: true,
+          issueTitle: fixResult.issueTitle,
+          issueCategory: fixResult.issueCategory,
+          description: withFlags(fixResult.description, [
+            "meta description — no suggestion was produced, the page meta description was left unchanged",
+          ]),
+          codeSnippet: fixResult.codeSnippet,
+          language: fixResult.language,
+        });
+        return;
+      }
       const px = calculatePixelWidth(optimalMeta);
       setPageData((prev) => ({
         ...prev,
@@ -371,22 +413,25 @@ export function SidePanelApp() {
         isOpen: true,
         issueTitle: fixResult.issueTitle,
         issueCategory: fixResult.issueCategory,
-        description: fixResult.description,
+        description: withFlags(fixResult.description, suggestionFlags(fixResult.source)),
         codeSnippet: fixResult.codeSnippet,
         language: fixResult.language,
       });
     } else if (win.id === "canonical-h1") {
-      const singleH1 = fixResult.optimalH1 || "SpringHill Suites Panama City Beachfront";
+      const singleH1 = fixResult.optimalH1?.trim();
       setPageData((prev) => ({
         ...prev,
         canonical: canonicalUrl,
-        h1Elements: [singleH1],
+        ...(singleH1 ? { h1Elements: [singleH1] } : {}),
       }));
       setFixedDrawer({
         isOpen: true,
         issueTitle: fixResult.issueTitle,
         issueCategory: fixResult.issueCategory,
-        description: fixResult.description,
+        description: withFlags(
+          fixResult.description,
+          singleH1 ? suggestionFlags(fixResult.source) : ["H1 — no suggestion was produced, the page headings were left unchanged"],
+        ),
         codeSnippet: fixResult.codeSnippet,
         language: fixResult.language,
       });
@@ -396,41 +441,27 @@ export function SidePanelApp() {
         pageData.title.toLowerCase().match(/hotel|resort|suites|inn|lodging/)
       );
 
-      const generatedSchema = isHotel
-        ? {
-            "@type": "Hotel",
-            name: siteName,
-            description: pageData.metaDesc || "Premier hospitality destination with modern suites, pool, and guest amenities.",
-            url: canonicalUrl,
-            telephone: activeProfile.phone || "+1-850-230-6004",
-            priceRange: "$$$",
-            address: {
-              "@type": "PostalAddress",
-              streetAddress: activeProfile.address || "14401 Front Beach Rd",
-              addressLocality: activeProfile.city || "Panama City Beach",
-              addressRegion: activeProfile.state || "FL",
-              postalCode: activeProfile.postalCode || "32413",
-              addressCountry: "US",
+      const draft = isHotel
+        ? buildHotelSchema({
+            siteName,
+            canonicalUrl,
+            metaDesc: pageData.metaDesc,
+            profile: {
+              phone: activeProfile.phone,
+              address: activeProfile.address,
+              city: activeProfile.city,
+              state: activeProfile.state,
+              postalCode: activeProfile.postalCode,
             },
-            geo: {
-              "@type": "GeoCoordinates",
-              latitude: 30.2037,
-              longitude: -85.8612,
-            },
-            checkinTime: "16:00",
-            checkoutTime: "11:00",
-            amenityFeature: [
-              { "@type": "LocationFeatureSpecification", name: "High-Speed Wi-Fi", value: true },
-              { "@type": "LocationFeatureSpecification", name: "Complimentary Hot Breakfast", value: true },
-            ],
-          }
-        : {
-            "@type": "Organization",
-            name: siteName,
-            url: canonicalUrl,
-            description: pageData.metaDesc || `${siteName} official website.`,
-            sameAs: pageData.socialLinks?.map((s) => s.url) || [],
-          };
+          })
+        : buildOrganizationSchema({
+            siteName,
+            canonicalUrl,
+            metaDesc: pageData.metaDesc,
+            socialLinks: pageData.socialLinks,
+          });
+
+      const generatedSchema = draft.schema;
 
       setPageData((prev) => ({
         ...prev,
@@ -452,95 +483,68 @@ export function SidePanelApp() {
         2
       )}\n</script>`;
 
+      const injectedNote = isHotel
+        ? "Injected valid Schema.org/Hotel structured data using only values present on the page or in the client profile."
+        : "Injected valid Schema.org/Organization structured data for universal search and entity graph recognition.";
+
       setFixedDrawer({
         isOpen: true,
         issueTitle: fixResult.source === "custom_tuned_model" ? fixResult.issueTitle : (isHotel ? "Hotel Schema Markup Injected" : "Organization Schema Injected"),
         issueCategory: fixResult.issueCategory,
-        description: fixResult.source === "custom_tuned_model" ? fixResult.description : (isHotel ? "Injected valid Schema.org/Hotel structured data with coordinates, amenities, and contact points." : "Injected valid Schema.org/Organization structured data for universal search and entity graph recognition."),
+        description:
+          fixResult.source === "custom_tuned_model"
+            ? withFlags(fixResult.description, draft.blankFields)
+            : withFlags(injectedNote, draft.blankFields),
         codeSnippet: fixResult.source === "custom_tuned_model" ? fixResult.codeSnippet : jsonSnippet,
         language: "json",
       });
     } else if (win.id === "og-missing") {
-      const ogTitle = pageData.title || `${siteName} | Official Site`;
-      const ogDesc = pageData.metaDesc || `Discover official solutions, products, and direct benefits from ${siteName}.`;
-      const ogImg = pageData.ogImage || (pageData.imagesList && pageData.imagesList[0]?.src) || "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=1200&h=630&q=80";
+      const ogTitle = pageData.title.trim() || siteName;
+      const ogDesc = pageData.metaDesc.trim();
+      const ogImg = (pageData.ogImage || pageData.imagesList?.[0]?.src || "").trim();
       const ogUrl = canonicalUrl;
+
+      const { snippet, blankFields } = buildSocialSnippet({
+        siteName,
+        title: pageData.title,
+        metaDesc: pageData.metaDesc,
+        image: ogImg,
+        url: ogUrl,
+      });
 
       setPageData((prev) => ({
         ...prev,
-        hasOgTitle: true,
-        hasOgImage: true,
+        hasOgTitle: Boolean(ogTitle),
+        hasOgImage: Boolean(ogImg),
         ogTitle,
         ogDescription: ogDesc,
         ogImage: ogImg,
       }));
 
-      const snippet = `<!-- Open Graph & Twitter Social Metadata -->\n<meta property="og:type" content="website" />\n<meta property="og:site_name" content="${siteName}" />\n<meta property="og:title" content="${ogTitle}" />\n<meta property="og:description" content="${ogDesc}" />\n<meta property="og:image" content="${ogImg}" />\n<meta property="og:url" content="${ogUrl}" />\n<meta name="twitter:card" content="summary_large_image" />\n<meta name="twitter:title" content="${ogTitle}" />\n<meta name="twitter:description" content="${ogDesc}" />\n<meta name="twitter:image" content="${ogImg}" />`;
+      const socialNote =
+        "Generated Open Graph and Twitter Card tags from the page's own title, meta description and images.";
 
       setFixedDrawer({
         isOpen: true,
         issueTitle: fixResult.source === "custom_tuned_model" ? fixResult.issueTitle : "Social Open Graph Tags Injected",
         issueCategory: fixResult.issueCategory,
-        description: fixResult.source === "custom_tuned_model" ? fixResult.description : "Generated complete Open Graph and Twitter Card tags for high-CTR social previews.",
+        description:
+          fixResult.source === "custom_tuned_model"
+            ? withFlags(fixResult.description, blankFields)
+            : withFlags(socialNote, [...blankFields, ...suggestionFlags(fixResult.source)]),
         codeSnippet: fixResult.source === "custom_tuned_model" ? fixResult.codeSnippet : snippet,
         language: "html",
       });
     } else if (win.id === "geo-ai-readiness") {
-      const faqSchema = {
-        "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: "What time is check-in and check-out at SpringHill Suites Panama City Beachfront?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Check-in begins at 4:00 PM and check-out is at 11:00 AM local time. Digital check-in is available in the Marriott Bonvoy app.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Does the hotel provide complimentary breakfast and parking?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Yes, complimentary daily hot buffet breakfast is included for all direct booking guests. On-site self-parking is available in our secure garage.",
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Is SpringHill Suites Panama City Beach located directly on the beach?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Yes, our resort is located directly beachfront on the Gulf of Mexico featuring private boardwalk beach access and an outdoor lazy river pool.",
-            },
-          },
-        ],
-      };
-
-      setPageData((prev) => ({
-        ...prev,
-        words: Math.max(prev.words, 680),
-        schemas: [
-          ...prev.schemas.filter((s) => !String(s["@type"] || "").toLowerCase().includes("faq")),
-          faqSchema,
-        ],
-      }));
-
-      const jsonSnippet = `<script type="application/ld+json">\n${JSON.stringify(
-        {
-          "@context": "https://schema.org",
-          ...faqSchema,
-        },
-        null,
-        2
-      )}\n</script>`;
-
+      // No verified answers exist for this page: never write invented FAQ copy.
       setFixedDrawer({
         isOpen: true,
-        issueTitle: fixResult.source === "custom_tuned_model" ? fixResult.issueTitle : "GEO AI Knowledge & FAQ Injected",
-        issueCategory: fixResult.issueCategory,
-        description: fixResult.source === "custom_tuned_model" ? fixResult.description : "Injected structured FAQPage schema and expanded content depth to 680 words for AI Overviews.",
-        codeSnippet: fixResult.source === "custom_tuned_model" ? fixResult.codeSnippet : jsonSnippet,
-        language: "json",
+        issueTitle: "FAQ Schema Needs Verified Answers",
+        issueCategory: "GEO AI Readiness",
+        description: FAQ_REQUIRES_VERIFIED_ANSWERS,
+        codeSnippet:
+          "<!-- No FAQ schema generated. Add your own Question/Answer pairs (or connect an AI provider) before publishing FAQPage markup. -->",
+        language: "html",
       });
     } else {
       handleFixWithTemplate(win.templateIdToFix || "title-meta-suite");

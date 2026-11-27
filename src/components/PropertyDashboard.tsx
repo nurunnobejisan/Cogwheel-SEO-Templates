@@ -179,9 +179,15 @@ export default function PropertyDashboard() {
   const [tmError, setTmError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterMode, setFilterMode] = useState<"all" | "ready" | "upcoming">("ready");
-  const [aiStatus, setAiStatus] = useState<{ provider: string; activeRules: number }>({
+  const [aiStatus, setAiStatus] = useState<{
+    provider: string;
+    activeRules: number;
+    /** True only when the keyless free-online AI fallback was explicitly opted in. */
+    providerIsFreeOnline: boolean;
+  }>({
     provider: "Checking…",
     activeRules: 0,
+    providerIsFreeOnline: false,
   });
 
   useEffect(() => {
@@ -305,11 +311,13 @@ export default function PropertyDashboard() {
       if (trainingRes.ok) {
         const tData = (await trainingRes.json()) as {
           provider?: string;
+          providerIsFreeOnline?: boolean;
           rules?: Array<{ active: boolean }>;
         };
         setAiStatus({
           provider: tData.provider || "Provider not configured",
           activeRules: (tData.rules ?? []).filter((r) => r.active).length,
+          providerIsFreeOnline: tData.providerIsFreeOnline === true,
         });
       }
     } catch {
@@ -1058,6 +1066,12 @@ export default function PropertyDashboard() {
                   <div className="mt-2 truncate font-display text-h3 font-bold text-slate-900 dark:text-white">
                     {aiStatus.provider}
                   </div>
+                  {aiStatus.providerIsFreeOnline && (
+                    <div className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-2 py-1.5 text-caption font-semibold text-amber-800 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-300">
+                      Keyless free AI (Pollinations) is opted in — these are not paid-engine
+                      answers. Verify before publishing.
+                    </div>
+                  )}
                   <div className="mt-2 flex items-center gap-1 text-caption font-semibold text-emerald-700 dark:text-emerald-400">
                     {aiStatus.activeRules} trained rules active
                     <span className="transition-transform group-hover:translate-x-0.5">&rarr;</span>

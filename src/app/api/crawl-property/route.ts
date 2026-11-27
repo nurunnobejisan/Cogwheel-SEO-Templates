@@ -1,16 +1,12 @@
 import { NextResponse } from "next/server";
-import { z } from "zod";
 import { US_STATES } from "@/config/geo";
 import sitemap from "@/config/sitemap.json";
-import { crawlTargetWebsite, UrlValidationError } from "@/core/crawler";
+import { crawlCacheDescriptor, crawlTargetWebsite, UrlValidationError } from "@/core/crawler";
 import type { SitemapPage } from "@/lib/types";
+import { crawlPropertyBodySchema } from "./schema";
 
 export const runtime = "nodejs";
 export const maxDuration = 30;
-
-const bodySchema = z.object({
-  url: z.string().trim().url("Please enter a valid property URL (https://...)"),
-});
 
 const PAGE_URL_HINTS: Array<{ id: string; pattern: RegExp }> = [
   { id: "rooms", pattern: /\/rooms?\b|accommodat/i },
@@ -31,14 +27,14 @@ const PAGE_URL_HINTS: Array<{ id: string; pattern: RegExp }> = [
 
 /** Auto-discover property details (city/state, pet policy, active sitemap pages) from a URL. */
 export async function POST(req: Request) {
-  const parsed = bodySchema.safeParse(await req.json().catch(() => null));
+  const parsed = crawlPropertyBodySchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json({ error: "Invalid URL", issues: parsed.error.issues }, { status: 400 });
   }
 
   let crawlResult;
   try {
-    crawlResult = await crawlTargetWebsite(parsed.data.url);
+    crawlResult = await crawlTargetWebsite(parsed.data.url, { scopeKey: parsed.data.scopeKey });
   } catch (e) {
     if (e instanceof UrlValidationError) {
       return NextResponse.json({ error: e.message }, { status: 400 });
@@ -51,6 +47,7 @@ export async function POST(req: Request) {
       city: "",
       state: "",
       title: "",
+      storage: crawlCacheDescriptor(),
     });
   }
 
@@ -66,6 +63,7 @@ export async function POST(req: Request) {
       city: "",
       state: "",
       title: "",
+      storage: crawlCacheDescriptor(),
     });
   }
 
@@ -128,5 +126,7 @@ export async function POST(req: Request) {
     services: crawlResult.serviceLabels,
     pageTopics: crawlResult.pageTopics,
     warnings,
+    // Where the crawl result is cached — always per-instance memory.
+    storage: crawlCacheDescriptor(),
   });
 }

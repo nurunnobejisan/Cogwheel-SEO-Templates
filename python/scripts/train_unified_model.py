@@ -32,6 +32,14 @@ DEFAULT_EVAL_FILE = TRAINING_DIR / "unified_seo_eval.jsonl"
 DEFAULT_TRAIN_FILE = TRAINING_DIR / "unified_seo_train.jsonl"
 REGISTRY_FILE = MODELS_DIR / "model_registry.json"
 
+# Stored with every evaluationBenchmark so a reader can never mistake the
+# lexical proxy numbers for a measured evaluation (see D-013).
+BENCHMARK_NOTE = (
+    "Lexical proxy computed from the eval file (format, grounding, SERP-budget and "
+    "schema keyword checks) — not a model-quality measurement and not a golden-set "
+    "run. A measured number requires ml/eval/run_eval.py --endpoint."
+)
+
 
 def load_jsonl(file_path: Path) -> list[dict[str, Any]]:
     """Load JSONL lines safely."""
@@ -58,6 +66,9 @@ def run_eval_benchmark(eval_records: list[dict[str, Any]]) -> dict[str, Any]:
             "totalEvaluated": 0,
             "overallScore": 0.0,
             "metrics": {},
+            "provenance": "lexical-proxy",
+            "measured": False,
+            "note": BENCHMARK_NOTE,
         }
 
     valid_json_count = 0
@@ -106,6 +117,9 @@ def run_eval_benchmark(eval_records: list[dict[str, Any]]) -> dict[str, Any]:
             "structuredSchemaScore": schema_score,
             "hallucinationRate": round(100 - ground_score, 1),
         },
+        "provenance": "lexical-proxy",
+        "measured": False,
+        "note": BENCHMARK_NOTE,
     }
 
 
@@ -162,14 +176,15 @@ def main() -> int:
         train_records = load_jsonl(train_path)
         eval_records = load_jsonl(eval_path)
 
-    # 1. Run Benchmark
-    print("\n[+] Running Evaluation Benchmark on Holdout Test Set...")
+    # 1. Run Benchmark (lexical proxy — never a measured evaluation, see D-013)
+    print("\n[+] Running lexical-proxy benchmark on holdout test set (NOT a measured evaluation)...")
     eval_results = run_eval_benchmark(eval_records)
-    print(f"    - Overall Model Readiness Score: {eval_results['overallScore']}%")
+    print(f"    - Overall lexical-proxy score: {eval_results['overallScore']}%")
     print(f"    - Domain Grounding Score: {eval_results['metrics'].get('domainGroundingScore')}%")
     print(f"    - SERP Budget Adherence: {eval_results['metrics'].get('serpBudgetAdherenceScore')}%")
     print(f"    - Structured Schema Score: {eval_results['metrics'].get('structuredSchemaScore')}%")
     print(f"    - Hallucination Rate: {eval_results['metrics'].get('hallucinationRate')}%")
+    print("    - Provenance: lexical-proxy, measured=False (a real number needs ml/eval/run_eval.py)")
 
     # 2. Register New Model Checkpoint
     model_version = f"v{int(time.time())}"

@@ -1,9 +1,16 @@
 import { randomUUID } from "node:crypto";
 import { getSupabase, isSupabaseConfigured } from "@/lib/supabase";
+import { storageDescriptor, type StorageDescriptor } from "@/core/storage";
 import type { CrawlPageRecord, CrawlRunRecord, CrawlRunStatus, CrawlQueueState, SiteCrawlSummary } from "./types";
 
+// Per-instance stores: without Supabase these vanish on every restart.
 const memoryCrawlRuns = new Map<string, CrawlRunRecord>();
 const memoryCrawlPages = new Map<string, CrawlPageRecord[]>();
+
+/** Where crawl runs/pages are actually kept right now (see `src/core/storage.ts`). */
+export function crawlStoreDescriptor(): StorageDescriptor {
+  return storageDescriptor(isSupabaseConfigured());
+}
 
 export async function createCrawlRun(opts: {
   propertyId: string | null;

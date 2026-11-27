@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getActiveAiProviderLabel } from "@/core/claude";
+import { getActiveAiProviderLabel, isFreeOnlineAiEnabled } from "@/core/claude";
 import {
   addTrainingRule,
   deleteTrainingRule,
@@ -106,6 +106,8 @@ export async function GET(req: Request) {
   return NextResponse.json({
     rules,
     provider: getActiveAiProviderLabel(),
+    // True only when the keyless Pollinations fallback was explicitly opted in.
+    providerIsFreeOnline: isFreeOnlineAiEnabled(),
     designSettings: getDesignSettings(),
     history: listChangeHistory(),
   });
