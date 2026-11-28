@@ -1,9 +1,29 @@
 "use client";
 
 import * as React from "react";
-import { Check, Download, Moon, Plus, Search, Settings, Sparkles, Sun, Trash2 } from "lucide-react";
+import { Check, Download, Globe, Moon, Plus, Search, Settings, Sparkles, Sun, Trash2 } from "lucide-react";
 import { BrandMark } from "@/components/BrandMark";
 import { AnimatedNumber, FadeSlide, SignalPulse, TelemetryGrid } from "@/components/motion";
+import { CrawlPulseScene, GeoRadarSweep, SerpPixelMeter } from "@/components/motion/TelemetryScenes";
+import {
+  CategoryCard,
+  DataTable,
+  DeltaBadge,
+  DistributionChart,
+  EmptyState,
+  FilterTabs,
+  InlineAlert,
+  IssueTable,
+  KpiTile,
+  MetricRow,
+  PageHeader,
+  ScoreRing,
+  SeverityFilter,
+  StatusIcon,
+  TrendChart,
+  VitalsBar,
+  type AuditSeverity,
+} from "@/components/data/index";
 import {
   Avatar,
   AvatarFallback,
@@ -93,6 +113,8 @@ export function DevUiShowcase() {
   const [radio, setRadio] = React.useState("desktop");
   const [selectVal, setSelectVal] = React.useState("hotel");
   const [score, setScore] = React.useState(86);
+  const [filterView, setFilterView] = React.useState("all");
+  const [severities, setSeverities] = React.useState<AuditSeverity[]>(["error", "warning", "notice"]);
 
   React.useEffect(() => {
     setDark(document.documentElement.classList.contains("dark"));
@@ -425,6 +447,148 @@ export function DevUiShowcase() {
               <Skeleton className="h-16 w-full" />
               <Skeleton className="h-16 w-full" />
             </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div>
+              <CardTitle>Phase 2 Data Display, Charts &amp; Telemetry</CardTitle>
+              <CardDescription>PageHeader, KPIs, ScoreRing, DistributionChart, VitalsBar, IssueTable, DataTable.</CardDescription>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <PageHeader
+              title="Sample Audit Header"
+              description="Fluid workspace frame with single primary CTA and responsive More menu."
+              primaryAction={<Button variant="primary" size="sm">Run audit</Button>}
+              secondaryActions={[{ label: "Export CSV", onClick: () => toast.info("Exported sample") }]}
+            />
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="surface-card p-4">
+                <ScoreRing score={score} />
+              </div>
+              <KpiTile label="Errors" value={14} delta={-4} goodWhen="down" sparkline={[24, 21, 18, 14]} caption="vs last crawl" />
+              <KpiTile label="Warnings" value={38} delta={6} goodWhen="down" caption="vs last crawl" />
+              <KpiTile label="Field INP" value={null} />
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-3">
+              <DistributionChart
+                className="lg:col-span-2"
+                data={[
+                  { category: "Security", errors: 2, warnings: 4, notices: 1 },
+                  { category: "Meta", errors: 5, warnings: 11, notices: 3 },
+                  { category: "Headings", errors: 3, warnings: 8, notices: 4 },
+                  { category: "Images", errors: 4, warnings: 15, notices: 6 },
+                ]}
+              />
+              <VitalsBar
+                desktop={[
+                  { label: "LCP", goodPct: 78, needsWorkPct: 16, poorPct: 6 },
+                  { label: "INP", goodPct: 86, needsWorkPct: 10, poorPct: 4 },
+                  { label: "CLS", goodPct: 92, needsWorkPct: 6, poorPct: 2 },
+                ]}
+                mobile={[
+                  { label: "LCP", goodPct: 58, needsWorkPct: 27, poorPct: 15 },
+                  { label: "INP", goodPct: 72, needsWorkPct: 18, poorPct: 10 },
+                  { label: "CLS", goodPct: 88, needsWorkPct: 8, poorPct: 4 },
+                ]}
+              />
+            </div>
+
+            <div className="grid gap-4 lg:grid-cols-2">
+              <TrendChart
+                data={[
+                  { date: "Nov 1", score: 71, issues: 42 },
+                  { date: "Nov 14", score: 79, issues: 28 },
+                  { date: "Nov 28", score: 86, issues: 14 },
+                ]}
+              />
+              <div className="space-y-4">
+                <CrawlPulseScene label="Crawler active" sublabel="Scanning 24 discovered URLs" />
+                <SerpPixelMeter label="Title pixel budget" pixels={492} limitPx={580} />
+                <GeoRadarSweep
+                  score={78}
+                  engines={[
+                    { name: "ChatGPT", value: 72, connected: true },
+                    { name: "Perplexity", value: 84, connected: true },
+                    { name: "Gemini", value: 65, connected: true },
+                    { name: "AIO", value: null, connected: false },
+                  ]}
+                />
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <FilterTabs
+                value={filterView}
+                onChange={setFilterView}
+                options={[
+                  { id: "all", label: "All", count: 52 },
+                  { id: "new", label: "New", count: 9 },
+                  { id: "fixed", label: "Fixed", count: 14 },
+                ]}
+              />
+              <SeverityFilter selected={severities} onChange={setSeverities} counts={{ error: 14, warning: 38, notice: 12 }} />
+              <DeltaBadge value={-12} goodWhen="down" />
+              <StatusIcon status="success" />
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2">
+              <CategoryCard
+                href="/audit/issues?category=security"
+                name="Security & HTTPS"
+                icon={<Globe className="h-4 w-4" />}
+                errorCount={2}
+                warningCount={4}
+                selected
+              />
+              <div className="surface-card p-3.5">
+                <MetricRow label="Indexable pages" value={148} delta={12} goodWhen="up" />
+                <MetricRow label="Average response time" value="184 ms" delta={-24} goodWhen="down" />
+              </div>
+            </div>
+
+            <IssueTable
+              items={[
+                {
+                  id: "missing-h1",
+                  title: "Pages missing primary H1 heading",
+                  severity: "error",
+                  pagesCount: 4,
+                  fixedCount: 2,
+                  newCount: 1,
+                  description: "Four crawled room templates omit a semantic H1 heading.",
+                  howToFix: "Add one concise H1 matching the page's primary keyword and property market.",
+                  affectedUrls: ["https://example.com/rooms/king-suite", "https://example.com/dining/rooftop"],
+                },
+              ]}
+            />
+
+            <DataTable
+              data={[
+                { url: "/rooms/king-suite", status: 200, words: 642 },
+                { url: "/dining/rooftop", status: 200, words: 418 },
+              ]}
+              columns={[
+                { accessorKey: "url", header: "URL" },
+                { accessorKey: "status", header: "Status" },
+                { accessorKey: "words", header: "Words" },
+              ]}
+            />
+
+            <InlineAlert
+              variant="warning"
+              title="Search Console not connected"
+              description="Connect Google Search Console credentials to measure clicks, impressions, and cannibalization."
+            />
+            <EmptyState
+              title="No custom rules yet"
+              description="Add a guardrail rule to tailor outputs to brand standards."
+              action={<Button variant="secondary" size="sm">Create rule</Button>}
+            />
           </CardContent>
         </Card>
       </div>
