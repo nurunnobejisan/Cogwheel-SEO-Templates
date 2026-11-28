@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
+import { brand, pageTitle } from "@/config/brand";
+
+const title = "System Architecture & Technical Specs";
+const description =
+  `${brand.name}'s technical architecture for the Manifest V3 extension, AI training vault, model routing, and Python fine-tuning pipelines in detail.`;
 
 export const metadata: Metadata = {
-  title: "System Architecture & Technical Specs — SEO Studio",
-  description:
-    "SEO Studio's technical architecture for the Manifest V3 extension, AI training vault, hybrid model routing, and Python fine-tuning pipelines in detail.",
+  title,
+  description,
+  alternates: { canonical: "/architecture" },
+  openGraph: {
+    title: pageTitle(title),
+    description,
+    url: "/architecture",
+    type: "website",
+    siteName: brand.name,
+  },
+  twitter: { card: "summary_large_image", title: pageTitle(title), description },
 };
 
 export default function ArchitecturePage() {
@@ -19,13 +32,13 @@ export default function ArchitecturePage() {
               href="/"
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              CW
+              SG
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                  SEO &amp; GEO Studio
-                </h1>
+                <p className="font-display text-base font-extrabold text-slate-900 dark:text-white">
+                  {brand.name}
+                </p>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                   v3.0.0
                 </span>
@@ -77,9 +90,9 @@ export default function ArchitecturePage() {
           <span className="inline-block rounded-md bg-purple-50 px-2 py-0.5 text-micro font-bold text-purple-700 uppercase tracking-wider dark:bg-purple-950/60 dark:text-purple-300">
             Enterprise Multi-Tier Topology &bull; Manifest V3 &bull; React 18 &bull; Python 3.11+
           </span>
-          <h2 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
+          <h1 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
             System Architecture &amp; Technical Specifications
-          </h2>
+          </h1>
           <p className="max-w-3xl text-body text-slate-600 dark:text-slate-400">
             Engineering specifications detailing client-side inspection boundaries, physical pixel calculation tables, AI training data harvesting, hybrid inference routing, and Python fine-tuning pipelines.
           </p>

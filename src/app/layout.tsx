@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { brand } from "@/config/brand";
 import { DownloadFeedbackModal } from "@/components/DownloadFeedbackModal";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SpeedInsights } from "@vercel/speed-insights/next";
@@ -13,19 +14,22 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://seo-studio.vercel.app"),
-  title: "SEO & GEO Studio",
-  description:
-    "Technical, On-Page, Off-Page, Local & AI-search (GEO) workflows in one free-first workspace.",
+  metadataBase: new URL(brand.siteUrl),
+  title: { default: brand.name, template: `%s — ${brand.name}` },
+  description: brand.description,
   icons: {
-    icon: "/icon.svg",
+    icon: ["/icon.svg", "/icon.png"],
   },
   openGraph: {
-    title: "SEO & GEO Studio",
-    description:
-      "Technical, On-Page, Off-Page, Local & AI-search (GEO) workflows in one free-first workspace.",
+    title: brand.name,
+    description: brand.description,
     type: "website",
-    siteName: "SEO & GEO Studio",
+    siteName: brand.name,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: brand.name,
+    description: brand.description,
   },
 };
 

@@ -3,6 +3,7 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { brand } from "@/config/brand";
 import { usePropertySearch } from "@/hooks/usePropertySearch";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
 import { Button, Card, Stat } from "./ui";
@@ -437,9 +438,10 @@ export default function PropertyDashboard() {
           <div className="flex min-w-0 items-center gap-3.5">
             <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
-                <h1 className="font-display text-h3 font-bold tracking-tight text-slate-900 dark:text-white">
-                  SEO &amp; GEO Studio
-                </h1>
+                <p className="font-display text-h3 font-bold tracking-tight text-slate-900 dark:text-white">
+                  {brand.name}
+                </p>
+                <h1 className="sr-only">Hotel Search &amp; AI Visibility Suite</h1>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/40 bg-brand-50 px-2 py-0.5 text-eyebrow font-semibold text-brand-800 dark:border-brand/30 dark:bg-brand-950/50 dark:text-brand-light">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   v3.0.0

@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { brand, pageTitle } from "@/config/brand";
 import { TemplatesHubClient } from "./TemplatesHubClient";
 
+const title = "Hospitality SEO & GEO Template Library";
+const description =
+  `${brand.name}'s production-ready on-page, lodging schema, GEO visibility, and GBP NAP audit templates for Marriott, Hilton, IHG, Hyatt and luxury stays.`;
+
 export const metadata: Metadata = {
-  title: "Hospitality SEO & GEO Template Library — SEO Studio",
-  description:
-    "SEO Studio's production-ready on-page, lodging schema, GEO visibility, and GBP NAP audit templates for Marriott, Hilton, IHG, Hyatt, and luxury stays.",
+  title,
+  description,
+  alternates: { canonical: "/templates" },
+  openGraph: {
+    title: pageTitle(title),
+    description,
+    url: "/templates",
+    type: "website",
+    siteName: brand.name,
+  },
+  twitter: { card: "summary_large_image", title: pageTitle(title), description },
 };
 
 export default function TemplatesPage() {
@@ -19,12 +32,12 @@ export default function TemplatesPage() {
               href="/"
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              CW
+              SG
             </Link>
             <div>
-              <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                SEO &amp; GEO Studio
-              </h1>
+              <p className="font-display text-base font-extrabold text-slate-900 dark:text-white">
+                {brand.name}
+              </p>
               <p className="text-tiny text-slate-500 dark:text-slate-400">Master Hospitality Templates Catalog</p>
             </div>
           </div>
@@ -72,9 +85,9 @@ export default function TemplatesPage() {
           <span className="inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-micro font-bold text-emerald-700 uppercase tracking-wider dark:bg-emerald-950/60 dark:text-emerald-300">
             Battle-Tested SEO &amp; GEO Blueprints
           </span>
-          <h2 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
+          <h1 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
             Hospitality SEO &amp; GEO Templates Hub
-          </h2>
+          </h1>
           <p className="max-w-3xl text-body text-slate-600 dark:text-slate-400">
             12 complete, production-ready SEO templates across 6 core categories. Filter by category, test queries in real time, customize variables, and preview SERP snippet pixels.
           </p>

@@ -1,11 +1,24 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { brand, pageTitle } from "@/config/brand";
 import matrixData from "../../../data/78-keyword-strategy-matrix.json";
 
+const title = "78-Keyword Hospitality Strategy Matrix";
+const description =
+  `${brand.name}'s 78-keyword hospitality matrix spanning Brand, Local, Airport, Meetings, Extended Stay, Generative AI conversational queries worldwide.`;
+
 export const metadata: Metadata = {
-  title: "78-Keyword Hospitality Strategy Matrix — SEO Studio",
-  description:
-    "SEO Studio's 78-keyword hospitality matrix spanning Brand, Local, Airport, Meetings, Extended Stay, and Generative AI conversational queries worldwide.",
+  title,
+  description,
+  alternates: { canonical: "/strategy-matrix" },
+  openGraph: {
+    title: pageTitle(title),
+    description,
+    url: "/strategy-matrix",
+    type: "website",
+    siteName: brand.name,
+  },
+  twitter: { card: "summary_large_image", title: pageTitle(title), description },
 };
 
 export default function StrategyMatrixPage() {
@@ -21,13 +34,13 @@ export default function StrategyMatrixPage() {
               href="/"
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              CW
+              SG
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                  SEO &amp; GEO Studio
-                </h1>
+                <p className="font-display text-base font-extrabold text-slate-900 dark:text-white">
+                  {brand.name}
+                </p>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                   v3.0.0
                 </span>
@@ -79,9 +92,9 @@ export default function StrategyMatrixPage() {
           <span className="inline-block rounded-md bg-blue-50 px-2 py-0.5 text-micro font-bold text-blue-700 uppercase tracking-wider dark:bg-blue-950/60 dark:text-blue-300">
             Canonical Hospitality Dataset &bull; {meta.totalKeywords} Targeted Query Formulas
           </span>
-          <h2 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
+          <h1 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
             78-Keyword Search &amp; GEO Strategy Matrix
-          </h2>
+          </h1>
           <p className="max-w-3xl text-body text-slate-600 dark:text-slate-400">
             Engineered across 6 distinct hospitality purchase funnel stages to dominate high-intent branded reservations, local districts, airport layovers, weddings, extended stays, and generative AI conversational queries.
           </p>
