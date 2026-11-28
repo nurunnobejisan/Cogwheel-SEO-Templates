@@ -545,3 +545,40 @@ golden criteria.
 
 **Reverse.** Map `approve` → `gold` in `recordDecision`, or add an explicit
 `gold` action to the queue.
+
+### D-035 — DPO pairs come from paired human decisions, keyed by input fingerprint
+
+**Decision.** `ml/train/build_dpo.py` builds `data/build/dpo-v2.jsonl` from
+three first-party sources (healing patch decisions, vault approve/reject
+pairs, WP1 review-queue decisions on shadow disagreements). Decisions are
+grouped by a stable input fingerprint; an input with only one decision kind
+is counted and skipped — a single outcome is not a preference signal. Review-
+queue rows carry the losing candidate inline (`originalOutput`), so one
+approved row is enough for a shadow pair. A rejected review row never becomes
+a train row.
+
+**Reason.** Preference data must encode a real human choice between two
+outputs. Reusing `build_sft.py`'s host split and `dpo.py`'s gate family keeps
+one governance path.
+
+**Reverse.** Relax `pair_decisions` to synthesize pairs from single
+outcomes (not recommended), or add explicit pair producers.
+
+### D-036 — Adapter task scope is measured per task (`readyTasks`), never hard-coded
+
+**Decision.** The registry gains `readyTasks` + `readyTasksProvenance` per
+entry. Only `ml.serve.register --ready-task <task> --baseline-report <r1>
+--baseline-report <r2>` widens scope, and only when every ship gate for the
+task passes (e.g. `jsonld_valid >= 95%`, `title_budget >= 90%`,
+`invented_metrics = 0`) **and** the candidate beats both baselines (untuned
+base + free provider) on the same golden cases. The router reads the active
+ready entry's measured scope instead of v1's hard-coded `V1_ADAPTER_TASKS`;
+provenance-less `readyTasks` is treated as empty everywhere (Python and TS,
+fail closed). A requested task that fails refuses the whole promotion.
+
+**Reason.** Tier 2 graduation was a v2 goal; a per-task measured scope is the
+mechanism. With no ready entry the adapter serves no task — today's truth.
+
+**Reverse.** Restore the hard-coded `V1_ADAPTER_TASKS` two-task list in
+`ai/router.ts` (kept temporarily as a deprecated constant), or relax the
+baselines requirement to a single baseline.

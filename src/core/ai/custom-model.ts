@@ -22,10 +22,24 @@
 import modelRegistryJson from "../../../data/models/model_registry.json";
 import { isSafeEmbeddingsEndpoint } from "../../../ai/rag/embedder.ts";
 
+export interface ReadyTasksProvenance {
+  /** Must be "ml.serve.register" — the only writer allowed to widen scope. */
+  by?: string;
+  /** sha256 of the run_eval report the measured decision came from. */
+  reportSha256?: string;
+  /** ISO-8601 timestamp of the measured promotion decision. */
+  measuredAt?: string;
+}
+
 export interface RegistryEntryShape {
   modelId?: string;
   baseModel?: string;
   status?: string;
+  createdAt?: string;
+  promotedAt?: string;
+  /** Per-task adapter scope (v2 D-036). Empty until register.py widens it. */
+  readyTasks?: string[];
+  readyTasksProvenance?: ReadyTasksProvenance;
 }
 
 export interface ModelRegistryShape {
@@ -165,4 +179,57 @@ export async function callCustomModel(opts: CustomModelCallOptions): Promise<str
     throw new CustomModelError("fine-tuned endpoint returned no assistant content");
   }
   return content;
+}
+
+/**
+ * The active `status: "ready"` registry entry, preferring the `activeModelId`
+ * match, then the newest `promotedAt`/`createdAt`. `null` when none is ready —
+ * the adapter is then used for **no task** (v2 D-036).
+ */
+export function getActiveReadyEntry(
+  registry: ModelRegistryShape = modelRegistryJson,
+): RegistryEntryShape | null {
+  const models = registry.models ?? [];
+  const ready = models.filter((m) => m.status === "ready");
+  if (!ready.length) return null;
+  const active = ready.find((m) => m.modelId === registry.activeModelId);
+  if (active) return active;
+  return [...ready].sort((a, b) =>
+    String(b.promotedAt ?? b.createdAt ?? "").localeCompare(String(a.promotedAt ?? a.createdAt ?? "")),
+  )[0];
+}
+
+/**
+ * Per-task adapter scope of the active ready entry (v2 decision 1).
+ *
+ * Fail-closed provenance rule: a non-empty `readyTasks` list is honoured only
+ * when it carries `readyTasksProvenance` written by `ml.serve.register` (a
+ * 64-hex report sha and a measuredAt timestamp). Hand-edited scope without
+ * provenance is treated as empty — nothing outside `register.py` can widen
+ * the adapter's task set.
+ */
+export function getAdapterReadyTasks(
+  registry: ModelRegistryShape = modelRegistryJson,
+): readonly string[] {
+  const entry = getActiveReadyEntry(registry);
+  if (!entry) return [];
+  const tasks = entry.readyTasks;
+  if (!Array.isArray(tasks) || tasks.length === 0) return [];
+  const provenance = entry.readyTasksProvenance;
+  const provenanceOk =
+    !!provenance &&
+    provenance.by === "ml.serve.register" &&
+    /^[0-9a-f]{64}$/.test(String(provenance.reportSha256 ?? "")) &&
+    /^\d{4}-\d{2}-\d{2}T/.test(String(provenance.measuredAt ?? ""));
+  if (!provenanceOk) return [];
+  return tasks.filter((task): task is string => typeof task === "string" && task.length > 0);
+}
+
+/** True only when `task` is in the measured `readyTasks` of the active ready entry. */
+export function isAdapterTaskReady(
+  task: string | undefined | null,
+  registry: ModelRegistryShape = modelRegistryJson,
+): boolean {
+  if (!task) return false;
+  return getAdapterReadyTasks(registry).includes(task);
 }

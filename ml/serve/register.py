@@ -38,18 +38,29 @@ import hashlib
 import json
 import os
 import sys
+from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
+from typing import Any, Optional
 
 from ml.serve.registry import DEFAULT_REGISTRY, RegistryError, load_registry
 from ml.train.config import resolve_base_model
 
-__all__ = ["DEFAULT_GOLDEN", "verify_promotion", "build_entry", "promote", "main"]
+__all__ = [
+    "DEFAULT_GOLDEN",
+    "TASK_SHIP_GATES",
+    "evaluate_task_readiness",
+    "select_ready_tasks",
+    "verify_ready_tasks",
+    "verify_promotion",
+    "build_entry",
+    "promote",
+    "main",
+]
 
 DEFAULT_GOLDEN = Path("ml/eval/golden/cases.jsonl")
 
-Check = Tuple[str, bool, str]
+Check = tuple[str, bool, str]
 
 
 class PromotionError(Exception):
@@ -60,7 +71,7 @@ def _sha256_file(path: Path) -> str:
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def _load_json(path: Path, what: str) -> Dict[str, Any]:
+def _load_json(path: Path, what: str) -> dict[str, Any]:
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
     except OSError as exc:
@@ -72,15 +83,182 @@ def _load_json(path: Path, what: str) -> Dict[str, Any]:
     return payload
 
 
+#: v2 D-036 — per-task ship gates. A task may join `readyTasks` only when
+#: every gate here passes at or above the threshold (pass-rate over the
+#: golden cases of that task) AND the candidate beats BOTH baselines
+#: (untuned base + current free provider) on the same cases.
+#: `invented_metrics` at 1.0 means zero invented-metric failures allowed.
+TASK_SHIP_GATES: dict[str, dict[str, float]] = {
+    "schema_generation": {"jsonld_valid": 0.95, "invented_metrics": 1.0},
+    "metadata_generation": {"title_budget": 0.90, "invented_metrics": 1.0},
+    "entity_gap_analysis": {"grounding": 0.80, "invented_metrics": 1.0},
+    "rag_synthesis": {"explainer_citation": 1.0, "invented_metrics": 1.0},
+}
+
+
+def _golden_task_map(golden_path: Path) -> dict[str, str]:
+    """caseId -> task for the frozen golden set."""
+    tasks: dict[str, str] = {}
+    for line in golden_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        case = json.loads(line)
+        case_id = str(case.get("id", ""))
+        if case_id:
+            tasks[case_id] = str(case.get("task") or "")
+    return tasks
+
+
+def _task_gate_scores(
+    report: Mapping[str, Any],
+    task: str,
+    task_map: Mapping[str, str],
+) -> Optional[dict[str, float]]:
+    """Per-check pass rate for one task, from a run_eval report (None when the
+    task has no cases in the report)."""
+    results = report.get("results")
+    if not isinstance(results, list):
+        return None
+    per_check: dict[str, list[int]] = {}
+    seen_cases = 0
+    for result in results:
+        if not isinstance(result, Mapping):
+            continue
+        if task_map.get(str(result.get("caseId"))) != task:
+            continue
+        seen_cases += 1
+        check = str(result.get("check") or "")
+        if not check:
+            continue
+        bucket = per_check.setdefault(check, [0, 0])
+        bucket[1] += 1
+        if str(result.get("status")) == "pass":
+            bucket[0] += 1
+    if not seen_cases:
+        return None
+    return {
+        check: (passed / total) if total else 0.0
+        for check, (passed, total) in per_check.items()
+    }
+
+
+def evaluate_task_readiness(
+    report: Mapping[str, Any],
+    task: str,
+    baseline_reports: Sequence[Mapping[str, Any]],
+    task_map: Mapping[str, str],
+) -> tuple[bool, str, dict[str, Any]]:
+    """One task's readiness decision (v2 decision 1).
+
+    Ready only when: the task has a ship-gate entry, every gate passes at or
+    above threshold, both baselines were supplied and measured on the same
+    golden cases, and the candidate strictly beats each baseline aggregate.
+    """
+    gates = TASK_SHIP_GATES.get(task)
+    if not gates:
+        return False, f"no ship gates defined for task {task!r}", {}
+    scores = _task_gate_scores(report, task, task_map)
+    if scores is None:
+        return False, f"task {task!r} has no cases in the candidate report", {}
+
+    detail_parts: list[str] = []
+    metrics: dict[str, Any] = {"gates": {}}
+    for gate, threshold in sorted(gates.items()):
+        rate = scores.get(gate)
+        metrics["gates"][gate] = round(rate, 4) if rate is not None else None
+        if rate is None:
+            return False, f"task {task!r} report lacks gate {gate!r}", metrics
+        if rate + 1e-9 < threshold:
+            return (
+                False,
+                f"task {task!r} gate {gate} pass-rate {rate:.3f} < required {threshold:.2f}",
+                metrics,
+            )
+
+    if len(baseline_reports) < 2:
+        return (
+            False,
+            f"task {task!r} needs both baselines (untuned base + free provider); got {len(baseline_reports)}",
+            metrics,
+        )
+
+    def _aggregate(scores_map: Mapping[str, float]) -> float:
+        gates_only = [scores_map.get(g) for g in gates if g in scores_map]
+        if not gates_only:
+            return 0.0
+        return sum(gates_only) / len(gates_only)
+
+    candidate_aggregate = _aggregate(scores)
+    metrics["aggregate"] = round(candidate_aggregate, 4)
+    for index, baseline in enumerate(baseline_reports, 1):
+        base_scores = _task_gate_scores(baseline, task, task_map)
+        if base_scores is None:
+            return (
+                False,
+                f"baseline #{index} has no cases for task {task!r} — baselines must run on the same golden set",
+                metrics,
+            )
+        base_aggregate = _aggregate(base_scores)
+        metrics[f"baseline{index}Aggregate"] = round(base_aggregate, 4)
+        if candidate_aggregate <= base_aggregate:
+            return (
+                False,
+                f"task {task!r} aggregate {candidate_aggregate:.4f} does not beat baseline #{index} ({base_aggregate:.4f})",
+                metrics,
+            )
+        detail_parts.append(f"beats baseline #{index}: {candidate_aggregate:.4f} > {base_aggregate:.4f}")
+
+    return True, "; ".join(detail_parts), metrics
+
+
+def select_ready_tasks(
+    report: Mapping[str, Any],
+    baseline_reports: Sequence[Mapping[str, Any]],
+    golden_path: Path,
+    requested_tasks: Optional[Sequence[str]] = None,
+) -> tuple[list[str], list[tuple[str, bool, str]]]:
+    """Decide which tasks join `readyTasks` for this promotion (v2 D-036)."""
+    task_map = _golden_task_map(golden_path)
+    candidates = list(requested_tasks) if requested_tasks else list(TASK_SHIP_GATES)
+    ready: list[str] = []
+    checks: list[tuple[str, bool, str]] = []
+    for task in candidates:
+        ok, detail, _metrics = evaluate_task_readiness(report, task, baseline_reports, task_map)
+        checks.append((f"task_ready:{task}", ok, detail))
+        if ok:
+            ready.append(task)
+    return ready, checks
+
+
+def verify_ready_tasks(
+    report: Mapping[str, Any],
+    requested_tasks: Sequence[str],
+    baseline_reports: Sequence[Mapping[str, Any]],
+    *,
+    golden_path: Path,
+) -> list[tuple[str, bool, str]]:
+    """Per-task readiness checks for a promotion (v2 D-036).
+
+    Every requested task must pass — a failing task check fails the whole
+    promotion (fail closed; register.py never writes a partially measured
+    scope).
+    """
+    _ready, checks = select_ready_tasks(
+        report, baseline_reports, golden_path, requested_tasks=requested_tasks
+    )
+    return checks
+
+
 def verify_promotion(
     manifest: Mapping[str, Any],
     report: Mapping[str, Any],
     *,
     golden_path: Path = DEFAULT_GOLDEN,
     allow_failures: int = 0,
-) -> List[Check]:
+) -> list[Check]:
     """Run the gate chain; a check is ``(name, passed, detail)``."""
-    checks: List[Check] = []
+    checks: list[Check] = []
 
     kind = manifest.get("kind")
     checks.append(
@@ -222,7 +400,7 @@ def verify_promotion(
         values = meta.get(key)
         return values[0] if isinstance(values, list) and values else None
 
-    meta_notes: List[str] = []
+    meta_notes: list[str] = []
     meta_ok = True
     meta_adapter = _first("adapter")
     if meta_adapter is not None and meta_adapter != adapter:
@@ -250,7 +428,9 @@ def build_entry(
     report_sha: str,
     golden_sha: str,
     failure_count: int,
-) -> Dict[str, Any]:
+    ready_tasks: Optional[Sequence[str]] = None,
+    ready_task_baselines: Optional[Sequence[str]] = None,
+) -> dict[str, Any]:
     """Assemble the registry entry for a verified run (status: ready)."""
     now = datetime.now(timezone.utc).replace(microsecond=0).isoformat().replace("+00:00", "Z")
     run_id = str(manifest.get("runId"))
@@ -289,6 +469,23 @@ def build_entry(
             "reportFailures": failure_count,
             "templateVersion": template_version,
         },
+        # v2 D-036: per-task measured scope. Empty `readyTasks` needs no
+        # provenance; a non-empty list is only written here, and always with
+        # provenance — the registry and the router refuse hand-edited scope.
+        "readyTasks": list(ready_tasks or []),
+        **(
+            {
+                "readyTasksProvenance": {
+                    "by": "ml.serve.register",
+                    "reportSha256": report_sha,
+                    "measuredAt": now,
+                    "goldenSha256": golden_sha,
+                    "baselines": list(ready_task_baselines or []),
+                }
+            }
+            if ready_tasks
+            else {}
+        ),
     }
 
 
@@ -303,14 +500,37 @@ def promote(
     set_active: bool = False,
     force: bool = False,
     dry_run: bool = False,
-) -> Dict[str, Any]:
-    """Verify gates and (unless dry_run) write the registry entry."""
+    ready_tasks: Optional[Sequence[str]] = None,
+    baseline_report_paths: Optional[Sequence[Path]] = None,
+) -> dict[str, Any]:
+    """Verify gates and (unless dry_run) write the registry entry.
+
+    v2 D-036: ``ready_tasks`` names the tasks to evaluate for the entry's
+    measured per-task scope. A requested task that fails its ship gates or
+    does not beat both baselines **refuses the promotion** (fail closed) —
+    register.py is the only writer of ``readyTasks`` and never writes a
+    partially measured scope. With no ``--ready-task``, ``readyTasks`` stays
+    ``[]`` (the adapter then serves no task).
+    """
     manifest = _load_json(manifest_path, "manifest")
     report = _load_json(report_path, "report")
 
     checks = verify_promotion(
         manifest, report, golden_path=golden_path, allow_failures=allow_failures
     )
+
+    requested_tasks = [t.strip() for t in (ready_tasks or []) if t.strip()]
+    baseline_reports: list[Mapping[str, Any]] = []
+    baseline_names: list[str] = []
+    if requested_tasks:
+        for path in baseline_report_paths or []:
+            baseline_reports.append(_load_json(path, "baseline report"))
+            baseline_names.append(path.name)
+        task_checks = verify_ready_tasks(
+            report, requested_tasks, baseline_reports, golden_path=golden_path
+        )
+        checks.extend(task_checks)
+
     failed = [name for name, ok, _ in checks if not ok]
     if failed:
         details = "; ".join(f"{name}: {detail}" for name, ok, detail in checks if not ok)
@@ -318,6 +538,7 @@ def promote(
 
     run_id = str(manifest.get("runId"))
     resolved_model_id = model_id.strip() or f"seo-studio-{run_id}"
+    ready_task_scope = requested_tasks if not failed else []
     manifest_sha = _sha256_file(manifest_path)
     report_sha = _sha256_file(report_path)
     golden_sha = _sha256_file(golden_path)
@@ -333,6 +554,8 @@ def promote(
         report_sha=report_sha,
         golden_sha=golden_sha,
         failure_count=failure_count,
+        ready_tasks=ready_task_scope,
+        ready_task_baselines=baseline_names,
     )
 
     registry = load_registry(registry_path)
@@ -410,6 +633,26 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     parser.add_argument("--active", action="store_true", help="also set activeModelId")
     parser.add_argument("--force", action="store_true", help="replace an existing different entry")
     parser.add_argument("--dry-run", action="store_true", help="print the result, write nothing")
+    parser.add_argument(
+        "--ready-task",
+        action="append",
+        default=None,
+        dest="ready_tasks",
+        metavar="TASK",
+        help="evaluate TASK for the entry's measured readyTasks scope "
+        "(repeatable; v2 D-036). A task that fails its gates or does not beat "
+        "both baselines refuses the promotion.",
+    )
+    parser.add_argument(
+        "--baseline-report",
+        action="append",
+        type=Path,
+        default=None,
+        dest="baseline_reports",
+        metavar="REPORT",
+        help="run_eval report of a baseline (untuned base, free provider); "
+        "two required when --ready-task is used, on the same golden set",
+    )
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     if args.allow_failures < 0:
@@ -427,6 +670,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             set_active=args.active,
             force=args.force,
             dry_run=args.dry_run,
+            ready_tasks=args.ready_tasks,
+            baseline_report_paths=args.baseline_reports,
         )
     except PromotionError as exc:
         print(f"error: {exc}", file=sys.stderr)

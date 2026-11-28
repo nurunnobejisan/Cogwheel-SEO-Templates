@@ -15,7 +15,8 @@ import {
   type AdapterMode,
 } from "@/core/ai/adapter-mode";
 import { gateOutput } from "@/core/ai/output-gates";
-import { classifyTask, V1_ADAPTER_TASKS } from "../../ai/router";
+import { isV1AdapterTask, V1_ADAPTER_TASKS } from "../../ai/router";
+import { recordShadowDisagreement } from "@/lib/review/shadow-recorder";
 import type { TaskKind } from "../../ai/types";
 
 export {
@@ -368,11 +369,11 @@ export async function generateClaudeText(opts: {
   // WP2, WP3 & WP5 — the v1 adapter only handles allow-listed Tier 1 tasks
   // (`schema_generation`, `metadata_generation`) when `AI_ADAPTER_MODE` enables it
   // (`off | shadow | canary | on`, default `off`).
+  // v2 D-036 — the adapter handles exactly the tasks listed in the active
+  // ready registry entry's measured `readyTasks` (only `ml.serve.register`
+  // widens that set). With no ready entry the adapter is used for no task.
   const mode = getAdapterMode();
-  const isV1Eligible =
-    opts.task !== undefined &&
-    V1_ADAPTER_TASKS.includes(opts.task) &&
-    classifyTask(opts.task) === "tier1";
+  const isV1Eligible = isV1AdapterTask(opts.task);
   const adapterAvailable =
     isV1Eligible && mode !== "off" && isCustomModelConfigured();
 
@@ -384,7 +385,7 @@ export async function generateClaudeText(opts: {
   if (mode === "shadow") {
     const stdErrors: string[] = [];
     const stdStart = Date.now();
-    const [, stdResult] = await Promise.allSettled([
+    const [adapterResult, stdResult] = await Promise.allSettled([
       tryAdapterForV1Task({
         task,
         modeLabel: "shadow",
@@ -411,6 +412,31 @@ export async function generateClaudeText(opts: {
       brand: opts.brand,
     });
     incrementGateCounter(`${task}|shadow|standard:${stdGate.ok ? "pass" : "fail"}`);
+
+    // v2 WP3 — capture the disagreement for the human review queue (WP1) so
+    // it can become DPO preference data (WP2). Never breaks generation.
+    const adapterText = adapterResult.status === "fulfilled" ? adapterResult.value : null;
+    if (adapterText) {
+      const adapterGate = gateOutput(task, adapterText, {
+        prompt: opts.prompt,
+        brand: opts.brand,
+      });
+      void recordShadowDisagreement({
+        task,
+        input: opts.prompt,
+        adapterOutput: adapterText,
+        standardOutput: stdResult.value,
+        gateResults: [
+          {
+            gate: "output_gates",
+            passed: adapterGate.ok,
+            ...(adapterGate.failures?.length ? { detail: adapterGate.failures.join(", ") } : {}),
+          },
+        ],
+        propertyId: opts.propertyId,
+        requestId: opts.requestId,
+      });
+    }
     return stdResult.value;
   }
 

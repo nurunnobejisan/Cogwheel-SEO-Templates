@@ -212,6 +212,30 @@ Do **not** promote unless **every** condition below passes on the `run_eval.py` 
 
 ---
 
+## Step 5b — Promote with a measured per-task scope (v2 D-036)
+
+`readyTasks` is written only by `ml.serve.register` and only from measurement.
+For each task you want the adapter to serve, run the eval for the candidate
+**and both baselines** (untuned base, current free provider) on the same
+frozen golden set, then:
+
+```bash
+python3 -m ml.serve.register \
+  --manifest data/out/<run>/manifest.json \
+  --report <run>-report.json \
+  --ready-task schema_generation \
+  --baseline-report baseline-untuned-report.json \
+  --baseline-report baseline-free-report.json
+```
+
+A task whose gates fall below threshold (`jsonld_valid >= 95%`,
+`title_budget >= 90%`, `invented_metrics = 0`, per task in
+`register.TASK_SHIP_GATES`) or that fails to beat **either** baseline refuses
+the whole promotion — no partial scope is ever written. Omit `--ready-task` to
+promote with an empty scope (adapter serves no task).
+
+---
+
 ## Step 6 — App Rollout (`shadow` -> `canary` -> `on`)
 
 Ship `schema_generation` first (`D-029`). Configure Vercel / runtime environment variables cleanly:

@@ -13,7 +13,7 @@
 
 import type { ProviderDescriptor, RouteDecision, TaskKind } from "./types.ts";
 import { modelFor } from "../src/core/ai/models.ts";
-import { isCustomModelConfigured } from "../src/core/ai/custom-model.ts";
+import { isCustomModelConfigured, isAdapterTaskReady } from "../src/core/ai/custom-model.ts";
 
 export const TIER1_TASKS: readonly TaskKind[] = [
   "structured_extraction",
@@ -31,16 +31,29 @@ export const TIER2_TASKS: readonly TaskKind[] = [
 ];
 
 /**
- * Only these Tier 1 tasks may route to the v1 fine-tuned QLoRA adapter.
- * Expansion requires beating Tier 2 on the frozen golden set (D-025).
+ * Adapter task scope (v2 decision 1, D-036): per-task and **measured**.
+ *
+ * v1 hard-coded `V1_ADAPTER_TASKS = ["schema_generation", "metadata_generation"]`;
+ * v2 replaces it with the active ready registry entry's `readyTasks`, which
+ * only `ml.serve.register` widens (gates pass + beats both baselines on the
+ * same cases). With today's registry — no ready entry — the adapter is used
+ * for **no task**. The v1 constant is kept only as a deprecated fallback
+ * marker so existing imports keep resolving.
+ *
+ * @deprecated Read `getAdapterReadyTasks()` / `isAdapterTaskReady()` instead.
  */
 export const V1_ADAPTER_TASKS: readonly TaskKind[] = [
   "schema_generation",
   "metadata_generation",
 ];
 
+/**
+ * True only when `task` is in the measured `readyTasks` of the active ready
+ * registry entry (v2 D-036). The v1 tier constraint is gone by design: a Tier
+ * 2 task can graduate through exactly the same measured path.
+ */
 export function isV1AdapterTask(task: TaskKind | undefined): task is TaskKind {
-  return Boolean(task && V1_ADAPTER_TASKS.includes(task) && classifyTask(task) === "tier1");
+  return Boolean(task && isAdapterTaskReady(task));
 }
 
 /** Map a task kind to its tier. Unknown tasks default to Tier 1 (cheapest). */
