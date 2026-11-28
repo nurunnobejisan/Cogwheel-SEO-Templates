@@ -16,6 +16,7 @@
         "src/components/data/**/*.tsx",
         "src/components/shell/**/*.tsx",
         "src/components/motion/**/*.tsx",
+        "src/components/pages/**/*.tsx",
         "src/components/BrandMark.tsx",
         "src/app/dev/**/*.tsx",
         "src/app/layout.tsx"

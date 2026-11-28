@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import type { FullWebsiteAuditReport } from "@/core/full-audit/types";
 import type { TaskStatus } from "@/tasks/tasks.config";
 
 export interface ActiveProperty {
@@ -27,6 +28,12 @@ export interface AiEngineStatus {
   loaded: boolean;
 }
 
+export interface AuditHistoryEntry {
+  date: string;
+  score: number;
+  issues: number;
+}
+
 interface WorkspaceContextValue {
   activeProperty: ActiveProperty;
   recentProperties: ActiveProperty[];
@@ -44,10 +51,18 @@ interface WorkspaceContextValue {
   runsLoaded: boolean;
   aiStatus: AiEngineStatus;
   refreshRuns: () => Promise<void>;
+  auditReport: FullWebsiteAuditReport | null;
+  previousAuditReport: FullWebsiteAuditReport | null;
+  auditHistory: AuditHistoryEntry[];
+  auditLoading: boolean;
+  auditError: string | null;
+  runFullWebsiteAudit: (urlOverride?: string) => Promise<FullWebsiteAuditReport | null>;
 }
 
 const ACTIVE_PROPERTY_KEY = "seo_studio_active_property_v1";
 const RECENT_PROPERTIES_KEY = "seo_studio_recent_properties_v1";
+const AUDIT_REPORT_KEY = "seo_studio_last_audit_v1";
+const AUDIT_HISTORY_KEY = "seo_studio_audit_history_v1";
 const THEME_KEY = "seo_studio_theme";
 
 const EMPTY_PROPERTY: ActiveProperty = {
@@ -75,6 +90,12 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     loaded: false,
   });
 
+  const [auditReport, setAuditReport] = React.useState<FullWebsiteAuditReport | null>(null);
+  const [previousAuditReport, setPreviousAuditReport] = React.useState<FullWebsiteAuditReport | null>(null);
+  const [auditHistory, setAuditHistory] = React.useState<AuditHistoryEntry[]>([]);
+  const [auditLoading, setAuditLoading] = React.useState(false);
+  const [auditError, setAuditError] = React.useState<string | null>(null);
+
   React.useEffect(() => {
     setIsDark(document.documentElement.classList.contains("dark"));
     try {
@@ -88,6 +109,17 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         const parsedRecent = JSON.parse(savedRecent) as ActiveProperty[];
         if (Array.isArray(parsedRecent)) {
           setRecentProperties(parsedRecent.slice(0, 5));
+        }
+      }
+      const savedAudit = window.sessionStorage.getItem(AUDIT_REPORT_KEY);
+      if (savedAudit) {
+        setAuditReport(JSON.parse(savedAudit) as FullWebsiteAuditReport);
+      }
+      const savedHist = window.localStorage.getItem(AUDIT_HISTORY_KEY);
+      if (savedHist) {
+        const parsedHist = JSON.parse(savedHist) as AuditHistoryEntry[];
+        if (Array.isArray(parsedHist)) {
+          setAuditHistory(parsedHist.slice(-10));
         }
       }
     } catch {
@@ -221,6 +253,76 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
     void refreshRuns();
   }, [refreshRuns]);
 
+  const runFullWebsiteAudit = React.useCallback(
+    async (urlOverride?: string) => {
+      const targetUrl = (urlOverride ?? activeProperty.url).trim();
+      if (!targetUrl) {
+        setAuditError("Enter or select a property URL before running a full audit.");
+        return null;
+      }
+
+      setAuditLoading(true);
+      setAuditError(null);
+      try {
+        const res = await fetch("/api/full-audit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            targetUrl,
+            maxPages: 25,
+            includeGsc: true,
+            includeGeo: true,
+          }),
+        });
+        const json = (await res.json()) as {
+          error?: string;
+          details?: string;
+          report?: FullWebsiteAuditReport;
+        };
+        if (!res.ok || !json.report) {
+          throw new Error(json.details || json.error || "Full website audit failed.");
+        }
+
+        setAuditReport((prev) => {
+          if (prev) setPreviousAuditReport(prev);
+          return json.report!;
+        });
+
+        const entry: AuditHistoryEntry = {
+          date: new Date(json.report.createdAt).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          }),
+          score: json.report.overallScore,
+          issues: json.report.actionPlan.length,
+        };
+        setAuditHistory((prev) => {
+          const updated = [...prev, entry].slice(-10);
+          try {
+            window.localStorage.setItem(AUDIT_HISTORY_KEY, JSON.stringify(updated));
+          } catch {
+            // ignore storage errors
+          }
+          return updated;
+        });
+
+        try {
+          window.sessionStorage.setItem(AUDIT_REPORT_KEY, JSON.stringify(json.report));
+        } catch {
+          // ignore storage quota errors
+        }
+
+        return json.report;
+      } catch (err) {
+        setAuditError((err as Error).message);
+        return null;
+      } finally {
+        setAuditLoading(false);
+      }
+    },
+    [activeProperty.url]
+  );
+
   return (
     <WorkspaceContext.Provider
       value={{
@@ -240,6 +342,12 @@ export function WorkspaceProvider({ children }: { children: React.ReactNode }) {
         runsLoaded,
         aiStatus,
         refreshRuns,
+        auditReport,
+        previousAuditReport,
+        auditHistory,
+        auditLoading,
+        auditError,
+        runFullWebsiteAudit,
       }}
     >
       {children}

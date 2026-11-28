@@ -4,6 +4,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import trainedPropertiesData from "@/data/trained-properties.json";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
 import { Button, Card, Stat } from "./ui";
@@ -51,15 +52,6 @@ const VisibilitySuiteModal = dynamic(() =>
 );
 const CommandPalette = dynamic(() =>
   import("./CommandPalette").then((m) => m.CommandPalette),
-);
-const SitemapAuditModal = dynamic(() =>
-  import("./SitemapAuditModal").then((m) => m.SitemapAuditModal),
-);
-const ImageOptimizationAuditModal = dynamic(() =>
-  import("./ImageOptimizationAuditModal").then((m) => m.ImageOptimizationAuditModal),
-);
-const HeadingStructureAuditModal = dynamic(() =>
-  import("./HeadingStructureAuditModal").then((m) => m.HeadingStructureAuditModal),
 );
 const KeywordResearchView = dynamic(() =>
   import("./KeywordResearchView").then((m) => m.KeywordResearchView),
@@ -154,6 +146,7 @@ export default function PropertyDashboard({
   initialTab?: "home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo";
   initialSection?: TaskSection;
 } = {}) {
+  const router = useRouter();
   const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo">(initialTab);
   const [labsSubTab, setLabsSubTab] = useState<"geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture">("geo");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
@@ -169,9 +162,6 @@ export default function PropertyDashboard({
   const [showAutoPilot, setShowAutoPilot] = useState(false);
   const [showVisibilitySuite, setShowVisibilitySuite] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
-  const [showSitemapAudit, setShowSitemapAudit] = useState(false);
-  const [showImageAudit, setShowImageAudit] = useState(false);
-  const [showHeadingAudit, setShowHeadingAudit] = useState(false);
   const [activeCrawlTask, setActiveCrawlTask] = useState<TaskConfig | null>(null);
   const [historyTask, setHistoryTask] = useState<TaskConfig | null>(null);
   const [comingSoonTask, setComingSoonTask] = useState<TaskConfig | null>(null);
@@ -242,7 +232,6 @@ export default function PropertyDashboard({
       }
       if (e.key === "Escape") {
         setShowCommandPalette(false);
-        setShowSitemapAudit(false);
         setShowAiTraining(false);
         setShowVisibilitySuite(false);
         setDeliverablesTab(null);
@@ -360,11 +349,11 @@ export default function PropertyDashboard({
       return;
     }
     if (task.id === "image-optimization") {
-      setShowImageAudit(true);
+      router.push("/audit/images");
       return;
     }
     if (task.id === "heading-structure") {
-      setShowHeadingAudit(true);
+      router.push("/audit/headings");
       return;
     }
     if (CRAWL_TASK_IDS.has(task.id)) {
@@ -1099,8 +1088,8 @@ export default function PropertyDashboard({
             <UnifiedSeoSuiteView
               property={activeProperty}
               onBackToDashboard={() => setMainTab("home")}
-              onOpenImageAudit={() => setShowImageAudit(true)}
-              onOpenHeadingAudit={() => setShowHeadingAudit(true)}
+              onOpenImageAudit={() => router.push("/audit/images")}
+              onOpenHeadingAudit={() => router.push("/audit/headings")}
             />
           )}
 
@@ -1129,8 +1118,8 @@ export default function PropertyDashboard({
               onSubTabChange={(tab) => setLabsSubTab(tab)}
               onRunDeckGeneration={() => setDeliverablesTab("pptx")}
               onExportMemo={() => setDeliverablesTab("memo")}
-              onOpenImageAudit={() => setShowImageAudit(true)}
-              onOpenHeadingAudit={() => setShowHeadingAudit(true)}
+              onOpenImageAudit={() => router.push("/audit/images")}
+              onOpenHeadingAudit={() => router.push("/audit/headings")}
             />
           )}
 
@@ -1144,13 +1133,13 @@ export default function PropertyDashboard({
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="secondary" onClick={() => setShowHeadingAudit(true)}>
+                  <Button variant="secondary" onClick={() => router.push("/audit/headings")}>
                     Audit Headings
                   </Button>
-                  <Button variant="secondary" onClick={() => setShowImageAudit(true)}>
+                  <Button variant="secondary" onClick={() => router.push("/audit/images")}>
                     Audit Images
                   </Button>
-                  <Button variant="secondary" onClick={() => setShowSitemapAudit(true)}>
+                  <Button variant="secondary" onClick={() => router.push("/audit/sitemap")}>
                     Audit XML Sitemap
                   </Button>
                   <Button variant="primary" onClick={() => setShowAutoPilot(true)}>
@@ -1177,7 +1166,7 @@ export default function PropertyDashboard({
                 <div className="flex flex-wrap items-center gap-2">
                   <button
                     type="button"
-                    onClick={() => setShowHeadingAudit(true)}
+                    onClick={() => router.push("/audit/headings")}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-caption font-semibold text-slate-700 transition hover:border-emerald-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
                   >
                     <svg className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1187,7 +1176,7 @@ export default function PropertyDashboard({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowImageAudit(true)}
+                    onClick={() => router.push("/audit/images")}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-caption font-semibold text-slate-700 transition hover:border-amber-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
                   >
                     <svg className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1197,7 +1186,7 @@ export default function PropertyDashboard({
                   </button>
                   <button
                     type="button"
-                    onClick={() => setShowSitemapAudit(true)}
+                    onClick={() => router.push("/audit/sitemap")}
                     className="inline-flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-caption font-semibold text-slate-700 transition hover:border-purple-400 hover:bg-white hover:text-slate-900 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700 dark:hover:text-white"
                   >
                     <svg className="h-3.5 w-3.5 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1635,54 +1624,6 @@ export default function PropertyDashboard({
         </div>
       )}
 
-      {showSitemapAudit && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setShowSitemapAudit(false);
-          }}
-        >
-          <div className="w-full max-w-3xl">
-            <SitemapAuditModal
-              defaultUrl={activeProperty.url}
-              onClose={() => setShowSitemapAudit(false)}
-            />
-          </div>
-        </div>
-      )}
-
-      {showImageAudit && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setShowImageAudit(false);
-          }}
-        >
-          <div className="w-full max-w-5xl">
-            <ImageOptimizationAuditModal
-              defaultUrl={activeProperty.url}
-              onClose={() => setShowImageAudit(false)}
-            />
-          </div>
-        </div>
-      )}
-
-      {showHeadingAudit && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-slate-900/60 p-4 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setShowHeadingAudit(false);
-          }}
-        >
-          <div className="w-full max-w-6xl">
-            <HeadingStructureAuditModal
-              defaultUrl={activeProperty.url}
-              onClose={() => setShowHeadingAudit(false)}
-            />
-          </div>
-        </div>
-      )}
-
       <CommandPalette
         isOpen={showCommandPalette}
         onClose={() => setShowCommandPalette(false)}
@@ -1691,7 +1632,7 @@ export default function PropertyDashboard({
         onNavigateLabsSubTab={(st) => setLabsSubTab(st)}
         onOpenDeliverables={(tab) => setDeliverablesTab(tab || "deck")}
         onOpenVisibilitySuite={() => setShowVisibilitySuite(true)}
-        onOpenSitemapAudit={() => setShowSitemapAudit(true)}
+        onOpenSitemapAudit={() => router.push("/audit/sitemap")}
         onOpenAiTraining={() => setShowAiTraining(true)}
         onRunAutoPilot={() => setShowAutoPilot(true)}
         onSelectTask={(task) => {

@@ -9,6 +9,7 @@ const TOKEN_STRICT_DIRS = [
   "src/components/data",
   "src/components/shell",
   "src/components/motion",
+  "src/components/pages",
   "src/app/dev",
   "src/app/(app)",
   "src/app/(public)",

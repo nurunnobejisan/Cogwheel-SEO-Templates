@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { LegacyImagesRoute } from "@/components/shell/LegacyRouteViews";
+import { ImagesAuditClient } from "@/components/pages/ImagesAuditClient";
 
 export const metadata: Metadata = {
   title: "Image Optimization Audit — SEO & GEO Studio",
 };
 
 export default function AuditImagesPage() {
-  return <LegacyImagesRoute />;
+  return <ImagesAuditClient />;
 }
