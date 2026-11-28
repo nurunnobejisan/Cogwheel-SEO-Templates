@@ -1,4 +1,5 @@
 import { generateClaudeText, isClaudeConfigured } from "@/core/claude";
+import type { TaskKind } from "../../../ai/types";
 import { getLatestCrawlRunForProperty } from "@/core/crawler";
 import { runTaskPipeline, type PipelineResult } from "@/core/pipeline";
 import { buildSeoBaselinePrompt, parseSeoBaselineDraft } from "./prompt";
@@ -15,7 +16,7 @@ import {
 } from "./validator";
 
 export interface SeoBaselineDeps {
-  callClaude?: (opts: { system: string; prompt: string; maxTokens?: number }) => Promise<string>;
+  callClaude?: (opts: { system: string; prompt: string; maxTokens?: number; task?: TaskKind }) => Promise<string>;
 }
 
 interface BaselineDataBundle {
@@ -90,7 +91,7 @@ export async function runSeoBaselineAiVisibility(
         deterministicFindings: data.deterministic.findings,
         feedback,
       });
-      const raw = await callClaude({ system, prompt, maxTokens: 900 });
+      const raw = await callClaude({ system, prompt, maxTokens: 900, task: "entity_gap_analysis" });
       try {
         return parseSeoBaselineDraft(raw);
       } catch {

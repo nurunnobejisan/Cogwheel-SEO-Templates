@@ -17,8 +17,9 @@ import {
   getActiveAiProviderLabel,
   isClaudeConfigured,
   generateClaudeText,
+  V1_ADAPTER_TASKS,
 } from "../src/core/claude.ts";
-import { loadProviders, routeTask } from "../ai/router.ts";
+import { loadProviders, routeTask, V1_ADAPTER_TASKS as ROUTER_V1_TASKS } from "../ai/router.ts";
 import type { ProviderDescriptor } from "../ai/types.ts";
 
 const SAFE_ENDPOINT = "https://example.com/v1/chat/completions";
@@ -175,8 +176,31 @@ describe("Phase 4 — callCustomModel", () => {
   });
 });
 
-describe("Phase 4 — generateClaudeText ordering", () => {
-  it("tries the fine-tuned endpoint first when configured", async () => {
+describe("Phase 4 / WP2 — generateClaudeText task routing", () => {
+  it("exports V1_ADAPTER_TASKS scoped strictly to schema_generation and metadata_generation", () => {
+    expect(V1_ADAPTER_TASKS).toEqual(["schema_generation", "metadata_generation"]);
+    expect(ROUTER_V1_TASKS).toEqual(["schema_generation", "metadata_generation"]);
+  });
+
+  it("skips the custom adapter for untagged calls and falls back to the main provider chain", async () => {
+    snapshotEnv();
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      GROQ_API_KEY: "groq-test-key",
+    });
+    const fetchMock = vi.fn(async (..._args: unknown[]) =>
+      jsonResponse({ choices: [{ message: { content: "from groq chain" } }] }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const text = await generateClaudeText({ system: "sys", prompt: "q" });
+    expect(text).toBe("from groq chain");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("api.groq.com");
+  });
+
+  it("uses the custom adapter first for v1 Tier 1 tasks (schema_generation, metadata_generation)", async () => {
     snapshotEnv();
     setEnv({ CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT, CUSTOM_MODEL_ID: "seo-studio-tuned-v1" });
     const fetchMock = vi.fn(async (..._args: unknown[]) =>
@@ -184,13 +208,47 @@ describe("Phase 4 — generateClaudeText ordering", () => {
     );
     vi.stubGlobal("fetch", fetchMock);
 
-    const text = await generateClaudeText({ system: "sys", prompt: "q" });
-    expect(text).toBe("from the tuned model");
-    expect(fetchMock).toHaveBeenCalledTimes(1);
+    const schemaText = await generateClaudeText({
+      system: "sys",
+      prompt: "q",
+      task: "schema_generation",
+    });
+    expect(schemaText).toBe("from the tuned model");
+
+    const metaText = await generateClaudeText({
+      system: "sys",
+      prompt: "q",
+      task: "metadata_generation",
+    });
+    expect(metaText).toBe("from the tuned model");
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(String(fetchMock.mock.calls[0]?.[0])).toBe(SAFE_ENDPOINT);
+    expect(String(fetchMock.mock.calls[1]?.[0])).toBe(SAFE_ENDPOINT);
   });
 
-  it("falls through to the error path when the tuned endpoint fails", async () => {
+  it("never calls the custom adapter for Tier 2 or non-v1 Tier 1 tasks", async () => {
+    snapshotEnv();
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      GROQ_API_KEY: "groq-test-key",
+    });
+    const fetchMock = vi.fn(async (..._args: unknown[]) =>
+      jsonResponse({ choices: [{ message: { content: "standard chain output" } }] }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    for (const task of ["rag_synthesis", "entity_gap_analysis", "alt_text_generation"] as const) {
+      await generateClaudeText({ system: "sys", prompt: "q", task });
+    }
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    for (const call of fetchMock.mock.calls) {
+      expect(String(call[0])).not.toBe(SAFE_ENDPOINT);
+      expect(String(call[0])).toContain("api.groq.com");
+    }
+  });
+
+  it("falls through to the error path when a v1 task fails on the tuned endpoint", async () => {
     snapshotEnv();
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
@@ -201,9 +259,9 @@ describe("Phase 4 — generateClaudeText ordering", () => {
       vi.fn(async () => jsonResponse({ error: "busy" }, 500)),
     );
 
-    await expect(generateClaudeText({ system: "sys", prompt: "q" })).rejects.toThrow(
-      /Fine-tuned \(seo-studio-unified\)/,
-    );
+    await expect(
+      generateClaudeText({ system: "sys", prompt: "q", task: "schema_generation" }),
+    ).rejects.toThrow(/Fine-tuned \(seo-studio-unified\)/);
   });
 
   it("does not touch the network when the endpoint fails the guard", async () => {
@@ -212,9 +270,9 @@ describe("Phase 4 — generateClaudeText ordering", () => {
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(generateClaudeText({ system: "sys", prompt: "q" })).rejects.toThrow(
-      /All online AI providers failed/,
-    );
+    await expect(
+      generateClaudeText({ system: "sys", prompt: "q", task: "schema_generation" }),
+    ).rejects.toThrow(/All online AI providers failed/);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 

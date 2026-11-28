@@ -30,6 +30,19 @@ export const TIER2_TASKS: readonly TaskKind[] = [
   "entity_gap_analysis",
 ];
 
+/**
+ * Only these Tier 1 tasks may route to the v1 fine-tuned QLoRA adapter.
+ * Expansion requires beating Tier 2 on the frozen golden set (D-025).
+ */
+export const V1_ADAPTER_TASKS: readonly TaskKind[] = [
+  "schema_generation",
+  "metadata_generation",
+];
+
+export function isV1AdapterTask(task: TaskKind | undefined): task is TaskKind {
+  return Boolean(task && V1_ADAPTER_TASKS.includes(task) && classifyTask(task) === "tier1");
+}
+
 /** Map a task kind to its tier. Unknown tasks default to Tier 1 (cheapest). */
 export function classifyTask(task: TaskKind): "tier1" | "tier2" {
   return TIER2_TASKS.includes(task) ? "tier2" : "tier1";
