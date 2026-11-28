@@ -30,6 +30,7 @@ import logging
 import os
 import re
 import urllib.parse
+import urllib.request
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 from typing import Any, Optional
@@ -627,6 +628,10 @@ class HeadingOptimizer:
                 headers={"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"},
             )
             with urllib.request.urlopen(req, timeout=5) as response:
+                status = getattr(response, "status", 200)
+                if status != 200:
+                    logger.debug("Live fetch for %s returned HTTP %s; using fallback extraction", url, status)
+                    return None
                 html = response.read().decode("utf-8", errors="ignore")
                 soup = BeautifulSoup(html, "html.parser")
                 extracted = self.extract_dom_headings(soup, url)
