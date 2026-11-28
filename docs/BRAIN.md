@@ -38,8 +38,10 @@ The brain is a thin interpretation layer over the **measured** audit engine.
 - `GET /api/training-triples` → counts and triples; `?eligible=true` returns only reviewed/gold.
 - `POST /api/training-triples/review` `{ id, quality }` → operator tier change.
 - `GET/POST /api/outcomes` → record a deployed change and measure its Search Console before/after (with a control set); `{ action: "judge" }` returns control-adjusted effect estimates per change kind (L2 judgment). See `docs/OUTCOMES.md` and `docs/JUDGMENT.md`.
+- `GET /api/assistant` → engine status (Gemini free tier → Groq Llama 3.3 → OpenRouter `:free` → optional paid keys).
+- `POST /api/assistant` `{ question, targetUrl, report?, gscPanel?, forceRules? }` → newline-delimited JSON stream of `status`, `delta` and `done` events. The answer is grounded in the audit, attached Search Console panel, latest visibility run and retrieved knowledge chunks. A model answer is accepted only if every number and claim passes `verifyClaimProvenance`; otherwise the next engine is tried and a deterministic rules engine is the final fallback. Anonymous visitors always use the rules path.
 
-All endpoints require a signed operator session and use the shared rate-limit classes.
+All endpoints use the shared rate-limit classes; all except the rules-only path of `/api/assistant` require a signed operator session.
 
 ## Claim-to-field provenance
 Every sentence in the interpretation must either:

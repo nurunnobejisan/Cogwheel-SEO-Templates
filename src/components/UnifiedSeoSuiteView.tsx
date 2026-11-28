@@ -22,111 +22,6 @@ interface UnifiedSeoSuiteViewProps {
 
 type SuiteSubTab = "full-audit" | "gsc-intel" | "geo-visibility" | "ai-orchestrator" | "model-training";
 
-/**
- * Answers the in-app assistant from the audit report the operator just ran.
- *
- * This deliberately does not call an LLM: the previous implementation returned
- * canned diagnoses and invented scores. Every sentence below is derived from
- * measured report fields, and missing data sources are named instead of filled.
- */
-function answerFromAudit(
-  question: string,
-  report: FullWebsiteAuditReport | null,
-  targetUrl: string,
-): { content: string; toolUsed: string } {
-  if (!report) {
-    return {
-      toolUsed: "audit_report:missing",
-      content: `### No audit loaded\n\nRun the 11-dimension audit for ${targetUrl} first. This assistant answers from the current report only — it does not crawl on its own and it does not invent metrics.`,
-    };
-  }
-
-  const q = question.toLowerCase();
-  const r = report;
-
-  if (q.includes("cannibal") || q.includes("gsc") || q.includes("search console")) {
-    const gsc = r.searchConsole;
-    if (!gsc.isConnected) {
-      return {
-        toolUsed: "audit_report:search_console",
-        content:
-          "### Search Console cannibalization\n\nNot measured for this report. Google Search Console credentials are not connected, so query-level clicks, impressions and cannibalization conflicts are unavailable.\n\nConnect Search Console and re-run the audit to populate this section.",
-      };
-    }
-    const top = gsc.topQueries
-      .slice(0, 5)
-      .map((query) => `- \`${query.query}\` — ${query.clicks} clicks / ${query.impressions} impressions / position ${query.position.toFixed(1)}`)
-      .join("\n");
-    return {
-      toolUsed: "audit_report:search_console",
-      content: `### Search Console cannibalization\n\n- Property: \`${gsc.siteUrl}\` (last ${gsc.periodDays} days)\n- Clicks / impressions: ${gsc.totalClicks.toLocaleString()} / ${gsc.totalImpressions.toLocaleString()}\n- Average CTR / position: ${(gsc.averageCtr * 100).toFixed(2)}% / ${gsc.averagePosition.toFixed(1)}\n- Conflicting queries: **${gsc.cannibalizationDetectedCount}**\n${top ? `\nTop queries:\n${top}` : ""}\n\n${gsc.cannibalizationDetectedCount > 0 ? "Review the competing URLs listed in the Search Console panel and consolidate internal links onto one canonical target per query." : "No query-level conflict was detected in the exported window."}`,
-    };
-  }
-
-  if (q.includes("geo") || q.includes("perplexity") || q.includes("ai overview") || q.includes("citation")) {
-    const geo = r.aiGeoVisibility;
-    const citations = geo.dataAvailable
-      ? `- Citations: Google AI Overviews ${geo.estimatedCitationsAcrossEngines.googleAiOverviews}, Perplexity ${geo.estimatedCitationsAcrossEngines.perplexity}, ChatGPT Search ${geo.estimatedCitationsAcrossEngines.chatgptSearch}, Claude ${geo.estimatedCitationsAcrossEngines.claude}`
-      : "- Citations: **not measured** — no AI engine or licensed visibility provider is connected.";
-    const recommendations = geo.recommendations.length
-      ? `\n\nRecommendations from the report:\n${geo.recommendations.slice(0, 5).map((item) => `- ${item}`).join("\n")}`
-      : "";
-    return {
-      toolUsed: "audit_report:geo",
-      content: `### AI / GEO visibility\n\n- Readiness score: **${geo.visibilityScore}/100** (${geo.dataAvailable ? "includes measured citations" : "on-page heuristic only"})\n- Brand entity clarity: ${geo.brandEntityClarity}/100\n- Fact density: ${geo.factDensityScore}/100\n${citations}\n\nMethodology: ${geo.methodology}${recommendations}`,
-    };
-  }
-
-  if (q.includes("update") || q.includes("algorithm") || q.includes("core")) {
-    const impact = r.algorithmImpact;
-    const updates = impact.recentRelevantUpdates.length
-      ? impact.recentRelevantUpdates
-          .map((update) => `- ${update.name} (${update.date}, ${update.kind})${update.notes ? ` — ${update.notes}` : ""}`)
-          .join("\n")
-      : "- No update matched the rules in `data/google-updates.json`.";
-    return {
-      toolUsed: "audit_report:algorithm_impact",
-      content: `### Algorithm update risk\n\n- Risk rating: **${impact.riskRating}**\n- Potentially impacted: ${impact.potentiallyImpactedByRecentUpdates ? "yes" : "no"}\n\nMatched updates:\n${updates}\n\nThis is a rules-based mapping from the audit issues to the local update archive, not a prediction from Google.`,
-    };
-  }
-
-  if (q.includes("heading") || q.includes("h1") || q.includes("h2")) {
-    const h = r.headings;
-    return {
-      toolUsed: "audit_report:headings",
-      content: `### Heading structure\n\n- Total headings: ${h.totalHeadings}\n- H1 / H2 / H3 / H4 / H5 / H6: ${h.h1Count} / ${h.h2Count} / ${h.h3Count} / ${h.h4Count} / ${h.h5Count} / ${h.h6Count}\n- Hierarchy valid: ${h.hierarchyValid ? "yes" : "no"}\n- Issues: ${h.issuesCount}\n${h.sampleH1 ? `- Sample H1: ${h.sampleH1}` : ""}\n\n${h.hierarchyValid ? "No skipped levels were detected on the audited pages." : "Open the Heading Audit tab for the per-page outline and skipped-level details."}`,
-    };
-  }
-
-  if (q.includes("image") || q.includes("alt") || q.includes("webp")) {
-    const img = r.images;
-    return {
-      toolUsed: "audit_report:images",
-      content: `### Images\n\n- Total images: ${img.totalImages}\n- Missing alt text: ${img.missingAltCount}\n- Oversized: ${img.oversizedCount}\n- Legacy formats: ${img.legacyFormatCount}\n- Lazy-loaded: ${img.lazyLoadedCount}\n- Measured optimization opportunity: ${img.optimizationOpportunityBytes > 0 ? `${img.optimizationOpportunityBytes.toLocaleString()} bytes` : "not measured"}\n\nOpen the Image Audit tab for per-file findings.`,
-    };
-  }
-
-  if (q.includes("technical") || q.includes("speed") || q.includes("ssl") || q.includes("https") || q.includes("index")) {
-    const t = r.technicalHealth;
-    const c = r.crawlability;
-    return {
-      toolUsed: "audit_report:technical",
-      content: `### Technical health & crawlability\n\n- HTTP status: ${t.statusCode} · response ${t.responseTimeMs} ms\n- HTTPS / SSL: ${t.isHttps ? "yes" : "no"} / ${t.sslValid ? "valid" : "not valid"}\n- Compression: ${t.hasCompression ? "enabled" : "disabled"} · server: ${t.server || "not disclosed"}\n- Indexable: ${c.isIndexable ? "yes" : "no"} · noindex: ${c.hasNoindex ? "yes" : "no"} · nofollow: ${c.hasNofollow ? "yes" : "no"}\n- robots.txt: ${c.hasRobotsTxt ? c.robotsTxtUrl : "not found"}\n- Sitemaps discovered: ${c.discoveredSitemaps.length || "none"}\n- Links: ${c.totalInternalLinksDiscovered} internal / ${c.totalExternalLinksDiscovered} external`,
-    };
-  }
-
-  const topActions = [...r.actionPlan]
-    .sort((a, b) => a.priority.localeCompare(b.priority))
-    .slice(0, 3)
-    .map((item) => `- **${item.priority}** ${item.title} — ${item.description}`)
-    .join("\n");
-  return {
-    toolUsed: "audit_report:summary",
-    content: `### Audit summary for ${r.domain}\n\n- Overall score: **${r.overallScore}/100**\n- Technical ${r.scores.technical} · On-page ${r.scores.onPage} · Headings ${r.scores.headings} · Images ${r.scores.images} · Schema ${r.scores.schema} · GEO readiness ${r.scores.aiVisibility}\n- Data sources unavailable: ${r.dataProvenance.unavailable.length ? r.dataProvenance.unavailable.join(", ") : "none"}\n\nTop actions:\n${topActions || "No issues were raised by the rules engine."}\n\nAsk about Search Console, GEO, algorithm risk, headings, images or technical health for the matching section.`,
-  };
-}
-
-
 export function UnifiedSeoSuiteView({
   property,
   onBackToDashboard,
@@ -146,11 +41,19 @@ export function UnifiedSeoSuiteView({
   const [exportError, setExportError] = useState<string | null>(null);
 
   // AI Assistant Chat State
-  const [chatMessages, setChatMessages] = useState<Array<{ role: "user" | "assistant" | "system"; content: string; toolUsed?: string }>>([
+  const [chatMessages, setChatMessages] = useState<
+    Array<{
+      role: "user" | "assistant" | "system";
+      content: string;
+      toolUsed?: string;
+      provider?: string;
+      provenance?: string;
+    }>
+  >([
     {
       role: "assistant",
       content:
-        "Ask about the audit you just ran — Search Console, GEO readiness, algorithm risk, headings, images or technical health. Answers are computed from the current report only; this assistant does not call an external AI model and will name any data source that is not connected.",
+        "Ask about the audit you just ran — Search Console, GEO readiness, algorithm risk, headings, images or technical health. Answers try Gemini, Groq and OpenRouter free tiers, then optional paid keys, then a deterministic rules fallback. Every number is checked against the current audit, Search Console, visibility and knowledge-base context before it is shown.",
     },
   ]);
   const [chatInput, setChatInput] = useState<string>("");
@@ -274,22 +177,92 @@ export function UnifiedSeoSuiteView({
     }
   };
 
-  // Answer questions from the current audit report (no external model call)
-  const handleSendChat = (e: React.FormEvent) => {
+  // Streams answers from /api/assistant. The route supplies the engine label
+  // and the result of the unverified-number check as SSE-style JSON events.
+  const handleSendChat = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim() || isChatLoading) return;
 
     const userText = chatInput.trim();
     setChatInput("");
-    setChatMessages((prev) => [...prev, { role: "user", content: userText }]);
-    setIsChatLoading(true);
-
-    const answer = answerFromAudit(userText, auditReport, targetUrl);
     setChatMessages((prev) => [
       ...prev,
-      { role: "assistant", content: answer.content, toolUsed: answer.toolUsed },
+      { role: "user", content: userText },
+      { role: "assistant", content: "", provider: "Connecting…" },
     ]);
-    setIsChatLoading(false);
+    setIsChatLoading(true);
+
+    const appendToLast = (patch: { content?: string; provider?: string; toolUsed?: string; provenance?: string }) => {
+      setChatMessages((prev) => {
+        const updated = [...prev];
+        const last = updated[updated.length - 1];
+        if (!last || last.role !== "assistant") return prev;
+        updated[updated.length - 1] = {
+          ...last,
+          ...patch,
+          content: `${last.content}${patch.content ?? ""}`,
+        };
+        return updated;
+      });
+    };
+
+    try {
+      const response = await fetch("/api/assistant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: userText,
+          targetUrl,
+          report: auditReport,
+          gscPanel: gscForAudit,
+        }),
+      });
+      if (!response.ok || !response.body) {
+        const payload = (await response.json().catch(() => ({}))) as { error?: string };
+        throw new Error(payload.error || `Assistant request failed (${response.status})`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split("\n");
+        buffer = lines.pop() ?? "";
+        for (const line of lines) {
+          if (!line.trim()) continue;
+          const parsed = JSON.parse(line) as {
+            type: string;
+            text?: string;
+            provider?: string;
+            toolUsed?: string;
+            provenance?: { ok: boolean; untracedNumbers?: string[] };
+            message?: string;
+          };
+          if (parsed.type === "status") appendToLast({ provider: `Checking ${parsed.provider}…` });
+          if (parsed.type === "delta") appendToLast({ content: parsed.text ?? "" });
+          if (parsed.type === "done") {
+            appendToLast({
+              provider: parsed.provider,
+              toolUsed: parsed.toolUsed,
+              provenance: parsed.provenance?.ok
+                ? "All numbers traced to supplied context"
+                : `Unverified numbers: ${(parsed.provenance?.untracedNumbers ?? []).join(", ") || "unknown"}`,
+            });
+          }
+          if (parsed.type === "error") appendToLast({ content: `\n\nError: ${parsed.message ?? "stream failed"}` });
+        }
+      }
+    } catch (err) {
+      appendToLast({
+        content: `\n\nCould not answer: ${err instanceof Error ? err.message : String(err)}`,
+        provider: "Unavailable",
+      });
+    } finally {
+      setIsChatLoading(false);
+    }
   };
 
   return (
@@ -729,8 +702,9 @@ export function UnifiedSeoSuiteView({
             Audit Assistant
           </h2>
           <p className="mt-1 text-caption text-slate-500">
-            Answers are derived from the current audit report by the rules engine. No external AI
-            model is called, and unavailable data sources are named rather than estimated.
+            Answers are grounded in the current audit, Search Console panel, visibility runs and
+            retrieved knowledge. Free engines are tried first, then optional paid keys, then the
+            deterministic rules engine. Every number is checked before display.
           </p>
 
           <div className="mt-4 flex flex-col h-[400px] rounded-xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-800 dark:bg-slate-950">
@@ -747,17 +721,35 @@ export function UnifiedSeoSuiteView({
                         : "bg-white text-slate-800 border border-slate-200 shadow-sm dark:bg-slate-900 dark:border-slate-800 dark:text-slate-200"
                     }`}
                   >
-                    {msg.toolUsed && (
-                      <div className="mb-2 inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 text-micro font-bold uppercase text-slate-600 dark:bg-slate-800 dark:text-slate-400">
-                        Tool: {msg.toolUsed}
-                      </div>
-                    )}
+                    <div className="mb-2 flex flex-wrap gap-1.5">
+                      {msg.provider && (
+                        <span className="rounded-full border border-purple-200 bg-purple-50 px-2 py-0.5 text-micro font-semibold text-purple-800 dark:border-purple-900/60 dark:bg-purple-950/40 dark:text-purple-200">
+                          {msg.provider}
+                        </span>
+                      )}
+                      {msg.toolUsed && (
+                        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-micro font-bold uppercase text-slate-600 dark:bg-slate-800 dark:text-slate-400">
+                          {msg.toolUsed}
+                        </span>
+                      )}
+                      {msg.provenance && (
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-micro font-semibold ${
+                            msg.provenance.startsWith("All numbers")
+                              ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-300"
+                              : "bg-amber-50 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200"
+                          }`}
+                        >
+                          {msg.provenance}
+                        </span>
+                      )}
+                    </div>
                     <div className="whitespace-pre-wrap">{msg.content}</div>
                   </div>
                 </div>
               ))}
               {isChatLoading && (
-                <div className="text-caption text-slate-500 italic">Reading the current audit report...</div>
+                <div className="text-caption text-slate-500 italic">Checking grounded context and engine availability…</div>
               )}
             </div>
 
