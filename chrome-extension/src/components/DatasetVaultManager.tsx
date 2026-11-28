@@ -46,7 +46,7 @@ export interface DatasetVaultManagerProps {
   activeProfile?: ClientProfile;
 }
 
-const DEFAULT_API_CONFIG_KEY = "cogwheel_api_sync_config";
+const DEFAULT_API_CONFIG_KEY = "seo_studio_api_sync_config";
 
 export function DatasetVaultManager({
   activeTabId,

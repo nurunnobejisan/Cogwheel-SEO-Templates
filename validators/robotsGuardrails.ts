@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Robots Guardrails & Metadata Deduplicator
+ * SEO Studio Templates — Robots Guardrails & Metadata Deduplicator
  * 
  * Manages:
  * - Environment-aware robots meta tags (noindex for staging/dev, index for prod)

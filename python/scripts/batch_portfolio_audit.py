@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cogwheel SEO Studio — Batch Hospitality Portfolio Audit CLI.
+"""SEO Studio — Batch Hospitality Portfolio Audit CLI.
 
 Executes automated On-Page, Schema, and GEO AI readiness audits across a list of
 hotel property URLs or CSV exports, outputting executive reports.
@@ -351,7 +351,7 @@ def main() -> int:
         "--urls",
         nargs="+",
         default=[
-            "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+            "https://github.com/nurunnobejisan/SEO-Studio",
             "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/",
             "https://www.hilton.com/en/hotels/miaapdt-doubletree-miami-airport-convention-center/",
         ],

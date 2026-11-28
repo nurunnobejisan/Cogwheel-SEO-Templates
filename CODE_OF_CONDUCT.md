@@ -30,7 +30,7 @@ Examples of unacceptable behavior include:
 ### Enforcement
 
 Instances of abusive, harassing, or otherwise unacceptable behavior may be
-reported by contacting the project team at `cogwheel-seo@example.com`. All
+reported by contacting the project team at `seo-studio-seo@example.com`. All
 complaints will be reviewed and investigated and will result in a response that
 is deemed necessary and appropriate to the circumstances. The project team is
 authorized to take any action deemed appropriate, including warning the

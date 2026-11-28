@@ -1,4 +1,4 @@
-# Cogwheel SEO Brain
+# SEO Brain
 
 The brain is a thin interpretation layer over the **measured** audit engine.
 

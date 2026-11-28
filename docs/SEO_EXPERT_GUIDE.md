@@ -1,6 +1,6 @@
-# SEO‑Expert Guide for **Cogwheel SEO — Universal Autonomous SEO & GEO Engine**
+# SEO‑Expert Guide for **SEO — Universal Autonomous SEO & GEO Engine**
 
-> **Purpose** – This document explains how an SEO specialist can use the Cogwheel SEO extension to audit any website (hospitality or universal), visualize results, and automatically apply safe fixes via the self‑healing CMS layer.
+> **Purpose** – This document explains how an SEO specialist can use the SEO Studio SEO extension to audit any website (hospitality or universal), visualize results, and automatically apply safe fixes via the self‑healing CMS layer.
 
 ---
 
@@ -25,7 +25,7 @@
 1. **Clone the repo** (replace `<repo‑url>` with your GitHub URL):
    ```bash
    git clone <repo‑url>
-   cd Cogwheel-SEO-Templates
+   cd SEO-Studio
    ```
 2. **Install Node dependencies** (Node 20 is required by the CI):
    ```bash
@@ -49,7 +49,7 @@
 ## 3️⃣ Running an Audit (SEO‑Expert workflow)
 
 1. **Navigate to any page** you wish to audit (e‑commerce, SaaS, blog, etc.).
-2. Open the Cogwheel side‑panel (extension icon → *Open Cogwheel SEO Dashboard*).
+2. Open the SEO Studio side‑panel (extension icon → *Open SEO Dashboard*).
 3. Click the **Run Audit** button in the header.
    - The content script triggers `controlledAutoScroll` to force lazy‑loaded resources to render.
    - `extractPageContext` collects meta tags, Open Graph, headings, JSON‑LD, links, images, performance metrics, and a navigation‑timing snapshot.

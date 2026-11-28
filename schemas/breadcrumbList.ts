@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — BreadcrumbList Schema Builder
+ * SEO Studio Templates — BreadcrumbList Schema Builder
  */
 
 export interface BreadcrumbItem {

@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO & GEO Studio - Extension Options & Training Guardrails
+ * SEO & GEO Studio - Extension Options & Training Guardrails
  */
 
 export interface ExtensionOptions {
@@ -49,13 +49,13 @@ export const DEFAULT_OPTIONS: ExtensionOptions = {
   allowlistDomains: ["marriott.com", "hilton.com", "ihg.com", "hyatt.com"],
   blocklistDomains: DEFAULT_BLOCKLIST_DOMAINS,
   blocklistPaths: DEFAULT_BLOCKLIST_PATHS,
-  apiUrl: "https://cogwheel-seo-templates.vercel.app/api/ai-training",
+  apiUrl: "https://seo-studio.vercel.app/api/ai-training",
   apiToken: "",
 };
 
 import { encryptSecret, decryptSecret } from "./secureStorage";
 
-const STORAGE_KEY = "cogwheel_extension_options_v1";
+const STORAGE_KEY = "seo_studio_extension_options_v1";
 
 export async function loadExtensionOptions(): Promise<ExtensionOptions> {
   if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {

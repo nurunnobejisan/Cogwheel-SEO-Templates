@@ -15,8 +15,8 @@ export function UpdateBanner({ onRulesSynced }: Props) {
   useEffect(() => {
     // 1. Check local storage for cached update state
     if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(["cogwheel_update_state"], (res) => {
-        const cached = res["cogwheel_update_state"] as ExtensionUpdateState | undefined;
+      chrome.storage.local.get(["seo_studio_update_state"], (res) => {
+        const cached = res["seo_studio_update_state"] as ExtensionUpdateState | undefined;
         if (cached) {
           setUpdateState(cached);
         }
@@ -25,7 +25,7 @@ export function UpdateBanner({ onRulesSynced }: Props) {
       // 2. Query background worker for live check
       if (chrome.runtime && chrome.runtime.sendMessage) {
         chrome.runtime.sendMessage(
-          { type: "COGWHEEL_CHECK_UPDATES" },
+          { type: "SEO_STUDIO_CHECK_UPDATES" },
           (response: ExtensionUpdateState | undefined) => {
             if (response && response.latestVersion) {
               setUpdateState(response);
@@ -42,7 +42,7 @@ export function UpdateBanner({ onRulesSynced }: Props) {
 
     if (typeof chrome !== "undefined" && chrome.runtime && chrome.runtime.sendMessage) {
       chrome.runtime.sendMessage(
-        { type: "COGWHEEL_CHECK_UPDATES" },
+        { type: "SEO_STUDIO_CHECK_UPDATES" },
         (res: ExtensionUpdateState | undefined) => {
           setIsSyncing(false);
           if (res) {
@@ -69,7 +69,7 @@ export function UpdateBanner({ onRulesSynced }: Props) {
       window.open(updateState.releaseDownloadUrl, "_blank", "noopener,noreferrer");
     } else {
       window.open(
-        "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/releases/latest",
+        "https://github.com/nurunnobejisan/SEO-Studio/releases/latest",
         "_blank",
         "noopener,noreferrer"
       );

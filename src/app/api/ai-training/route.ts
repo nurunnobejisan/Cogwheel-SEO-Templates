@@ -114,7 +114,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const authHeader = req.headers.get("Authorization");
-    const expectedToken = process.env.COGWHEEL_API_BEARER_TOKEN;
+    const expectedToken = process.env.SEO_STUDIO_API_BEARER_TOKEN;
     if (expectedToken && expectedToken.trim().length > 0) {
       if (authHeader !== `Bearer ${expectedToken.trim()}`) {
         return NextResponse.json({ error: "Unauthorized: Invalid or missing Bearer token" }, { status: 401 });

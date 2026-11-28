@@ -241,10 +241,10 @@ describe("PPTX report", () => {
 describe("report file names", () => {
   it("sanitizes the domain and uses the right extension", () => {
     expect(auditReportFileName("example.com", "pdf", "2026-11-25T00:00:00.000Z")).toBe(
-      "cogwheel-audit-example.com-2026-11-25.pdf",
+      "seo-studio-audit-example.com-2026-11-25.pdf",
     );
     expect(auditReportFileName("weird/domain?x=1", "pptx", "2026-01-02T00:00:00.000Z")).toBe(
-      "cogwheel-audit-weird-domain-x-1-2026-01-02.pptx",
+      "seo-studio-audit-weird-domain-x-1-2026-01-02.pptx",
     );
   });
 });

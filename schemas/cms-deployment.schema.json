@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "CmsDeploymentResult",
-  "description": "Outcome of deploying a Phase 2 FixPatch through the Cogwheel CMS integration layer (cms/deploy.ts).",
+  "description": "Outcome of deploying a Phase 2 FixPatch through the SEO Studio CMS integration layer (cms/deploy.ts).",
   "type": "object",
   "properties": {
     "patchId": { "type": "string", "minLength": 1 },

@@ -47,7 +47,7 @@ interface GeoReport {
   };
 }
 
-const API_BASE = "https://cogwheel-seo-templates.vercel.app";
+const API_BASE = "https://seo-studio.vercel.app";
 
 const PROVENANCE_STYLE: Record<Provenance, string> = {
   measured: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300",
@@ -114,7 +114,7 @@ export function GeoVisibilityCard({ url }: { url: string }) {
       if (!res.ok) {
         setError(
           res.status === 401
-            ? "Sign in to the Cogwheel web app in this browser to run a GEO check."
+            ? "Sign in to the SEO Studio web app in this browser to run a GEO check."
             : data.error || data.details || `HTTP ${res.status}`
         );
         setReport(null);

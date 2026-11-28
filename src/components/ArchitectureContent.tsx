@@ -35,7 +35,7 @@ export function ArchitectureContent() {
         <div className="w-full overflow-x-auto">
           <Image
             src="/system-architecture.svg"
-            alt="Cogwheel SEO Studio System Architecture Diagram"
+            alt="SEO Studio System Architecture Diagram"
             width={1200}
             height={780}
             className="w-full min-w-[700px] rounded-lg"

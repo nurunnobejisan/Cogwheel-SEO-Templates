@@ -45,13 +45,13 @@ jobs:
           npm ci
           npm run build
           cd dist
-          zip -r "$GITHUB_WORKSPACE/cogwheel-seo-studio.zip" .
+          zip -r "$GITHUB_WORKSPACE/seo-studio.zip" .
 
       - name: Publish GitHub Release
         if: steps.check.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.meta.outputs.version }}
-          name: Cogwheel SEO GEO Studio v${{ steps.meta.outputs.version }}
-          files: cogwheel-seo-studio.zip
+          name: SEO GEO Studio v${{ steps.meta.outputs.version }}
+          files: seo-studio.zip
           generate_release_notes: true

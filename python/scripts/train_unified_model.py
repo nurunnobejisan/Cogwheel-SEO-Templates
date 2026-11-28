@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cogwheel Unified SEO Platform - Unified Model Training & Evaluation Engine.
+"""Unified SEO Platform - Unified Model Training & Evaluation Engine.
 
 Orchestrates:
 1. Benchmarking baseline model vs. tuned model across evaluation metrics:
@@ -131,7 +131,7 @@ def update_model_registry(model_metadata: dict[str, Any]) -> None:
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Cogwheel Unified Model Training & Evaluation Engine")
+    parser = argparse.ArgumentParser(description="SEO Studio Unified Model Training & Evaluation Engine")
     parser.add_argument("--train-file", type=str, default=str(DEFAULT_TRAIN_FILE), help="Path to train.jsonl")
     parser.add_argument("--eval-file", type=str, default=str(DEFAULT_EVAL_FILE), help="Path to eval.jsonl")
     parser.add_argument("--provider", type=str, choices=["tuned_gemini", "open_weight", "custom_rest"], default="tuned_gemini")
@@ -142,7 +142,7 @@ def main() -> int:
     args = parser.parse_args()
 
     print("==================================================================")
-    print(" Cogwheel Unified SEO Model Training & Evaluation Engine")
+    print(" SEO Studio Unified SEO Model Training & Evaluation Engine")
     print(f" Provider: {args.provider} | Base: {args.base_model} | Epochs: {args.epochs}")
     print("==================================================================")
 
@@ -173,7 +173,7 @@ def main() -> int:
 
     # 2. Register New Model Checkpoint
     model_version = f"v{int(time.time())}"
-    model_id = f"cogwheel-seo-unified-{args.provider}-{model_version}"
+    model_id = f"seo-studio-unified-{args.provider}-{model_version}"
 
     model_metadata = {
         "modelId": model_id,

@@ -222,7 +222,7 @@
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://hotelely.cogwheelmarketing.com/",
+    "url": "https://hotelely.example.com/",
     "propertyType": "Independent",
     "category": "",
     "projectType": "",
@@ -4890,24 +4890,6 @@
       "ai_overview",
       "chatgpt",
       "gemini"
-    ]
-  },
-  {
-    "name": "Razib Marketing",
-    "brand": "Independent",
-    "city": "",
-    "state": "",
-    "url": "https://razibmarketing.com",
-    "propertyType": "Boutique",
-    "category": "SMB Independent",
-    "projectType": "Ongoing",
-    "status": "Active",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini",
-      "perplexity"
     ]
   }
 ]

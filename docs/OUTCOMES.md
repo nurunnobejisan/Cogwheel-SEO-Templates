@@ -1,6 +1,6 @@
 # Outcome logging
 
-Outcome logging is how Cogwheel answers the only question that matters after a fix:
+Outcome logging is how SEO Studio answers the only question that matters after a fix:
 **did the page actually do better?** It records every change, then measures the
 page's Google Search Console performance over matched **before/after** windows and
 compares it with a set of **unchanged control pages**.
@@ -55,7 +55,7 @@ measureChange()  ──►  getGscSearchAnalytics(page rows × before/after)
 data/outcomes.jsonl   (upserted by id; re-measuring replaces)
 ```
 
-Storage honours `COGWHEEL_DATA_DIR` (see `src/lib/platform/data-dir.ts`): repo
+Storage honours `SEO_STUDIO_DATA_DIR` (see `src/lib/platform/data-dir.ts`): repo
 `data/` locally, temp dir on serverless, a real volume in production.
 
 ## API

@@ -1,10 +1,10 @@
 /**
- * Cogwheel SEO & GEO Studio - Custom Fine-Tuned Model Inference Client
+ * SEO & GEO Studio - Custom Fine-Tuned Model Inference Client
  *
  * Provides a unified inference client routing Auto-Fix and GEO Summary requests
  * to user-configured fine-tuned models (e.g., Google Vertex AI / tuned Gemini models,
  * custom REST endpoints, or open-weight LoRA servers) with seamless, zero-latency
- * automatic fallback to Cogwheel's deterministic rules engine.
+ * automatic fallback to SEO Studio's deterministic rules engine.
  */
 
 export interface CustomModelConfig {
@@ -30,7 +30,7 @@ export const DEFAULT_CUSTOM_MODEL_CONFIG: CustomModelConfig = {
   fallbackToDefault: true,
 };
 
-export const STORAGE_KEY_CUSTOM_MODEL = "cogwheel_custom_model_config";
+export const STORAGE_KEY_CUSTOM_MODEL = "seo_studio_custom_model_config";
 
 // In-memory fallback for headless or test environments
 let inMemoryConfig: CustomModelConfig = { ...DEFAULT_CUSTOM_MODEL_CONFIG };

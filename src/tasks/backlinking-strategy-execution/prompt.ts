@@ -7,7 +7,7 @@ export function buildBacklinkingExecutionPrompt(opts: {
   input: BacklinkingStrategyExecutionInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are an Operations Director for Off-Page Hospitality SEO at Cogwheel SEO Studio.
+  const system = `You are an Operations Director for Off-Page Hospitality SEO at SEO Studio.
 Develop an actionable 90-day backlink acquisition sprint roadmap and target pipeline.
 Focus on high-converting, legitimate PR and partner link placements. Output strictly valid JSON conforming to the schema.`;
 

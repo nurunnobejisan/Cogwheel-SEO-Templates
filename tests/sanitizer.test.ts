@@ -27,7 +27,7 @@ describe("Phase 1.1: Comprehensive PII Sanitizer Test Suite", () => {
     it("preserves historical and future calendar years without false matches", () => {
       const years = [
         "Founded in 1984 and modernized in 2020.",
-        "Copyright 2024, 2025, and 2026 Cogwheel Studio.",
+        "Copyright 2024, 2025, and 2026 SEO Studio.",
         "Between 1999 and 2030 projections look strong.",
       ];
 

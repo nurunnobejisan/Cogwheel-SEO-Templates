@@ -1,4 +1,4 @@
-# MASTER RUN: Cogwheel to Universal SEO & GEO Studio — Progress Log
+# MASTER RUN: SEO Studio to Universal SEO & GEO Studio — Progress Log
 
 - **Start Time**: Mon Nov 23 19:22:04 +06 2026
 - **Branch**: `universal/20261123-1922`

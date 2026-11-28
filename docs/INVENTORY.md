@@ -1,4 +1,4 @@
-# Cogwheel SEO Templates — Comprehensive File Inventory
+# SEO Studio Templates — Comprehensive File Inventory
 **Version:** 3.0.0 (Enterprise Universal Release)  
 **Updated:** 2026-11-23  
 

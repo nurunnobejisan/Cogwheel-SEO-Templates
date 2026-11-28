@@ -8,7 +8,7 @@ from pathlib import Path
 import openpyxl
 import pytest
 
-from python.cogwheel_auto import CogwheelAutoRunner
+from python.seo_studio_auto import SeoStudioAutoRunner
 from python.generators.image_optimizer import (
     ImageAssetRecord,
     ImageOptimizer,
@@ -224,7 +224,7 @@ class TestImageWorkbookAndDeliverables:
             with open(domain_dir / "site-images-optimized.json", "w") as f:
                 json.dump(image_map, f)
 
-            runner = CogwheelAutoRunner("https://thenines.com", output_dir=tmp_dir)
+            runner = SeoStudioAutoRunner("https://thenines.com", output_dir=tmp_dir)
             bundle_path = runner.build_extension_bundle(
                 kw_map_path=domain_dir / "site-keyword-map.json",
                 meta_json_path=domain_dir / "site-meta-optimized.json",

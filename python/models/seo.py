@@ -51,7 +51,7 @@ class TemplatePayload(BaseModel):
 
     model_config = ConfigDict(extra="forbid", strict=True)
 
-    templateId: str = Field(..., min_length=1, description="Identifier of the Cogwheel template being executed")
+    templateId: str = Field(..., min_length=1, description="Identifier of the SEO Studio template being executed")
     variables: dict[str, str] = Field(
         default_factory=dict, description="Key-value dictionary of string variables resolved into template"
     )

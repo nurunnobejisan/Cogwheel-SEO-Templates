@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Context-Aware XSS Protection (escape-html compliant)
+ * SEO Studio Templates — Context-Aware XSS Protection (escape-html compliant)
  * 
  * Provides robust escaping for HTML text content, HTML attribute values,
  * and JSON-LD script context to prevent injection vulnerabilities.

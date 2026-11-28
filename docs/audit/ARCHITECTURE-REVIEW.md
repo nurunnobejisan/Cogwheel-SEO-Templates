@@ -1,4 +1,4 @@
-# Architecture Review — Cogwheel Enterprise Platform
+# Architecture Review — SEO Studio Enterprise Platform
 **Date:** 2026-11-23  
 **Document:** `AUDIT/ARCHITECTURE-REVIEW.md`  
 **Status:** Approved Architectural Blueprint  
@@ -7,7 +7,7 @@
 
 ## 1. System Architecture Overview
 
-Cogwheel SEO & GEO Studio follows a hybrid, decoupled architecture designed for high resiliency, local execution capabilities, and enterprise cloud persistence:
+SEO & GEO Studio follows a hybrid, decoupled architecture designed for high resiliency, local execution capabilities, and enterprise cloud persistence:
 
 ```mermaid
 flowchart TD

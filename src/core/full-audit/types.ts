@@ -1,5 +1,5 @@
 /**
- * Cogwheel Unified SEO Platform - Full Website Audit Types
+ * Unified SEO Platform - Full Website Audit Types
  *
  * Combines 11 comprehensive SEO audit dimensions:
  * 1. Executive Summary & Scores

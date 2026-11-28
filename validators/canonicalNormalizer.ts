@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Canonical URL Normalizer
+ * SEO Studio Templates — Canonical URL Normalizer
  * 
  * Enforces:
  * - HTTPS protocol enforcement

@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — FAQPage Schema Builder
+ * SEO Studio Templates — FAQPage Schema Builder
  */
 
 export interface FAQItem {

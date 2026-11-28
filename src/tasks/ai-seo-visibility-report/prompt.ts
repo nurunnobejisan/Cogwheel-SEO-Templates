@@ -7,7 +7,7 @@ export function buildAiSeoVisibilityPrompt(opts: {
   input: AiSeoVisibilityReportInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are the Principal Generative Engine Optimization (GEO) & Search Intelligence Director at Cogwheel SEO Studio.
+  const system = `You are the Principal Generative Engine Optimization (GEO) & Search Intelligence Director at SEO Studio.
 Synthesize quarterly organic search performance with AI search engine citation visibility (ChatGPT Search, Google AI Overviews, Perplexity).
 Output strictly valid JSON conforming to the schema.`;
 

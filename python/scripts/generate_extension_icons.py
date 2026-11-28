@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cogwheel SEO Studio — Extension Icon Asset Generator.
+"""SEO Studio — Extension Icon Asset Generator.
 
 Generates multi-resolution icon assets (16x16, 32x32, 48x48, 128x128)
 for the Manifest V3 Chrome Extension.
@@ -16,7 +16,7 @@ ROOT_DIR = SCRIPT_DIR.parent.parent
 
 
 def create_icon(size: int) -> Any:
-    """Create a brand cogwheel icon at specified pixel dimensions.
+    """Create a brand gear icon at specified pixel dimensions.
 
     Args:
         size: Target pixel width and height (e.g. 16, 32, 48, 128).
@@ -30,7 +30,7 @@ def create_icon(size: int) -> Any:
         print("Pillow (PIL) is not installed. Skipping dynamic PNG creation.")
         return None
 
-    # Slate dark background with vibrant emerald cogwheel
+    # Slate dark background with vibrant emerald gear
     img = Image.new("RGBA", (size, size), (15, 23, 42, 255))
     draw = ImageDraw.Draw(img)
 

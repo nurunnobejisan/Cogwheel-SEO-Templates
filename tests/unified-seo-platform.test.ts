@@ -24,7 +24,7 @@ import {
 import { executeUnifiedTool, UNIFIED_SEO_TOOLS } from "../src/engine/unified-ai-orchestrator.ts";
 import { runFullWebsiteAudit } from "../src/core/full-audit/audit-runner.ts";
 
-describe("Cogwheel Unified SEO Platform - Multi-Source Integration Suite", () => {
+describe("Unified SEO Platform - Multi-Source Integration Suite", () => {
   describe("1. FastMCP Google Search Console Integration (mcp-gsc)", () => {
     const client = new UnifiedGscClient();
 

@@ -1,4 +1,4 @@
--- Cogwheel Enterprise Platform: Multi-Client, Competitors, Backlinks, and Task Management
+-- SEO Studio Enterprise Platform: Multi-Client, Competitors, Backlinks, and Task Management
 -- Migration: 0005_enterprise_clients.sql
 
 -- 1. Agency Clients Table

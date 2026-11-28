@@ -17,7 +17,7 @@ import {
 import { isNewerVersion } from "../chrome-extension/src/background/auto-updater";
 import { PageAuditData, ClientProfile } from "../chrome-extension/src/types/extension";
 
-describe("Cogwheel SEO & GEO Studio — Comprehensive Unit Test Suite", () => {
+describe("SEO & GEO Studio — Comprehensive Unit Test Suite", () => {
   // ==========================================================================
   // 1. EXACT SERP PIXEL-WIDTH CALCULATIONS & THRESHOLD TRIGGERS
   // ==========================================================================

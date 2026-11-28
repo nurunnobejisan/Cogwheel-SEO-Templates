@@ -1,5 +1,5 @@
 /**
- * Cogwheel Self-Healing Pipeline — Shared Types (Phase 4)
+ * SEO Studio Self-Healing Pipeline — Shared Types (Phase 4)
  *
  * Contracts for the continuous scan scheduler, issue triage, the approval
  * queue, the versioned rollback store, the live micro-crawler verification and

@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Interactive Local Preview CLI Tool
+ * SEO Studio Templates — Interactive Local Preview CLI Tool
  * 
  * Marketing team preview tool supporting:
  * 1. Template selection
@@ -40,7 +40,7 @@ const guideSchema: TemplateSchema = {
 };
 
 console.log("================================================================================");
-console.log(" COGWHEEL SEO STUDIO — MARKETING TEAM PREVIEW TOOL");
+console.log(" SEO STUDIO — MARKETING TEAM PREVIEW TOOL");
 console.log("================================================================================\n");
 
 // 1. Resolve Template

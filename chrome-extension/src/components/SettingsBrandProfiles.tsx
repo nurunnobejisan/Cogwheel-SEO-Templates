@@ -20,7 +20,7 @@ import {
   AlertCircle,
   Globe,
 } from "lucide-react";
-import { PRESET_CLIENT_PROFILES } from "../data/cogwheelTemplates";
+import { PRESET_CLIENT_PROFILES } from "../data/seoStudioTemplates";
 import { ClientProfile } from "../types/extension";
 import {
   CustomModelConfig,

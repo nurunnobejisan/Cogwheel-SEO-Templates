@@ -1,7 +1,7 @@
 /**
  * Central AI model configuration.
  *
- * Free-first by design: Cogwheel defaults to providers that are usable on a free
+ * Free-first by design: SEO Studio defaults to providers that are usable on a free
  * tier and never *requires* a paid key. A paid key (ANTHROPIC_API_KEY) is opt-in;
  * if it is absent the drafting client falls through the free providers below.
  *

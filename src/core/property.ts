@@ -13,8 +13,8 @@ const memoryClients: Map<string, Client> = new Map([
     "client-default",
     {
       id: "client-default",
-      name: "Cogwheel Hospitality Portfolio",
-      contactEmail: "director@cogwheelmarketing.com",
+      name: "SEO Studio Hospitality Portfolio",
+      contactEmail: "director@example.com",
       contactName: "Portfolio Director",
       industry: "Hospitality & Luxury Hotels",
       status: "active",

@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 /**
- * Cogwheel SEO Templates — Zod Schemas for Strict Variable Resolution & Fallbacks
+ * SEO Studio Templates — Zod Schemas for Strict Variable Resolution & Fallbacks
  * Shared with Python via JSON Schema in /shared/schemas/
  */
 

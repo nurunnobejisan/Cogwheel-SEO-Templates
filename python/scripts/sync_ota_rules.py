@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cogwheel SEO Studio — Over-the-Air (OTA) Rule Synchronization CLI.
+"""SEO Studio — Over-the-Air (OTA) Rule Synchronization CLI.
 
 Synchronizes and validates live keyword matrices and brand guardrails from
 GitHub main, verifying integrity against local models.
@@ -21,8 +21,8 @@ sys.path.insert(0, str(ROOT_DIR))
 
 from python.scripts.models import KeywordStrategyMatrix, OtaConfig
 
-REPO_OWNER = "jisan-razibmarketing"
-REPO_NAME = "Cogwheel-SEO-Templates"
+REPO_OWNER = "nurunnobejisan"
+REPO_NAME = "SEO-Studio"
 RAW_BASE = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/main"
 REMOTE_MATRIX_URL = f"{RAW_BASE}/data/78-keyword-strategy-matrix.json"
 REMOTE_OTA_URL = f"{RAW_BASE}/data/ota-config.json"
@@ -43,7 +43,7 @@ def fetch_remote_json(url: str, timeout: int = 10) -> dict[str, Any]:
     """
     req = urllib.request.Request(
         url,
-        headers={"User-Agent": "Cogwheel-Python-OTA-Sync/2.7", "Accept": "application/json"},
+        headers={"User-Agent": "SEO-Studio-Python-OTA-Sync/2.7", "Accept": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=timeout) as response:
         data = response.read().decode("utf-8")

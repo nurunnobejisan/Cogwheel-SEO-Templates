@@ -1,6 +1,6 @@
 """Automated Title & Meta Description Generator for Any Website URL.
 
-Enforces Cogwheel's Exact Title & Meta Rules:
+Enforces SEO Studio's Exact Title & Meta Rules:
 1. SEO Title (<= 60 chars hard cap):
    - Places the page's assigned Keyword Focus in the first half of the title.
    - Followed by " - {Brand Name}" or " | {Page Name} - {Brand Name}" in the second half whenever space permits.
@@ -66,7 +66,7 @@ class OptimizedMetaRow:
 
 
 class MetaOptimizer:
-    """Generates strictly budgeted SEO titles and meta descriptions according to Cogwheel methodology."""
+    """Generates strictly budgeted SEO titles and meta descriptions according to SEO Studio methodology."""
 
     def __init__(
         self,
@@ -525,7 +525,7 @@ class MetaOptimizer:
         ws1.column_dimensions["C"].width = 85
 
         # Title Block
-        ws1["B2"] = "COGWHEEL SEO STUDIO — CLIENT DELIVERABLE 02"
+        ws1["B2"] = "SEO STUDIO — CLIENT DELIVERABLE 02"
         ws1["B2"].font = Font(name="Arial", size=9, bold=True, color="059669")
 
         ws1["B3"] = "Title Tag & Meta Description Optimization Proofing Guide"
@@ -782,7 +782,7 @@ def run_meta_optimizer(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Automated Cogwheel Title & Meta Description Generator")
+    parser = argparse.ArgumentParser(description="Automated SEO Studio Title & Meta Description Generator")
     parser.add_argument("--url", default=None, help="Target website URL or domain (e.g. thenines.com)")
     parser.add_argument("--domain", default=None, help="Target domain (e.g. thenines.com)")
     parser.add_argument("--map-json", default=None, help="Path to site-keyword-map.json")

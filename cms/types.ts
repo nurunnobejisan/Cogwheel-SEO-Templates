@@ -1,5 +1,5 @@
 /**
- * Cogwheel CMS Integration Layer — Shared Types (Phase 3)
+ * SEO Studio CMS Integration Layer — Shared Types (Phase 3)
  *
  * Contracts for the encrypted credential vault, the OAuth 2.0 state handlers,
  * the platform connectors (WordPress / Shopify / Webflow / custom runtime) and

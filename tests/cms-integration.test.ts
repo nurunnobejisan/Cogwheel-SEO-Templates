@@ -212,7 +212,7 @@ describe("Phase 3 — WordPress connector", () => {
     expect(resolveWordPressMetaKey("title", "yoast")).toBe("_yoast_wpseo_title");
     expect(resolveWordPressMetaKey("meta_description", "rank_math")).toBe("rank_math_description");
     expect(resolveWordPressMetaKey("canonical_url", "aioseo")).toBe("_aioseo_canonical_url");
-    expect(resolveWordPressMetaKey("meta_description", "none")).toBe("_cogwheel_meta_description");
+    expect(resolveWordPressMetaKey("meta_description", "none")).toBe("_seo_studio_meta_description");
     expect(resolveWordPressMetaKey("image_alt_text", "yoast")).toBeNull();
   });
 

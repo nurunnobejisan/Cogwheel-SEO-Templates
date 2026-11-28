@@ -37,7 +37,7 @@ export interface RuntimeHandle {
   coldStart: boolean;
 }
 
-const GLOBAL_KEY = "__cogwheelPlatformRuntime__";
+const GLOBAL_KEY = "__seoStudioPlatformRuntime__";
 
 interface GlobalCache {
   [GLOBAL_KEY]?: Promise<RuntimeHandle>;
@@ -52,7 +52,7 @@ function createAdapter(): { adapter: PersistenceAdapter; storage: RuntimeHandle[
   const configured = process.env.PLATFORM_DATA_DIR;
   // Serverless filesystems are ephemeral/read-only, so fall back to /tmp there.
   const defaultDir = process.env.VERCEL
-    ? path.join(os.tmpdir(), "cogwheel-platform")
+    ? path.join(os.tmpdir(), "seo-studio-platform")
     : path.join(process.cwd(), ".platform-data");
   const dir = configured ?? defaultDir;
 
@@ -67,7 +67,7 @@ async function bootstrap(): Promise<RuntimeHandle> {
 
   // A missing key still works (dev), but the vault then only protects state on
   // this machine. Production MUST set CMS_VAULT_KEY.
-  const vaultKey = process.env.CMS_VAULT_KEY ?? "cogwheel-dev-insecure-vault-key";
+  const vaultKey = process.env.CMS_VAULT_KEY ?? "seo-studio-dev-insecure-vault-key";
   if (!process.env.CMS_VAULT_KEY) {
     console.warn(
       "[platform] CMS_VAULT_KEY is not set — the credential vault is using an " +

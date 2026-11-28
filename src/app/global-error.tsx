@@ -31,7 +31,7 @@ export default function GlobalError({
           <span style={{ fontSize: "0.75rem", fontWeight: 700, letterSpacing: "0.05em", textTransform: "uppercase", color: "#e11d48" }}>
             Application error
           </span>
-          <h1 style={{ fontSize: "1.5rem", fontWeight: 800 }}>Cogwheel hit an unexpected error</h1>
+          <h1 style={{ fontSize: "1.5rem", fontWeight: 800 }}>SEO Studio hit an unexpected error</h1>
           <p style={{ fontSize: "0.875rem", color: "#475569" }}>
             The application failed to start this view. Please retry.
           </p>

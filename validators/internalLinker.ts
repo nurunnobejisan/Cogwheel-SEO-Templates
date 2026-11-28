@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Semantic Topic Clustering & Internal Linking Engine
+ * SEO Studio Templates — Semantic Topic Clustering & Internal Linking Engine
  * 
  * Manages:
  * - Manifest-driven contextual internal linking

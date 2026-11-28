@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO & GEO Studio - Brand Guardrails Engine
+ * SEO & GEO Studio - Brand Guardrails Engine
  *
  * Enforces hotel franchise standards, prohibited superlatives,
  * mandatory loyalty suffix structures, and length limits for:

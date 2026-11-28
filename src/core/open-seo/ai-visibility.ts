@@ -3,7 +3,7 @@
  * Adapted from open-seo (every-app/open-seo) under MIT License
  *
  * Integrity note (see docs/REPOSITORY_AUDIT.md, C2):
- * Cogwheel cannot query ChatGPT, Perplexity, Claude or Google AI Overviews
+ * SEO Studio cannot query ChatGPT, Perplexity, Claude or Google AI Overviews
  * without a licensed visibility provider. This module therefore reports NO
  * citation metrics unless `ALLOW_SIMULATED_DATA` is explicitly enabled for a
  * demo, in which case the numbers are synthetic and labelled as such. It never

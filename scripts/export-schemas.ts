@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Shared JSON Schema Exporter
+ * SEO Studio Templates — Shared JSON Schema Exporter
  *
  * `schemas/` is the single source of truth for every schema contract (see
  * docs/PROJECT_STRUCTURE.md, rule 6 + "No duplicates"). The Python engine reads

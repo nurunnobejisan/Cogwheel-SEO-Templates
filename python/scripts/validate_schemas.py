@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Cogwheel SEO Studio — Schema Validation CLI.
+"""SEO Studio — Schema Validation CLI.
 
 Validates hospitality datasets (78-keyword strategy matrix, OTA config, brand guardrails,
 and audit payloads) against the Python Pydantic models and JSON Schema definitions.
@@ -131,7 +131,7 @@ def main() -> int:
         0 if all validations pass, 1 otherwise.
     """
     parser = argparse.ArgumentParser(
-        description="Validate Cogwheel SEO Studio datasets against Python Single Source of Truth models."
+        description="Validate SEO Studio datasets against Python Single Source of Truth models."
     )
     parser.add_argument(
         "--matrix",

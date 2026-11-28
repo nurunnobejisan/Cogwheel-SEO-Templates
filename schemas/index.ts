@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Composable JSON-LD @graph Builders
+ * SEO Studio Templates — Composable JSON-LD @graph Builders
  * 
  * Standardized Schema.org structured data generators:
  * - Article

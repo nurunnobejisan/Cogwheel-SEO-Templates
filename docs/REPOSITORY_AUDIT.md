@@ -1,4 +1,4 @@
-# Repository Audit — Cogwheel SEO & GEO Studio
+# Repository Audit — SEO & GEO Studio
 
 **Date:** 2026-11-25
 **Version audited:** 3.0.0
@@ -44,7 +44,7 @@
 *Resolved — see §6: live measurement + `dataProvenance`; unmeasured dimensions report `dataAvailable: false`.
 
 **C3 — No application-level authentication or middleware.**
-26 route handlers under `src/app/api/**`; **no `middleware.ts`**. Auth exists only where `COGWHEEL_API_BEARER_TOKEN` happens to be set (`ai-training` POST), and `src/lib/platform/auth.ts:44-52` derives identity from spoofable `x-actor-role`/cookie headers defaulting to `viewer` with no JWT/session verification.
+26 route handlers under `src/app/api/**`; **no `middleware.ts`**. Auth exists only where `SEO_STUDIO_API_BEARER_TOKEN` happens to be set (`ai-training` POST), and `src/lib/platform/auth.ts:44-52` derives identity from spoofable `x-actor-role`/cookie headers defaulting to `viewer` with no JWT/session verification.
 *Impact:* anyone can invoke paid AI providers (`ANTHROPIC_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY`, `GEMINI_API_KEY`) and the Supabase **service-role** key (`src/lib/supabase.ts:13`).
 *Resolved — see §6: signed sessions, fail-closed platform API, middleware rate limits and CSRF origin checks.*
 
@@ -54,7 +54,7 @@
 *Resolved — see §6: argument-array `execFile` behind opt-in env flags, explicit `501` by default, no shell interpolation, no hardcoded personal account.*
 
 **C5 — The shipped Chrome extension content script is broken.**
-`chrome-extension`'s Vite build (`vite.config.ts:10-27`) emits a code-split ES-module bundle, but `chrome-extension/public/manifest.json:50-55` registers `content.js` as a classic MV3 content script. Verified in the committed `public/cogwheel-chrome-extension.zip`: `content.js` begins `import{...}from"./assets/pixelCalculator-…js"`, which Chrome cannot load. The core DOM-audit feature fails on every page.
+`chrome-extension`'s Vite build (`vite.config.ts:10-27`) emits a code-split ES-module bundle, but `chrome-extension/public/manifest.json:50-55` registers `content.js` as a classic MV3 content script. Verified in the committed `public/seo-studio-chrome-extension.zip`: `content.js` begins `import{...}from"./assets/pixelCalculator-…js"`, which Chrome cannot load. The core DOM-audit feature fails on every page.
 
 **C6 — CI was non-functional (no automated gate).**
 `.github/workflows/ci.yml` began with a `//` line (not valid YAML comment → stray top-level key), referenced a missing `python/requirements.txt`, called `ruff`/`mypy`/`ts-node` which are not dependencies, ran `pytest -q python` (tests live in `tests/python/`), and even ran `scripts/git-auto-push.ts` in CI. `seo-integrity.yml` pointed at `tests/seoLinter.ts` (does not exist). *Resolved — see §4.*
@@ -85,7 +85,7 @@ Two SEO stacks (`rules/` vs `validators/`), TS vs Python thin-content engines (`
 No `chrome-extension/node_modules`/`dist`; root `node_modules` lacks `@vitejs/plugin-react`; `vite.config.ts:2` imports it.
 
 **H9 — Version/artifact drift.**
-Root `manifest.json` = `2.0.0` (stale orphan pointing at non-existent `dist/` files); `chrome-extension/public/manifest.json` = `3.0.0`; lockfile `2.0.0`; update artifact names diverge (`cogwheel-chrome-extension.zip` vs `cogwheel-seo-studio.zip`); `scripts/build-extension.js:117` copies a root `updates.xml` naming the wrong zip.
+Root `manifest.json` = `2.0.0` (stale orphan pointing at non-existent `dist/` files); `chrome-extension/public/manifest.json` = `3.0.0`; lockfile `2.0.0`; update artifact names diverge (`seo-studio-chrome-extension.zip` vs `seo-studio.zip`); `scripts/build-extension.js:117` copies a root `updates.xml` naming the wrong zip.
 
 **H10 — Installed default secret.**
 `src/lib/platform/runtime.ts:70` falls back to a known constant vault key when `CMS_VAULT_KEY` is unset.
@@ -175,7 +175,7 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 - `src/middleware.ts`: per-IP API rate limits (read/write/crawl tiers), cross-origin write rejection, security headers, `noindex` for `/api/*` and `/platform`.
 - `src/lib/platform/session.ts` + `src/app/api/platform/session/route.ts`: HMAC-signed `cw_session` tokens, `PLATFORM_OPERATOR_TOKEN` sign-in, `PLATFORM_SESSION_SECRET` signing key; platform API fails closed (`401`) except `GET /health`; spoofable `x-actor-role` only honoured under explicit local `PLATFORM_DEV_AUTH=1`.
 - `src/lib/security/egress.ts`: DNS-aware SSRF validation + redirect-revalidating `safeFetch`, applied to full audit, sitemap audit, property autofill, visibility report, site crawl, heading audit and image audit.
-- OS-exec removed from request paths: Gmail CLI and python-pptx builder are opt-in (`COGWHEEL_ALLOW_LOCAL_*`), use `execFile` argument arrays, and return `501` by default.
+- OS-exec removed from request paths: Gmail CLI and python-pptx builder are opt-in (`SEO_STUDIO_ALLOW_LOCAL_*`), use `execFile` argument arrays, and return `501` by default.
 - Tests: `tests/security.test.ts` covers IP classification, egress rejection, rate-limit windows, session signing/tampering/expiry and header-spoofing rejection.
 
 ### Completed — reporting (H6)
@@ -188,7 +188,7 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 
 - `vite.content.config.ts` builds the content script as a single classic IIFE, and `scripts/build-extension.js` fails the build if ES-module syntax reappears.
 - The build uses `chrome-extension/node_modules` binaries, runs both Vite builds, removes stale ZIPs before packaging, and verifies the manifest version against `updates.xml`.
-- Artifact naming is unified on `cogwheel-seo-studio.zip` (site downloads, release workflow, auto-updater, `updates.xml`); the stale root `manifest.json` (2.0.0) was removed.
+- Artifact naming is unified on `seo-studio.zip` (site downloads, release workflow, auto-updater, `updates.xml`); the stale root `manifest.json` (2.0.0) was removed.
 
 ### Remaining
 

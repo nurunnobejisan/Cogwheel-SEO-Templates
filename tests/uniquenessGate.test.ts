@@ -14,9 +14,9 @@ describe("Day 6: Anti-Thin-Content Gate & Uniqueness Scorer", () => {
     const raw = `
       <h1>Downtown Hotel</h1>
       <p>Enjoy our luxury rooms in Denver.</p>
-      <footer>All rights reserved. Privacy Policy. Powered by Razib Marketing.</footer>
+      <footer>All rights reserved. Privacy Policy. Powered by SEO Studio.</footer>
     `;
-    const cleaned = cleanContent(raw, ["all rights reserved", "privacy policy", "powered by razib marketing"]);
+    const cleaned = cleanContent(raw, ["all rights reserved", "privacy policy", "powered by seo studio"]);
     assert(!cleaned.includes("rights reserved"));
     assert(!cleaned.includes("privacy policy"));
     assert(cleaned.includes("luxury rooms in denver"));

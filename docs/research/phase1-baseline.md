@@ -1,6 +1,6 @@
-# Phase 1 — Cogwheel Baseline Report
+# Phase 1 — SEO Studio Baseline Report
 
-**Scope:** Read-only inspection of the Cogwheel repository (`jisan-razibmarketing/Cogwheel-SEO-Templates`, branch `main`, HEAD `1afe937`) plus repository discovery of the three research accounts (`rifonix`, `mdrifatcom`, `Razib-Marketing`).
+**Scope:** Read-only inspection of the SEO Studio repository (`nurunnobejisan/SEO-Studio`, branch `main`, HEAD `1afe937`) plus repository discovery of the three research accounts (`rifonix`, `mdrifatcom`, `Archived external account`).
 
 **Purpose:** Establish the current architecture, capabilities, bugs, limitations, and technical debt *before* any change. No application code was modified to produce this report.
 
@@ -16,10 +16,10 @@
 | Pages | `src/app/page.tsx` (home), `templates`, `strategy-matrix`, `architecture`, `platform`. |
 | API | 24 route handlers under `src/app/api/**/route.ts` (see §4). |
 | Domain engines (outside `src`) | Top-level `rules/`, `validators/`, `schemas/`, `exporters/`, `healing/`, `platform/`, `cms/`, `ai/`, `python/`. This split is deliberate: the DOM/rule engine is framework-independent so the Chrome extension and the server share it. |
-| Extension | `chrome-extension/` (Manifest V3, Vite build); packaged to `public/cogwheel-seo-studio.zip` via `npm run extension:pack`. |
+| Extension | `chrome-extension/` (Manifest V3, Vite build); packaged to `public/seo-studio.zip` via `npm run extension:pack`. |
 | Python | `python/` (analyzer, crawler, generators, scraper, processor, scripts) with `tests/python` (pytest). |
 | Persistence | Supabase (SQL migrations in `supabase/migrations`) with in-memory fallback; local JSON/JSONL stores resolved through `src/lib/platform/data-dir.ts`. |
-| Deploy | Vercel (project `seo-3114/cogwheel-seo-templates`); CLI deploys recorded in `CHANGELOG.md`. |
+| Deploy | Vercel (project `seo-3114/seo-studio`); CLI deploys recorded in `CHANGELOG.md`. |
 
 ---
 
@@ -109,7 +109,7 @@ Auth: `src/lib/platform/auth.ts` (`isAuthenticatedPrincipal`, `principalFromRequ
 
 ---
 
-## 5. Security posture (Cogwheel)
+## 5. Security posture (SEO Studio)
 
 **Present and verified:**
 - SSRF defense with DNS resolution + per-hop redirect re-validation (`egress.ts`, `crawler/url.ts`).
@@ -122,7 +122,7 @@ Auth: `src/lib/platform/auth.ts` (`isAuthenticatedPrincipal`, `principalFromRequ
 
 **Gaps / debt:**
 - Crawler identifies as `HiltonSEOStudioCrawler` (stale branding).
-- On Vercel the writable data dir falls back to temp (ephemeral); durable history needs `COGWHEEL_DATA_DIR`/Supabase (`src/lib/platform/data-dir.ts`, documented in `CHANGELOG.md`).
+- On Vercel the writable data dir falls back to temp (ephemeral); durable history needs `SEO_STUDIO_DATA_DIR`/Supabase (`src/lib/platform/data-dir.ts`, documented in `CHANGELOG.md`).
 - No background job/queue: all audits run synchronously inside route handlers (serverless duration limits).
 - No redirect-loop detection; no multi-page crawl; no JS rendering.
 
@@ -172,4 +172,4 @@ Auth: `src/lib/platform/auth.ts` (`isAuthenticatedPrincipal`, `principalFromRequ
 
 ## 8. Conclusion
 
-Cogwheel already has a disciplined, evidence-first single-page audit engine and strong SSRF/security controls. The material gaps — all confirmed in code — are: **multi-page crawling with coverage tracking, redirect-loop detection, configurable depth/concurrency/rate limits, robots-enforced crawl loop, JS-rendered page support, and asynchronous/background execution.** These align exactly with the user's stated top priority, and none of the three external accounts provides a drop-in crawler, so the work is in-repo, incrementally, on top of existing code.
+SEO Studio already has a disciplined, evidence-first single-page audit engine and strong SSRF/security controls. The material gaps — all confirmed in code — are: **multi-page crawling with coverage tracking, redirect-loop detection, configurable depth/concurrency/rate limits, robots-enforced crawl loop, JS-rendered page support, and asynchronous/background execution.** These align exactly with the user's stated top priority, and none of the three external accounts provides a drop-in crawler, so the work is in-repo, incrementally, on top of existing code.

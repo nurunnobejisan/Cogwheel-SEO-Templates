@@ -1,6 +1,6 @@
 import { PageAuditData, CmsAutoFillResult } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
-import { COGWHEEL_OPTIMAL_AUDIT_DATA } from "../data/cogwheelTemplates";
+import { SEO_STUDIO_OPTIMAL_AUDIT_DATA } from "../data/seoStudioTemplates";
 import { extractCapturedWebSample } from "./training-capture";
 
 function isTopLevelWindow(): boolean {
@@ -12,8 +12,8 @@ function isTopLevelWindow(): boolean {
 }
 
 // Listen for messages from Side Panel, Popup, or Background Worker
-if (!(window as any).__COGWHEEL_MESSAGE_LISTENER__) {
-  (window as any).__COGWHEEL_MESSAGE_LISTENER__ = true;
+if (!(window as any).__SEO_STUDIO_MESSAGE_LISTENER__) {
+  (window as any).__SEO_STUDIO_MESSAGE_LISTENER__ = true;
   chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
   if (!isTopLevelWindow()) {
     return false;
@@ -34,7 +34,7 @@ if (!(window as any).__COGWHEEL_MESSAGE_LISTENER__) {
       const data = extractComprehensivePageData();
       sendResponse({ success: true, data });
     } catch (err) {
-      console.warn("[Cogwheel Content] Extraction error:", err);
+      console.warn("[SEO Studio Content] Extraction error:", err);
       sendResponse({ success: false, error: String(err) });
     }
     return true;
@@ -781,10 +781,10 @@ function handleInjectPreview(payload: { title?: string; metaDesc?: string; h1?: 
   }
 
   if (payload.schemaJson) {
-    let script = document.getElementById("__cogwheel_preview_schema__");
+    let script = document.getElementById("__seo_studio_preview_schema__");
     if (!script) {
       script = document.createElement("script");
-      script.id = "__cogwheel_preview_schema__";
+      script.id = "__seo_studio_preview_schema__";
       script.setAttribute("type", "application/ld+json");
       document.head.appendChild(script);
     }
@@ -961,10 +961,10 @@ function handleFillActiveCmsField(payload: {
 
   // 1. If schema script injection requested
   if (payload.fieldType === "schema") {
-    let scriptTag = document.getElementById("__cogwheel_injected_schema__") as HTMLScriptElement | null;
+    let scriptTag = document.getElementById("__seo_studio_injected_schema__") as HTMLScriptElement | null;
     if (!scriptTag) {
       scriptTag = document.createElement("script");
-      scriptTag.id = "__cogwheel_injected_schema__";
+      scriptTag.id = "__seo_studio_injected_schema__";
       scriptTag.type = "application/ld+json";
       document.head.appendChild(scriptTag);
       injectedSchemaElement = scriptTag;
@@ -1063,44 +1063,44 @@ export type OverlayType = "headings" | "missingAlts" | "schemas" | "bookingLinks
 
 function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
   const normalizedType = type === "links" ? "bookingLinks" : type;
-  const overlayId = `__cogwheel_${normalizedType}_overlay__`;
+  const overlayId = `__seo_studio_${normalizedType}_overlay__`;
   const existing = document.getElementById(overlayId);
 
   if (!enabled) {
     if (existing) existing.remove();
 
     if (normalizedType === "headings") {
-      document.querySelectorAll(".cogwheel-heading-badge").forEach((el) => el.remove());
-      document.querySelectorAll("[data-cogwheel-headings]").forEach((el) => {
+      document.querySelectorAll(".seo-studio-heading-badge").forEach((el) => el.remove());
+      document.querySelectorAll("[data-seo-studio-headings]").forEach((el) => {
         (el as HTMLElement).style.outline = "";
-        (el as HTMLElement).removeAttribute("data-cogwheel-headings");
+        (el as HTMLElement).removeAttribute("data-seo-studio-headings");
       });
     } else if (normalizedType === "missingAlts") {
-      document.querySelectorAll(".cogwheel-alt-badge").forEach((el) => el.remove());
-      document.querySelectorAll("[data-cogwheel-missingAlts]").forEach((el) => {
+      document.querySelectorAll(".seo-studio-alt-badge").forEach((el) => el.remove());
+      document.querySelectorAll("[data-seo-studio-missingAlts]").forEach((el) => {
         (el as HTMLElement).style.outline = "";
         (el as HTMLElement).style.outlineOffset = "";
-        (el as HTMLElement).removeAttribute("data-cogwheel-missingAlts");
+        (el as HTMLElement).removeAttribute("data-seo-studio-missingAlts");
       });
     } else if (normalizedType === "schemas") {
-      const banner = document.getElementById("cogwheel_schema_banner");
+      const banner = document.getElementById("seo_studio_schema_banner");
       if (banner) banner.remove();
-      document.querySelectorAll("[data-cogwheel-schemas]").forEach((el) => {
+      document.querySelectorAll("[data-seo-studio-schemas]").forEach((el) => {
         (el as HTMLElement).style.outline = "";
-        (el as HTMLElement).removeAttribute("data-cogwheel-schemas");
+        (el as HTMLElement).removeAttribute("data-seo-studio-schemas");
       });
     } else if (normalizedType === "bookingLinks") {
-      document.querySelectorAll(".cogwheel-booking-badge").forEach((el) => el.remove());
-      document.querySelectorAll("[data-cogwheel-bookingLinks]").forEach((el) => {
+      document.querySelectorAll(".seo-studio-booking-badge").forEach((el) => el.remove());
+      document.querySelectorAll("[data-seo-studio-bookingLinks]").forEach((el) => {
         (el as HTMLElement).style.outline = "";
-        (el as HTMLElement).removeAttribute("data-cogwheel-bookingLinks");
+        (el as HTMLElement).removeAttribute("data-seo-studio-bookingLinks");
       });
     } else if (normalizedType === "geoBlocks") {
-      document.querySelectorAll(".cogwheel-geo-badge").forEach((el) => el.remove());
-      document.querySelectorAll("[data-cogwheel-geoBlocks]").forEach((el) => {
+      document.querySelectorAll(".seo-studio-geo-badge").forEach((el) => el.remove());
+      document.querySelectorAll("[data-seo-studio-geoBlocks]").forEach((el) => {
         (el as HTMLElement).style.outline = "";
         (el as HTMLElement).style.outlineOffset = "";
-        (el as HTMLElement).removeAttribute("data-cogwheel-geoBlocks");
+        (el as HTMLElement).removeAttribute("data-seo-studio-geoBlocks");
       });
     }
     return;
@@ -1115,7 +1115,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
 
   if (normalizedType === "headings") {
     styleEl.textContent = `
-      .cogwheel-heading-badge {
+      .seo-studio-heading-badge {
         position: absolute;
         top: -10px;
         left: 0;
@@ -1129,45 +1129,45 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
         box-shadow: 0 2px 8px rgba(0,0,0,0.3);
         pointer-events: none;
       }
-      .cogwheel-badge-h1 { background: #10b981; }
-      .cogwheel-badge-h1-dup { background: #ef4444; }
-      .cogwheel-badge-h2 { background: #0284c7; }
-      .cogwheel-badge-h3 { background: #8b5cf6; }
+      .seo-studio-badge-h1 { background: #10b981; }
+      .seo-studio-badge-h1-dup { background: #ef4444; }
+      .seo-studio-badge-h2 { background: #0284c7; }
+      .seo-studio-badge-h3 { background: #8b5cf6; }
     `;
 
     const h1s = Array.from(document.querySelectorAll("h1"));
     h1s.forEach((h1, i) => {
-      h1.setAttribute("data-cogwheel-headings", "true");
+      h1.setAttribute("data-seo-studio-headings", "true");
       (h1 as HTMLElement).style.position = "relative";
       (h1 as HTMLElement).style.outline = i === 0 ? "2.5px dashed #10b981" : "3px solid #ef4444";
       const badge = document.createElement("span");
-      badge.className = `cogwheel-heading-badge ${i === 0 ? "cogwheel-badge-h1" : "cogwheel-badge-h1-dup"}`;
+      badge.className = `seo-studio-heading-badge ${i === 0 ? "seo-studio-badge-h1" : "seo-studio-badge-h1-dup"}`;
       badge.textContent = i === 0 ? "H1 (Primary)" : `H1 Duplicate #${i + 1}`;
       h1.appendChild(badge);
     });
 
     document.querySelectorAll("h2").forEach((h2, i) => {
-      h2.setAttribute("data-cogwheel-headings", "true");
+      h2.setAttribute("data-seo-studio-headings", "true");
       (h2 as HTMLElement).style.position = "relative";
       (h2 as HTMLElement).style.outline = "2px dotted #0284c7";
       const badge = document.createElement("span");
-      badge.className = "cogwheel-heading-badge cogwheel-badge-h2";
+      badge.className = "seo-studio-heading-badge seo-studio-badge-h2";
       badge.textContent = `H2 #${i + 1}`;
       h2.appendChild(badge);
     });
 
     document.querySelectorAll("h3").forEach((h3, i) => {
-      h3.setAttribute("data-cogwheel-headings", "true");
+      h3.setAttribute("data-seo-studio-headings", "true");
       (h3 as HTMLElement).style.position = "relative";
       (h3 as HTMLElement).style.outline = "2px dotted #8b5cf6";
       const badge = document.createElement("span");
-      badge.className = "cogwheel-heading-badge cogwheel-badge-h3";
+      badge.className = "seo-studio-heading-badge seo-studio-badge-h3";
       badge.textContent = `H3 #${i + 1}`;
       h3.appendChild(badge);
     });
   } else if (normalizedType === "missingAlts") {
     styleEl.textContent = `
-      .cogwheel-alt-badge {
+      .seo-studio-alt-badge {
         position: absolute;
         top: 4px;
         left: 4px;
@@ -1180,9 +1180,9 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
         box-shadow: 0 2px 6px rgba(0,0,0,0.4);
         pointer-events: none;
       }
-      .cogwheel-badge-missing { background: #ef4444; color: #fff; }
-      .cogwheel-badge-decorative { background: #10b981; color: #fff; }
-      .cogwheel-badge-empty { background: #f59e0b; color: #000; }
+      .seo-studio-badge-missing { background: #ef4444; color: #fff; }
+      .seo-studio-badge-decorative { background: #10b981; color: #fff; }
+      .seo-studio-badge-empty { background: #f59e0b; color: #000; }
     `;
 
     document.querySelectorAll("img").forEach((img) => {
@@ -1193,7 +1193,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
 
       if (alt === null) {
         // Genuine defect: missing alt attribute
-        img.setAttribute("data-cogwheel-missingAlts", "true");
+        img.setAttribute("data-seo-studio-missingAlts", "true");
         (img as HTMLElement).style.outline = "3px solid #ef4444";
         (img as HTMLElement).style.outlineOffset = "2px";
 
@@ -1201,14 +1201,14 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
           img.parentElement.style.position = "relative";
         }
         const badge = document.createElement("span");
-        badge.className = "cogwheel-alt-badge cogwheel-badge-missing";
+        badge.className = "seo-studio-alt-badge seo-studio-badge-missing";
         badge.textContent = "MISSING ALT ATTRIBUTE";
         if (img.parentElement) {
           img.parentElement.appendChild(badge);
         }
       } else if (isExplicitlyDecorative) {
         // Valid per WCAG 2.2 AA
-        img.setAttribute("data-cogwheel-missingAlts", "true");
+        img.setAttribute("data-seo-studio-missingAlts", "true");
         (img as HTMLElement).style.outline = "1.5px dashed #10b981";
         (img as HTMLElement).style.outlineOffset = "1px";
 
@@ -1216,14 +1216,14 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
           img.parentElement.style.position = "relative";
         }
         const badge = document.createElement("span");
-        badge.className = "cogwheel-alt-badge cogwheel-badge-decorative";
+        badge.className = "seo-studio-alt-badge seo-studio-badge-decorative";
         badge.textContent = 'WCAG VALID (alt="")';
         if (img.parentElement) {
           img.parentElement.appendChild(badge);
         }
       } else if (alt.trim() === "") {
         // Suspicious empty alt
-        img.setAttribute("data-cogwheel-missingAlts", "true");
+        img.setAttribute("data-seo-studio-missingAlts", "true");
         (img as HTMLElement).style.outline = "2px dashed #f59e0b";
         (img as HTMLElement).style.outlineOffset = "1px";
 
@@ -1231,7 +1231,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
           img.parentElement.style.position = "relative";
         }
         const badge = document.createElement("span");
-        badge.className = "cogwheel-alt-badge cogwheel-badge-empty";
+        badge.className = "seo-studio-alt-badge seo-studio-badge-empty";
         badge.textContent = "EMPTY ALT (DECORATIVE?)";
         if (img.parentElement) {
           img.parentElement.appendChild(badge);
@@ -1240,7 +1240,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
     });
   } else if (normalizedType === "schemas") {
     // Injects non-destructive top floating banner displaying validated JSON-LD entities
-    const existingBanner = document.getElementById("cogwheel_schema_banner");
+    const existingBanner = document.getElementById("seo_studio_schema_banner");
     if (existingBanner) existingBanner.remove();
 
     const scripts = Array.from(document.querySelectorAll('script[type="application/ld+json"]'));
@@ -1261,7 +1261,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
     });
 
     const banner = document.createElement("div");
-    banner.id = "cogwheel_schema_banner";
+    banner.id = "seo_studio_schema_banner";
     banner.setAttribute("style", `
       position: fixed;
       top: 14px;
@@ -1305,7 +1305,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
     document.body.appendChild(banner);
   } else if (normalizedType === "bookingLinks") {
     styleEl.textContent = `
-      .cogwheel-booking-badge {
+      .seo-studio-booking-badge {
         position: absolute;
         top: -8px;
         right: 0;
@@ -1326,7 +1326,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
     const bookingPattern = /book|reserv|stay|room|rate|checkout|check-avail|cart/i;
 
     document.querySelectorAll("a[href]").forEach((a) => {
-      a.setAttribute("data-cogwheel-bookingLinks", "true");
+      a.setAttribute("data-seo-studio-bookingLinks", "true");
       const href = a.getAttribute("href") || "";
       const text = a.textContent || "";
       const isBooking = bookingPattern.test(href) || bookingPattern.test(text);
@@ -1339,7 +1339,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
           (a as HTMLElement).style.position = "relative";
           (a as HTMLElement).style.outline = "2.5px solid #10b981";
           const badge = document.createElement("span");
-          badge.className = "cogwheel-booking-badge";
+          badge.className = "seo-studio-booking-badge";
           badge.textContent = "DIRECT BOOKING CTA";
           a.appendChild(badge);
         } else if (isInternal) {
@@ -1353,7 +1353,7 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
     });
   } else if (normalizedType === "geoBlocks") {
     styleEl.textContent = `
-      .cogwheel-geo-badge {
+      .seo-studio-geo-badge {
         position: absolute;
         top: 6px;
         left: 6px;
@@ -1409,13 +1409,13 @@ function handleToggleOverlay(type: OverlayType | "links", enabled: boolean) {
     });
 
     geoNodes.forEach((node) => {
-      node.setAttribute("data-cogwheel-geoBlocks", "true");
+      node.setAttribute("data-seo-studio-geoBlocks", "true");
       (node as HTMLElement).style.position = "relative";
       (node as HTMLElement).style.outline = "2.5px dashed #8b5cf6";
       (node as HTMLElement).style.outlineOffset = "3px";
 
       const badge = document.createElement("span");
-      badge.className = "cogwheel-geo-badge";
+      badge.className = "seo-studio-geo-badge";
       badge.textContent = "GEO AI KNOWLEDGE TARGET";
       node.appendChild(badge);
     });
@@ -1472,25 +1472,25 @@ function checkAndDispatchSpaChange(): void {
 }
 
 // 1. Patch history API (idempotent across duplicate injections)
-if (isTopLevelWindow() && !(window as any).__COGWHEEL_SPA_HOOKS__) {
-  (window as any).__COGWHEEL_SPA_HOOKS__ = true;
+if (isTopLevelWindow() && !(window as any).__SEO_STUDIO_SPA_HOOKS__) {
+  (window as any).__SEO_STUDIO_SPA_HOOKS__ = true;
   (function patchHistoryApi() {
     const originalPush = history.pushState;
     const originalReplace = history.replaceState;
 
     history.pushState = function (...args) {
       const res = originalPush.apply(this, args);
-      window.dispatchEvent(new Event("cogwheel-spa-navigate"));
+      window.dispatchEvent(new Event("seo-studio-spa-navigate"));
       return res;
     };
 
     history.replaceState = function (...args) {
       const res = originalReplace.apply(this, args);
-      window.dispatchEvent(new Event("cogwheel-spa-navigate"));
+      window.dispatchEvent(new Event("seo-studio-spa-navigate"));
       return res;
     };
 
-    window.addEventListener("cogwheel-spa-navigate", checkAndDispatchSpaChange);
+    window.addEventListener("seo-studio-spa-navigate", checkAndDispatchSpaChange);
     window.addEventListener("popstate", checkAndDispatchSpaChange);
     window.addEventListener("hashchange", checkAndDispatchSpaChange);
   })();

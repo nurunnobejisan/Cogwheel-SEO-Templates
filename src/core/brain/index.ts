@@ -20,9 +20,9 @@ import { canUseLlm, recordLlmUsage } from "./usage";
 import { createRagPipeline, type RagPipeline } from "../../../ai/rag";
 import { generateClaudeText, isClaudeConfigured } from "@/core/claude";
 
-export const BRAIN_SYSTEM_PROMPT = `You are the Cogwheel SEO Brain.
+export const BRAIN_SYSTEM_PROMPT = `You are the SEO Brain.
 
-You interpret a MEASURED audit produced by the Cogwheel audit engine. The audit
+You interpret a MEASURED audit produced by the SEO Studio audit engine. The audit
 report contains only facts measured from the live page, plus sections explicitly
 labelled "estimated" or "unavailable".
 

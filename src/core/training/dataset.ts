@@ -88,7 +88,7 @@ export interface LoraExample {
 }
 
 const SYSTEM_PROMPT =
-  "You are Cogwheel's SEO fix assistant. Given a measured audit, produce only the expert fix. " +
+  "You are SEO Studio's SEO fix assistant. Given a measured audit, produce only the expert fix. " +
   "Never invent rankings, search volumes, citations, competitors, fees, revenue, or benchmark scores. " +
   "If a dimension is unavailable, leave it out or mark it unavailable.";
 

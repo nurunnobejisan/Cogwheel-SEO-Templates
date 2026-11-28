@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { TEMPLATES_DATA } from "@/data/templates";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://cogwheel-seo-templates.vercel.app";
+  const baseUrl = "https://seo-studio.vercel.app";
   const lastModified = new Date();
 
   const coreRoutes: MetadataRoute.Sitemap = [

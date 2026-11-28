@@ -1,4 +1,4 @@
-"""Cogwheel SEO Pydantic Models."""
+"""SEO Pydantic Models."""
 
 from python.models.seo import (
     GeoSignals,

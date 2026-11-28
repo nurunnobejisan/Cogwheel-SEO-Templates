@@ -38,11 +38,11 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
   // Load persistence from localStorage on mount
   useEffect(() => {
     try {
-      const storedProgress = localStorage.getItem(`cogwheel_progress_${template.id}`);
+      const storedProgress = localStorage.getItem(`seo_studio_progress_${template.id}`);
       if (storedProgress) {
         setCheckedTasks(JSON.parse(storedProgress));
       }
-      const storedBookmarks = localStorage.getItem("cogwheel_bookmarks");
+      const storedBookmarks = localStorage.getItem("seo_studio_bookmarks");
       if (storedBookmarks) {
         const bookmarks: string[] = JSON.parse(storedBookmarks);
         setIsBookmarked(bookmarks.includes(template.id));
@@ -63,7 +63,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
     setCheckedTasks((prev) => {
       const updated = { ...prev, [taskId]: !prev[taskId] };
       try {
-        localStorage.setItem(`cogwheel_progress_${template.id}`, JSON.stringify(updated));
+        localStorage.setItem(`seo_studio_progress_${template.id}`, JSON.stringify(updated));
       } catch {}
       return updated;
     });
@@ -72,7 +72,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
   // Toggle bookmark
   const toggleBookmark = () => {
     try {
-      const stored = localStorage.getItem("cogwheel_bookmarks");
+      const stored = localStorage.getItem("seo_studio_bookmarks");
       let list: string[] = stored ? JSON.parse(stored) : [];
       if (list.includes(template.id)) {
         list = list.filter((id) => id !== template.id);
@@ -83,7 +83,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
         setIsBookmarked(true);
         showToast("Template Saved to Bookmarks");
       }
-      localStorage.setItem("cogwheel_bookmarks", JSON.stringify(list));
+      localStorage.setItem("seo_studio_bookmarks", JSON.stringify(list));
     } catch {}
   };
 
@@ -173,7 +173,7 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
         },
         publisher: {
           "@type": "Organization",
-          name: "Cogwheel SEO Studio",
+          name: "SEO Studio",
           url: baseUrl,
         },
       };

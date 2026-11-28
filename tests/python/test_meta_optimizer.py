@@ -18,7 +18,7 @@ from python.generators.meta_optimizer import (
 
 
 class TestMetaRulesAndRepair:
-    """Verify Cogwheel's title & meta description constraints and repair loops."""
+    """Verify SEO Studio's title & meta description constraints and repair loops."""
 
     @pytest.fixture
     def sample_optimizer(self):

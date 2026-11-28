@@ -1,6 +1,6 @@
 """Hospitality Template Processor.
 
-Injects verified live property facts and GEO signals into all 10 Cogwheel
+Injects verified live property facts and GEO signals into all 10 SEO Studio
 hotel prompt and content templates to guarantee grounded AI generation.
 """
 
@@ -22,7 +22,7 @@ from python.scraper.hotel_extractor import HotelExtractor
 
 
 class TemplateProcessor:
-    """Renders Cogwheel SEO and GEO templates grounded in live property facts."""
+    """Renders SEO and GEO templates grounded in live property facts."""
 
     # Explicit marker for facts that were not present on the source page. Used
     # instead of a plausible default so generated copy never asserts invented
@@ -266,7 +266,7 @@ class TemplateProcessor:
         facts: ExtractedHotelFacts,
         geo: Optional[GeoScoreResult] = None,
     ) -> TemplatePayload:
-        """Render a single Cogwheel template grounded in property facts."""
+        """Render a single SEO Studio template grounded in property facts."""
         filename = self.TEMPLATE_FILES.get(template_id, template_id)
         template_path = self.templates_dir / filename
         if not template_path.exists():
@@ -328,7 +328,7 @@ class TemplateProcessor:
     def render_all_templates(
         self, facts: ExtractedHotelFacts, geo: Optional[GeoScoreResult] = None
     ) -> dict[str, TemplatePayload]:
-        """Render all 10 Cogwheel hotel templates grounded in extracted facts."""
+        """Render all 10 SEO Studio hotel templates grounded in extracted facts."""
         rendered: dict[str, TemplatePayload] = {}
         for tmpl_id in self.TEMPLATE_FILES:
             try:

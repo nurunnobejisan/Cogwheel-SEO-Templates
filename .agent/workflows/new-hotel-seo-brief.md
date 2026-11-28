@@ -1,5 +1,5 @@
 ---
-description: "Generate a complete, brand-compliant client SEO and Generative Engine Optimization (GEO) brief for any hotel property using Cogwheel SEO templates."
+description: "Generate a complete, brand-compliant client SEO and Generative Engine Optimization (GEO) brief for any hotel property using SEO templates."
 ---
 
 # New Hotel SEO & GEO Client Brief Workflow
@@ -80,7 +80,7 @@ flowchart TD
 
 ### Phase 6: Final Brief Compilation & Quality Verification
 1. Assemble all compiled sections into a unified client brief at `briefs/{{propertySlug}}-seo-brief.md`.
-2. Run Cogwheel SEO validation gates:
+2. Run SEO validation gates:
    - **Variable Resolver**: Confirm zero uncompiled `{{variableName}}` markers.
    - **XSS Sanitizer**: Ensure all attributes and schema tags are clean.
    - **Canonical Normalizer**: Confirm HTTPS and clean parameter-free URLs.

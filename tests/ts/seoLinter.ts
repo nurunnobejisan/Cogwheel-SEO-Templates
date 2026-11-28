@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Master SEO Integrity Linter
+ * SEO Studio Templates — Master SEO Integrity Linter
  * 
  * Executes comprehensive multi-gate checks across:
  * 1. Uncompiled template variables / raw syntax leaks
@@ -178,7 +178,7 @@ export function runFullSeoLint(): { passed: boolean; reports: LinterGateReport[]
 // Direct CLI execution
 if (process.argv[1]?.endsWith("seoLinter.ts") || process.argv[1]?.endsWith("seoLinter.js")) {
   console.log("================================================================================");
-  console.log(" COGWHEEL SEO INTEGRITY LINTER — 10-GATE VALIDATION SUITE");
+  console.log(" SEO INTEGRITY LINTER — 10-GATE VALIDATION SUITE");
   console.log("================================================================================\n");
 
   const { passed, reports } = runFullSeoLint();

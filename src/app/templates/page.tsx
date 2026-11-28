@@ -3,7 +3,7 @@ import Link from "next/link";
 import { TemplatesHubClient } from "./TemplatesHubClient";
 
 export const metadata: Metadata = {
-  title: "Hospitality SEO & GEO Templates — Cogwheel SEO Studio",
+  title: "Hospitality SEO & GEO Templates — SEO Studio",
   description:
     "Production-ready on-page, lodging schema, GEO AI visibility, and GBP UNAP audit templates tailored for Marriott, Hilton, IHG, Hyatt, and luxury hotels.",
 };
@@ -23,7 +23,7 @@ export default function TemplatesPage() {
             </Link>
             <div>
               <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                Cogwheel SEO &amp; GEO Studio
+                SEO &amp; GEO Studio
               </h1>
               <p className="text-tiny text-slate-500 dark:text-slate-400">Master Hospitality Templates Catalog</p>
             </div>

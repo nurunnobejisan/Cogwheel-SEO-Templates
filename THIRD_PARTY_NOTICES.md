@@ -1,6 +1,6 @@
 # Third-party notices
 
-Cogwheel SEO & GEO Studio adapts **ideas and small logic patterns** from the
+SEO & GEO Studio adapts **ideas and small logic patterns** from the
 open-source projects below. No entire repository is vendored, and no
 third-party source code is copied into this repository unless explicitly noted.
 

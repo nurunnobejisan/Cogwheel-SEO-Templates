@@ -1,5 +1,5 @@
 # Source Code Attribution & License Inventory
-**Cogwheel SEO & GEO Studio — Unified Platform Integration**
+**SEO & GEO Studio — Unified Platform Integration**
 
 This document records the provenance, licensing, technical scope, and integration mapping for code, prompts, tools, workflows, and datasets integrated from the three open-source repositories:
 1. **`claude-seo`** (AgriciDaniel/claude-seo)
@@ -25,7 +25,7 @@ All three upstream projects are licensed under the permissive **MIT License**, p
 ### A. Google Search Console & URL Inspection (`mcp-gsc`)
 * **Original Repository:** `https://github.com/AminForou/mcp-gsc`
 * **Original License:** MIT License, Copyright (c) 2025 Amin Foroutan
-* **Destination in Cogwheel:**
+* **Destination in SEO Studio:**
   - `src/core/gsc/client.ts` & `src/core/gsc/types.ts`: TypeScript adapter for Search Console queries, indexing inspection, sitemaps, and period comparisons.
   - `api/gsc_server.py`: Standalone FastMCP server maintaining native Python FastMCP tool interface for desktop and MCP clients.
   - `src/tasks/gsc-intelligence/`: Automated periodic task runner for search analytics and cannibalization detection.
@@ -36,12 +36,12 @@ All three upstream projects are licensed under the permissive **MIT License**, p
   - `get_performance_overview`, `get_sitemaps`, `submit_sitemap`
 * **Changes Made:**
   - Added support for both Python FastMCP and TypeScript native runtime via `@/core/google`.
-  - Integrated OAuth credentials with Cogwheel's existing `GOOGLE_SERVICE_ACCOUNT_JSON` and `GOOGLE_SERVICE_ACCOUNT_B64` fallback flow.
+  - Integrated OAuth credentials with SEO Studio's existing `GOOGLE_SERVICE_ACCOUNT_JSON` and `GOOGLE_SERVICE_ACCOUNT_B64` fallback flow.
 
 ### B. Specialized SEO Agents & Technical Tool Scripts (`claude-seo`)
 * **Original Repository:** `https://github.com/AgriciDaniel/claude-seo`
 * **Original License:** MIT License, Copyright (c) 2026 agricidaniel
-* **Destination in Cogwheel:**
+* **Destination in SEO Studio:**
   - `src/core/claude-seo/`: Python and TypeScript execution bridge for on-page audits, structured data, sitemaps, and core updates.
   - `src/ai/prompts/agents/`: 20 specialized SEO system prompt profiles (`seo-technical`, `seo-content`, `seo-cluster`, `seo-geo`, `seo-schema`, etc.).
   - `data/google-updates.json`: Historical catalog of Google Core algorithm updates, Helpful Content updates, and spam rollouts.
@@ -51,13 +51,13 @@ All three upstream projects are licensed under the permissive **MIT License**, p
   - Page-level SEO criteria (meta tags, open graph, twitter cards, canonicals, hreflang, structured data).
   - Search Experience Optimization (SXO) and Generative Engine Optimization (GEO) scoring criteria.
 * **Changes Made:**
-  - Standardized CLI flags and wrapped outputs into JSON structured objects for Cogwheel AI Model tool calls.
-  - Adapted imports to Cogwheel's unified logger and config system.
+  - Standardized CLI flags and wrapped outputs into JSON structured objects for SEO Studio AI Model tool calls.
+  - Adapted imports to SEO Studio's unified logger and config system.
 
 ### C. TypeScript MCP Suite, Backlink & AI Visibility Engines (`open-seo`)
 * **Original Repository:** `https://github.com/every-app/open-seo`
 * **Original License:** MIT License, Copyright (c) 2026 Ben Senescu
-* **Destination in Cogwheel:**
+* **Destination in SEO Studio:**
   - `src/core/open-seo/`: TypeScript MCP tool implementations for Site Audit, AI Visibility, Backlinks, SERP analysis, and Keyword Research.
   - `src/core/open-seo/schemas.ts`: Zod schemas and validation contracts.
   - `src/core/ai-visibility/`: GEO & LLM prompt citation tracking engine (monitoring visibility in ChatGPT, Perplexity, Claude, Gemini).
@@ -67,8 +67,8 @@ All three upstream projects are licensed under the permissive **MIT License**, p
   - Backlinks profile and overview analysis contracts (`get-backlinks-overview.ts`, `get-backlinks-profile.ts`).
   - Keyword research and SERP rank tracking contracts (`research-keywords.ts`, `get-serp-results.ts`).
 * **Changes Made:**
-  - Removed proprietary Cloudflare D1/Worker dependencies in favor of Cogwheel's existing Next.js, Node.js, and Supabase/PostgreSQL schema layer.
-  - Integrated with Cogwheel's 78-keyword hospitality strategy matrix.
+  - Removed proprietary Cloudflare D1/Worker dependencies in favor of SEO Studio's existing Next.js, Node.js, and Supabase/PostgreSQL schema layer.
+  - Integrated with SEO Studio's 78-keyword hospitality strategy matrix.
 
 ---
 

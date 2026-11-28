@@ -58,7 +58,7 @@ export async function POST(req: Request) {
       rawUrl.startsWith("http") ? rawUrl : `https://${rawUrl}`,
       {
         headers: {
-          "User-Agent": "RazibMarketingSEOBot/1.0 (+https://razibmarketing.com)",
+          "User-Agent": "SEOSandboxBot/1.0 (+https://example.com)",
           Accept: "text/html,application/xhtml+xml",
         },
       },

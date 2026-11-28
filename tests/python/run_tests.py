@@ -16,7 +16,7 @@ import test_schema_validation
 
 def run_all():
     print("=" * 80)
-    print(" COGWHEEL SEO STUDIO - PYTHON TEST RUNNER")
+    print(" SEO STUDIO - PYTHON TEST RUNNER")
     print("=" * 80)
 
     print("\n> Running test_hotel_engine...")

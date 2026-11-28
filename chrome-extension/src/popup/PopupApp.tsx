@@ -17,7 +17,7 @@ import {
   Heading,
 } from "lucide-react";
 import { PageAuditData } from "../types/extension";
-import { calculateSeoScores } from "../data/cogwheelTemplates";
+import { calculateSeoScores } from "../data/seoStudioTemplates";
 import { checkPageRestriction } from "../utils/urlSecurity";
 import {
   calculatePixelWidth,
@@ -185,7 +185,7 @@ export function PopupApp() {
         <div className="flex items-center gap-2">
           <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
           <span className="font-display text-xs font-black tracking-wider text-white uppercase">
-            RAZIB MARKETING
+            SEO
           </span>
           <span className="text-[10px] text-slate-500">|</span>
           <span className="text-[10px] font-bold text-slate-400">STUDIO</span>
@@ -567,12 +567,12 @@ export function PopupApp() {
         </button>
 
         <a
-          href="https://cogwheel-seo-templates.vercel.app"
+          href="https://seo-studio.vercel.app"
           target="_blank"
           rel="noreferrer"
           className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900/60 py-2 text-[11px] font-bold text-slate-300 hover:bg-slate-800 hover:text-white transition"
         >
-          <span>Open Cogwheel Cloud Studio</span>
+          <span>Open SEO Studio Cloud Studio</span>
           <ExternalLink className="h-3 w-3 text-slate-400" />
         </a>
       </div>

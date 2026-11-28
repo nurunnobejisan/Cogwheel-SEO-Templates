@@ -1,5 +1,5 @@
 /**
- * Cogwheel Self-Healing Pipeline — Entry Point (Phase 4)
+ * SEO Studio Self-Healing Pipeline — Entry Point (Phase 4)
  *
  * Continuous scan scheduling, issue triage, the operator approval gate, the
  * versioned rollback store, live micro-crawler verification and the healing

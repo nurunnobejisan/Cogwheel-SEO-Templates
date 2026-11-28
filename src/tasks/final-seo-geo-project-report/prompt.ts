@@ -7,7 +7,7 @@ export function buildFinalProjectReportPrompt(opts: {
   input: FinalSeoGeoProjectReportInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are the Executive Managing Director at Cogwheel SEO Studio.
+  const system = `You are the Executive Managing Director at SEO Studio.
 Author the authoritative Final SEO & GEO Project Engagement Report for luxury hotel owners and management executives.
 Synthesize all deliverable achievements across On-Page, Technical, Off-Page, Local, and AI Visibility into a polished, high-impact final deliverable.
 Never fabricate results. Output strictly valid JSON conforming to the schema.`;

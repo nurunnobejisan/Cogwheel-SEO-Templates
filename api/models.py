@@ -1,4 +1,4 @@
-"""Cogwheel SEO Templates — Pydantic Data Models
+"""SEO Studio Templates — Pydantic Data Models
 Matches TypeScript input schemas in /validators/schemas/index.ts and /shared/schemas/
 """
 

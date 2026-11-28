@@ -7,7 +7,7 @@ export function buildCompetitorsBacklinkPrompt(opts: {
   input: CompetitorsBacklinkAnalysisInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are a Principal Off-Page SEO & Backlink Intelligence Strategist at Cogwheel SEO Studio.
+  const system = `You are a Principal Off-Page SEO & Backlink Intelligence Strategist at SEO Studio.
 Analyze competitive backlink profiles and identify high-equity referring domain gaps for hotel properties.
 Never suggest toxic link schemes. Output strictly valid JSON conforming to the requested schema.`;
 

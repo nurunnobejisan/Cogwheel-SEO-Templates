@@ -101,7 +101,7 @@ class SiteMapper:
 
     USER_AGENT = (
         "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) "
-        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 (CogwheelSiteMapper/3.0)"
+        "AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36 (SeoStudioSiteMapper/3.0)"
     )
 
     def __init__(self, target_url: str, max_pages: int = 50, timeout: int = 10):

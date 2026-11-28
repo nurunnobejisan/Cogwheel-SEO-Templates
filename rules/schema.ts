@@ -1,5 +1,5 @@
 /**
- * Cogwheel Universal SEO Engine — AuditReport Validation
+ * SEO Studio Universal SEO Engine — AuditReport Validation
  *
  * Strict Zod schema enforcing the standardized Universal Audit JSON payload
  * before it leaves the engine. Freeform output is rejected here, mirroring the

@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Article Schema Builder
+ * SEO Studio Templates — Article Schema Builder
  */
 
 export interface ArticleInput {

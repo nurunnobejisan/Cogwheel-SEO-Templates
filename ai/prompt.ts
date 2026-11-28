@@ -10,7 +10,7 @@
 import type { AuditIssue, AuditReport } from "../rules/types.ts";
 import type { BuiltPrompt, ScoredChunk, TaskKind } from "./types.ts";
 
-export const FIX_PATCH_SYSTEM_PROMPT = `You are the Cogwheel SEO Fix Engine.
+export const FIX_PATCH_SYSTEM_PROMPT = `You are the SEO Fix Engine.
 
 You convert a single SEO audit issue into a machine-applicable JSON mutation.
 

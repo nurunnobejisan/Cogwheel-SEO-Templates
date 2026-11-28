@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Master Validators Registry
+ * SEO Studio Templates — Master Validators Registry
  * 
  * Central barrel export for all 7 SEO quality gates:
  * 1. Variable Resolver & Fallback Engine

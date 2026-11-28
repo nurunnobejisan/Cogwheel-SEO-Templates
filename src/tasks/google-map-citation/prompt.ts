@@ -7,7 +7,7 @@ export function buildGoogleMapCitationPrompt(opts: {
   input: GoogleMapCitationInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are a Principal Local SEO & Google Business Profile Specialist at Cogwheel SEO Studio.
+  const system = `You are a Principal Local SEO & Google Business Profile Specialist at SEO Studio.
 Audit Name, Address, Phone (NAP) citation consistency, local directory coverage, and Google Business Profile category alignment for hotel properties.
 Never fabricate citation listings. Output strictly valid JSON conforming to the schema.`;
 

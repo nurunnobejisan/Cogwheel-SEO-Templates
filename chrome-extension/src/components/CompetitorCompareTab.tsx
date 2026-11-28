@@ -16,7 +16,7 @@ import {
   Check,
 } from "lucide-react";
 import { PageAuditData, CompetitorTabData } from "../types/extension";
-import { calculateSeoScores } from "../data/cogwheelTemplates";
+import { calculateSeoScores } from "../data/seoStudioTemplates";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 
 interface Props {

@@ -119,14 +119,14 @@ export function CommandPalette({
     list.push({
       id: "action-extension",
       title: "Download Chrome Extension (.zip)",
-      subtitle: "Install the Cogwheel SEO & GEO Inspector extension for real-time hotel page audits",
+      subtitle: "Install the SEO & GEO Inspector extension for real-time hotel page audits",
       category: "Actions",
       badge: "Extension",
       action: () => {
         onClose();
         const a = document.createElement("a");
-        a.href = "/cogwheel-seo-studio.zip";
-        a.download = "cogwheel-seo-studio.zip";
+        a.href = "/seo-studio.zip";
+        a.download = "seo-studio.zip";
         a.click();
       },
     });

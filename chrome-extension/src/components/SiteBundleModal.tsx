@@ -166,7 +166,7 @@ export function SiteBundleModal({
             </div>
             <h3 className="text-sm font-semibold text-white">No Site Bundle Imported</h3>
             <p className="mt-1 max-w-sm text-[11px] text-[#A1A1AA]">
-              Run <code className="text-emerald-400 font-mono">python -m cogwheel_auto --url &lt;domain&gt;</code> to
+              Run <code className="text-emerald-400 font-mono">python -m seo_studio_auto --url &lt;domain&gt;</code> to
               generate the complete agency deliverable package, then upload{" "}
               <code className="text-emerald-400 font-mono">extension-bundle.json</code> here.
             </p>

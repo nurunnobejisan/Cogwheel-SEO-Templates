@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Strict Variable Resolver & Fallback Engine
+ * SEO Studio Templates — Strict Variable Resolver & Fallback Engine
  * 
  * Provides:
  * - Pre-render validation for required and optional variables

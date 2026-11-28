@@ -108,7 +108,7 @@ export function ExportDatasetModal({
 
   const handleDownload = () => {
     if (!jsonlOutput) return;
-    const filename = `cogwheel_${activeFormat}_sft_${new Date().toISOString().slice(0, 10)}.jsonl`;
+    const filename = `seo_studio_${activeFormat}_sft_${new Date().toISOString().slice(0, 10)}.jsonl`;
     const blob = new Blob([jsonlOutput], { type: "application/jsonlines;charset=utf-8" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -371,7 +371,7 @@ export function ExportDatasetModal({
                     </label>
                     <input
                       type="url"
-                      placeholder="https://api.cogwheel-seo.com/v1/training-vault/sync"
+                      placeholder="https://api.example.com/v1/training-vault/sync"
                       value={endpointUrl}
                       onChange={(e) => setEndpointUrl(e.target.value)}
                       className="w-full rounded-md border border-[#27272A] bg-[#18181B] px-3 py-2 text-xs text-[#FAFAFA] placeholder-[#52525B] focus:border-emerald-500 focus:outline-none"

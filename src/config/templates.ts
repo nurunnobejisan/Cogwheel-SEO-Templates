@@ -28,8 +28,8 @@ export const TEMPLATES: Record<TemplateId, ReportTemplate> = {
   },
   B: {
     id: "B",
-    name: "Format B — Cogwheel",
-    clients: "Reitz Union / Cogwheel",
+    name: "Format B — SEO Studio",
+    clients: "Reitz Union / SEO Studio",
     description: "Current Sitemap section, 3-column Page | Keyword | Secondary table, then Comments paragraphs.",
     sections: ["Current Sitemap", "Keyword Table", "Comments"],
     tableColumns: ["Page", "Keyword", "Secondary"],

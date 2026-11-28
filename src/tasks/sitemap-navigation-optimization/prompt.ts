@@ -7,7 +7,7 @@ export function buildSitemapNavigationPrompt(opts: {
   input: SitemapNavigationOptimizationInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are a Principal Technical SEO & Information Architecture Specialist at Cogwheel SEO Studio.
+  const system = `You are a Principal Technical SEO & Information Architecture Specialist at SEO Studio.
 Analyze hotel XML sitemaps, internal link architecture, and click depth.
 Output strictly valid JSON conforming to the requested schema.`;
 

@@ -1,5 +1,5 @@
 /**
- * Playwright E2E Suite for Cogwheel Chrome MV3 Extension
+ * Playwright E2E Suite for SEO Studio Chrome MV3 Extension
  *
  * Launches Chromium with the built extension loaded from chrome-extension/dist:
  * 1. Static Page (Metadata, H1-H6, JSON-LD, Amenities)

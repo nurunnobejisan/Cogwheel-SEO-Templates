@@ -1,7 +1,7 @@
 import type { Config } from "tailwindcss";
 
 /**
- * Cogwheel design tokens.
+ * SEO Studio design tokens.
  *
  * The UI deliberately stays on Tailwind's `slate` neutral ramp (every component
  * already ships `dark:` slate variants) and layers a small, semantic token set

@@ -7,7 +7,7 @@ export function buildInternalKickoffStrategyPrompt(opts: {
   input: InternalKickoffStrategyListInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are a Senior Digital PR & Hospitality Off-Page SEO Director at Cogwheel SEO Studio.
+  const system = `You are a Senior Digital PR & Hospitality Off-Page SEO Director at SEO Studio.
 Develop linkable property assets, PR narrative angles, and tier-1 publication outreach targets.
 Never suggest spammy PBNs or link schemes. Output strictly valid JSON conforming to the schema.`;
 

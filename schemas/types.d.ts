@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Strongly Typed Schema.org Types (schema-dts compatible)
+ * SEO Studio Templates — Strongly Typed Schema.org Types (schema-dts compatible)
  */
 
 export interface SchemaThing {

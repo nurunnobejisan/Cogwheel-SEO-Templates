@@ -2,7 +2,7 @@
  * Automated Title & Meta Description Generator (TypeScript Bridge)
  *
  * Programmatically coordinates SEO Title and Meta Description optimization,
- * enforcing Cogwheel's strict length constraints (<= 60 title, 145-160 meta),
+ * enforcing SEO Studio's strict length constraints (<= 60 title, 145-160 meta),
  * first-half keyword positioning, verified page USPs, and action CTAs.
  * Reads /output/<domain>/site-keyword-map.json and writes:
  * - /output/<domain>/02-meta-title-description.xlsx (OpenPyXL styled workbook)

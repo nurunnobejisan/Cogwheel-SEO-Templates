@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Cogwheel SEO & GEO Studio - Supervised Fine-Tuning Pipeline.
+"""SEO & GEO Studio - Supervised Fine-Tuning Pipeline.
 
-Processes JSONL datasets exported from the Cogwheel Chrome Extension:
+Processes JSONL datasets exported from the SEO Studio Extension:
 1. Validates token lengths, JSON syntax, and target SEO/GEO schema consistency.
 2. Performs a deterministic 90/10 split into train.jsonl and validation.jsonl.
 3. Configures supervised fine-tuning on Google Vertex AI / Gemini or generates
@@ -471,7 +471,7 @@ def generate_lora_training_config(
     with launcher_py.open("w", encoding="utf-8") as f:
         f.write(
             f'''#!/usr/bin/env python3
-"""Automated LoRA Fine-Tuning Execution Script for Cogwheel SEO Models."""
+"""Automated LoRA Fine-Tuning Execution Script for SEO Models."""
 
 import json
 from pathlib import Path
@@ -505,7 +505,7 @@ def launch_vertex_ai_job(
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Prepares and launches a supervised fine-tuning job on Google Vertex AI / Gemini."""
-    actual_project = project_id or os.getenv("GOOGLE_CLOUD_PROJECT", "cogwheel-seo-prod")
+    actual_project = project_id or os.getenv("GOOGLE_CLOUD_PROJECT", "seo-studio-prod")
 
     spec: dict[str, Any] = {
         "job_type": "vertex_ai_supervised_fine_tuning",
@@ -575,14 +575,14 @@ def compute_evaluation_benchmark() -> dict[str, ModelEvalMetrics]:
 
     return {
         "Base Model (Zero-Shot)": base_metrics,
-        "Cogwheel Tuned Model (SFT)": tuned_metrics,
+        "SEO Studio Tuned Model (SFT)": tuned_metrics,
     }
 
 
 def render_evaluation_summary_table(benchmarks: dict[str, ModelEvalMetrics]) -> str:
     """Renders a clean ASCII evaluation table comparing base vs. tuned model."""
     base = benchmarks["Base Model (Zero-Shot)"]
-    tuned = benchmarks["Cogwheel Tuned Model (SFT)"]
+    tuned = benchmarks["SEO Studio Tuned Model (SFT)"]
 
     delta_title = tuned.title_pixel_compliance_pct - base.title_pixel_compliance_pct
     delta_meta = tuned.meta_pixel_compliance_pct - base.meta_pixel_compliance_pct
@@ -593,7 +593,7 @@ def render_evaluation_summary_table(benchmarks: dict[str, ModelEvalMetrics]) -> 
 
     lines = [
         "+" + "-" * 78 + "+",
-        "| COGWHEEL SEO STUDIO - FINE-TUNING EVALUATION SUMMARY BENCHMARK           |",
+        "| SEO STUDIO - FINE-TUNING EVALUATION SUMMARY BENCHMARK           |",
         "+" + "-" * 78 + "+",
         f"| {'Evaluation Criterion':<35} | {'Base Model':<11} | {'Tuned Model':<12} | {'Delta':<10} |",
         "|" + "-" * 37 + "|" + "-" * 13 + "|" + "-" * 14 + "|" + "-" * 12 + "|",
@@ -603,7 +603,7 @@ def render_evaluation_summary_table(benchmarks: dict[str, ModelEvalMetrics]) -> 
         f"| {'Schema.org Hotel Graph Validity':<35} | {base.schema_validity_pct:>10.1f}% | {tuned.schema_validity_pct:>11.1f}% | {f'+{delta_schema:.1f}%':>10} |",
         f"| {'GEO Generative Entity Depth':<35} | {base.geo_entity_depth_score:>10.1f}% | {tuned.geo_entity_depth_score:>11.1f}% | {f'+{delta_geo:.1f}%':>10} |",
         "|" + "=" * 37 + "|" + "=" * 13 + "|" + "=" * 14 + "|" + "=" * 12 + "|",
-        f"| {'OVERALL COGWHEEL SCORE':<35} | {base.overall_seo_score:>10.1f}% | {tuned.overall_seo_score:>11.1f}% | {f'+{delta_overall:.1f}%':>10} |",
+        f"| {'OVERALL SEO STUDIO SCORE':<35} | {base.overall_seo_score:>10.1f}% | {tuned.overall_seo_score:>11.1f}% | {f'+{delta_overall:.1f}%':>10} |",
         "+" + "-" * 78 + "+",
     ]
     return "\n".join(lines)
@@ -615,7 +615,7 @@ def render_evaluation_summary_table(benchmarks: dict[str, ModelEvalMetrics]) -> 
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Cogwheel SEO Studio - Supervised Fine-Tuning Pipeline CLI"
+        description="SEO Studio - Supervised Fine-Tuning Pipeline CLI"
     )
     parser.add_argument(
         "--input",
@@ -659,7 +659,7 @@ def main() -> int:
     args = parser.parse_args()
 
     print("=" * 80)
-    print(" COGWHEEL SEO STUDIO - FINE-TUNING PIPELINE")
+    print(" SEO STUDIO - FINE-TUNING PIPELINE")
     print("=" * 80)
 
     # 1. Validation Step

@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Operator console · Outcomes tab** (`src/components/PlatformPanels.tsx`, `OperatorConsole.tsx`): surfaces the outcome log and L2 judgment. Shows tracked changes with their latest Search Console before/after (clicks/impressions/position + control delta, each tagged `measured`/`unavailable`), and per-change-kind effect estimates with confidence, sample size, positive share and caveats. "Measure all" and "Recompute" act through `/api/outcomes`. Read-only evidence — nothing is fabricated or attributed to a page.
 - **Free-first, centralized AI model config** (`src/core/ai/models.ts`): one env-overridable table for every provider/model, defaulting to free tiers and never requiring a paid key. `claude.ts`, `ai/router.ts` and the visibility adapters now read from it; stale ids (`claude-sonnet-4-5`, `gemini-2.0-flash`) refreshed to current ones (`gemini-3.8-flash`, etc.). `.env.example` documents the free provider chain (Gemini → Groq → OpenRouter → Pollinations).
 - **L2 judgment — effect estimates from outcomes** (`src/core/judgment/`, `docs/JUDGMENT.md`): turns measured `OutcomeRecord`s into per-change-kind, control-adjusted effect estimates via difference-in-differences (counterfactual from the control group's trend). Reports sample size, exclusions, median/mean net clicks, positive share and position gain, with confidence capped by sample size. Additive to the audited P0–P3 `actionPlan` (no re-prioritization) and `provenance: "estimated"` throughout — correlational, never a per-page prediction. Exposed as `POST /api/outcomes { action: "judge" }`; it is the deterministic baseline a trained L2 model must later beat.
-- **Outcome logging** (`src/core/outcomes/`, `docs/OUTCOMES.md`): every deployed fix is recorded as a `ChangeEvent`, then measured against Google Search Console over matched before/after windows (28 days, 3-day data lag) with a control set of unchanged high-impression pages. Records are `measured` (real rows) or `unavailable` with a reason (no Search Console, no rows, still-filling window) — never estimated, never invented. Storage is idempotent JSONL (`COGWHEEL_DATA_DIR`-aware); `/api/outcomes` records/measures, and successful `/api/platform/v1/deployments` record a change automatically (best-effort, never blocking the deploy).
+- **Outcome logging** (`src/core/outcomes/`, `docs/OUTCOMES.md`): every deployed fix is recorded as a `ChangeEvent`, then measured against Google Search Console over matched before/after windows (28 days, 3-day data lag) with a control set of unchanged high-impression pages. Records are `measured` (real rows) or `unavailable` with a reason (no Search Console, no rows, still-filling window) — never estimated, never invented. Storage is idempotent JSONL (`SEO_STUDIO_DATA_DIR`-aware); `/api/outcomes` records/measures, and successful `/api/platform/v1/deployments` record a change automatically (best-effort, never blocking the deploy).
 - **GEO audit engine** (`rules/geo/`, `src/rules/geo/`): measured llms.txt presence/validity, AI-crawler rules in `robots.txt` (longest-match/Allow-wins), a documented 0–100 citability heuristic with formula and inputs, local-first drift snapshots, and a CI-friendly 5-point fail threshold. Every check carries `measured`, `estimated`, or `unavailable` provenance.
 - **AI visibility tracker** (`src/core/visibility/`): hotel and universal buyer-prompt generation; BYOK adapters for ChatGPT, Claude, Perplexity and Gemini; Google AI Overviews always `unavailable` (no official API, no scraping); deterministic mention/citation analysis; local JSONL run history; per-provider daily call/cost caps.
 - **Gap detector and healing plans**: prompts with a measured answer but no brand mention become prioritized gaps, then `healing/` patch plans with `status: "pending_approval"` and `autoApply: false`. Human approval is required.
@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Training-capture dedupe is content-based**: `POST /api/training-triples` no longer rejects a repeated URL; it rejects only byte-identical `audit` + `expertFix` content (`hasDuplicateContent`). An operator can now re-capture the same page after further expert edits, while exact duplicates are still blocked.
 - **Custom Fine-Tuned Model Inference Engine & Fallback Router** (`src/engine/custom-model-client.ts`):
   - Multi-provider inference support for Tuned Google Gemini (Vertex AI / Google AI Studio), custom REST API endpoints (vLLM / HuggingFace TGI), and local open-weight instances (Ollama / LoRA).
-  - Zero-latency 3-tier automatic fallback to Cogwheel's local deterministic rules engine on network failure or rate limits.
+  - Zero-latency 3-tier automatic fallback to SEO Studio's local deterministic rules engine on network failure or rate limits.
   - Dedicated inference settings interface in **Settings** tab with model endpoint configuration, API keys, temperature parameters, and live latency connection testing.
 - **Python Supervised Fine-Tuning (SFT) & LoRA Pipeline** (`python/scripts/fine_tune_pipeline.py`):
   - End-to-end dataset ingestion with strict Pydantic token and schema validation.
@@ -46,14 +46,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Universal DOM Training Capture & PII Sanitizer** (`src/content/training-capture.ts`, `src/storage/training-vault.ts`):
   - Read-only DOM capture extracting page structure, headings, OpenGraph metadata, and body text.
   - Automated PII redaction engine scrubbing emails, telephone numbers, and sensitive URL query credentials.
-  - IndexedDB storage vault (`CogwheelTrainingVaultDB` v2) with SHA-256 canonical URL hash deduplication and multi-factor quality scoring (0-100).
+  - IndexedDB storage vault (`SeoStudioTrainingVaultDB` v2) with SHA-256 canonical URL hash deduplication and multi-factor quality scoring (0-100).
 - **Comprehensive System Architecture Guide Overhaul** (`docs/ARCHITECTURE.md`):
   - Detailed architectural specifications for Manifest V3 extension, ML harvesting vault, multi-provider inference ladder, SFT pipeline, and CSP/privacy governance.
 
 ## [3.0.0] - 2026-11-24
 
 ### Added
-- Complete source code integration of `claude-seo`, `open-seo`, and `mcp-gsc` into Cogwheel's unified architecture.
+- Complete source code integration of `claude-seo`, `open-seo`, and `mcp-gsc` into SEO Studio's unified architecture.
 - FastMCP Google Search Console Server and Unified TypeScript Client with query cannibalization detection and URL inspection.
 - 20 specialized autonomous SEO agents and 66-entry Google algorithm updates dataset with volatility risk checker.
 - Open-SEO audit issues catalog, Generative Engine Optimization (GEO) AI visibility tracker, backlinks, and keyword research.

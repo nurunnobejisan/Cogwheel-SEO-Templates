@@ -55,7 +55,7 @@ describe("Enterprise RBAC & Integration Health Suite", () => {
 
     const adminSession: UserSession = {
       userId: "admin-1",
-      email: "admin@cogwheel.com",
+      email: "admin@example.com",
       role: "Administrator",
     };
     expect(canAccessProperty(adminSession, "any-hotel-id")).toBe(true);

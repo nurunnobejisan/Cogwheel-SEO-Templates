@@ -7,12 +7,12 @@ import {
 
 export * from "../types/updater.types";
 
-const REPO_OWNER = "jisan-razibmarketing";
-const REPO_NAME = "Cogwheel-SEO-Templates";
+const REPO_OWNER = "nurunnobejisan";
+const REPO_NAME = "SEO-Studio";
 const RAW_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
-const RELEASE_ZIP_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download/cogwheel-seo-studio.zip`;
+const RELEASE_ZIP_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download/seo-studio.zip`;
 const RELEASES_PAGE_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest`;
-const ALARM_NAME = "cogwheel_auto_update_check";
+const ALARM_NAME = "seo_studio_auto_update_check";
 
 /**
  * Compares two SemVer strings (e.g., "2.7.0" vs "2.6.1").
@@ -70,12 +70,12 @@ export async function runAutoUpdateCheck(): Promise<ExtensionUpdateState> {
       otaDataVersion = otaConfig.schemaVersion;
       if (typeof chrome !== "undefined" && chrome.storage?.local) {
         await chrome.storage.local.set({
-          cogwheel_ota_config: otaConfig,
+          seo_studio_ota_config: otaConfig,
         });
       }
     }
   } catch (error) {
-    console.warn("[Cogwheel Auto-Updater] Offline or rate-limited:", error);
+    console.warn("[SEO Studio Auto-Updater] Offline or rate-limited:", error);
   }
 
   const updateState: ExtensionUpdateState = {
@@ -90,7 +90,7 @@ export async function runAutoUpdateCheck(): Promise<ExtensionUpdateState> {
   };
 
   if (typeof chrome !== "undefined" && chrome.storage?.local) {
-    await chrome.storage.local.set({ cogwheel_update_state: updateState });
+    await chrome.storage.local.set({ seo_studio_update_state: updateState });
   }
 
   // Highlight extension toolbar icon when a new build is ready
@@ -127,13 +127,13 @@ export function initAutoUpdater(): void {
 
   // Allow manual "Check for Updates" trigger from the Inspector UI
   chrome.runtime.onMessage?.addListener((message: { type?: string }, _sender, sendResponse) => {
-    if (message.type === "COGWHEEL_CHECK_UPDATES" || message.type === "SYNC_RULES_NOW") {
+    if (message.type === "SEO_STUDIO_CHECK_UPDATES" || message.type === "SYNC_RULES_NOW") {
       void runAutoUpdateCheck().then((state) => sendResponse(state));
       return true;
     }
     if (message.type === "GET_UPDATE_METADATA") {
-      void chrome.storage.local.get(["cogwheel_update_state"], (res) => {
-        const state = res["cogwheel_update_state"] as ExtensionUpdateState | undefined;
+      void chrome.storage.local.get(["seo_studio_update_state"], (res) => {
+        const state = res["seo_studio_update_state"] as ExtensionUpdateState | undefined;
         sendResponse({ success: true, metadata: state });
       });
       return true;

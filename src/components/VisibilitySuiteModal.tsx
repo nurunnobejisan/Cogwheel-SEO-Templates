@@ -68,7 +68,7 @@ export function VisibilitySuiteModal({
       domain: propertyUrl,
       city: propertyCity,
       state: propertyState,
-      source: "Cogwheel SEO Templates",
+      source: "SEO Studio Templates",
     },
     promptsBatch: [
       {

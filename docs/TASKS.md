@@ -1,4 +1,4 @@
-# MASTER RUN: Cogwheel to Universal SEO & GEO Studio — Backlog & Task Registry
+# MASTER RUN: SEO Studio to Universal SEO & GEO Studio — Backlog & Task Registry
 
 ## Backlog
 

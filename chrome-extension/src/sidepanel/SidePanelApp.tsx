@@ -17,7 +17,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { PageAuditData, ClientProfile, QuickWinItem } from "../types/extension";
-import { PRESET_CLIENT_PROFILES, calculateSeoScores, COGWHEEL_OPTIMAL_AUDIT_DATA } from "../data/cogwheelTemplates";
+import { PRESET_CLIENT_PROFILES, calculateSeoScores, SEO_STUDIO_OPTIMAL_AUDIT_DATA } from "../data/seoStudioTemplates";
 import { ScoreGauge } from "../components/ScoreGauge";
 import { SerpSocialPreview } from "../components/SerpSocialPreview";
 import { QuickWinsList } from "../components/QuickWinsList";
@@ -56,7 +56,7 @@ export function SidePanelApp() {
     setBrainLoading(true);
     setBrainAnswer("");
     try {
-      const res = await fetch("https://cogwheel-seo-templates.vercel.app/api/brain", {
+      const res = await fetch("https://seo-studio.vercel.app/api/brain", {
         method: "POST",
         credentials: "include",
         headers: { "Content-Type": "application/json" },
@@ -83,7 +83,7 @@ export function SidePanelApp() {
         document.documentElement.classList.remove("dark");
       }
       if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-        chrome.storage.local.set({ cogwheel_theme_dark: isDarkMode });
+        chrome.storage.local.set({ seo_studio_theme_dark: isDarkMode });
       }
     } catch {
       // ignore
@@ -92,9 +92,9 @@ export function SidePanelApp() {
 
   useEffect(() => {
     if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(["cogwheel_theme_dark"], (res) => {
-        if (typeof res?.cogwheel_theme_dark === "boolean") {
-          setIsDarkMode(res.cogwheel_theme_dark);
+      chrome.storage.local.get(["seo_studio_theme_dark"], (res) => {
+        if (typeof res?.seo_studio_theme_dark === "boolean") {
+          setIsDarkMode(res.seo_studio_theme_dark);
         }
       });
     }
@@ -171,13 +171,13 @@ export function SidePanelApp() {
         if (tab && tab.id) {
           setActiveTabId(tab.id);
 
-          const isCogwheel = Boolean(
-            (tab.url && tab.url.includes("Cogwheel-SEO-Templates")) ||
-            (tab.title && tab.title.includes("Cogwheel-SEO-Templates"))
+          const isSeoStudio = Boolean(
+            (tab.url && tab.url.includes("SEO-Studio")) ||
+            (tab.title && tab.title.includes("SEO-Studio"))
           );
 
-          if (isCogwheel) {
-            setPageData(COGWHEEL_OPTIMAL_AUDIT_DATA);
+          if (isSeoStudio) {
+            setPageData(SEO_STUDIO_OPTIMAL_AUDIT_DATA);
             setIsRestrictedTab(false);
             setNeedsReload(false);
             setLoading(false);
@@ -556,7 +556,7 @@ export function SidePanelApp() {
             <div className="flex items-center gap-2">
               <div className="h-2 w-2 rounded-full bg-emerald-400" />
               <span className="text-xs font-semibold tracking-wider text-[#FAFAFA] uppercase">
-                COGWHEEL SEO STUDIO
+                SEO STUDIO
               </span>
               <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-semibold text-emerald-400 tabular-nums">
                 v3.0.0
@@ -947,7 +947,7 @@ export function SidePanelApp() {
             />
           )}
 
-          {/* TAB 2: Cogwheel Template Studio */}
+          {/* TAB 2: SEO Studio Template Studio */}
           {activeTab === "studio" && (
             <TemplateStudio
               pageData={pageData}

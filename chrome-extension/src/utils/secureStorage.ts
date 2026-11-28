@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Studio — best-effort at-rest encryption for secrets.
+ * SEO Studio — best-effort at-rest encryption for secrets.
  *
  * Uses Web Crypto (AES-GCM) with a key derived from the extension runtime id.
  * Values are stored with an `enc:v1:` prefix so legacy plaintext values can be
@@ -8,7 +8,7 @@
  */
 
 const PREFIX = "enc:v1:";
-const SALT = "cogwheel-extension-secret-salt-v1";
+const SALT = "seo-studio-extension-secret-salt-v1";
 
 function getRuntimeSecret(): string {
   try {
@@ -18,7 +18,7 @@ function getRuntimeSecret(): string {
   } catch {
     // ignore
   }
-  return "cogwheel-local-dev-secret";
+  return "seo-studio-local-dev-secret";
 }
 
 function toBase64(bytes: Uint8Array): string {

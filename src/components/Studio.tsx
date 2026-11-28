@@ -607,7 +607,7 @@ export default function Studio({
 
             <TrainingCaptureCard
               title="Training capture — page-to-keyword map"
-              subtitle="Contribute the approved keyword assignments (and your edits to the allocator's proposal) to the Cogwheel SEO/GEO training set. Nothing is captured automatically."
+              subtitle="Contribute the approved keyword assignments (and your edits to the allocator's proposal) to the SEO/GEO training set. Nothing is captured automatically."
               stats={[
                 { label: "Pages approved", value: `${approvedCount}/${state.matrix.length}` },
                 { label: "Edited vs proposal", value: matrixEditedCount },

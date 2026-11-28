@@ -1,14 +1,14 @@
 /**
  * Outcome-logging persistence (JSONL, local-first).
  *
- * Uses `cogwheelDataFile` so the location honours `COGWHEEL_DATA_DIR` and falls
+ * Uses `seoStudioDataFile` so the location honours `SEO_STUDIO_DATA_DIR` and falls
  * back to the repo `data/` folder locally / temp dir on serverless. Outcome
  * records are upserted by id so re-measuring is idempotent.
  */
 
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { cogwheelDataFile } from "../../lib/platform/data-dir.ts";
+import { seoStudioDataFile } from "../../lib/platform/data-dir.ts";
 import type { ChangeEvent, OutcomeRecord } from "./types.ts";
 
 const CHANGES_FILE = "outcome-changes.jsonl";
@@ -16,7 +16,7 @@ const OUTCOMES_FILE = "outcomes.jsonl";
 
 async function readJsonl<T>(file: string): Promise<T[]> {
   try {
-    const raw = await fs.readFile(cogwheelDataFile(file), "utf8");
+    const raw = await fs.readFile(seoStudioDataFile(file), "utf8");
     return raw
       .split("\n")
       .filter((line) => line.trim())
@@ -27,7 +27,7 @@ async function readJsonl<T>(file: string): Promise<T[]> {
 }
 
 async function appendJsonl(file: string, value: unknown): Promise<void> {
-  const target = cogwheelDataFile(file);
+  const target = seoStudioDataFile(file);
   await fs.mkdir(path.dirname(target), { recursive: true });
   await fs.appendFile(target, `${JSON.stringify(value)}\n`, "utf8");
 }
@@ -49,7 +49,7 @@ export async function upsertOutcome(outcome: OutcomeRecord): Promise<void> {
   const index = all.findIndex((entry) => entry.id === outcome.id);
   if (index >= 0) all[index] = outcome;
   else all.push(outcome);
-  const target = cogwheelDataFile(OUTCOMES_FILE);
+  const target = seoStudioDataFile(OUTCOMES_FILE);
   await fs.mkdir(path.dirname(target), { recursive: true });
   await fs.writeFile(target, all.map((entry) => JSON.stringify(entry)).join("\n") + "\n", "utf8");
 }

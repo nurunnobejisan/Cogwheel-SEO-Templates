@@ -1,5 +1,5 @@
 /**
- * Cogwheel AI SEO Brain — Shared Types (Phase 2)
+ * SEO Studio AI SEO Brain — Shared Types (Phase 2)
  *
  * Contracts for the multi-tier model router, the RAG knowledge base, the prompt
  * construction engine and the strict JSON patch pipeline.

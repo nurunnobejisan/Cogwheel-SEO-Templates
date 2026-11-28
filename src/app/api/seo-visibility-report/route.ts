@@ -312,12 +312,12 @@ export async function POST(req: NextRequest) {
     // a host-process execution path, so it is disabled unless an operator
     // explicitly opts in on a trusted machine. It is never available on
     // serverless deployments (no python3/python-pptx).
-    if (process.env.COGWHEEL_ALLOW_LOCAL_PYTHON !== "1") {
+    if (process.env.SEO_STUDIO_ALLOW_LOCAL_PYTHON !== "1") {
       return NextResponse.json(
         {
           error:
             "Server-side report generation is disabled. Run `python3 api/seo_visibility_report.py --template <pptx> --xlsx <xlsx> --output <out.pptx>` locally, " +
-            "or set COGWHEEL_ALLOW_LOCAL_PYTHON=1 on a trusted self-hosted instance.",
+            "or set SEO_STUDIO_ALLOW_LOCAL_PYTHON=1 on a trusted self-hosted instance.",
           code: "report_generation_disabled",
         },
         { status: 501 }

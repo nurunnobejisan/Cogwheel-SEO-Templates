@@ -18,14 +18,14 @@ describe("AI Training Rules Store", () => {
     expect(reportContext).toContain("Strictly Grounded Property Claims");
   });
 
-  it("seeds Cogwheel keyword research rules from client deliverable training data", async () => {
+  it("seeds SEO Studio keyword research rules from client deliverable training data", async () => {
     const rules = await listTrainingRules("keyword-research");
     expect(rules.some((r) => r.id === "seed-kw-beachfront-oceanfront-bucketing")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-low-kd-amenity-threshold")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-local-geo-anchoring")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-small-market-metro-feeder")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-specialty-venue-hierarchy")).toBe(true);
-    expect(rules.some((r) => r.id === "seed-kw-cogwheel-3step-rationale")).toBe(true);
+    expect(rules.some((r) => r.id === "seed-kw-seo-studio-3step-rationale")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-neighborhood-geo-anchoring")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-landmark-proximity-anchoring")).toBe(true);
     expect(rules.some((r) => r.id === "seed-kw-colloquial-vernacular-matching")).toBe(true);
@@ -35,7 +35,7 @@ describe("AI Training Rules Store", () => {
     expect(kwContext).toContain("Beachfront, Oceanfront & Coastal Keyword Bucketing");
     expect(kwContext).toContain("Secondary & Amenity Page Low-KD (< 45)");
     expect(kwContext).toContain("Local/City Geo-Anchoring Over State-Wide Generics");
-    expect(kwContext).toContain("Cogwheel Client Rationale Structure");
+    expect(kwContext).toContain("SEO Studio Client Rationale Structure");
     expect(kwContext).toContain("Metropolitan Cultural/Historic Neighborhood Geo-Anchoring");
     expect(kwContext).toContain("High-Intent Landmark & Demand Generator Proximity Anchoring");
     expect(kwContext).toContain("Colloquial & Regional Vernacular Abbreviation Matching");

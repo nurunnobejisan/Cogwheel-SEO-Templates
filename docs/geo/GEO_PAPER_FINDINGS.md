@@ -25,7 +25,7 @@ difficulty, and intent.
 The paper reports relative visibility improvements up to roughly 40% for some
 methods. It also reports that keyword stuffing performed poorly.
 
-## How Cogwheel uses this
+## How SEO Studio uses this
 
 | Paper finding | Our implementation |
 | --- | --- |

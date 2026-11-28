@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Cogwheel SEO & Hospitality Templates Studio
+SEO Studio
 Website Image Optimization Audit Tool (CLI & Automation Engine)
 
 Crawls public pages of a website, audits every image placement (alt text, file size,
@@ -34,7 +34,7 @@ import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 
-USER_AGENT = "Mozilla/5.0 (compatible; CogwheelImageAudit/2.7; +https://cogwheel-seo-templates.vercel.app)"
+USER_AGENT = "Mozilla/5.0 (compatible; SeoStudioImageAudit/2.7; +https://seo-studio.vercel.app)"
 
 
 # -----------------------------------------------------------------------------
@@ -903,7 +903,7 @@ def run_image_audit(
     checkpoint_file = f".audit_checkpoint_{hostname_clean}.json"
 
     print("\n=======================================================")
-    print(" COGWHEEL IMAGE OPTIMIZATION AUDIT ENGINE (v2.7)")
+    print(" SEO STUDIO IMAGE OPTIMIZATION AUDIT ENGINE (v2.7)")
     print(f" Target: {norm_start}")
     print(f" Crawl Limit: {max_pages} pages | Delay: {delay}s | Size Gate: {size_threshold_kb}KB")
     print(f" Output: {output_path}")
@@ -1263,7 +1263,7 @@ def run_image_audit(
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Cogwheel SEO Studio — Website Image Optimization Audit Tool",
+        description="SEO Studio — Website Image Optimization Audit Tool",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:

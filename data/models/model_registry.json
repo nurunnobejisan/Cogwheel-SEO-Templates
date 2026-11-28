@@ -1,8 +1,8 @@
 {
-  "activeModelId": "cogwheel-seo-unified-tuned_gemini-v1795487332",
+  "activeModelId": "seo-studio-unified-tuned_gemini-v1795487332",
   "models": [
     {
-      "modelId": "cogwheel-seo-unified-tuned_gemini-v1795487332",
+      "modelId": "seo-studio-unified-tuned_gemini-v1795487332",
       "modelVersion": "v1795487332",
       "baseModel": "gemini-1.5-flash-002",
       "provider": "tuned_gemini",
@@ -35,7 +35,7 @@
       ]
     },
     {
-      "modelId": "cogwheel-seo-unified-tuned_gemini-v1795486557",
+      "modelId": "seo-studio-unified-tuned_gemini-v1795486557",
       "modelVersion": "v1795486557",
       "baseModel": "gemini-1.5-flash-002",
       "provider": "tuned_gemini",

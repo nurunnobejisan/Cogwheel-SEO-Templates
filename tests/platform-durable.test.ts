@@ -70,7 +70,7 @@ function request(
 const tempDirs: string[] = [];
 
 async function tempDir(): Promise<string> {
-  const dir = await mkdtemp(path.join(os.tmpdir(), "cogwheel-platform-"));
+  const dir = await mkdtemp(path.join(os.tmpdir(), "seo-studio-platform-"));
   tempDirs.push(dir);
   return dir;
 }

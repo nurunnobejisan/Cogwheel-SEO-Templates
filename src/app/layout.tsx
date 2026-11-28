@@ -13,22 +13,22 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cogwheel-seo-templates.vercel.app"),
+  metadataBase: new URL("https://seo-studio.vercel.app"),
   title: {
-    default: "Cogwheel SEO & GEO Studio — Hotel Search Engine Suite",
+    default: "SEO & GEO Studio — Hotel Search Engine Suite",
     template: "%s",
   },
   description:
     "Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.",
   icons: {
-    icon: "/razib-marketing-logo.png",
+    icon: "/nurunnobe-logo.png",
   },
   openGraph: {
-    title: "Cogwheel SEO & GEO Studio — Hotel Search Engine Suite",
+    title: "SEO & GEO Studio — Hotel Search Engine Suite",
     description:
       "Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.",
     type: "website",
-    siteName: "Cogwheel SEO & GEO Studio",
+    siteName: "SEO & GEO Studio",
   },
 };
 

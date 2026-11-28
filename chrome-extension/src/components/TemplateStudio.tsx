@@ -12,11 +12,11 @@ import {
   Database,
 } from "lucide-react";
 import {
-  COGWHEEL_TEMPLATES,
+  SEO_STUDIO_TEMPLATES,
   extractTemplateVariables,
   resolveTemplateContent,
-} from "../data/cogwheelTemplates";
-import { CogwheelTemplate, PageAuditData, ClientProfile } from "../types/extension";
+} from "../data/seoStudioTemplates";
+import { SeoStudioTemplate, PageAuditData, ClientProfile } from "../types/extension";
 import { calculatePixelWidth, TITLE_PIXEL_LIMIT, META_DESC_PIXEL_LIMIT } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
 import { saveTrainingPair } from "../storage/training-vault";
@@ -170,14 +170,14 @@ export function TemplateStudio({
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem("cogwheel_favorite_templates") || "[]");
+      return JSON.parse(localStorage.getItem("seo_studio_favorite_templates") || "[]");
     } catch {
       return [];
     }
   });
 
   const [selectedTemplateId, setSelectedTemplateId] = useState<string>(
-    initialTemplateId || COGWHEEL_TEMPLATES[0].id
+    initialTemplateId || SEO_STUDIO_TEMPLATES[0].id
   );
 
   useEffect(() => {
@@ -186,10 +186,10 @@ export function TemplateStudio({
     }
   }, [initialTemplateId]);
 
-  const selectedTemplate = useMemo<CogwheelTemplate>(() => {
+  const selectedTemplate = useMemo<SeoStudioTemplate>(() => {
     return (
-      COGWHEEL_TEMPLATES.find((t) => t.id === selectedTemplateId) ||
-      COGWHEEL_TEMPLATES[0]
+      SEO_STUDIO_TEMPLATES.find((t) => t.id === selectedTemplateId) ||
+      SEO_STUDIO_TEMPLATES[0]
     );
   }, [selectedTemplateId]);
 
@@ -306,7 +306,7 @@ export function TemplateStudio({
       ? favorites.filter((f) => f !== id)
       : [...favorites, id];
     setFavorites(next);
-    localStorage.setItem("cogwheel_favorite_templates", JSON.stringify(next));
+    localStorage.setItem("seo_studio_favorite_templates", JSON.stringify(next));
   };
 
   const categories = [
@@ -320,7 +320,7 @@ export function TemplateStudio({
   ];
 
   const filteredTemplates = useMemo(() => {
-    return COGWHEEL_TEMPLATES.filter((t) => {
+    return SEO_STUDIO_TEMPLATES.filter((t) => {
       const matchCat = selectedCategory === "All" || t.category === selectedCategory;
       const matchSearch =
         searchQuery.trim() === "" ||
@@ -480,7 +480,7 @@ export function TemplateStudio({
     }`;
     }
 
-    return `<!-- Cogwheel SEO Studio v3.0 - Universal Brand Guardrail Compliant Export -->
+    return `<!-- SEO Studio v3.0 - Universal Brand Guardrail Compliant Export -->
 <!-- Platform Framework: ${pageData?.detectedCmsLabel || "Universal"} | Category: ${pageData?.siteCategoryLabel || cat.toUpperCase()} -->
 <!-- Policy Profile: ${activeGuardrail.name} (${activeGuardrail.loyaltyProgram}) -->
 

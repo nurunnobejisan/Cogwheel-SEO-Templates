@@ -1,7 +1,7 @@
 /**
  * Heading Structure Optimization & Auditor Engine (TypeScript)
  *
- * Provides DOM-level structural heading auditing, Cogwheel hierarchy scoring,
+ * Provides DOM-level structural heading auditing, SEO Studio hierarchy scoring,
  * non-semantic heading detection (UI stats, badges, quotes, footer columns),
  * single H1 enforcement, and coordinates execution with the Python generator.
  */

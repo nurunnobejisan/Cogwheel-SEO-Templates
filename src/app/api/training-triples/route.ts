@@ -11,19 +11,19 @@ import {
   stripPii,
   type TrainingTriple,
 } from "@/core/training/dataset";
-import { cogwheelDataFile } from "@/lib/platform/data-dir";
+import { seoStudioDataFile } from "@/lib/platform/data-dir";
 
 export const dynamic = "force-dynamic";
 
 function tripleFile(): string {
-  return cogwheelDataFile("training-triples.jsonl");
+  return seoStudioDataFile("training-triples.jsonl");
 }
 
 /** Temp-dir writes on serverless are ephemeral; surface that honestly. */
 function persistenceNote(): string | null {
-  if (process.env.COGWHEEL_DATA_DIR) return null;
+  if (process.env.SEO_STUDIO_DATA_DIR) return null;
   if (process.env.VERCEL) {
-    return "Written to the serverless temp filesystem; set COGWHEEL_DATA_DIR (or back this with Supabase/KV) for durable training storage.";
+    return "Written to the serverless temp filesystem; set SEO_STUDIO_DATA_DIR (or back this with Supabase/KV) for durable training storage.";
   }
   return null;
 }
@@ -44,7 +44,7 @@ async function robotsAllowed(url: string): Promise<boolean> {
     const robotsUrl = `${u.protocol}//${u.host}/robots.txt`;
     const fetched = await safeFetch(
       robotsUrl,
-      { method: "GET", headers: { "User-Agent": "CogwheelSeoBot/3.0 (+https://cogwheel.ai/bot)" } },
+      { method: "GET", headers: { "User-Agent": "SeoStudioBot/3.0 (+https://example.com/bot)" } },
       { timeoutMs: 5000, maxRedirects: 3 }
     ).catch(() => null);
     if (!fetched || !fetched.response.ok) return true;

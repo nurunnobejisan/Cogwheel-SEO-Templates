@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO & GEO Studio - Training Data Vault (IndexedDB Store) v3.0
+ * SEO & GEO Studio - Training Data Vault (IndexedDB Store) v3.0
  *
  * Implements a persistent, client-side dataset repository for fine-tuning
  * and Generative Engine Optimization. Automatically pairs raw webpage DOM snapshots
@@ -107,7 +107,7 @@ export interface TrainingVaultStats {
   avgQualityScore: number;
 }
 
-export const DB_NAME = "CogwheelTrainingVaultDB";
+export const DB_NAME = "SeoStudioTrainingVaultDB";
 export const DB_VERSION = 3;
 export const STORE_NAME = "training_samples";
 

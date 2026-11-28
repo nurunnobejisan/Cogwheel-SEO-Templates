@@ -4,7 +4,7 @@ export function buildCompsetKeywordsPrompt(opts: {
   input: CompsetsKeywordsAnalysisInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are an elite hospitality SEO strategist for Cogwheel SEO Studio.
+  const system = `You are an elite hospitality SEO strategist for SEO Studio.
 Analyze competitive keyword gaps between a target hotel property and its primary competitive set.
 Output strictly valid JSON matching the requested schema. Never invent unrealistic volume or fabricate metrics.`;
 

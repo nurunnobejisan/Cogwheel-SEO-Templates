@@ -128,7 +128,7 @@ def categorize(system_prompt: str) -> str:
         return "Google Algorithm Updates"
     if "SERP Strategist" in system_prompt:
         return CATEGORY_KEYWORDS
-    if "Cogwheel Unified SEO Platform" in system_prompt:
+    if "Unified SEO Platform" in system_prompt:
         return "20 Claude-SEO Agents"
     return "Search Console Cannibalization & GEO"
 

@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Multi-CMS Export Adapters Registry
+ * SEO Studio Templates — Multi-CMS Export Adapters Registry
  * 
  * Production adapters:
  * - HTML5 Exporter (pre-rendered canonicals, robots, minification)

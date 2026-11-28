@@ -231,8 +231,8 @@ describe("local visibility store", () => {
   let dir: string;
 
   beforeEach(async () => {
-    dir = await fs.mkdtemp(path.join(os.tmpdir(), "cogwheel-vis-"));
-    vi.stubEnv("COGWHEEL_DATA_DIR", dir);
+    dir = await fs.mkdtemp(path.join(os.tmpdir(), "seo-studio-vis-"));
+    vi.stubEnv("SEO_STUDIO_DATA_DIR", dir);
   });
 
   afterEach(async () => {

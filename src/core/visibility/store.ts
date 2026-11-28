@@ -1,7 +1,7 @@
 /**
  * Local-first visibility run store.
  *
- * Runs are appended as JSONL under COGWHEEL_DATA_DIR (or the OS temp dir).
+ * Runs are appended as JSONL under SEO_STUDIO_DATA_DIR (or the OS temp dir).
  * Production can swap this for Supabase by implementing the same three
  * functions; the rest of the module only depends on this interface.
  */
@@ -12,7 +12,7 @@ import path from "node:path";
 import type { VisibilityRun } from "./types.ts";
 
 function storeFile(): string {
-  return path.join(process.env.COGWHEEL_DATA_DIR || path.join(os.tmpdir(), "cogwheel-visibility"), "runs.jsonl");
+  return path.join(process.env.SEO_STUDIO_DATA_DIR || path.join(os.tmpdir(), "seo-studio-visibility"), "runs.jsonl");
 }
 
 export async function saveVisibilityRun(run: VisibilityRun): Promise<void> {

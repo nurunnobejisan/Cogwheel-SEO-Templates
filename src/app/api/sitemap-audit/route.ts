@@ -87,7 +87,7 @@ export async function POST(req: Request) {
         sitemapUrl,
         {
           headers: {
-            "User-Agent": "Mozilla/5.0 (compatible; CogwheelSEOSitemapBot/2.6; +https://cogwheel.hospitality)",
+            "User-Agent": "Mozilla/5.0 (compatible; SeoStudioSitemapBot/2.6; +https://example.com)",
             Accept: "application/xml, text/xml, */*",
           },
         },
@@ -101,7 +101,7 @@ export async function POST(req: Request) {
           fallbackUrl,
           {
             headers: {
-              "User-Agent": "Mozilla/5.0 (compatible; CogwheelSEOSitemapBot/2.6)",
+              "User-Agent": "Mozilla/5.0 (compatible; SeoStudioSitemapBot/2.6)",
               Accept: "application/xml, text/xml, */*",
             },
           },
@@ -138,7 +138,7 @@ export async function POST(req: Request) {
         try {
           const { response: subRes } = await safeFetch(
             subUrl,
-            { headers: { "User-Agent": "CogwheelSEOSitemapBot/2.6" } },
+            { headers: { "User-Agent": "SeoStudioSitemapBot/2.6" } },
             { timeoutMs: 5000, maxRedirects: 3 },
           );
           if (subRes.ok) {

@@ -41,7 +41,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "llms.txt: structure and validation rules",
     text:
       "llms.txt is a Markdown file published at the site root (/llms.txt). A valid file starts with an H1 project name, includes a one-line blockquote summary, and adds ## sections whose link lists point to the most citable pages. Links should be absolute http(s) URLs. The file should be plain Markdown, not an HTML page, and should stay well under 512 KB. Our validator checks the H1, summary, sections, absolute links, plain-text format, size, and placeholders. Missing (HTTP 404) is reported as absent; a fetch failure is reported as unavailable.",
-    source: "llmstxt.org + Cogwheel GEO playbook",
+    source: "llmstxt.org + SEO Studio GEO playbook",
     url: "https://llmstxt.org/",
     tags: ["geo", "llms-txt", "technical", "playbook"],
   },
@@ -50,7 +50,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "AI crawler access in robots.txt",
     text:
       "AI answer engines use crawlers such as GPTBot, OAI-SearchBot, ChatGPT-User, ClaudeBot, anthropic-ai, PerplexityBot, Perplexity-User, Google-Extended, Applebot-Extended, CCBot, Bytespider, and meta-externalagent. A User-agent group with 'Disallow: /' blocks that crawler; an explicit Allow rule can override a broader Disallow. If no group matches a crawler, it is unmentioned rather than blocked. A 404 robots.txt means access is unrestricted by default. We never infer crawler access when robots.txt could not be fetched.",
-    source: "Cogwheel GEO playbook",
+    source: "SEO Studio GEO playbook",
     tags: ["geo", "robots", "crawlers", "technical", "playbook"],
   },
   {
@@ -58,7 +58,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "Citability score formula and components",
     text:
       "Our citability score is a deterministic 0-100 heuristic, labelled estimated, not an AI-citation measurement. Formula: round(structured_data × 0.25 + answer_coverage × 0.25 + entity_signals × 0.15 + content_depth × 0.15 + citations × 0.20). Structured data rewards schema types, FAQPage and entity schema. Answer coverage rewards question-style headings and direct answer blocks. Entity signals reward Organization/LocalBusiness schema, sameAs links and NAP. Content depth uses word bands and paragraph count. Citations count statistics, quotations, external links and years. Every component exposes its inputs.",
-    source: "Cogwheel GEO playbook",
+    source: "SEO Studio GEO playbook",
     tags: ["geo", "citability", "score", "formula", "playbook"],
   },
   {
@@ -66,7 +66,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "GEO drift detection and CI threshold",
     text:
       "A GEO snapshot stores the citability score, component scores, llms.txt status, robots status, blocked AI crawlers, schema types, word count and issue ids. Drift compares the newest snapshot with the previous one. The default CI fail threshold is a 5-point citability drop. A newly blocked AI crawler, a lost llms.txt, removed schema types, or a large word-count loss also fails the check. Snapshots are local-first and can be exported as CI artifacts.",
-    source: "Cogwheel GEO playbook",
+    source: "SEO Studio GEO playbook",
     tags: ["geo", "drift", "ci", "monitoring", "playbook"],
   },
   {
@@ -74,7 +74,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "AI visibility tracking: mentions and citations",
     text:
       "Visibility tracking asks a fixed set of buyer prompts to each configured provider and records whether the brand was mentioned and which domains were cited. Mention matching is deterministic text matching, not an LLM judge. Citation classification covers own, competitor, social, informational and other. Competitor domains must be supplied by the operator; we never guess competitors. A prompt where every provider was unavailable is unmeasured, not a gap. A prompt is a gap only when at least one provider answered and none mentioned the brand.",
-    source: "Cogwheel GEO playbook",
+    source: "SEO Studio GEO playbook",
     tags: ["geo", "visibility", "mentions", "citations", "playbook"],
   },
   {
@@ -82,7 +82,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "BYOK provider adapters and daily cost caps",
     text:
       "Provider adapters are enabled only when their API key exists: OPENAI_API_KEY for ChatGPT, ANTHROPIC_API_KEY for Claude, PERPLEXITY_API_KEY for Perplexity, and GEMINI_API_KEY or GOOGLE_AI_API_KEY for Gemini. Google AI Overviews has no official API, so that adapter always reports unavailable rather than scraping. Every provider call is checked against VISIBILITY_DAILY_CALL_CAP (default 60) and VISIBILITY_DAILY_COST_CAP_USD (default 3). When a cap is reached the adapter returns unavailable with the cap reason.",
-    source: "Cogwheel GEO playbook",
+    source: "SEO Studio GEO playbook",
     tags: ["geo", "providers", "byok", "cost", "playbook"],
   },
   {
@@ -90,7 +90,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "Answer blocks and question-led headings",
     text:
       "A citable page gives a direct answer before the detail. Use question-style H2 or H3 headings that match how buyers ask the question, then a 40-60 word factual answer, then supporting sections. Add cited statistics or quotations with source links. Do not invent numbers: if a figure is not measured or sourced, leave it out. FAQPage or QAPage schema can make the Q&A structure explicit.",
-    source: "Cogwheel GEO playbook",
+    source: "SEO Studio GEO playbook",
     tags: ["geo", "content", "answer-blocks", "headings", "playbook"],
   },
   {
@@ -98,7 +98,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "Entity signals for AI recognition",
     text:
       "Answer engines need to resolve the brand as an entity. Use consistent Organization, LocalBusiness, Hotel or LodgingBusiness JSON-LD with name, url, logo, sameAs and NAP. Align the same facts across the site, Google Business Profile and Wikidata. Brand mentions in the title and meta description help, but schema and third-party corroboration matter more. Never fabricate awards, ratings or review counts.",
-    source: "Cogwheel GEO playbook",
+    source: "SEO Studio GEO playbook",
     tags: ["geo", "entity", "schema", "brand", "playbook"],
   },
   {
@@ -106,7 +106,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "Measure, label, or leave blank",
     text:
       "Every metric carries a provenance label. Measured means it came from a live fetch or a connected data source. Estimated means a documented deterministic heuristic, such as citability. Unavailable means the source needed to measure it is not connected; the value is null, never a plausible placeholder. For visibility tracking, mentioned=false means an answer was measured and the brand was absent; mentioned=null means no answer was measured. Rankings, search volumes, citations, competitors, fees and revenue are never invented.",
-    source: "Cogwheel measurement policy",
+    source: "SEO Studio measurement policy",
     tags: ["geo", "policy", "provenance", "measurement"],
   },
   {
@@ -114,7 +114,7 @@ export const GEO_KNOWLEDGE: RagChunk[] = [
     title: "Training data tiers and LoRA export gate",
     text:
       "Training triples move through raw, reviewed and gold tiers. Capture requires consent, a robots.txt allow decision, PII stripping and deduplication. Only reviewed and gold triples are training-eligible. The LoRA export is JSONL and refuses to start training until at least 2,000 reviewed pairs exist. Training data is our own audit-to-expert-fix pairs; third-party repository code is never training data.",
-    source: "Cogwheel GEO playbook",
+    source: "SEO Studio GEO playbook",
     tags: ["geo", "training", "lora", "tiers", "playbook"],
   },
   {

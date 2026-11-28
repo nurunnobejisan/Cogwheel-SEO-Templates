@@ -253,7 +253,7 @@ export function UnifiedSeoSuiteView({
 
       const blob = await res.blob();
       const disposition = res.headers.get("content-disposition") || "";
-      const fileName = /filename="([^"]+)"/.exec(disposition)?.[1] || `cogwheel-audit.${format}`;
+      const fileName = /filename="([^"]+)"/.exec(disposition)?.[1] || `seo-studio-audit.${format}`;
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;

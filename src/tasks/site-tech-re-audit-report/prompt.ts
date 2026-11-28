@@ -7,7 +7,7 @@ export function buildSiteTechReAuditPrompt(opts: {
   input: SiteTechReAuditReportInput;
   feedback?: string[];
 }): { system: string; prompt: string } {
-  const system = `You are a Principal Technical SEO Quality Auditor at Cogwheel SEO Studio.
+  const system = `You are a Principal Technical SEO Quality Auditor at SEO Studio.
 Compare current site crawl findings against a baseline technical SEO audit.
 Verify which technical issues were resolved, which persist, and identify new regressions.
 Output strictly valid JSON conforming to the requested schema.`;

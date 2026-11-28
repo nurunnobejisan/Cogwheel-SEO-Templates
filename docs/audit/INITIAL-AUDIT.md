@@ -1,14 +1,14 @@
-# Initial Product Audit — Cogwheel SEO & GEO Studio
+# Initial Product Audit — SEO & GEO Studio
 **Date:** 2026-11-23  
 **Auditor:** Principal Enterprise Systems & SEO Architect  
-**Workspace:** `jisan-razibmarketing/Cogwheel-SEO-Templates`  
+**Workspace:** `nurunnobejisan/SEO-Studio`
 **Version Baseline:** 2.8.0  
 
 ---
 
 ## 1. Executive Summary
 
-Cogwheel SEO & GEO Studio is a specialized hospitality search engine optimization and generative engine optimization (GEO) platform. Originally conceived for hotel property SEO audits with strict adherence to Hilton brand guidelines and physical pixel-budgeted SERP snippets, the application has evolved through multiple phases into a multi-vertical search automation engine.
+SEO & GEO Studio is a specialized hospitality search engine optimization and generative engine optimization (GEO) platform. Originally conceived for hotel property SEO audits with strict adherence to Hilton brand guidelines and physical pixel-budgeted SERP snippets, the application has evolved through multiple phases into a multi-vertical search automation engine.
 
 This initial audit establishes the ground truth of the codebase across all tiers: UI components, API routes, task pipeline runners, data stores, database migrations, Python analytical modules, and Chrome extension capture systems.
 
@@ -24,7 +24,7 @@ This initial audit establishes the ground truth of the codebase across all tiers
 ## 2. Directory Structure Analysis
 
 ```
-Cogwheel-SEO-Templates/
+SEO-Studio/
 ├── .github/workflows/          # CI/CD: ci.yml, seo-integrity.yml, auto-release.yml
 ├── AUDIT/                      # Architectural audits, inventory, and roadmaps
 ├── chrome-extension/           # Chrome MV3 TypeScript Extension (Vite + React)

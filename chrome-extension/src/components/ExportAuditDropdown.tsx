@@ -70,7 +70,7 @@ export function ExportAuditDropdown({
     openHtmlInNewTab(html);
     downloadFile(
       html,
-      `cogwheel-executive-audit-${propertySlug}-${dateSlug}.html`,
+      `seo-studio-executive-audit-${propertySlug}-${dateSlug}.html`,
       "text/html;charset=utf-8"
     );
   };
@@ -104,7 +104,7 @@ export function ExportAuditDropdown({
     const csv = generatePortfolioCsv(pageData, scores, activeProfile);
     downloadFile(
       csv,
-      `cogwheel-portfolio-audit-${propertySlug}-${dateSlug}.csv`,
+      `seo-studio-portfolio-audit-${propertySlug}-${dateSlug}.csv`,
       "text/csv;charset=utf-8"
     );
   };

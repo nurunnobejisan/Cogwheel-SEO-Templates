@@ -1,5 +1,5 @@
 /**
- * Cogwheel Universal SEO Engine — Entry Point
+ * SEO Studio Universal SEO Engine — Entry Point
  *
  * Mode-aware audit orchestration:
  *   1. Extract a normalized PageSnapshot (extension DOM pass or HTML fallback).

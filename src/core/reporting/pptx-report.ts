@@ -136,8 +136,8 @@ export async function buildAuditPptxReport(report: FullWebsiteAuditReport): Prom
   const r = report;
   const pptx = new PptxGenJS();
   pptx.layout = "LAYOUT_16x9";
-  pptx.author = "Cogwheel SEO Studio";
-  pptx.company = "Cogwheel";
+  pptx.author = "SEO Studio";
+  pptx.company = "SEO Studio";
   pptx.subject = `SEO & GEO audit for ${r.domain}`;
   pptx.title = `SEO & GEO Audit — ${r.domain}`;
 
@@ -171,7 +171,7 @@ export async function buildAuditPptxReport(report: FullWebsiteAuditReport): Prom
   };
 
   const addFooter = (slide: PptxGenJS.Slide, page: number) => {
-    slide.addText(`Cogwheel SEO Studio · ${r.domain} · ${new Date(r.createdAt).toISOString().slice(0, 10)}`, {
+    slide.addText(`SEO Studio · ${r.domain} · ${new Date(r.createdAt).toISOString().slice(0, 10)}`, {
       x: MARGIN,
       y: PAGE_H - 0.34,
       w: CONTENT_W - 0.6,

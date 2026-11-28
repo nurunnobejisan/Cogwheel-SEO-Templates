@@ -1,5 +1,5 @@
 /**
- * Cogwheel Unified SEO Platform - Full Website Audit Runner
+ * Unified SEO Platform - Full Website Audit Runner
  *
  * Orchestrates the audit dimensions and synthesizes a single
  * FullWebsiteAuditReport.
@@ -40,7 +40,7 @@ import type {
   SeverityLevel,
 } from "./types.ts";
 
-const USER_AGENT = "CogwheelSeoBot/3.0 (+https://cogwheel.ai/bot)";
+const USER_AGENT = "SeoStudioBot/3.0 (+https://example.com/bot)";
 const FETCH_TIMEOUT_MS = 15000;
 
 /** Issue categories from rules/ → report dimension. */

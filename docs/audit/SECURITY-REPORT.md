@@ -1,4 +1,4 @@
-# Security Audit Report — Cogwheel Enterprise Platform
+# Security Audit Report — SEO Studio Enterprise Platform
 **Date:** 2026-11-23  
 **Document:** `AUDIT/SECURITY-REPORT.md`  
 **Security Status:** Pass (Zero Critical Vulnerabilities)  

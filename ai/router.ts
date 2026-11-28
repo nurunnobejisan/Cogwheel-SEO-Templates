@@ -72,10 +72,10 @@ export function loadProviders(env: NodeJS.ProcessEnv = process.env): ProviderDes
       configured: Boolean(env.OPENROUTER_API_KEY),
     },
     {
-      id: "cogwheel-tuned",
-      label: "Cogwheel fine-tuned model",
+      id: "seo-studio-tuned",
+      label: "SEO Studio fine-tuned model",
       tier: "tier1",
-      model: env.CUSTOM_MODEL_ID || "cogwheel-seo-unified",
+      model: env.CUSTOM_MODEL_ID || "seo-studio-unified",
       configured: Boolean(env.CUSTOM_MODEL_ENDPOINT),
     },
   ];

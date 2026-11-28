@@ -104,7 +104,7 @@ export function KeywordResearchView({
     score += Math.min(20, Math.round(ratio * 20));
     // 3. Page Architecture Depth (up to 20 pts)
     score += Math.min(20, currentDeliverable.matrix.length * 3.5);
-    // 4. Cogwheel 3-Step Rationale Completeness (up to 20 pts)
+    // 4. SEO Studio 3-Step Rationale Completeness (up to 20 pts)
     const hasRationales = currentDeliverable.matrix.every((r) => r.rationale && r.placement);
     score += hasRationales ? 20 : 10;
     // 5. Keyword Pool & Intent Categorization (up to 20 pts)
@@ -273,7 +273,7 @@ export function KeywordResearchView({
               {currentDeliverable.propertyName}
             </h3>
             <p className="text-caption text-slate-500 dark:text-slate-400">
-              Targeting high-intent direct-booking queries with low-competition secondary page pairings and Cogwheel 3-step rationales.
+              Targeting high-intent direct-booking queries with low-competition secondary page pairings and SEO Studio 3-step rationales.
             </p>
           </div>
 
@@ -469,7 +469,7 @@ export function KeywordResearchView({
                   </div>
                 </div>
 
-                {/* Cogwheel 3-Step Rationale Section */}
+                {/* SEO Studio 3-Step Rationale Section */}
                 <div className="mt-3.5 grid gap-2.5 border-t border-slate-100 pt-3 text-caption sm:grid-cols-2 dark:border-slate-800/80">
                   <div className="rounded-xl bg-slate-50/80 p-3 dark:bg-slate-800/40">
                     <span className="text-micro font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">

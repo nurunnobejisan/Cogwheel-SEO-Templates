@@ -1,5 +1,5 @@
 /**
- * Cogwheel SEO Templates — Webflow CMS Exporter
+ * SEO Studio Templates — Webflow CMS Exporter
  * 
  * Generates Webflow CMS Collection-compliant CSV structures
  * with clean rich-text HTML escaping and standard Webflow SEO fields.

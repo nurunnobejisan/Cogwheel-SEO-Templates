@@ -300,9 +300,9 @@ export function readActor(): ActorIdentity {
 
 /** Roles a principal can assume in the console (dev convenience). */
 export const DEMO_ACTORS: ReadonlyArray<ActorIdentity> = [
-  { id: "admin@cogwheel.dev", role: "admin", organizationId: "org_demo" },
-  { id: "specialist@cogwheel.dev", role: "specialist", organizationId: "org_demo" },
-  { id: "viewer@cogwheel.dev", role: "viewer", organizationId: "org_demo" },
+  { id: "admin@example.com", role: "admin", organizationId: "org_demo" },
+  { id: "specialist@example.com", role: "specialist", organizationId: "org_demo" },
+  { id: "viewer@example.com", role: "viewer", organizationId: "org_demo" },
 ];
 
 export type {

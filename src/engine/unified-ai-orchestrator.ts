@@ -1,6 +1,6 @@
 /**
  * Unified AI SEO Model & Tool Orchestrator
- * Integrates Claude-SEO, Open-SEO, and MCP-GSC into Cogwheel's Unified Model System
+ * Integrates Claude-SEO, Open-SEO, and MCP-GSC into SEO Studio's Unified Model System
  */
 
 import { listGscProperties, getGscPerformanceOverview, compareGscPeriods, detectGscCannibalization, inspectGscUrl } from "../core/gsc/client.ts";
@@ -211,8 +211,8 @@ export function buildUnifiedSeoSystemPrompt(domain: string, brandName: string): 
   const agents = listClaudeSeoAgents();
   const agentSummary = agents.map((a) => `- ${a.name} (${a.category})`).join("\n");
 
-  return `You are the Cogwheel Unified Autonomous SEO AI Architect.
-You possess combined expertise synthesized from Cogwheel Studio, Claude-SEO, Open-SEO, and MCP-GSC.
+  return `You are the SEO Studio Unified Autonomous SEO AI Architect.
+You possess combined expertise synthesized from SEO Studio, Claude-SEO, Open-SEO, and MCP-GSC.
 
 CORE CAPABILITIES:
 1. Technical SEO: Full website crawling, canonical integrity, robots.txt, sitemaps, image optimization (=IMAGE formula parity), and heading structure (H1–H6).

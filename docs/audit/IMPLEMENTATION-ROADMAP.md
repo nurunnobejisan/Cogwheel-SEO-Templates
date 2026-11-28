@@ -1,4 +1,4 @@
-# Implementation Roadmap — Cogwheel Enterprise Platform
+# Implementation Roadmap — SEO Studio Enterprise Platform
 **Date:** 2026-11-23  
 **Document:** `AUDIT/IMPLEMENTATION-ROADMAP.md`  
 **Execution Strategy:** Continuous Checkpoint Delivery (Checkpoints A – I)  

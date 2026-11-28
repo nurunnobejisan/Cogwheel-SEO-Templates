@@ -48,7 +48,7 @@ All endpoints require the operator session.
 
 ## Storage
 
-Runs are appended to `COGWHEEL_DATA_DIR/runs.jsonl` (default: OS temp dir).
+Runs are appended to `SEO_STUDIO_DATA_DIR/runs.jsonl` (default: OS temp dir).
 Production should back this with Supabase or a KV store; the interface is three
 functions in `src/core/visibility/store.ts`.
 

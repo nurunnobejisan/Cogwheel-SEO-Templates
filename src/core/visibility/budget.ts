@@ -21,7 +21,7 @@ function today(): string {
 }
 
 function usageFile(): string {
-  return path.join(process.env.COGWHEEL_DATA_DIR || path.join(os.tmpdir(), "cogwheel-visibility"), "usage.json");
+  return path.join(process.env.SEO_STUDIO_DATA_DIR || path.join(os.tmpdir(), "seo-studio-visibility"), "usage.json");
 }
 
 const DEFAULT_CALL_CAP = 60;
