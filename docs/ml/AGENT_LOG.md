@@ -24,3 +24,13 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Untyped/legacy callers (content generation, audit explanations, daily-session agents) remain untagged so they stay safely on the standard provider chain.
 - **Remaining**: Proceed to WP3 (`ml/wp3-output-gates`).
+
+## WP3 — Validate Adapter Output, Then Fall Back (`ml/wp3-output-gates`)
+- **Changed**:
+  - Exported the canonical 47-type Schema.org allow-list to `schemas/known-schema-types.json` and loaded it in both `ml/eval/run_eval.py` and TypeScript.
+  - Created `src/core/ai/output-gates.ts` (`gateOutput`) validating `schema_generation` (JSON parse, known `@type`, ungrounded phone/address/price and metric checks) and `metadata_generation` (SERP pixel/char budgets via `validators/serpOptimizer.ts` plus brand check).
+  - Updated `src/core/claude.ts` (`generateClaudeText`) to run `gateOutput` on adapter completions, retry once on the standard provider chain on failure, record structured counter metrics (`getAdapterGateCounters`), and never log prompts or outputs.
+  - Added `tests/output-gates.test.ts` testing gate pass/fail, fallback routing, shared `KNOWN_SCHEMA_TYPES`, and no-prompt-logging.
+- **Defaults taken**:
+  - Supports both bare JSON-LD objects/`@graph` and task-wrapped `{ jsonLd }` / `{ rows: [{ proposedTitle, proposedMeta }] }` arrays so real task callers pass without translation glue.
+- **Remaining**: Proceed to WP4 (`ml/wp4-registry-retirement`).
