@@ -271,8 +271,16 @@ class HeadingOptimizer:
         issues_found: list[str] = []
         optimized_items: list[HeadingItem] = []
 
-        # Analyze current H1 counts and hierarchy
-        h1_indices = [i for i, (lvl, txt) in enumerate(raw_headings) if lvl == "H1"]
+        # Analyze current H1 counts and hierarchy. A non-semantic H1 (for
+        # example a testimonial) is about to be demoted to TEXT, so it must
+        # not satisfy the "page has an H1" check — otherwise every following
+        # H2 is demoted as an inverted hierarchy and no H1 is ever assigned.
+        raw_h1_indices = [i for i, (lvl, _txt) in enumerate(raw_headings) if lvl == "H1"]
+        h1_indices = [
+            i
+            for i in raw_h1_indices
+            if self.detect_non_semantic(self.clean_headline(raw_headings[i][1])) is None
+        ]
         h1_count = len(h1_indices)
 
         if h1_count == 0:
@@ -584,8 +592,8 @@ class HeadingOptimizer:
             keyword=keyword,
             headings=optimized_items,
             issues_found=issues_found,
-            h1_count_before=h1_count,
-            h1_count_after=1,
+            h1_count_before=len(raw_h1_indices),
+            h1_count_after=sum(1 for h in optimized_items if h.new_level == "H1"),
             total_headings=len(optimized_items),
             health_score=score,
         )
