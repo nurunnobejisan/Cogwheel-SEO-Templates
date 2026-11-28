@@ -64,7 +64,7 @@ jobs:
       - name: Lint (ruff)
         run: |
           pip install ruff==0.17.6
-          ruff check python/
+          ruff check python/ api/
       - name: Tests (pytest)
         run: pytest tests/python -q
 
