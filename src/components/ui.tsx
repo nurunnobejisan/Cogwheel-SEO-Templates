@@ -6,11 +6,30 @@ import type {
   ReactNode,
   SelectHTMLAttributes,
 } from "react";
-import { useEffect, useId, useRef } from "react";
+import { useId } from "react";
+import { X, Loader2 } from "lucide-react";
 import type { KeywordFlag } from "@/lib/types";
+import {
+  Badge as TokenBadge,
+  Button as TokenButton,
+  Card as TokenCard,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  Input as TokenInput,
+  type BadgeProps as TokenBadgeProps,
+} from "@/components/ui/index";
+import { cn } from "@/lib/utils";
 
 /* ─────────────────────────────────────────────────────────────────────────────
-   Card
+   Thin compatibility wrapper around `src/components/ui/*` (removed in Phase 4)
    ───────────────────────────────────────────────────────────────────────────── */
 
 export interface CardProps {
@@ -19,7 +38,6 @@ export interface CardProps {
   actions?: ReactNode;
   children: ReactNode;
   className?: string;
-  /** Applied to the inner content wrapper (defaults to `p-6`). */
   bodyClassName?: string;
   as?: "section" | "article" | "div";
 }
@@ -30,32 +48,26 @@ export function Card({
   actions,
   children,
   className = "",
-  bodyClassName = "p-6",
+  bodyClassName = "p-4 md:p-5",
   as: Component = "section",
 }: CardProps) {
   return (
-    <Component
-      className={`rounded-2xl border border-slate-200/80 bg-white shadow-soft transition-colors dark:border-slate-800 dark:bg-slate-900 ${className}`}
-    >
-      {(title || actions) && (
-        <header className="flex flex-wrap items-start justify-between gap-3 border-b border-slate-100 px-5 py-4 dark:border-slate-800 sm:px-6">
-          <div className="min-w-0">
-            {title && (
-              <h2 className="section-title">{title}</h2>
-            )}
-            {subtitle && <p className="section-subtitle text-pretty">{subtitle}</p>}
-          </div>
-          {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
-        </header>
-      )}
-      <div className={bodyClassName}>{children}</div>
-    </Component>
+    <TokenCard className={className}>
+      <Component>
+        {(title || actions) && (
+          <CardHeader>
+            <div className="min-w-0">
+              {title && <CardTitle>{title}</CardTitle>}
+              {subtitle && <CardDescription>{subtitle}</CardDescription>}
+            </div>
+            {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+          </CardHeader>
+        )}
+        <CardContent className={bodyClassName}>{children}</CardContent>
+      </Component>
+    </TokenCard>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Button
-   ───────────────────────────────────────────────────────────────────────────── */
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "danger" | "outline" | "subtle";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -63,27 +75,16 @@ export type ButtonSize = "sm" | "md" | "lg";
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: ButtonVariant;
   size?: ButtonSize;
+  loading?: boolean;
 }
 
-const BUTTON_VARIANTS: Record<ButtonVariant, string> = {
-  primary:
-    "bg-brand text-slate-900 font-display font-bold hover:bg-brand-light shadow-glow hover:-translate-y-0.5 active:translate-y-0 disabled:bg-slate-200 disabled:text-slate-400 disabled:shadow-none disabled:translate-y-0 dark:disabled:bg-slate-800 dark:disabled:text-slate-600",
-  secondary:
-    "border border-slate-200 bg-white text-slate-700 font-semibold hover:border-slate-300 hover:bg-slate-50 disabled:text-slate-400 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700",
-  outline:
-    "border border-slate-300 bg-transparent text-slate-700 font-semibold hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800",
-  subtle:
-    "bg-slate-100 text-slate-800 font-semibold hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700",
-  ghost:
-    "text-slate-600 font-medium hover:bg-slate-100 disabled:text-slate-300 dark:text-slate-400 dark:hover:bg-slate-800 dark:disabled:text-slate-600",
-  danger:
-    "bg-rose-50 border border-rose-200 text-rose-700 font-semibold hover:bg-rose-100 dark:bg-rose-950/40 dark:border-rose-900/50 dark:text-rose-300",
-};
-
-const BUTTON_SIZES: Record<ButtonSize, string> = {
-  sm: "px-3 py-1.5 text-caption rounded-lg gap-1.5",
-  md: "px-4 py-2 text-body rounded-xl gap-2",
-  lg: "px-5 py-2.5 text-h3 rounded-xl gap-2.5",
+const LEGACY_BUTTON_VARIANT: Record<ButtonVariant, "primary" | "secondary" | "ghost" | "destructive"> = {
+  primary: "primary",
+  secondary: "secondary",
+  outline: "secondary",
+  subtle: "secondary",
+  ghost: "ghost",
+  danger: "destructive",
 };
 
 export function Button({
@@ -91,24 +92,23 @@ export function Button({
   size = "md",
   className = "",
   disabled,
+  loading,
   children,
   ...props
 }: ButtonProps) {
   return (
-    <button
-      type="button"
+    <TokenButton
+      variant={LEGACY_BUTTON_VARIANT[variant]}
+      size={size}
       disabled={disabled}
-      className={`inline-flex items-center justify-center transition-all duration-200 ease-out-expo focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand/50 focus-visible:ring-offset-1 disabled:cursor-not-allowed ${BUTTON_SIZES[size]} ${BUTTON_VARIANTS[variant]} ${className}`}
+      loading={loading}
+      className={className}
       {...props}
     >
       {children}
-    </button>
+    </TokenButton>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Stat / KPI
-   ───────────────────────────────────────────────────────────────────────────── */
 
 export type StatTone = "default" | "good" | "warn" | "danger" | "brand";
 
@@ -125,38 +125,35 @@ export interface StatProps {
   trend?: StatTrend;
   subtext?: string;
   icon?: ReactNode;
-  /** 0–100. Renders a slim progress bar beneath the value. */
   progress?: number;
 }
 
 const STAT_TONES: Record<StatTone, string> = {
-  default: "text-slate-900 dark:text-white",
-  good: "text-emerald-600 dark:text-emerald-400",
-  warn: "text-amber-600 dark:text-amber-400",
-  danger: "text-rose-600 dark:text-rose-400",
-  brand: "text-brand-dark dark:text-brand",
+  default: "text-text",
+  good: "text-success-fg",
+  warn: "text-warning-fg",
+  danger: "text-error-fg",
+  brand: "text-text",
 };
 
 export function Stat({ label, value, tone = "default", trend, subtext, icon, progress }: StatProps) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-slate-200/80 bg-white p-4 shadow-soft transition-all hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900">
+    <div className="surface-card flex flex-col justify-between p-4">
       <div className="flex items-center justify-between gap-2">
-        <span className="eyebrow">{label}</span>
-        {icon && <span className="text-slate-400">{icon}</span>}
+        <span className="text-overline uppercase text-text-muted">{label}</span>
+        {icon && <span className="text-text-subtle">{icon}</span>}
       </div>
-      <div className={`mt-2 nums font-display text-2xl font-extrabold tracking-tight ${STAT_TONES[tone]}`}>
-        {value}
-      </div>
+      <div className={cn("nums mt-2 text-display", STAT_TONES[tone])}>{value}</div>
       {typeof progress === "number" && (
         <div
-          className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800"
+          className="mt-2.5 h-1.5 w-full overflow-hidden rounded-full bg-surface-2"
           role="progressbar"
           aria-valuenow={Math.round(progress)}
           aria-valuemin={0}
           aria-valuemax={100}
         >
           <div
-            className="h-full rounded-full bg-brand transition-all duration-500 ease-out-expo"
+            className="h-full rounded-full bg-brand transition-all duration-panel ease-telemetry"
             style={{ width: `${Math.min(100, Math.max(0, progress))}%` }}
           />
         </div>
@@ -165,27 +162,24 @@ export function Stat({ label, value, tone = "default", trend, subtext, icon, pro
         <div className="mt-2 flex items-center gap-1.5 text-caption">
           {trend && (
             <span
-              className={`inline-flex items-center font-bold nums ${
+              className={cn(
+                "nums inline-flex items-center font-medium",
                 trend.isGood === true
-                  ? "text-emerald-600 dark:text-emerald-400"
+                  ? "text-success-fg"
                   : trend.isGood === false
-                  ? "text-rose-600 dark:text-rose-400"
-                  : "text-slate-500"
-              }`}
+                  ? "text-error-fg"
+                  : "text-text-muted"
+              )}
             >
               {trend.value}
             </span>
           )}
-          {subtext && <span className="text-slate-400 dark:text-slate-500">{subtext}</span>}
+          {subtext && <span className="text-text-muted">{subtext}</span>}
         </div>
       )}
     </div>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Badge
-   ───────────────────────────────────────────────────────────────────────────── */
 
 export type BadgeVariant = "brand" | "success" | "warning" | "danger" | "info" | "neutral";
 export type BadgeSize = "sm" | "md";
@@ -196,90 +190,67 @@ export interface BadgeProps {
   size?: BadgeSize;
   title?: string;
   className?: string;
-  /** Renders a status dot before the label. */
   dot?: boolean;
 }
 
-const BADGE_VARIANTS: Record<BadgeVariant, string> = {
-  brand: "bg-brand/15 text-slate-900 border border-brand/30 dark:bg-brand/20 dark:text-brand-light",
-  success:
-    "bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/40 dark:text-emerald-300 dark:border-emerald-800/40",
-  warning:
-    "bg-amber-50 text-amber-800 border border-amber-200 dark:bg-amber-950/40 dark:text-amber-300 dark:border-amber-800/40",
-  danger:
-    "bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/40 dark:text-rose-300 dark:border-rose-800/40",
-  info: "bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/40 dark:text-sky-300 dark:border-sky-800/40",
-  neutral:
-    "bg-slate-100 text-slate-700 border border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700",
+const LEGACY_BADGE_VARIANT: Record<BadgeVariant, NonNullable<TokenBadgeProps["variant"]>> = {
+  brand: "brand",
+  success: "success",
+  warning: "warning",
+  danger: "error",
+  info: "notice",
+  neutral: "neutral",
 };
 
-const BADGE_SIZES: Record<BadgeSize, string> = {
-  sm: "px-2 py-0.5 text-eyebrow",
-  md: "px-2.5 py-1 text-caption",
-};
-
-export function Badge({ children, variant = "neutral", size = "md", title, className = "", dot }: BadgeProps) {
+export function Badge({ children, variant = "neutral", title, className = "", dot }: BadgeProps) {
   return (
-    <span
-      title={title}
-      className={`inline-flex items-center gap-1 rounded-full font-semibold transition-colors ${BADGE_SIZES[size]} ${BADGE_VARIANTS[variant]} ${className}`}
-    >
-      {dot && <span className="h-1.5 w-1.5 rounded-full bg-current opacity-70" />}
+    <TokenBadge variant={LEGACY_BADGE_VARIANT[variant]} title={title} className={className} dot={dot}>
       {children}
-    </span>
+    </TokenBadge>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   Keyword flag badge & KD pill (preserved behavior)
-   ───────────────────────────────────────────────────────────────────────────── */
-
-const FLAG_STYLES: Record<KeywordFlag, { label: string; cls: string; title: string }> = {
-  "kd-na": { label: "KD N/A", cls: "bg-slate-100 text-slate-600", title: "KD was N/A in the source export" },
+const FLAG_STYLES: Record<KeywordFlag, { label: string; variant: NonNullable<TokenBadgeProps["variant"]>; title: string }> = {
+  "kd-na": { label: "KD N/A", variant: "neutral", title: "KD was N/A in the source export" },
   "low-sv-exception": {
     label: "Low-SV exception",
-    cls: "bg-sky-100 text-sky-700",
+    variant: "notice",
     title: "SV < 10 kept: KD < 20 local venue demand generator",
   },
   "kd-unknown": {
     label: "KD unknown",
-    cls: "bg-amber-100 text-amber-800",
+    variant: "warning",
     title: "Primary has no KD — verify before approving",
   },
   "kd-exception": {
     label: "KD ≥ 45",
-    cls: "bg-rose-100 text-rose-700",
+    variant: "error",
     title: "No KD < 45 candidate — high-difficulty exception requires approval",
   },
   "high-sv-exception-available": {
     label: "High-SV exception",
-    cls: "bg-violet-100 text-violet-700",
+    variant: "notice",
     title: "A KD ≥ 45 keyword with much higher volume is available",
   },
-  "no-candidates": { label: "No candidates", cls: "bg-rose-100 text-rose-700", title: "No keywords in this page's buckets" },
-  "manual-override": { label: "Edited", cls: "bg-brand-100 text-slate-900", title: "Manually changed at checkpoint" },
+  "no-candidates": { label: "No candidates", variant: "error", title: "No keywords in this page's buckets" },
+  "manual-override": { label: "Edited", variant: "brand", title: "Manually changed at checkpoint" },
 };
 
 export function FlagBadge({ flag }: { flag: KeywordFlag }) {
   const s = FLAG_STYLES[flag];
   if (!s) return null;
   return (
-    <span title={s.title} className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-eyebrow font-semibold ${s.cls}`}>
+    <TokenBadge variant={s.variant} title={s.title}>
       {s.label}
-    </span>
+    </TokenBadge>
   );
 }
 
 export function KdPill({ kd, max = 45 }: { kd: number | null; max?: number }) {
-  if (kd === null) return <span className="text-caption text-slate-400">N/A</span>;
-  const cls =
-    kd < 30 ? "text-emerald-700 font-medium" : kd < max ? "text-amber-700 font-medium" : "text-rose-700 font-semibold";
-  return <span className={`nums ${cls}`}>{kd}</span>;
+  if (kd === null) return <span className="text-caption text-text-subtle">N/A</span>;
+  const cls = kd < 30 ? "text-success-fg" : kd < max ? "text-warning-fg" : "text-error-fg";
+  return <span className={cn("nums font-medium", cls)}>{kd}</span>;
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Empty state
-   ───────────────────────────────────────────────────────────────────────────── */
 
 export interface EmptyStateProps {
   title: string;
@@ -290,18 +261,14 @@ export interface EmptyStateProps {
 
 export function EmptyState({ title, description, action, icon }: EmptyStateProps) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-2xl border border-dashed border-slate-200 bg-slate-50/70 px-6 py-12 text-center dark:border-slate-800 dark:bg-slate-900/40">
-      {icon && <div className="rounded-2xl bg-white p-3 shadow-soft dark:bg-slate-800">{icon}</div>}
-      <h3 className="font-display text-h3 font-bold text-slate-800 dark:text-slate-100">{title}</h3>
-      <p className="max-w-md text-caption text-slate-500 text-pretty dark:text-slate-400">{description}</p>
-      {action && <div className="mt-2">{action}</div>}
+    <div className="telemetry-grid flex flex-col items-center justify-center gap-3 rounded border border-dashed border-border bg-surface-2 px-6 py-10 text-center">
+      {icon && <div className="rounded border border-border bg-surface p-2.5 text-text-muted">{icon}</div>}
+      <h3 className="text-heading text-text">{title}</h3>
+      <p className="max-w-[72ch] text-caption text-text-muted">{description}</p>
+      {action && <div className="mt-1">{action}</div>}
     </div>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Notification banner
-   ───────────────────────────────────────────────────────────────────────────── */
 
 export type NotificationType = "info" | "success" | "warning" | "error";
 
@@ -313,41 +280,35 @@ export interface NotificationBannerProps {
 }
 
 const NOTIFICATION_STYLES: Record<NotificationType, string> = {
-  info: "border-sky-200 bg-sky-50 text-sky-900 dark:border-sky-800/40 dark:bg-sky-950/30 dark:text-sky-200",
-  success:
-    "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-800/40 dark:bg-emerald-950/30 dark:text-emerald-200",
-  warning:
-    "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-800/40 dark:bg-amber-950/30 dark:text-amber-200",
-  error: "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-800/40 dark:bg-rose-950/30 dark:text-rose-200",
+  info: "border-notice/30 bg-notice-soft text-notice-fg",
+  success: "border-success/30 bg-success-soft text-success-fg",
+  warning: "border-warning/30 bg-warning-soft text-warning-fg",
+  error: "border-error/30 bg-error-soft text-error-fg",
 };
 
 export function NotificationBanner({ title, description, type = "info", onClose }: NotificationBannerProps) {
   return (
     <aside
       aria-label="Notification"
-      className={`flex items-start justify-between gap-3 rounded-2xl border p-4 text-caption ${NOTIFICATION_STYLES[type]}`}
+      className={cn("flex items-start justify-between gap-3 rounded border p-4 text-caption", NOTIFICATION_STYLES[type])}
     >
       <div>
-        <p className="font-bold">{title}</p>
-        {description && <p className="mt-0.5 opacity-90 text-pretty">{description}</p>}
+        <p className="font-semibold">{title}</p>
+        {description && <p className="mt-0.5 max-w-[72ch] opacity-90">{description}</p>}
       </div>
       {onClose && (
         <button
           type="button"
           onClick={onClose}
-          className="text-slate-400 transition hover:text-slate-700 dark:hover:text-slate-200"
+          className="tap-compact rounded-sm p-1 text-current opacity-70 transition-opacity hover:opacity-100"
           aria-label="Dismiss notification"
         >
-          ✕
+          <X className="h-4 w-4" aria-hidden="true" />
         </button>
       )}
     </aside>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Modal dialog
-   ───────────────────────────────────────────────────────────────────────────── */
 
 export type ModalSize = "sm" | "md" | "lg" | "xl" | "full";
 
@@ -370,68 +331,19 @@ const MODAL_SIZES: Record<ModalSize, string> = {
 };
 
 export function Modal({ isOpen, onClose, title, description, children, footer, size = "md" }: ModalProps) {
-  const modalRef = useRef<HTMLDivElement>(null);
-  const titleId = useId();
-
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
-    };
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-      window.addEventListener("keydown", handleKeyDown);
-    }
-    return () => {
-      document.body.style.overflow = "unset";
-      window.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [isOpen, onClose]);
-
-  if (!isOpen) return null;
-
   return (
-    <div role="dialog" aria-modal="true" aria-labelledby={titleId} className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
-      <div
-        className="fixed inset-0 bg-slate-950/60 backdrop-blur-sm transition-opacity"
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div
-        ref={modalRef}
-        className={`relative flex w-full flex-col rounded-2xl border border-slate-200 bg-white shadow-floating transition-all dark:border-slate-800 dark:bg-slate-900 ${MODAL_SIZES[size]}`}
-      >
-        <header className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5 dark:border-slate-800">
-          <div className="min-w-0">
-            <h2 id={titleId} className="font-display text-h2 font-bold text-slate-900 dark:text-white">
-              {title}
-            </h2>
-            {description && <p className="mt-1 text-caption text-slate-500 text-pretty dark:text-slate-400">{description}</p>}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-            aria-label="Close dialog"
-          >
-            ✕
-          </button>
-        </header>
-
-        <div className="flex-1 overflow-y-auto p-6">{children}</div>
-
-        {footer && (
-          <footer className="flex items-center justify-end gap-2 border-t border-slate-100 px-6 py-4 dark:border-slate-800">
-            {footer}
-          </footer>
-        )}
-      </div>
-    </div>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className={MODAL_SIZES[size]}>
+        <DialogHeader>
+          <DialogTitle>{title}</DialogTitle>
+          {description && <DialogDescription>{description}</DialogDescription>}
+        </DialogHeader>
+        <div className="flex-1 overflow-y-auto p-5">{children}</div>
+        {footer && <DialogFooter>{footer}</DialogFooter>}
+      </DialogContent>
+    </Dialog>
   );
 }
-
-/* ─────────────────────────────────────────────────────────────────────────────
-   Form controls
-   ───────────────────────────────────────────────────────────────────────────── */
 
 export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -440,29 +352,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 }
 
 export function Input({ label, error, helperText, className = "", id, ...props }: InputProps) {
-  const reactId = useId().replace(/:/g, "");
-  const inputId = id || (label ? `${label.toLowerCase().replace(/\s+/g, "-")}-${reactId}` : undefined);
-
-  return (
-    <div className="w-full">
-      {label && (
-        <label htmlFor={inputId} className="label">
-          {label}
-        </label>
-      )}
-      <input
-        id={inputId}
-        className={`mt-1.5 block w-full rounded-xl border bg-white px-3.5 py-2 text-body text-slate-900 shadow-soft transition placeholder:text-slate-400 focus:outline-none focus:ring-2 dark:border-slate-800 dark:bg-slate-900 dark:text-white ${
-          error
-            ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/20"
-            : "border-slate-200 focus:border-brand focus:ring-brand/25 dark:focus:border-brand"
-        } ${className}`}
-        {...props}
-      />
-      {error && <p className="mt-1 text-caption text-rose-600 dark:text-rose-400">{error}</p>}
-      {!error && helperText && <p className="mt-1 text-caption text-slate-400">{helperText}</p>}
-    </div>
-  );
+  return <TokenInput label={label} error={error} helperText={helperText} className={className} id={id} {...props} />;
 }
 
 export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
@@ -471,49 +361,40 @@ export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 }
 
 export function Select({ label, error, children, className = "", id, ...props }: SelectProps) {
-  const reactId = useId().replace(/:/g, "");
-  const selectId = id || (label ? `${label.toLowerCase().replace(/\s+/g, "-")}-${reactId}` : undefined);
+  const reactId = useId();
+  const selectId = id || reactId;
 
   return (
-    <div className="w-full">
+    <div className="w-full space-y-1.5">
       {label && (
-        <label htmlFor={selectId} className="label">
+        <label htmlFor={selectId} className="block text-caption font-medium text-text-muted">
           {label}
         </label>
       )}
       <select
         id={selectId}
-        className={`mt-1.5 block w-full rounded-xl border bg-white px-3.5 py-2 text-body text-slate-900 shadow-soft transition focus:outline-none focus:ring-2 dark:border-slate-800 dark:bg-slate-900 dark:text-white ${
-          error
-            ? "border-rose-400 focus:border-rose-500 focus:ring-rose-500/20"
-            : "border-slate-200 focus:border-brand focus:ring-brand/25 dark:focus:border-brand"
-        } ${className}`}
+        className={cn(
+          "flex h-9 w-full rounded-sm border bg-surface px-3 text-body text-text transition-colors focus:outline-none",
+          error ? "border-error focus:border-error" : "border-border-strong focus:border-brand",
+          className
+        )}
         {...props}
       >
         {children}
       </select>
-      {error && <p className="mt-1 text-caption text-rose-600 dark:text-rose-400">{error}</p>}
+      {error && <p className="text-caption text-error-fg">{error}</p>}
     </div>
   );
 }
 
-/* ─────────────────────────────────────────────────────────────────────────────
-   Spinner
-   ───────────────────────────────────────────────────────────────────────────── */
-
 export type SpinnerSize = "sm" | "md" | "lg";
 
 const SPINNER_SIZES: Record<SpinnerSize, string> = {
-  sm: "h-3.5 w-3.5 border-2",
-  md: "h-5 w-5 border-2",
-  lg: "h-8 w-8 border-[3px]",
+  sm: "h-3.5 w-3.5",
+  md: "h-5 w-5",
+  lg: "h-8 w-8",
 };
 
 export function Spinner({ size = "md" }: { size?: SpinnerSize }) {
-  return (
-    <span
-      className={`inline-block animate-spin rounded-full border-slate-900/20 border-t-slate-900 dark:border-white/20 dark:border-t-white ${SPINNER_SIZES[size]}`}
-      aria-label="Loading"
-    />
-  );
+  return <Loader2 className={cn("animate-spin text-text-muted", SPINNER_SIZES[size])} aria-label="Loading" />;
 }
