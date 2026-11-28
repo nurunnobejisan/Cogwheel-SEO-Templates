@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { pageTitle } from "../src/config/brand";
 import { metadata as homeMeta } from "../src/app/page";
 import { metadata as templatesMeta } from "../src/app/templates/page";
 import { metadata as matrixMeta } from "../src/app/strategy-matrix/page";
@@ -16,14 +17,14 @@ describe("Engineering Standards Rules Enforcement — Route Metadata & SEO Stand
   ];
 
   it("enforces unique meta titles on all routes", () => {
-    const titles = routes.map((r) => String(r.meta.title));
+    const titles = routes.map((r) => pageTitle(String(r.meta.title)));
     const uniqueTitles = new Set(titles);
     expect(uniqueTitles.size).toBe(routes.length);
   });
 
   it("enforces strict meta title length between 50 and 60 characters", () => {
     routes.forEach((r) => {
-      const title = String(r.meta.title);
+      const title = pageTitle(String(r.meta.title));
       expect(
         title.length,
         `Route ${r.route} title "${title}" (${title.length} chars) must be 50-60 chars`
@@ -58,13 +59,14 @@ describe("Engineering Standards Rules Enforcement — Route Metadata & SEO Stand
   it("validates all 12 templates have strict 50-60 char titles and 145-155 char descriptions", () => {
     expect(TEMPLATES_DATA.length).toBe(12);
     TEMPLATES_DATA.forEach((tmpl) => {
+      const renderedTitle = pageTitle(tmpl.metaTitle);
       expect(
-        tmpl.metaTitle.length,
-        `Template ${tmpl.slug} title "${tmpl.metaTitle}" (${tmpl.metaTitle.length} chars) must be 50-60 chars`
+        renderedTitle.length,
+        `Template ${tmpl.slug} title "${renderedTitle}" (${renderedTitle.length} chars) must be 50-60 chars`
       ).toBeGreaterThanOrEqual(50);
       expect(
-        tmpl.metaTitle.length,
-        `Template ${tmpl.slug} title "${tmpl.metaTitle}" (${tmpl.metaTitle.length} chars) must be 50-60 chars`
+        renderedTitle.length,
+        `Template ${tmpl.slug} title "${renderedTitle}" (${renderedTitle.length} chars) must be 50-60 chars`
       ).toBeLessThanOrEqual(60);
 
       expect(
