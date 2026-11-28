@@ -1,0 +1,11 @@
+{
+  "query": "ধানমন্ডিতে সেরা হোটেল",
+  "answer": "ধানমন্ডিতে সেরা হোটেল — সেরা: Pan Pacific Sonargaon Dhaka, Radisson Blu Dhaka.",
+  "citations": [
+    "panpacific.com",
+    "booking.com"
+  ],
+  "raw": {
+    "prompt": "ধানমন্ডিতে সেরা হোটেল"
+  }
+}
