@@ -26,6 +26,11 @@ describe("SSRF: private / reserved address classification", () => {
       "fe80::1",
       "fd00::1",
       "::ffff:127.0.0.1",
+      // URL-normalised and bracketed IPv4-mapped IPv6 forms.
+      "::ffff:7f00:1",
+      "[::ffff:7f00:1]",
+      "[::ffff:127.0.0.1]",
+      "0:0:0:0:0:ffff:7f00:1",
     ]) {
       expect(isPrivateOrReservedIp(ip), ip).toBe(true);
     }
@@ -43,11 +48,16 @@ describe("SSRF: private / reserved address classification", () => {
     expect(() => validateTargetUrl("http://localhost:3000")).toThrow();
     expect(() => validateTargetUrl("http://printer.local")).toThrow();
     expect(() => validateTargetUrl("file:///etc/passwd")).toThrow();
+    // WHATWG URL rewrites this to [::ffff:7f00:1]; the old regex missed it.
+    expect(() => validateTargetUrl("http://[::ffff:127.0.0.1]/")).toThrow();
   });
 
   it("blocks egress for private literal IPs without a DNS lookup", async () => {
     await expect(assertEgressAllowed("http://127.0.0.1:8080")).rejects.toBeInstanceOf(UrlValidationError);
     await expect(assertEgressAllowed("http://169.254.169.254/")).rejects.toBeInstanceOf(UrlValidationError);
+    await expect(assertEgressAllowed("http://[::ffff:127.0.0.1]/")).rejects.toBeInstanceOf(
+      UrlValidationError,
+    );
     // EgressBlockedError is a UrlValidationError subtype (DNS-level rejection).
     expect(new EgressBlockedError("x")).toBeInstanceOf(UrlValidationError);
   });
