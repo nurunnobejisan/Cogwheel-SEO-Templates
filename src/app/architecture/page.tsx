@@ -5,7 +5,7 @@ import Image from "next/image";
 export const metadata: Metadata = {
   title: "System Architecture & Technical Specs — SEO Studio",
   description:
-    "SEO Studio's technical architecture for the Manifest V3 extension, AI training vault, hybrid model routing, and Python fine-tuning pipelines.",
+    "SEO Studio's technical architecture for the Manifest V3 extension, AI training vault, hybrid model routing, and Python fine-tuning pipelines in detail.",
 };
 
 export default function ArchitecturePage() {

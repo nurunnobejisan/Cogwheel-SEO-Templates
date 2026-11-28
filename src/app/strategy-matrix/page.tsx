@@ -5,7 +5,7 @@ import matrixData from "../../../data/78-keyword-strategy-matrix.json";
 export const metadata: Metadata = {
   title: "78-Keyword Hospitality Strategy Matrix — SEO Studio",
   description:
-    "SEO Studio's 78-keyword hospitality matrix spanning Brand, Local, Airport, Meetings, Extended Stay, and Generative AI conversational queries.",
+    "SEO Studio's 78-keyword hospitality matrix spanning Brand, Local, Airport, Meetings, Extended Stay, and Generative AI conversational queries worldwide.",
 };
 
 export default function StrategyMatrixPage() {

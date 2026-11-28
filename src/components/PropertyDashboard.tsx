@@ -1,7 +1,6 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import Image from "next/image";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import trainedPropertiesData from "@/data/trained-properties.json";
@@ -427,15 +426,6 @@ export default function PropertyDashboard() {
       <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl dark:border-slate-800/70 dark:bg-slate-950/80">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3.5">
-            <Image
-              src="/seo-studio-logo.png"
-              alt="SEO Studio"
-              width={172}
-              height={42}
-              priority
-              className="h-8 w-auto object-contain"
-            />
-            <div className="hidden h-8 w-px bg-slate-200 dark:bg-slate-800 sm:block" />
             <div className="hidden min-w-0 sm:block">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-display text-h3 font-bold tracking-tight text-slate-900 dark:text-white">
