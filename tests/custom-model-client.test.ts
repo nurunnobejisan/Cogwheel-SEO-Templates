@@ -7,7 +7,7 @@ import {
   testCustomModelConnection,
   generateSeoAutoFix,
   generateGeoSummary,
-} from "../src/engine/custom-model-client";
+} from "../chrome-extension/src/engine/custom-model-client";
 
 describe("Custom Fine-Tuned Model Client & Inference Router", () => {
   beforeEach(async () => {
@@ -253,8 +253,40 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
 
       // Must fall back cleanly to default rules without crashing
       expect(result.source).toBe("default_rules_engine");
-      expect(result.optimalMeta).toBeDefined();
-      expect(result.optimalMeta).toContain("lowest rate guarantee");
+      // The rules engine never drafts descriptive copy: no suggestion was
+      // produced and no placeholder meta description was invented either.
+      expect(result.optimalMeta).toBeUndefined();
+      expect(result.codeSnippet).toBe("");
+      expect(result.description).toContain("no meta description suggestion was produced");
+    });
+
+    it("produces a blank suggestion when there is no property name source", async () => {
+      await saveCustomModelConfig({
+        ...DEFAULT_CUSTOM_MODEL_CONFIG,
+        enabled: false,
+      });
+
+      const result = await generateSeoAutoFix({ issueId: "title-len" });
+
+      expect(result.source).toBe("default_rules_engine");
+      expect(result.optimalTitle).toBeUndefined();
+      expect(result.codeSnippet).toBe("");
+      expect(result.description).toContain("no title suggestion was produced");
+    });
+
+    it("never falls back to a fabricated property, brand or URL", async () => {
+      await saveCustomModelConfig({
+        ...DEFAULT_CUSTOM_MODEL_CONFIG,
+        enabled: false,
+      });
+
+      const result = await generateSeoAutoFix({ issueId: "hotel-schema" });
+      expect(result.codeSnippet).toBe("");
+
+      const serialized = JSON.stringify(result);
+      expect(serialized).not.toContain("SpringHill Suites Panama City Beachfront");
+      expect(serialized).not.toContain("marriott.com");
+      expect(serialized).not.toContain("Beachfront Resort & Spa");
     });
   });
 
@@ -266,13 +298,31 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
       });
 
       const res = await generateGeoSummary({
-        hotelName: "SpringHill Suites Panama City Beachfront",
-        brand: "Marriott",
+        hotelName: "Seaside Inn",
+        brand: "Independent",
+        amenities: ["Free WiFi", "Heated pool"],
       });
 
       expect(res.source).toBe("default_rules_engine");
-      expect(res.geoSummary).toContain("official hospitality destination under the Marriott portfolio");
-      expect(res.faqSchema).toBeDefined();
+      // Facts only: the supplied property and the page's amenities.
+      expect(res.geoSummary).toContain("Seaside Inn");
+      expect(res.geoSummary).toContain("Free WiFi, Heated pool");
+      // No invented prose and no invented FAQ answers.
+      expect(res.geoSummary).not.toContain("official hospitality destination");
+      expect(res.faqSchema).toBeUndefined();
+    });
+
+    it("returns an empty GEO summary when there is no property to summarize", async () => {
+      await saveCustomModelConfig({
+        ...DEFAULT_CUSTOM_MODEL_CONFIG,
+        enabled: false,
+      });
+
+      const res = await generateGeoSummary({ brand: "Independent" });
+
+      expect(res.source).toBe("default_rules_engine");
+      expect(res.geoSummary).toBe("");
+      expect(res.faqSchema).toBeUndefined();
     });
 
     it("generates GEO summary using custom model when enabled", async () => {

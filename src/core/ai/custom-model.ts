@@ -1,7 +1,7 @@
 /**
  * SEO Studio fine-tuned model client (`CUSTOM_MODEL_*`).
  *
- * The server-side twin of `src/engine/custom-model-client.ts` (extension):
+ * The server-side twin of `chrome-extension/src/engine/custom-model-client.ts`:
  * it calls an OpenAI-compatible `/v1/chat/completions` endpoint — typically
  * `ml/serve/server.py` in front of a Phase 3 adapter — and is the first
  * provider `generateClaudeText` tries when `CUSTOM_MODEL_ENDPOINT` is set.

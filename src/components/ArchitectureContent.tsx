@@ -106,7 +106,7 @@ export function ArchitectureContent() {
             or Ollama, with automated zero-latency fallback to local rules.
           </p>
           <div className="mt-3 font-mono text-tiny text-slate-500">
-            <code>src/engine/custom-model-client.ts</code>
+            <code>chrome-extension/src/engine/custom-model-client.ts</code>
           </div>
         </article>
       </div>
