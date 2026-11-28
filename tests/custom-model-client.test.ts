@@ -7,7 +7,7 @@ import {
   testCustomModelConnection,
   generateSeoAutoFix,
   generateGeoSummary,
-} from "../src/engine/custom-model-client";
+} from "../chrome-extension/src/engine/custom-model-client";
 
 describe("Custom Fine-Tuned Model Client & Inference Router", () => {
   beforeEach(async () => {

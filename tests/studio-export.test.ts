@@ -194,7 +194,6 @@ describe("buildReadyToPasteSnippet", () => {
 
 describe("source guard: invented copy cannot return", () => {
   const guardedFiles = [
-    "src/engine/custom-model-client.ts",
     "chrome-extension/src/engine/custom-model-client.ts",
     "chrome-extension/src/components/TemplateStudio.tsx",
     "chrome-extension/src/engine/studio-export.ts",
