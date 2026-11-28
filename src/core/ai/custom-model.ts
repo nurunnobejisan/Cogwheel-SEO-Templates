@@ -19,7 +19,38 @@
  * Standard library + existing app utilities only; no new dependencies.
  */
 
+import modelRegistryJson from "../../../data/models/model_registry.json";
 import { isSafeEmbeddingsEndpoint } from "../../../ai/rag/embedder.ts";
+
+export interface RegistryEntryShape {
+  modelId?: string;
+  baseModel?: string;
+  status?: string;
+}
+
+export interface ModelRegistryShape {
+  activeModelId?: string | null;
+  models?: RegistryEntryShape[];
+}
+
+/**
+ * Returns false when `modelId` refers to a retired Gemini 1.5 Flash model or
+ * matches any registry entry whose `status` is not `"ready"`.
+ */
+export function isRegistryModelSelectable(
+  modelId: string,
+  registry: ModelRegistryShape = modelRegistryJson,
+): boolean {
+  const trimmed = modelId.trim();
+  if (!trimmed) return false;
+  if (/^gemini-1\.5-flash/i.test(trimmed)) return false;
+
+  const entry = registry.models?.find((m) => m.modelId === trimmed);
+  if (entry) {
+    return entry.status === "ready";
+  }
+  return true;
+}
 
 /** Thrown for any tuned-model failure: misconfiguration, guard, HTTP or shape. */
 export class CustomModelError extends Error {
@@ -54,8 +85,12 @@ export function getCustomModelSettings(
  * of attempting a call (fail closed).
  */
 export function isCustomModelConfigured(env: Record<string, string | undefined> = process.env): boolean {
-  const { endpoint } = getCustomModelSettings(env);
-  return endpoint.length > 0 && isSafeEmbeddingsEndpoint(endpoint);
+  const { endpoint, model } = getCustomModelSettings(env);
+  return (
+    endpoint.length > 0 &&
+    isSafeEmbeddingsEndpoint(endpoint) &&
+    isRegistryModelSelectable(model)
+  );
 }
 
 export interface CustomModelCallOptions {
@@ -84,6 +119,11 @@ export async function callCustomModel(opts: CustomModelCallOptions): Promise<str
   if (!isSafeEmbeddingsEndpoint(settings.endpoint)) {
     throw new CustomModelError(
       `CUSTOM_MODEL_ENDPOINT failed the SSRF guard (https required, no private hosts): ${settings.endpoint}`,
+    );
+  }
+  if (!isRegistryModelSelectable(settings.model)) {
+    throw new CustomModelError(
+      `Model '${settings.model}' is retired or not ready in model_registry.json and cannot be selected.`,
     );
   }
 

@@ -34,9 +34,19 @@ def test_every_registry_entry_labels_its_benchmark() -> None:
         assert "not a model-quality measurement" in benchmark["note"], model_id
         # An unlabelled benchmark would only ever be reachable from an
         # unverified entry; a measured run is what earns "ready".
-        assert entry["status"] in {"unverified", "ready"}, model_id
+        assert entry["status"] in {"unverified", "retired", "ready"}, model_id
+        if str(entry.get("baseModel", "")).startswith("gemini-1.5-flash"):
+            assert entry["status"] == "retired", model_id
         if benchmark["measured"] is False:
             assert entry["status"] != "ready", f"{model_id} serves an unmeasured benchmark"
+
+
+def test_registry_active_model_is_null_or_ready() -> None:
+    payload = json.loads(REGISTRY_FILE.read_text(encoding="utf-8"))
+    active_id = payload.get("activeModelId")
+    if active_id is not None:
+        matched = [m for m in payload.get("models", []) if m.get("modelId") == active_id]
+        assert matched and matched[0].get("status") == "ready"
 
 
 def test_benchmark_output_carries_the_label() -> None:
