@@ -427,3 +427,68 @@ model produced a report.
 
 **Reverse.** Delete the `--endpoint` branch and `OUTPUT_META_FIELDS`;
 `--generate` and plain `run_eval --outputs` behave exactly as before.
+
+---
+
+## 2026-11-29 — v2
+
+### D-025 — `ml/generate/` is not recreated; `ml/dataset/` stays the generation home
+
+**Decision.** The v2 prompt lists `ml/generate/` as a v1 deliverable, but no
+such package exists and the generation work it would contain already lives in
+`ml/dataset/` (`wdc.py`, `wikidata.py`, `cards.py`) and `scripts/`. Rather
+than recreate a package for naming's sake, this run keeps the existing layout
+and records the difference here.
+
+**Reason.** Moving or duplicating generation code adds drift risk with no
+behaviour change. The v2 work packages need builder CLIs (`build_sft.py`,
+`build_dpo.py`), not a new package.
+
+**Reverse.** Create `ml/generate/` and move the generation entry points into
+it, updating the runbook commands in one PR.
+
+### D-026 — The review queue's local source of truth is a JSONL data file; Supabase ships as a mirror migration
+
+**Decision.** Review rows and decisions persist through the existing
+`seoStudioDataFile` mechanism (`data/ml-review-queue.jsonl` locally, the SEO
+`SEO_STUDIO_DATA_DIR` volume in deployment), mirroring the training-triples
+store. A Supabase table with the same shape ships as
+`supabase/migrations/0006_ml_review_queue.sql` for the deployment path.
+
+**Reason.** The app already persists operator data (triples, rules, healing
+events) through `seoStudioDataFile`; a second, Supabase-only write path would
+need credentials and client wiring this run cannot test end to end. The
+migration keeps the deployed schema in step so a later PR can switch the
+store without a data reshape.
+
+**Reverse.** Point `src/lib/review/store.ts` at the Supabase client (the table
+already matches), keep the JSONL as an export path, and backfill existing
+rows.
+
+### D-027 — Approving a teacher triple flips it to `reviewed`, not `gold`
+
+**Decision.** An approve in the review queue sets the underlying triple's
+quality to `reviewed` (training-eligible). `gold` stays a stronger, separate
+human judgement in the triple store.
+
+**Reason.** Conservative default: approval through this queue proves the
+output is usable, which is the definition of `reviewed`. Promoting to `gold`
+should be a deliberate act by a reviewer who has checked the case against the
+golden criteria.
+
+**Reverse.** Map `approve` → `gold` in `recordDecision`, or add an explicit
+`gold` action to the queue.
+
+### D-028 — Missing v1-equivalent pieces are finished inside the v2 WPs that consume them
+
+**Decision.** `AI_ADAPTER_MODE` and the adapter output gates (v1 scope) are
+built as part of v2 WP3; the `build_sft.py` CLI entry point is built as part
+of WP2, wrapping the existing `ml/train/dataset.py`. The mapping is recorded
+in the AGENT_LOG v2-start table.
+
+**Reason.** The v1 prompt is not available; rebuilding each missing piece
+standalone first would duplicate work the v2 WPs already specify, and the
+consumers (router, runbook) define the needed shape precisely.
+
+**Reverse.** None needed — this only affects where the code lands, not what
+it does.

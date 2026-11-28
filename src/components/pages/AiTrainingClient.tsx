@@ -167,6 +167,19 @@ export function AiTrainingClient() {
         <KpiTile label="Change log entries" value={history.length} />
       </div>
 
+      {isOperator ? (
+        <InlineAlert
+          variant="notice"
+          title="Human review queue"
+          description="Golden-v2 candidates, teacher-drafted triples and shadow-mode disagreements wait for your decision before they can become training or evaluation data."
+          action={
+            <Button variant="secondary" size="sm" asChild>
+              <Link href="/settings/ai-training/review">Open review queue</Link>
+            </Button>
+          }
+        />
+      ) : null}
+
       {!isOperator ? (
         <InlineAlert
           variant="warning"
