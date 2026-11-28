@@ -373,10 +373,14 @@ export function SidePanelApp() {
       : [];
 
   const handleFixIssue = async (win: QuickWinItem) => {
-    const siteName = pageData.h1Elements[0] || (pageData.hostname ? pageData.hostname.replace(/^www\./, "") : activeProfile.name) || "Official Website";
-    const hotelName = siteName;
+    // Sourced values only: page H1 → hostname → profile name. With no source
+    // the rules engine returns a blank suggestion and the UI reports that.
+    const hotelName =
+      pageData.h1Elements[0] ||
+      (pageData.hostname ? pageData.hostname.replace(/^www\./, "") : activeProfile.name) ||
+      "";
     const brand = activeProfile.brand || "Independent";
-    const canonicalUrl = pageData.canonical || pageData.url || "https://example.com";
+    const canonicalUrl = pageData.canonical || pageData.url || "";
 
     const fixResult = await generateSeoAutoFix({
       issueId: win.id,

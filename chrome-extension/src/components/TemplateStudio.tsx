@@ -21,6 +21,7 @@ import { calculatePixelWidth, TITLE_PIXEL_LIMIT, META_DESC_PIXEL_LIMIT } from ".
 import { isRestrictedUrl } from "../utils/urlSecurity";
 import { saveTrainingPair } from "../storage/training-vault";
 import { generateGeoSummary } from "../engine/custom-model-client";
+import { buildReadyToPasteSnippet, initialLiveFields } from "../engine/studio-export";
 import {
   BrandGuardrail,
   BrandRules,
@@ -57,21 +58,12 @@ export function TemplateStudio({
   const [selectedBrand, setSelectedBrand] = useState<BrandGuardrail>(initialBrand);
   const activeGuardrail = BRAND_GUARDRAILS[selectedBrand];
 
-  // Live Editable Fields State
-  const [liveTitle, setLiveTitle] = useState(() => {
-    return pageData?.title || activeProfile?.name
-      ? `${activeProfile?.name || "Hotel"} in ${activeProfile?.city || "Downtown"} | Official Site`
-      : "SpringHill Suites Panama City Beachfront | Marriott Bonvoy";
-  });
-
-  const [liveMeta, setLiveMeta] = useState(() => {
-    return pageData?.metaDesc ||
-      "Stay beachfront in Panama City Beach, FL. Enjoy oceanfront suites, complimentary hot breakfast, resort pool, and direct Gulf access. Book direct & save.";
-  });
-
-  const [liveH1, setLiveH1] = useState(() => {
-    return pageData?.h1Elements?.[0] || activeProfile?.name || "SpringHill Suites Panama City Beachfront";
-  });
+  // Live Editable Fields State — seeded from the page / client profile only
+  // (no invented sample copy; see engine/studio-export.ts).
+  const liveFields = useMemo(() => initialLiveFields(pageData, activeProfile), [pageData, activeProfile]);
+  const [liveTitle, setLiveTitle] = useState(liveFields.title);
+  const [liveMeta, setLiveMeta] = useState(liveFields.meta);
+  const [liveH1, setLiveH1] = useState(liveFields.h1);
 
   // Auto-sync live fields when active page changes
   useEffect(() => {
@@ -86,9 +78,9 @@ export function TemplateStudio({
     }
   }, [pageData?.url, pageData?.title, pageData?.metaDesc]);
 
-  const [liveGeoAnswer, setLiveGeoAnswer] = useState(() => {
-    return `SpringHill Suites Panama City Beachfront is located at 12513 Front Beach Rd, Panama City Beach, FL 32407. The property features 200 all-suite oceanfront guestrooms with private balconies, an on-site beachfront pool bar, lazy river, 24/7 fitness center, and complimentary hot breakfast. Self-parking and EV charging stations are available on-site. Direct beach access is steps from the sun deck.`;
-  });
+  // GEO knowledge block starts blank — there is no verified content to
+  // summarize until the page or an AI provider supplies some.
+  const [liveGeoAnswer, setLiveGeoAnswer] = useState(liveFields.geoAnswer);
 
   const [showFullCode, setShowFullCode] = useState(false);
   const [copiedExport, setCopiedExport] = useState(false);
@@ -97,11 +89,18 @@ export function TemplateStudio({
   const [geoFeedback, setGeoFeedback] = useState<string | null>(null);
 
   const handleGenerateGeoSummary = async () => {
+    const hotelName = liveH1 || activeProfile?.name || "";
+    if (!hotelName) {
+      // Nothing to summarize — never ask a model to invent a property.
+      setGeoFeedback("No property name to summarize");
+      setTimeout(() => setGeoFeedback(null), 3000);
+      return;
+    }
     setGeneratingGeo(true);
     setGeoFeedback(null);
     try {
       const res = await generateGeoSummary({
-        hotelName: liveH1 || "SpringHill Suites Panama City Beachfront",
+        hotelName,
         brand: activeGuardrail.name,
         amenities: pageData?.extractedAmenities,
         pageContent: pageData?.metaDesc,
@@ -110,7 +109,7 @@ export function TemplateStudio({
       setGeoFeedback(
         res.source === "custom_tuned_model"
           ? `Tuned Model Generated (${res.modelIdentifier || "Custom Model"})`
-          : "Default Template Generated"
+          : "Page Facts Generated (no model connected)"
       );
       setTimeout(() => setGeoFeedback(null), 3000);
     } catch {
@@ -122,18 +121,25 @@ export function TemplateStudio({
   };
 
   const handleCaptureForAiTraining = async () => {
+    // Training pairs are only captured from a real audited page — no
+    // placeholder URLs, domains, copy or word counts are ever substituted.
+    if (!pageData?.url) {
+      setCapturedStatus("Capture Needs a Page");
+      setTimeout(() => setCapturedStatus(null), 3000);
+      return;
+    }
     try {
       const rawInput = {
-        url: pageData?.url || "https://example.com/hotel",
-        canonicalUrl: pageData?.canonical || pageData?.url || "https://example.com/hotel",
-        domain: pageData?.hostname || "example.com",
+        url: pageData.url,
+        canonicalUrl: pageData?.canonical || pageData.url,
+        domain: pageData?.hostname || "",
         rawTitle: pageData?.title || "",
         rawMetaDesc: pageData?.metaDesc || "",
         rawH1: pageData?.h1Elements || [],
         rawH2: pageData?.h2Elements || [],
-        rawBodyText: (pageData?.extractedAmenities || []).join(", ") || "Luxury beachfront hotel accommodations.",
+        rawBodyText: (pageData?.extractedAmenities || []).join(", "),
         detectedSchemas: (pageData?.schemas || []).map((s) => String(s["@type"] || "")),
-        wordCount: pageData?.words || 450,
+        wordCount: pageData?.words || 0,
       };
 
       const targetOutput = {
@@ -336,203 +342,20 @@ export function TemplateStudio({
   }, [selectedTemplate, formVariables]);
 
   // Production-Ready Bundled Export Code (HTML + JSON-LD)
-  const readyToPasteSnippet = useMemo(() => {
-    const cat = pageData?.siteCategory || "general";
-    const canonical =
-      pageData?.canonical ||
-      pageData?.url ||
-      "https://example.com/page";
-    const entityTitle = liveH1 || pageData?.title || activeProfile?.name || "Official Site";
-    const ogImage =
-      pageData?.ogImage ||
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1200&h=630&fit=crop";
+  const readyToPasteSnippet = useMemo(
+    () =>
+      buildReadyToPasteSnippet({
+        pageData,
+        activeProfile,
+        liveTitle,
+        liveMeta,
+        liveH1,
+        liveGeoAnswer,
+        activeGuardrail,
+      }),
+    [liveTitle, liveMeta, liveH1, liveGeoAnswer, activeGuardrail, pageData, activeProfile]
+  );
 
-    let ogType = "website";
-    let entityBlockTag = "WebSite";
-    let schemaEntityJson = "";
-
-    if (cat === "ecommerce") {
-      ogType = "product";
-      entityBlockTag = "Product";
-      const ecom = pageData?.ecommerce;
-      const cleanPrice = ecom?.price ? ecom.price.replace(/[^0-9.]/g, "") : "99.00";
-      const currency = ecom?.currency || "USD";
-      schemaEntityJson = `    {
-      "@type": "Product",
-      "@id": "${canonical}#product",
-      "name": "${entityTitle.replace(/"/g, '\\"')}",
-      "description": "${liveMeta.replace(/"/g, '\\"')}",
-      "url": "${canonical}",
-      "image": "${ogImage}",
-      "brand": {
-        "@type": "Brand",
-        "name": "${(activeProfile?.name || pageData?.hostname || "Brand").replace(/"/g, '\\"')}"
-      },
-      "offers": {
-        "@type": "Offer",
-        "url": "${canonical}",
-        "priceCurrency": "${currency}",
-        "price": "${cleanPrice}",
-        "availability": "https://schema.org/${ecom?.availability || "InStock"}",
-        "itemCondition": "https://schema.org/NewCondition"
-      }
-    }`;
-    } else if (cat === "saas") {
-      ogType = "website";
-      entityBlockTag = "SoftwareApplication";
-      schemaEntityJson = `    {
-      "@type": "SoftwareApplication",
-      "@id": "${canonical}#software",
-      "name": "${entityTitle.replace(/"/g, '\\"')}",
-      "description": "${liveMeta.replace(/"/g, '\\"')}",
-      "url": "${canonical}",
-      "image": "${ogImage}",
-      "applicationCategory": "BusinessApplication",
-      "operatingSystem": "All",
-      "offers": {
-        "@type": "Offer",
-        "price": "0",
-        "priceCurrency": "USD"
-      }
-    }`;
-    } else if (cat === "editorial") {
-      ogType = "article";
-      entityBlockTag = "Article";
-      schemaEntityJson = `    {
-      "@type": "Article",
-      "@id": "${canonical}#article",
-      "headline": "${liveTitle.replace(/"/g, '\\"')}",
-      "description": "${liveMeta.replace(/"/g, '\\"')}",
-      "url": "${canonical}",
-      "image": "${ogImage}",
-      "mainEntityOfPage": "${canonical}",
-      "author": {
-        "@type": "Person",
-        "name": "${(activeProfile?.name || pageData?.hostname || "Editorial Staff").replace(/"/g, '\\"')}"
-      },
-      "publisher": {
-        "@type": "Organization",
-        "name": "${(activeProfile?.name || pageData?.hostname || "Publisher").replace(/"/g, '\\"')}",
-        "url": "${pageData?.origin || canonical}"
-      }
-    }`;
-    } else if (cat === "local_business") {
-      ogType = "business.business";
-      entityBlockTag = "LocalBusiness";
-      schemaEntityJson = `    {
-      "@type": "LocalBusiness",
-      "@id": "${canonical}#localbusiness",
-      "name": "${entityTitle.replace(/"/g, '\\"')}",
-      "description": "${liveMeta.replace(/"/g, '\\"')}",
-      "url": "${canonical}",
-      "image": "${ogImage}",
-      "telephone": "${activeProfile?.phone || "+1-555-019-2834"}",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "${activeProfile?.address || "100 Main Street"}",
-        "addressLocality": "${activeProfile?.city || "Austin"}",
-        "addressRegion": "${activeProfile?.state || "TX"}",
-        "postalCode": "${activeProfile?.postalCode || "78701"}",
-        "addressCountry": "US"
-      }
-    }`;
-    } else if (cat === "hospitality") {
-      ogType = "hotel";
-      entityBlockTag = "Hotel";
-      schemaEntityJson = `    {
-      "@type": "Hotel",
-      "@id": "${canonical}#hotel",
-      "name": "${entityTitle.replace(/"/g, '\\"')}",
-      "description": "${liveMeta.replace(/"/g, '\\"')}",
-      "url": "${canonical}",
-      "image": "${ogImage}",
-      "address": {
-        "@type": "PostalAddress",
-        "streetAddress": "${activeProfile?.address || "12513 Front Beach Rd"}",
-        "addressLocality": "${activeProfile?.city || "Panama City Beach"}",
-        "addressRegion": "${activeProfile?.state || "FL"}",
-        "postalCode": "${activeProfile?.postalCode || "32407"}",
-        "addressCountry": "US"
-      },
-      "telephone": "${activeProfile?.phone || "+1-850-230-6004"}",
-      "priceRange": "$$$",
-      "starRating": {
-        "@type": "Rating",
-        "ratingValue": "4.5"
-      }
-    }`;
-    } else {
-      ogType = "website";
-      entityBlockTag = "Organization";
-      schemaEntityJson = `    {
-      "@type": "Organization",
-      "@id": "${pageData?.origin || canonical}#organization",
-      "name": "${(activeProfile?.name || pageData?.hostname || "Organization").replace(/"/g, '\\"')}",
-      "url": "${pageData?.origin || canonical}",
-      "description": "${liveMeta.replace(/"/g, '\\"')}",
-      "logo": "${ogImage}"
-    },
-    {
-      "@type": "WebSite",
-      "@id": "${pageData?.origin || canonical}#website",
-      "url": "${pageData?.origin || canonical}",
-      "name": "${entityTitle.replace(/"/g, '\\"')}"
-    }`;
-    }
-
-    return `<!-- SEO Studio v3.0 - Universal Brand Guardrail Compliant Export -->
-<!-- Platform Framework: ${pageData?.detectedCmsLabel || "Universal"} | Category: ${pageData?.siteCategoryLabel || cat.toUpperCase()} -->
-<!-- Policy Profile: ${activeGuardrail.name} (${activeGuardrail.loyaltyProgram}) -->
-
-<!-- 1. Primary Metadata & Search Snippets -->
-<title>${liveTitle}</title>
-<meta name="description" content="${liveMeta}" />
-<link rel="canonical" href="${canonical}" />
-
-<!-- 2. Open Graph & Social Sharing Card -->
-<meta property="og:type" content="${ogType}" />
-<meta property="og:site_name" content="${activeProfile?.name || activeGuardrail.loyaltyProgram}" />
-<meta property="og:title" content="${liveTitle}" />
-<meta property="og:description" content="${liveMeta}" />
-<meta property="og:url" content="${canonical}" />
-<meta property="og:image" content="${ogImage}" />
-
-<!-- 3. Above-the-Fold Primary H1 -->
-<h1>${entityTitle}</h1>
-
-<!-- 4. Generative AI Knowledge Entity Block -->
-<section class="geo-entity-block" data-geo-entity="${entityBlockTag}" aria-label="Entity Overview">
-  <p>${liveGeoAnswer}</p>
-</section>
-
-<!-- 5. Validated JSON-LD Schema (@graph ${entityBlockTag} + BreadcrumbList) -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@graph": [
-${schemaEntityJson},
-    {
-      "@type": "BreadcrumbList",
-      "@id": "${canonical}#breadcrumb",
-      "itemListElement": [
-        {
-          "@type": "ListItem",
-          "position": 1,
-          "name": "Home",
-          "item": "${pageData?.origin || "https://example.com"}"
-        },
-        {
-          "@type": "ListItem",
-          "position": 2,
-          "name": "${activeProfile?.city || "Overview"}",
-          "item": "${canonical}"
-        }
-      ]
-    }
-  ]
-}
-</script>`;
-  }, [liveTitle, liveMeta, liveH1, liveGeoAnswer, activeGuardrail, pageData, activeProfile]);
 
   const handleCopyExport = () => {
     navigator.clipboard.writeText(readyToPasteSnippet).then(() => {

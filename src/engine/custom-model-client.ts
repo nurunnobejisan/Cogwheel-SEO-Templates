@@ -7,6 +7,8 @@
  * automatic fallback to SEO Studio's deterministic rules engine.
  */
 
+import { encryptSecret, decryptSecret } from "../../shared/ts/secureStorage.ts";
+
 export interface CustomModelConfig {
   enabled: boolean;
   provider: "tuned_gemini" | "custom_rest" | "open_weight";
@@ -48,10 +50,9 @@ export async function getCustomModelConfig(): Promise<CustomModelConfig> {
         });
       });
       if (res[STORAGE_KEY_CUSTOM_MODEL]) {
-        return {
-          ...DEFAULT_CUSTOM_MODEL_CONFIG,
-          ...(res[STORAGE_KEY_CUSTOM_MODEL] as Partial<CustomModelConfig>),
-        };
+        const stored = { ...DEFAULT_CUSTOM_MODEL_CONFIG, ...(res[STORAGE_KEY_CUSTOM_MODEL] as Partial<CustomModelConfig>) };
+        if (stored.apiKey) stored.apiKey = await decryptSecret(stored.apiKey);
+        return stored;
       }
     } catch {
       // Fall through to localStorage
@@ -63,10 +64,9 @@ export async function getCustomModelConfig(): Promise<CustomModelConfig> {
     try {
       const stored = localStorage.getItem(STORAGE_KEY_CUSTOM_MODEL);
       if (stored) {
-        return {
-          ...DEFAULT_CUSTOM_MODEL_CONFIG,
-          ...JSON.parse(stored),
-        };
+        const parsed = { ...DEFAULT_CUSTOM_MODEL_CONFIG, ...JSON.parse(stored) };
+        if (parsed.apiKey) parsed.apiKey = await decryptSecret(parsed.apiKey);
+        return parsed;
       }
     } catch {
       // Fall through to in-memory
@@ -85,8 +85,9 @@ export async function saveCustomModelConfig(config: CustomModelConfig): Promise<
 
   if (typeof chrome !== "undefined" && chrome.storage?.local?.set) {
     try {
+      const toStore = { ...config, apiKey: await encryptSecret(config.apiKey) };
       await new Promise<void>((resolve) => {
-        chrome.storage.local.set({ [STORAGE_KEY_CUSTOM_MODEL]: config }, () => {
+        chrome.storage.local.set({ [STORAGE_KEY_CUSTOM_MODEL]: toStore }, () => {
           resolve();
         });
       });
@@ -97,7 +98,8 @@ export async function saveCustomModelConfig(config: CustomModelConfig): Promise<
 
   if (typeof localStorage !== "undefined") {
     try {
-      localStorage.setItem(STORAGE_KEY_CUSTOM_MODEL, JSON.stringify(config));
+      const toStore = { ...config, apiKey: await encryptSecret(config.apiKey) };
+      localStorage.setItem(STORAGE_KEY_CUSTOM_MODEL, JSON.stringify(toStore));
     } catch {
       // Storage quota or disabled
     }
@@ -149,9 +151,9 @@ export async function testCustomModelConnection(
     if (config.provider === "tuned_gemini") {
       // If endpoint is a model name (e.g. tunedModels/hospitality-v1 or models/gemini-1.5-flash)
       if (!endpoint.startsWith("http://") && !endpoint.startsWith("https://")) {
-        const keyQuery = config.apiKey ? `?key=${config.apiKey.trim()}` : "";
-        url = `https://generativelanguage.googleapis.com/v1beta/${endpoint}:generateContent${keyQuery}`;
-      } else if (config.apiKey) {
+        url = `https://generativelanguage.googleapis.com/v1beta/${endpoint}:generateContent`;
+      }
+      if (config.apiKey) {
         headers["x-goog-api-key"] = config.apiKey.trim();
       }
 
@@ -285,6 +287,11 @@ function getDefaultAutoFix(
   brand: string,
   canonicalUrl: string
 ): AutoFixInferenceResult {
+  // Sourced values only: every suggestion below is composed from the caller's
+  // property name / brand / canonical URL. When a value has no source the
+  // result stays blank and the caller reports it ("no suggestion was
+  // produced") — amenity, policy, rating, price or location claims are never
+  // drafted here.
   const brandSuffix =
     brand === "Marriott"
       ? " | Marriott Bonvoy"
@@ -294,17 +301,34 @@ function getDefaultAutoFix(
       ? " - IHG Hotel"
       : brand === "Hyatt"
       ? " | World of Hyatt"
-      : " | Official Site";
+      : "";
+
+  const noSuggestion = (issueTitle: string, issueCategory: string, why: string): AutoFixInferenceResult => ({
+    source: "default_rules_engine",
+    issueId,
+    issueTitle,
+    issueCategory,
+    description: why,
+    codeSnippet: "",
+    language: "html",
+  });
 
   if (issueId === "title-len") {
-    const rawOptimal = `${hotelName} Beachfront Resort & Spa`;
-    const optimalTitle = `${rawOptimal.slice(0, 58 - brandSuffix.length)}${brandSuffix}`;
+    if (!hotelName) {
+      return noSuggestion(
+        "Title Length Optimization",
+        "Title length",
+        "No property name source — no title suggestion was produced, the page title was left unchanged."
+      );
+    }
+    const optimalTitle = `${hotelName.slice(0, 58 - brandSuffix.length)}${brandSuffix}`;
     return {
       source: "default_rules_engine",
       issueId,
       issueTitle: "Title Length Optimization Applied",
       issueCategory: "Title length",
-      description: "Consolidated title within 580px Google SERP ceiling using franchise suffix.",
+      description:
+        "Consolidated the property name within the 580px Google SERP ceiling using the profile brand suffix.",
       codeSnippet: `<title>${optimalTitle}</title>`,
       language: "html",
       optimalTitle,
@@ -312,100 +336,113 @@ function getDefaultAutoFix(
   }
 
   if (issueId === "meta-len") {
-    const optimalMeta = `Book direct at ${hotelName} for luxury beachfront suites, private beach access, pool amenities, and lowest rate guarantee under ${brand}.`;
-    return {
-      source: "default_rules_engine",
-      issueId,
-      issueTitle: "Meta Description Optimization Applied",
-      issueCategory: "Meta description",
-      description: "Drafted compliant meta description within 920px ceiling without prohibited superlatives.",
-      codeSnippet: `<meta name="description" content="${optimalMeta}" />`,
-      language: "html",
-      optimalMeta,
-    };
+    // A meta description is descriptive copy — the rules engine has no
+    // verified source for it, so it never drafts one.
+    return noSuggestion(
+      "Meta Description Optimization",
+      "Meta description",
+      "No verified descriptive copy source — no meta description suggestion was produced, the page meta description was left unchanged. Connect an AI provider to draft one."
+    );
   }
 
   if (issueId === "canonical-h1") {
+    if (!canonicalUrl && !hotelName) {
+      return noSuggestion(
+        "Canonical URL & H1 Hierarchy",
+        "Canonical/H1",
+        "No canonical URL or property name source — the page canonical and headings were left unchanged."
+      );
+    }
+    const snippetParts: string[] = [];
+    if (canonicalUrl) {
+      snippetParts.push(
+        `<!-- Self-Referencing Canonical Tag -->\n<link rel="canonical" href="${canonicalUrl}" />`
+      );
+    }
+    if (hotelName) {
+      snippetParts.push(
+        `<!-- Single Primary H1 Heading Tag -->\n<h1 class="hotel-primary-headline">${hotelName}</h1>`
+      );
+    }
     return {
       source: "default_rules_engine",
       issueId,
       issueTitle: "Canonical URL & H1 Hierarchy Applied",
       issueCategory: "Canonical/H1",
-      description: "Enforced self-referencing canonical URL and single primary H1 heading.",
-      codeSnippet: `<!-- Self-Referencing Canonical Tag -->\n<link rel="canonical" href="${canonicalUrl}" />\n\n<!-- Single Primary H1 Heading Tag -->\n<h1 class="hotel-primary-headline">${hotelName}</h1>`,
+      description:
+        "Enforced self-referencing canonical URL and single primary H1 heading from the page's own URL and property name.",
+      codeSnippet: snippetParts.join("\n\n"),
       language: "html",
-      canonicalUrl,
-      optimalH1: hotelName,
+      ...(canonicalUrl ? { canonicalUrl } : {}),
+      ...(hotelName ? { optimalH1: hotelName } : {}),
     };
   }
 
   if (issueId === "hotel-schema") {
+    if (!hotelName) {
+      return noSuggestion(
+        "Hotel Schema Markup",
+        "Missing JSON-LD Schema",
+        "No property name source — no schema was drafted, the page markup was left unchanged."
+      );
+    }
     const schema = {
       "@context": "https://schema.org",
       "@type": "Hotel",
       name: hotelName,
-      url: canonicalUrl,
-      description: `Official luxury hotel accommodations at ${hotelName}.`,
+      ...(canonicalUrl ? { url: canonicalUrl } : {}),
     };
     return {
       source: "default_rules_engine",
       issueId,
-      issueTitle: "Hotel Schema Markup Injected",
+      issueTitle: "Hotel Schema Markup Drafted",
       issueCategory: "Missing JSON-LD Schema",
-      description: "Injected valid Schema.org/Hotel structured data with standard franchise graph.",
+      description: "Drafted Schema.org/Hotel structured data from the property name and canonical URL only.",
       codeSnippet: `<script type="application/ld+json">\n${JSON.stringify(schema, null, 2)}\n</script>`,
       language: "json",
     };
   }
 
   if (issueId === "og-missing") {
-    const ogTitle = `${hotelName}${brandSuffix}`;
-    const ogDesc = `Reserve your stay direct at ${hotelName}. Best rate guarantee and luxury accommodations.`;
+    if (!hotelName && !canonicalUrl) {
+      return noSuggestion(
+        "Social Open Graph Tags",
+        "Open Graph tags",
+        "No property name or canonical URL source — no Open Graph tags were drafted."
+      );
+    }
+    const ogTitle = hotelName ? `${hotelName}${brandSuffix}` : "";
+    const ogLines = [
+      "<!-- Open Graph & Twitter Social Metadata -->",
+      '<meta property="og:type" content="hotel" />',
+      ...(ogTitle ? [`<meta property="og:title" content="${ogTitle}" />`] : []),
+      ...(canonicalUrl ? [`<meta property="og:url" content="${canonicalUrl}" />`] : []),
+      '<meta name="twitter:card" content="summary_large_image" />',
+    ];
     return {
       source: "default_rules_engine",
       issueId,
-      issueTitle: "Social Open Graph Tags Injected",
+      issueTitle: "Social Open Graph Tags Drafted",
       issueCategory: "Open Graph tags",
-      description: "Generated complete Open Graph and Twitter Card tags for high-CTR SERP/social previews.",
-      codeSnippet: `<!-- Open Graph & Twitter Social Metadata -->\n<meta property="og:type" content="hotel" />\n<meta property="og:title" content="${ogTitle}" />\n<meta property="og:description" content="${ogDesc}" />\n<meta property="og:url" content="${canonicalUrl}" />\n<meta name="twitter:card" content="summary_large_image" />`,
+      description:
+        "Drafted Open Graph tags from the property name and canonical URL; og:description needs a verified meta description.",
+      codeSnippet: ogLines.join("\n"),
       language: "html",
-      optimalTitle: ogTitle,
-      optimalMeta: ogDesc,
+      ...(ogTitle ? { optimalTitle: ogTitle } : {}),
     };
   }
 
-  // Default: GEO AI readiness
-  const geoFaq = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `What time is check-in and check-out at ${hotelName}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Check-in begins at 4:00 PM and check-out is at 11:00 AM local time.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Does ${hotelName} offer complimentary amenities and parking?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Yes, verified guest amenities include high-speed Wi-Fi, pool access, and on-site self-parking.",
-        },
-      },
-    ],
-  };
-
+  // Default: GEO AI readiness — FAQ answers are never invented.
   return {
     source: "default_rules_engine",
     issueId,
-    issueTitle: "GEO AI Knowledge & FAQ Injected",
+    issueTitle: "GEO AI Knowledge & FAQ Needs Verified Answers",
     issueCategory: "GEO AI Readiness",
-    description: "Injected Schema.org/FAQPage entity questions to secure conversational AI citations.",
-    codeSnippet: `<script type="application/ld+json">\n${JSON.stringify(geoFaq, null, 2)}\n</script>`,
-    language: "json",
+    description:
+      "No verified FAQ answers exist for this page — no FAQ schema was injected. Add your own Q&A (or connect an AI provider) before publishing FAQPage markup.",
+    codeSnippet:
+      "<!-- No FAQ schema generated — verified answers are required before publishing FAQPage markup. -->",
+    language: "html",
   };
 }
 
@@ -423,14 +460,15 @@ export async function generateSeoAutoFix(
   },
   fetchFn: typeof fetch = fetch
 ): Promise<AutoFixInferenceResult> {
-  const hotelName = params.hotelName || "SpringHill Suites Panama City Beachfront";
-  const brand = params.brand || "Marriott";
-  const canonicalUrl = params.canonicalUrl || "https://www.marriott.com/hotel/ecpsb/";
+  const hotelName = params.hotelName || "";
+  const brand = params.brand || "";
+  const canonicalUrl = params.canonicalUrl || "";
 
   const config = await getCustomModelConfig();
 
-  // If custom model is disabled or unconfigured, route to default rules engine
-  if (!config.enabled || !config.endpointId.trim()) {
+  // If the custom model is disabled or unconfigured — or there is no property
+  // to fix — route to the default rules engine, which never drafts unsourced copy.
+  if (!config.enabled || !config.endpointId.trim() || !hotelName) {
     return getDefaultAutoFix(params.issueId, hotelName, brand, canonicalUrl);
   }
 
@@ -442,9 +480,9 @@ export async function generateSeoAutoFix(
 
     if (config.provider === "tuned_gemini") {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        const keyQuery = config.apiKey ? `?key=${config.apiKey.trim()}` : "";
-        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent${keyQuery}`;
-      } else if (config.apiKey) {
+        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent`;
+      }
+      if (config.apiKey) {
         headers["x-goog-api-key"] = config.apiKey.trim();
       }
     } else if (config.apiKey) {
@@ -535,36 +573,21 @@ export async function generateSeoAutoFix(
 /**
  * Standard deterministic rules fallback for GEO Knowledge Summary generation.
  */
-function getDefaultGeoSummary(hotelName: string, brand: string): GeoSummaryInferenceResult {
-  const geoText = `${hotelName} is an official hospitality destination under the ${brand} portfolio, offering prime accommodations, modern room suites, full on-site amenities, and direct guest loyalty benefits. Verified check-in is 4:00 PM and check-out is 11:00 AM with digital key access available.`;
-
-  const faqSchema = {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `What amenities are featured at ${hotelName}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Key guest amenities at ${hotelName} include complimentary high-speed Wi-Fi, swimming pool access, on-site fitness facilities, and direct booking guarantee under ${brand}.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Is direct booking available for ${hotelName}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Yes, guests can book direct to receive official loyalty rewards, room upgrades, and lowest rate protection.`,
-        },
-      },
-    ],
-  };
-
+function getDefaultGeoSummary(
+  hotelName: string,
+  brand: string,
+  amenities: string[] = []
+): GeoSummaryInferenceResult {
+  // Facts only: the property name/brand plus amenities the page actually
+  // lists. There is deliberately no default FAQ schema — answers are never
+  // invented here.
+  const parts: string[] = [];
+  if (hotelName) parts.push(`${brand ? `${hotelName} (${brand})` : hotelName}.`);
+  const listed = amenities.map((a) => a.trim()).filter(Boolean);
+  if (listed.length > 0) parts.push(`Amenities listed on the page: ${listed.join(", ")}.`);
   return {
     source: "default_rules_engine",
-    geoSummary: geoText,
-    faqSchema,
+    geoSummary: parts.join(" "),
   };
 }
 
@@ -581,13 +604,18 @@ export async function generateGeoSummary(
   },
   fetchFn: typeof fetch = fetch
 ): Promise<GeoSummaryInferenceResult> {
-  const hotelName = params.hotelName || "SpringHill Suites Panama City Beachfront";
-  const brand = params.brand || "Marriott";
+  const hotelName = params.hotelName || "";
+  const brand = params.brand || "";
+
+  if (!hotelName) {
+    // Nothing to summarize — never ask a model (or a template) to invent a property.
+    return { source: "default_rules_engine", geoSummary: "" };
+  }
 
   const config = await getCustomModelConfig();
 
   if (!config.enabled || !config.endpointId.trim()) {
-    return getDefaultGeoSummary(hotelName, brand);
+    return getDefaultGeoSummary(hotelName, brand, params.amenities);
   }
 
   const start = Date.now();
@@ -598,16 +626,18 @@ export async function generateGeoSummary(
 
     if (config.provider === "tuned_gemini") {
       if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        const keyQuery = config.apiKey ? `?key=${config.apiKey.trim()}` : "";
-        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent${keyQuery}`;
-      } else if (config.apiKey) {
+        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent`;
+      }
+      if (config.apiKey) {
         headers["x-goog-api-key"] = config.apiKey.trim();
       }
     } else if (config.apiKey) {
       headers["Authorization"] = `Bearer ${config.apiKey.trim()}`;
     }
 
-    const promptText = `Generate a dense, factual GEO (Generative Engine Optimization) knowledge block and FAQ schema for ${hotelName} under ${brand} brand standards. Amenities: ${(params.amenities || []).join(", ") || "Pool, Wi-Fi, Breakfast"}. Output clean JSON with 'geoEntityBlock' and 'faqSchema'.`;
+    const amenityList = (params.amenities || []).map((a) => a.trim()).filter(Boolean);
+    const amenityClause = amenityList.length > 0 ? ` Amenities: ${amenityList.join(", ")}.` : "";
+    const promptText = `Generate a dense, factual GEO (Generative Engine Optimization) knowledge block and FAQ schema for ${hotelName} under ${brand} brand standards.${amenityClause} Output clean JSON with 'geoEntityBlock' and 'faqSchema'.`;
 
     const requestBody =
       config.provider === "tuned_gemini"
