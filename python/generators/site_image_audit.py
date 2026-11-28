@@ -33,6 +33,9 @@ import urllib.request
 import zipfile
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+from typing import Any
+
+ImageRecord = dict[str, Any]
 
 USER_AGENT = "Mozilla/5.0 (compatible; SeoStudioImageAudit/2.7; +https://seo-studio-one.vercel.app)"
 
@@ -154,7 +157,9 @@ def classify_hospitality_context(text: str) -> tuple[str, str] | None:
     for cat_key, info in HOSPITALITY_CATEGORIES.items():
         for kw in info["keywords"]:
             if re.search(rf"\b{re.escape(kw)}\b", s):
-                return cat_key, info["descriptor"]
+                descriptor = info["descriptor"]
+                if isinstance(descriptor, str):
+                    return cat_key, descriptor
     return None
 
 
@@ -296,8 +301,8 @@ def pick_best_resolution_url(primary_url: str, candidates: list[str]) -> str:
     return best
 
 
-def extract_images_from_html(html_text: str, page_url: str) -> list[dict]:
-    images = []
+def extract_images_from_html(html_text: str, page_url: str) -> list[ImageRecord]:
+    images: list[ImageRecord] = []
     placement_index = 0
 
     # 1. <img> tags
@@ -444,9 +449,9 @@ def discover_sitemap_urls(origin: str, timeout: int = 10) -> tuple[list[str], li
     except Exception:
         pass
 
-    visited_sitemaps = set()
+    visited_sitemaps: set[str] = set()
 
-    def parse_xml_sitemap(sm_url: str):
+    def parse_xml_sitemap(sm_url: str) -> None:
         if sm_url in visited_sitemaps or len(visited_sitemaps) > 15:
             return
         visited_sitemaps.add(sm_url)
@@ -482,8 +487,8 @@ def discover_sitemap_urls(origin: str, timeout: int = 10) -> tuple[list[str], li
     return list(page_urls), list(image_urls)
 
 
-def discover_wordpress_media(origin: str, timeout: int = 10) -> list[dict]:
-    media_list = []
+def discover_wordpress_media(origin: str, timeout: int = 10) -> list[ImageRecord]:
+    media_list: list[ImageRecord] = []
     try:
         req = urllib.request.Request(f"{origin}/wp-json/wp/v2/media?per_page=100", headers={"User-Agent": USER_AGENT})
         with urllib.request.urlopen(req, timeout=timeout) as resp:
@@ -540,12 +545,12 @@ def build_styles_xml() -> str:
 
 def create_sheet_xml(
     headers: list[str],
-    rows: list[list],
-    cols_width: list[float] = None,
+    rows: list[list[Any]],
+    cols_width: list[float] | None = None,
     header_style: int = 0,
-    header_height: float = None,
-    data_height: float = None,
-    frozen_pane: bool = True
+    header_height: float | None = None,
+    data_height: float | None = None,
+    frozen_pane: bool = True,
 ) -> str:
     xml_parts = [
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
@@ -602,7 +607,7 @@ def create_sheet_xml(
     return "\n".join(xml_parts)
 
 
-def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) -> bytes:
+def build_audit_xlsx(summary: dict[str, Any], items: list[ImageRecord], crawl_log: list[dict[str, Any]]) -> bytes:
     """Builds a complete 5-tab Excel spreadsheet adhering to standard OpenXML spec."""
     # -------------------------------------------------------------------------
     # TAB 1: Image Optimization (STRICT 6 COLUMNS MATCHING REFERENCE GOOGLE SHEET)
@@ -840,9 +845,8 @@ def build_audit_xlsx(summary: dict, items: list[dict], crawl_log: list[dict]) ->
     return out_buf.getvalue()
 
 
-def inspect_single_header(url: str, timeout: int = 10) -> tuple[str, dict]:
-    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
-    req.get_method = lambda: "HEAD"
+def inspect_single_header(url: str, timeout: int = 10) -> tuple[str, dict[str, Any]]:
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT}, method="HEAD")
     try:
         with urllib.request.urlopen(req, timeout=timeout) as resp:
             ct = resp.headers.get("Content-Type", "")
@@ -855,8 +859,10 @@ def inspect_single_header(url: str, timeout: int = 10) -> tuple[str, dict]:
         return url, {"status": 0, "content_type": "", "size_bytes": None, "broken": True}
 
 
-def inspect_asset_headers_concurrently(urls: list[str], timeout: int = 10, max_workers: int = 10) -> dict[str, dict]:
-    header_cache = {}
+def inspect_asset_headers_concurrently(
+    urls: list[str], timeout: int = 10, max_workers: int = 10
+) -> dict[str, dict[str, Any]]:
+    header_cache: dict[str, dict[str, Any]] = {}
     total = len(urls)
     completed = 0
     if not urls:
@@ -891,7 +897,7 @@ def run_image_audit(
     resume: bool = False,
     enable_sitemaps: bool = True,
     enable_wp_media: bool = True
-) -> dict:
+) -> dict[str, Any]:
     norm_start = normalize_url(start_url)
     if not norm_start:
         raise ValueError(f"Invalid target URL: '{start_url}'")
@@ -1082,15 +1088,15 @@ def run_image_audit(
 
     # Concurrent high-performance header inspection across unique assets
     unique_urls = list({p["url"] for p in all_placements})
-    occurrence_counts = {}
+    occurrence_counts: dict[str, int] = {}
     for p in all_placements:
         occurrence_counts[p["url"]] = occurrence_counts.get(p["url"], 0) + 1
 
     header_cache = inspect_asset_headers_concurrently(unique_urls, timeout=timeout, max_workers=10)
 
     # Evaluate items
-    items = []
-    format_counts = {}
+    items: list[ImageRecord] = []
+    format_counts: dict[str, int] = {}
     broken_count = 0
     oversized_count = 0
     missing_alt_count = 0
@@ -1261,7 +1267,7 @@ def run_image_audit(
     }
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="SEO Studio — Website Image Optimization Audit Tool",
         formatter_class=argparse.RawDescriptionHelpFormatter,

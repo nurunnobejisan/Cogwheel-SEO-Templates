@@ -32,6 +32,10 @@ import urllib.parse
 import urllib.request
 import zipfile
 from datetime import datetime
+from typing import Any
+
+HeadingRecord = dict[str, Any]
+PageRecord = dict[str, Any]
 
 USER_AGENT = "Mozilla/5.0 (compatible; SeoStudioHeadingAudit/2.8; +https://seo-studio-one.vercel.app)"
 
@@ -192,8 +196,8 @@ def derive_target_keyword(url_str: str, page_title: str) -> str:
 # 2. Heading Extraction & Optimization
 # -----------------------------------------------------------------------------
 
-def extract_headings_from_html(html_text: str) -> list[dict]:
-    headings = []
+def extract_headings_from_html(html_text: str) -> list[HeadingRecord]:
+    headings: list[HeadingRecord] = []
     # Match <h1..h6>
     for m in re.finditer(r"<(h[1-6])\b[^>]*>(.*?)</\1>", html_text, re.I | re.S):
         tag = m.group(1).upper()
@@ -215,11 +219,11 @@ def extract_headings_from_html(html_text: str) -> list[dict]:
     return headings
 
 
-def analyze_and_optimize_page(raw_headings: list[dict], page_url: str, page_title: str) -> dict:
+def analyze_and_optimize_page(raw_headings: list[HeadingRecord], page_url: str, page_title: str) -> PageRecord:
     target_keyword = derive_target_keyword(page_url, page_title)
     is_home = urllib.parse.urlparse(page_url).path in ("", "/")
 
-    headings = []
+    headings: list[HeadingRecord] = []
     h1_count = 0
     h2_count = 0
     h3_count = 0
@@ -370,7 +374,7 @@ def build_heading_styles_xml() -> str:
     )
 
 
-def create_heading_sheet_xml(pages: list[dict]) -> str:
+def create_heading_sheet_xml(pages: list[PageRecord]) -> str:
     xml_parts = [
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
@@ -453,7 +457,7 @@ def create_heading_sheet_xml(pages: list[dict]) -> str:
     return "\n".join(xml_parts)
 
 
-def create_summary_sheet_xml(summary: dict) -> str:
+def create_summary_sheet_xml(summary: dict[str, Any]) -> str:
     xml_parts = [
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
@@ -510,7 +514,7 @@ def create_summary_sheet_xml(summary: dict) -> str:
     return "\n".join(xml_parts)
 
 
-def create_hierarchy_inventory_sheet_xml(pages: list[dict]) -> str:
+def create_hierarchy_inventory_sheet_xml(pages: list[PageRecord]) -> str:
     xml_parts = [
         '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>',
         '<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">',
@@ -567,7 +571,7 @@ def create_hierarchy_inventory_sheet_xml(pages: list[dict]) -> str:
     return "\n".join(xml_parts)
 
 
-def build_heading_audit_xlsx(summary: dict, pages: list[dict]) -> bytes:
+def build_heading_audit_xlsx(summary: dict[str, Any], pages: list[PageRecord]) -> bytes:
     sheet1_xml = create_heading_sheet_xml(pages)
     sheet2_xml = create_summary_sheet_xml(summary)
     sheet3_xml = create_hierarchy_inventory_sheet_xml(pages)
@@ -640,7 +644,7 @@ def run_heading_audit(
     output_path: str = "outputs/heading_structure_audit_thenines.xlsx",
     resume: bool = False,
     enable_sitemaps: bool = True
-) -> dict:
+) -> dict[str, Any]:
     norm_start = normalize_url(start_url)
     if not norm_start:
         raise ValueError(f"Invalid target URL: '{start_url}'")
@@ -696,10 +700,10 @@ def run_heading_audit(
         except Exception:
             pass
 
-        visited_sm = set()
-        sitemap_urls = set()
+        visited_sm: set[str] = set()
+        sitemap_urls: set[str] = set()
 
-        def parse_sm(sm_url):
+        def parse_sm(sm_url: str) -> None:
             if sm_url in visited_sm or len(visited_sm) > 15:
                 return
             visited_sm.add(sm_url)
@@ -776,7 +780,14 @@ def run_heading_audit(
                 for m_link in re.finditer(r"""<a\b[^>]*\bhref\s*=\s*["']([^"']*)["'][^>]*>""", html_text, re.I):
                     href = m_link.group(1).strip()
                     norm_link = normalize_url(href, current_url)
-                    origin_match = norm_link.startswith(origin) if not allow_subdomains else (norm_link and urllib.parse.urlparse(norm_link).netloc.endswith(urllib.parse.urlparse(origin).netloc))
+                    if norm_link is None:
+                        origin_match = False
+                    elif not allow_subdomains:
+                        origin_match = norm_link.startswith(origin)
+                    else:
+                        origin_match = urllib.parse.urlparse(norm_link).netloc.endswith(
+                            urllib.parse.urlparse(origin).netloc
+                        )
                     if (
                         norm_link
                         and origin_match
@@ -879,8 +890,8 @@ def run_heading_audit(
     os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
     print(f"\n[Export] Generating OpenXML workbook at: {output_path}")
     xlsx_bytes = build_heading_audit_xlsx(summary, pages_data)
-    with open(output_path, "wb") as f:
-        f.write(xlsx_bytes)
+    with open(output_path, "wb") as out_f:
+        out_f.write(xlsx_bytes)
 
     print("=======================================================")
     print(f" AUDIT COMPLETE: {len(pages_data)} pages, {total_headings} headings audited.")
@@ -896,7 +907,7 @@ def run_heading_audit(
     }
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(
         description="SEO Studio — Heading Structure Optimization Audit Tool",
         formatter_class=argparse.RawDescriptionHelpFormatter,
