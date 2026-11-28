@@ -87,3 +87,22 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Normalized registrable hosts collapse `www.` and multi-label subdomains (handling common 2-level public suffixes) into one `hostHash` per domain so subpages share the same split.
 - **Remaining**: Proceed to WP9 (`ml/wp9-golden-v2`).
+
+## WP9 — Golden Set v2 Scaffolding & Candidate CLI (`ml/wp9-golden-v2`)
+- **Changed**:
+  - Kept the frozen 52-case `ml/eval/golden/cases.jsonl` and its `docs/ml/DATA_CARD.md` hash untouched.
+  - Created `ml/eval/golden_v2/README.md` + `ml/eval/golden_v2/cases.jsonl` targeting `>= 75` `schema_generation` and `>= 75` `metadata_generation` human-reviewed cases on held-out hosts.
+  - Created `scripts/check-golden-v2.ts` (`evaluateGoldenV2`) enforcing `MlGoldenCaseSchema`, `humanReviewed: true`, licence/registry parity, zero host/hash overlap with train split, and `--strict` 75/75 coverage (wired `--allow-partial` into `npm run train:validate` and added `ml:golden-v2:check` / `ml:golden-v2:propose` scripts to `package.json`).
+  - Created `ml/eval/propose_golden_v2.py` to generate unreviewed (`humanReviewed: false`) candidates strictly excluding training & frozen golden hosts.
+  - Added `tests/golden-v2-check.test.ts` and `tests/python/test_ml_golden_v2.py`.
+- **Defaults taken**:
+  - Scaffolding starts `ml/eval/golden_v2/cases.jsonl` empty (`--allow-partial` in CI `train:validate`) rather than committing unreviewed or fabricated rows, while `--strict` blocks promotion until `75` schema + `75` metadata human-reviewed cases exist.
+- **Remaining**: Proceed to WP10 (`ml/wp10-gpu-runbook`).
+
+## WP10 — Update `docs/ml/GPU_RUNBOOK.md` (`ml/wp10-gpu-runbook`)
+- **Changed**:
+  - Updated `docs/ml/GPU_RUNBOOK.md` with exact copy-paste v1 commands across Steps 1–7 (`ml.train.build_sft`, baseline `ml.train.evaluate --endpoint` comparisons against untuned `Qwen/Qwen3-1.7B` and current free provider at temperature 0, QLoRA `0.6B -> 1.7B -> 4B` `< 9h` runs, private HF upload via `ML_PRIVATE_DATASET_REPO`, 11-gate `ml.serve.register` promotion, `shadow -> canary -> on` progressive app rollout via `AI_ADAPTER_MODE`/`AI_ADAPTER_CANARY_PCT`, and instant rollback).
+  - Documented mandatory v1 ship gates (`schema`: `jsonld_valid >= 95%`, `invented_metrics = 0`; `metadata`: `title_budget >= 90%`; beat both untuned base and free provider).
+- **Defaults taken**:
+  - Aligned config paths cleanly to `ml/train/config.py`'s real defaults (`ml/train/outputs/<runId>/adapter`, `data/build/sft-v2.jsonl`, `data/build/sft-v2.report.json`).
+- **Remaining**: Proceed to WP11 (`ml/wp11-progress-docs`).
