@@ -75,6 +75,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+      # Some pytest cases cross-check Python output against Node tooling, e.g.
+      # tests/python/test_ml_build_sft.py runs scripts/validate-training-data.mjs,
+      # which imports js-yaml. Node resolves packages from the importing file's
+      # directory, so the repo-root node_modules must exist or that test fails
+      # with ERR_MODULE_NOT_FOUND even though the Python side is correct.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install Node dependencies (cross-runtime gates)
+        run: npm ci
       - name: Lint (ruff)
         run: |
           pip install ruff==0.17.6
