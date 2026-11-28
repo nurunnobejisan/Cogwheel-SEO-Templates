@@ -1,0 +1,242 @@
+[
+  {
+    "intent_id": "best_hotel_gulshan",
+    "language": "en",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "best hotel in Gulshan",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_gulshan_en_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_gulshan",
+    "language": "en",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "best hotel in Gulshan",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_gulshan_en_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_gulshan",
+    "language": "bn",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "গুলশানে সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_gulshan_bn_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_gulshan",
+    "language": "bn",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "গুলশানে সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_gulshan_bn_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_gulshan",
+    "language": "banglish",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "gulshan e best hotel kon ta",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_gulshan_banglish_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_gulshan",
+    "language": "banglish",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "gulshan e best hotel kon ta",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_gulshan_banglish_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_banani",
+    "language": "en",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "best hotel in Banani",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_banani_en_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_banani",
+    "language": "en",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "best hotel in Banani",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_banani_en_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_banani",
+    "language": "bn",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "বনানীতে সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_banani_bn_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_banani",
+    "language": "bn",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "বনানীতে সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_banani_bn_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_banani",
+    "language": "banglish",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "banani te best hotel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_banani_banglish_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_banani",
+    "language": "banglish",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "banani te best hotel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_banani_banglish_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_dhanmondi",
+    "language": "en",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "best hotel in Dhanmondi",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_dhanmondi_en_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_dhanmondi",
+    "language": "en",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "best hotel in Dhanmondi",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_dhanmondi_en_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_dhanmondi",
+    "language": "bn",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "ধানমন্ডিতে সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_dhanmondi_bn_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_dhanmondi",
+    "language": "bn",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "ধানমন্ডিতে সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_dhanmondi_bn_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_dhanmondi",
+    "language": "banglish",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "dhanmondi te best hotel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_dhanmondi_banglish_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_dhanmondi",
+    "language": "banglish",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "dhanmondi te best hotel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_dhanmondi_banglish_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_uttara",
+    "language": "en",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "best hotel in Uttara",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_uttara_en_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_uttara",
+    "language": "en",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "best hotel in Uttara",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_uttara_en_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_uttara",
+    "language": "bn",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "উত্তরায় সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_uttara_bn_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_uttara",
+    "language": "bn",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "উত্তরায় সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_uttara_bn_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_uttara",
+    "language": "banglish",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "uttara te best hotel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_uttara_banglish_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_uttara",
+    "language": "banglish",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "uttara te best hotel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_uttara_banglish_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_motijheel",
+    "language": "en",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "best hotel in Motijheel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_motijheel_en_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_motijheel",
+    "language": "en",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "best hotel in Motijheel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_motijheel_en_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_motijheel",
+    "language": "bn",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "মতিঝিলে সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_motijheel_bn_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_motijheel",
+    "language": "bn",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "মতিঝিলে সেরা হোটেল",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_motijheel_bn_run1.json"
+  },
+  {
+    "intent_id": "best_hotel_motijheel",
+    "language": "banglish",
+    "run_index": 0,
+    "provider": "recorded",
+    "query": "motijheel e best hotel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_motijheel_banglish_run0.json"
+  },
+  {
+    "intent_id": "best_hotel_motijheel",
+    "language": "banglish",
+    "run_index": 1,
+    "provider": "recorded",
+    "query": "motijheel e best hotel",
+    "raw_answer_path": "/Users/jisanjomadder/Documents/Default Project/data/geo_visibility/runs/best_hotel_motijheel_banglish_run1.json"
+  }
+]

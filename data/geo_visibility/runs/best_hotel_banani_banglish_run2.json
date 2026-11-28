@@ -1,0 +1,11 @@
+{
+  "query": "banani te best hotel",
+  "answer": "banani te best hotel — best: Pan Pacific Sonargaon Dhaka, Radisson Blu Dhaka.",
+  "citations": [
+    "panpacific.com",
+    "booking.com"
+  ],
+  "raw": {
+    "prompt": "banani te best hotel"
+  }
+}

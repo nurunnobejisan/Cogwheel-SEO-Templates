@@ -1,0 +1,11 @@
+{
+  "query": "uttara te best hotel",
+  "answer": "uttara te best hotel — best: Pan Pacific Sonargaon Dhaka, Radisson Blu Dhaka.",
+  "citations": [
+    "panpacific.com",
+    "booking.com"
+  ],
+  "raw": {
+    "prompt": "uttara te best hotel"
+  }
+}

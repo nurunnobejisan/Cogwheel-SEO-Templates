@@ -1,0 +1,11 @@
+{
+  "query": "gulshan e best hotel kon ta",
+  "answer": "gulshan e best hotel kon ta — best: Pan Pacific Sonargaon Dhaka, Radisson Blu Dhaka.",
+  "citations": [
+    "panpacific.com",
+    "booking.com"
+  ],
+  "raw": {
+    "prompt": "gulshan e best hotel kon ta"
+  }
+}

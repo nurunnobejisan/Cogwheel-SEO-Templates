@@ -1,0 +1,11 @@
+{
+  "query": "মতিঝিলে সেরা হোটেল",
+  "answer": "মতিঝিলে সেরা হোটেল — সেরা: Pan Pacific Sonargaon Dhaka, Radisson Blu Dhaka.",
+  "citations": [
+    "panpacific.com",
+    "booking.com"
+  ],
+  "raw": {
+    "prompt": "মতিঝিলে সেরা হোটেল"
+  }
+}

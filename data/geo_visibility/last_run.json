@@ -1,0 +1,247 @@
+{
+  "run_id": "2026-11-28T09:47:04.764840+00:00",
+  "provider": "recorded",
+  "metrics": [
+    {
+      "entity": "Pan Pacific Sonargaon Dhaka",
+      "provider": "recorded",
+      "language": "en",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 1.0,
+      "first_mention_share": 1.0,
+      "citation_share": 1.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 1.0,
+        "bn": 1.0,
+        "banglish": 1.0
+      }
+    },
+    {
+      "entity": "Radisson Blu Dhaka",
+      "provider": "recorded",
+      "language": "en",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 1.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 1.0,
+        "bn": 1.0,
+        "banglish": 1.0
+      }
+    },
+    {
+      "entity": "InterContinental Dhaka",
+      "provider": "recorded",
+      "language": "en",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    },
+    {
+      "entity": "The Westin Dhaka",
+      "provider": "recorded",
+      "language": "en",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    },
+    {
+      "entity": "Le Méridien Dhaka",
+      "provider": "recorded",
+      "language": "en",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    },
+    {
+      "entity": "Pan Pacific Sonargaon Dhaka",
+      "provider": "recorded",
+      "language": "bn",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 1.0,
+      "first_mention_share": 1.0,
+      "citation_share": 1.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 1.0,
+        "bn": 1.0,
+        "banglish": 1.0
+      }
+    },
+    {
+      "entity": "Radisson Blu Dhaka",
+      "provider": "recorded",
+      "language": "bn",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 1.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 1.0,
+        "bn": 1.0,
+        "banglish": 1.0
+      }
+    },
+    {
+      "entity": "InterContinental Dhaka",
+      "provider": "recorded",
+      "language": "bn",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    },
+    {
+      "entity": "The Westin Dhaka",
+      "provider": "recorded",
+      "language": "bn",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    },
+    {
+      "entity": "Le Méridien Dhaka",
+      "provider": "recorded",
+      "language": "bn",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    },
+    {
+      "entity": "Pan Pacific Sonargaon Dhaka",
+      "provider": "recorded",
+      "language": "banglish",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 1.0,
+      "first_mention_share": 1.0,
+      "citation_share": 1.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 1.0,
+        "bn": 1.0,
+        "banglish": 1.0
+      }
+    },
+    {
+      "entity": "Radisson Blu Dhaka",
+      "provider": "recorded",
+      "language": "banglish",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 1.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 1.0,
+        "bn": 1.0,
+        "banglish": 1.0
+      }
+    },
+    {
+      "entity": "InterContinental Dhaka",
+      "provider": "recorded",
+      "language": "banglish",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    },
+    {
+      "entity": "The Westin Dhaka",
+      "provider": "recorded",
+      "language": "banglish",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    },
+    {
+      "entity": "Le Méridien Dhaka",
+      "provider": "recorded",
+      "language": "banglish",
+      "week": "2026-W48",
+      "n_runs": 10,
+      "mention_rate": 0.0,
+      "first_mention_share": 0.0,
+      "citation_share": 0.0,
+      "language_gap": 0.0,
+      "rates_by_language": {
+        "en": 0.0,
+        "bn": 0.0,
+        "banglish": 0.0
+      }
+    }
+  ],
+  "n_results": 30
+}
