@@ -65,3 +65,14 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Chunks with missing/empty `propertyId` are treated as shared public docs (`Google Search Central`, `schema.org`), while any non-empty `propertyId` stays strictly tenant-scoped.
 - **Remaining**: Proceed to WP7 (`ml/wp7-constrained-decoding`).
+
+## WP7 — Constrained Decoding Schema & `ml/generate/` (`ml/wp7-constrained-decoding`)
+- **Changed**:
+  - Defined `SchemaGenerationAnswerSchema` and `MetadataGenerationAnswerSchema` in `schemas/ml-v1-outputs.ts` reusing `schemas/known-schema-types.json` and `schemaMarkupItemSchema`.
+  - Updated `scripts/export-json-schemas.ts` to export self-contained Draft-07 JSON Schemas (`schemas/ml-schema-generation.schema.json` and `schemas/ml-metadata-generation.schema.json`).
+  - Created `ml/generate/` (`constrained.py`, `__init__.py`) loading the exported JSON Schemas directly (`load_task_json_schema`, `build_json_schema_response_format`, `generate_structured`) with lazy `outlines` import raising `HeavyDepsError` when absent.
+  - Wired optional `task` support (`schema_generation`, `metadata_generation`) into `ml/serve/server.py` (`ModelGateway.chat`) to constrain local adapter generation via `ml/generate` and attach OpenAI-compatible `response_format` when forwarding to `--upstream`.
+  - Added `tests/python/test_ml_generate.py` and `tests/ml-schema-exports.test.ts`.
+- **Defaults taken**:
+  - Inline `$refStrategy: "none"` for the two v1 decoding schemas so downstream constrained generators receive self-contained schemas without local `$ref` resolution.
+- **Remaining**: Proceed to WP8 (`ml/wp8-dataset-v2`).

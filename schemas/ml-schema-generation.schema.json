@@ -1,0 +1,320 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MlSchemaGenerationOutput",
+  "description": "Constrained decoding schema for v1 schema_generation JSON-LD outputs.",
+  "anyOf": [
+    {
+      "type": "object",
+      "properties": {
+        "@context": {
+          "type": "string",
+          "minLength": 1
+        },
+        "@type": {
+          "anyOf": [
+            {
+              "type": "string",
+              "enum": [
+                "AboutPage",
+                "AggregateRating",
+                "Answer",
+                "Apartment",
+                "Article",
+                "Bakery",
+                "BarOrPub",
+                "BedAndBreakfast",
+                "BlogPosting",
+                "BreadcrumbList",
+                "Cafe",
+                "ContactPage",
+                "Corporation",
+                "Event",
+                "FAQPage",
+                "FoodEstablishment",
+                "GeoCoordinates",
+                "Hostel",
+                "Hotel",
+                "House",
+                "HowTo",
+                "HowToStep",
+                "ImageObject",
+                "ListItem",
+                "LocalBusiness",
+                "LodgingBusiness",
+                "Menu",
+                "MenuItem",
+                "Motel",
+                "NewsArticle",
+                "Offer",
+                "OfferCatalog",
+                "Organization",
+                "Person",
+                "Place",
+                "PostalAddress",
+                "Product",
+                "Question",
+                "Rating",
+                "Resort",
+                "Restaurant",
+                "Review",
+                "Room",
+                "VacationRental",
+                "VideoObject",
+                "WebPage",
+                "WebSite"
+              ]
+            },
+            {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "enum": [
+                  "AboutPage",
+                  "AggregateRating",
+                  "Answer",
+                  "Apartment",
+                  "Article",
+                  "Bakery",
+                  "BarOrPub",
+                  "BedAndBreakfast",
+                  "BlogPosting",
+                  "BreadcrumbList",
+                  "Cafe",
+                  "ContactPage",
+                  "Corporation",
+                  "Event",
+                  "FAQPage",
+                  "FoodEstablishment",
+                  "GeoCoordinates",
+                  "Hostel",
+                  "Hotel",
+                  "House",
+                  "HowTo",
+                  "HowToStep",
+                  "ImageObject",
+                  "ListItem",
+                  "LocalBusiness",
+                  "LodgingBusiness",
+                  "Menu",
+                  "MenuItem",
+                  "Motel",
+                  "NewsArticle",
+                  "Offer",
+                  "OfferCatalog",
+                  "Organization",
+                  "Person",
+                  "Place",
+                  "PostalAddress",
+                  "Product",
+                  "Question",
+                  "Rating",
+                  "Resort",
+                  "Restaurant",
+                  "Review",
+                  "Room",
+                  "VacationRental",
+                  "VideoObject",
+                  "WebPage",
+                  "WebSite"
+                ]
+              },
+              "minItems": 1
+            }
+          ]
+        }
+      },
+      "required": [
+        "@context",
+        "@type"
+      ],
+      "additionalProperties": true
+    },
+    {
+      "type": "object",
+      "properties": {
+        "@context": {
+          "type": "string",
+          "minLength": 1
+        },
+        "@graph": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "@type": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "AboutPage",
+                      "AggregateRating",
+                      "Answer",
+                      "Apartment",
+                      "Article",
+                      "Bakery",
+                      "BarOrPub",
+                      "BedAndBreakfast",
+                      "BlogPosting",
+                      "BreadcrumbList",
+                      "Cafe",
+                      "ContactPage",
+                      "Corporation",
+                      "Event",
+                      "FAQPage",
+                      "FoodEstablishment",
+                      "GeoCoordinates",
+                      "Hostel",
+                      "Hotel",
+                      "House",
+                      "HowTo",
+                      "HowToStep",
+                      "ImageObject",
+                      "ListItem",
+                      "LocalBusiness",
+                      "LodgingBusiness",
+                      "Menu",
+                      "MenuItem",
+                      "Motel",
+                      "NewsArticle",
+                      "Offer",
+                      "OfferCatalog",
+                      "Organization",
+                      "Person",
+                      "Place",
+                      "PostalAddress",
+                      "Product",
+                      "Question",
+                      "Rating",
+                      "Resort",
+                      "Restaurant",
+                      "Review",
+                      "Room",
+                      "VacationRental",
+                      "VideoObject",
+                      "WebPage",
+                      "WebSite"
+                    ]
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "enum": [
+                        "AboutPage",
+                        "AggregateRating",
+                        "Answer",
+                        "Apartment",
+                        "Article",
+                        "Bakery",
+                        "BarOrPub",
+                        "BedAndBreakfast",
+                        "BlogPosting",
+                        "BreadcrumbList",
+                        "Cafe",
+                        "ContactPage",
+                        "Corporation",
+                        "Event",
+                        "FAQPage",
+                        "FoodEstablishment",
+                        "GeoCoordinates",
+                        "Hostel",
+                        "Hotel",
+                        "House",
+                        "HowTo",
+                        "HowToStep",
+                        "ImageObject",
+                        "ListItem",
+                        "LocalBusiness",
+                        "LodgingBusiness",
+                        "Menu",
+                        "MenuItem",
+                        "Motel",
+                        "NewsArticle",
+                        "Offer",
+                        "OfferCatalog",
+                        "Organization",
+                        "Person",
+                        "Place",
+                        "PostalAddress",
+                        "Product",
+                        "Question",
+                        "Rating",
+                        "Resort",
+                        "Restaurant",
+                        "Review",
+                        "Room",
+                        "VacationRental",
+                        "VideoObject",
+                        "WebPage",
+                        "WebSite"
+                      ]
+                    },
+                    "minItems": 1
+                  }
+                ]
+              }
+            },
+            "required": [
+              "@type"
+            ],
+            "additionalProperties": true
+          },
+          "minItems": 1
+        }
+      },
+      "required": [
+        "@context",
+        "@graph"
+      ],
+      "additionalProperties": true
+    },
+    {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "pageUrl": {
+            "type": "string",
+            "minLength": 1
+          },
+          "schemaType": {
+            "type": "string",
+            "minLength": 1
+          },
+          "existingTypes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "missing",
+              "incomplete",
+              "valid"
+            ]
+          },
+          "jsonLd": {
+            "type": "object",
+            "additionalProperties": {}
+          },
+          "notes": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "required": [
+          "pageUrl",
+          "schemaType",
+          "existingTypes",
+          "status",
+          "jsonLd",
+          "notes"
+        ],
+        "additionalProperties": false
+      },
+      "minItems": 1
+    }
+  ]
+}

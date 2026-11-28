@@ -40,6 +40,11 @@ import urllib.request
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any, Dict, List, Mapping, Optional
 
+from ml.generate import (
+    SUPPORTED_TASKS as CONSTRAINED_TASKS,
+    build_json_schema_response_format,
+    generate_structured,
+)
 from ml.serve.registry import (
     DEFAULT_REGISTRY,
     RegistryError,
@@ -151,6 +156,13 @@ class ModelGateway:
             if not isinstance(message, Mapping) or not isinstance(message.get("content"), str):
                 raise GatewayError(400, "bad_request", "each message needs a string 'content'")
 
+        raw_task = body.get("task")
+        task: Optional[str] = None
+        if raw_task is not None:
+            if not isinstance(raw_task, str) or not raw_task.strip():
+                raise GatewayError(400, "bad_request", "'task' must be a non-empty string")
+            task = raw_task.strip()
+
         requested = body.get("model") or self.config.registry.get("activeModelId") or ""
         entry = self._resolve_or_raise(str(requested))
         upstream_model = str(entry.get("modelId"))
@@ -161,8 +173,13 @@ class ModelGateway:
             "temperature": _number(body.get("temperature"), default=0.2, lo=0.0, hi=2.0),
             "max_tokens": _number(body.get("max_tokens"), default=1024, lo=1, hi=32768),
         }
+        if "response_format" in body and body["response_format"] is not None:
+            payload["response_format"] = body["response_format"]
+        elif task in CONSTRAINED_TASKS:
+            payload["response_format"] = build_json_schema_response_format(task)
+
         if self.config.adapter:
-            text = self._run_adapter(payload)
+            text = self._run_adapter(payload, task=task)
             return _completion_response(upstream_model, text)
         return self._forward(payload, upstream_model)
 
@@ -221,10 +238,20 @@ class ModelGateway:
         result["model"] = model_id  # the id the client asked for, not the upstream's
         return result
 
-    def _run_adapter(self, payload: Dict[str, Any]) -> str:
+    def _run_adapter(self, payload: Dict[str, Any], *, task: Optional[str] = None) -> str:
         """Generate with a locally loaded adapter (heavy deps, lazy import)."""
         pipeline = self._load_adapter()
         prompt = _messages_to_prompt(payload["messages"])
+        if task in CONSTRAINED_TASKS:
+            text = generate_structured(
+                prompt,
+                task=task,
+                model=pipeline.model,
+                max_tokens=int(payload["max_tokens"]),
+            )
+            if not isinstance(text, str) or not text.strip():
+                raise GatewayError(502, "upstream_bad_response", "constrained adapter produced no text")
+            return text
         output = pipeline(
             prompt,
             max_new_tokens=int(payload["max_tokens"]),
