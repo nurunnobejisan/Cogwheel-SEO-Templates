@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="public/seo-studio-logo.png" alt="SEO & GEO Studio" width="104" />
-
 # SEO & GEO Studio
 
 **Hospitality SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace.**
