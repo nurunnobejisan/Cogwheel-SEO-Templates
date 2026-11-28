@@ -98,3 +98,11 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Scaffolding starts `ml/eval/golden_v2/cases.jsonl` empty (`--allow-partial` in CI `train:validate`) rather than committing unreviewed or fabricated rows, while `--strict` blocks promotion until `75` schema + `75` metadata human-reviewed cases exist.
 - **Remaining**: Proceed to WP10 (`ml/wp10-gpu-runbook`).
+
+## WP10 — Update `docs/ml/GPU_RUNBOOK.md` (`ml/wp10-gpu-runbook`)
+- **Changed**:
+  - Updated `docs/ml/GPU_RUNBOOK.md` with exact copy-paste v1 commands across Steps 1–7 (`ml.train.build_sft`, baseline `ml.train.evaluate --endpoint` comparisons against untuned `Qwen/Qwen3-1.7B` and current free provider at temperature 0, QLoRA `0.6B -> 1.7B -> 4B` `< 9h` runs, private HF upload via `ML_PRIVATE_DATASET_REPO`, 11-gate `ml.serve.register` promotion, `shadow -> canary -> on` progressive app rollout via `AI_ADAPTER_MODE`/`AI_ADAPTER_CANARY_PCT`, and instant rollback).
+  - Documented mandatory v1 ship gates (`schema`: `jsonld_valid >= 95%`, `invented_metrics = 0`; `metadata`: `title_budget >= 90%`; beat both untuned base and free provider).
+- **Defaults taken**:
+  - Aligned config paths cleanly to `ml/train/config.py`'s real defaults (`ml/train/outputs/<runId>/adapter`, `data/build/sft-v2.jsonl`, `data/build/sft-v2.report.json`).
+- **Remaining**: Proceed to WP11 (`ml/wp11-progress-docs`).
