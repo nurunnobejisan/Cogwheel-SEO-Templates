@@ -7,6 +7,7 @@ import {
   getRelatedTemplates,
 } from "@/data/templates";
 import { TemplateCustomizerView } from "@/components/TemplateCustomizerView";
+import { APP_YEAR } from "@/config/app-meta";
 
 interface PageProps {
   params: {
@@ -134,7 +135,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
+              className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
               CW
             </Link>
@@ -157,25 +158,25 @@ export default function TemplateDetailPage({ params }: PageProps) {
           >
             <Link
               href="/"
-              className="rounded-lg px-3 py-1.5 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-lg px-3 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Studio
             </Link>
             <Link
               href="/templates"
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-white shadow-xs dark:bg-brand dark:text-slate-950"
+              className="inline-flex min-h-11 items-center rounded-lg bg-slate-900 px-3 text-white shadow-xs dark:bg-brand dark:text-slate-950"
             >
               Templates
             </Link>
             <Link
               href="/strategy-matrix"
-              className="rounded-lg px-3 py-1.5 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-lg px-3 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Strategy Matrix
             </Link>
             <Link
               href="/architecture"
-              className="rounded-lg px-3 py-1.5 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-lg px-3 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Architecture
             </Link>
@@ -268,7 +269,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
       {/* Semantic Footer Landmark */}
       <footer className="mt-16 border-t border-slate-200 bg-white py-8 text-center text-caption text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
         <div className="mx-auto max-w-6xl px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>© {new Date().getFullYear()} SEO &amp; GEO Studio. Hospitality Search Engine Suite.</p>
+          <p>© {APP_YEAR} SEO &amp; GEO Studio. Hospitality Search Engine Suite.</p>
           <div className="flex gap-4">
             <Link href="/" className="hover:underline">Studio</Link>
             <Link href="/templates" className="hover:underline">Templates</Link>

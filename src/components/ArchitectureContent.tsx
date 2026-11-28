@@ -39,6 +39,7 @@ export function ArchitectureContent() {
             width={1200}
             height={780}
             className="w-full min-w-[700px] rounded-lg"
+            sizes="(max-width: 768px) 700px, 1200px"
             priority
           />
         </div>

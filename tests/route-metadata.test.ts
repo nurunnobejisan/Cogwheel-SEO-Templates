@@ -91,12 +91,13 @@ describe("Engineering Standards Rules Enforcement — Route Metadata & SEO Stand
 
   it("generates valid sitemap covering all routes", () => {
     const sitemapEntries = sitemap();
-    expect(sitemapEntries.length).toBe(16);
+    expect(sitemapEntries.length).toBe(17);
     const urls = sitemapEntries.map((e) => e.url);
     expect(urls).toContain("https://seo-studio.vercel.app");
     expect(urls).toContain("https://seo-studio.vercel.app/templates");
     expect(urls).toContain("https://seo-studio.vercel.app/strategy-matrix");
     expect(urls).toContain("https://seo-studio.vercel.app/architecture");
+    expect(urls).toContain("https://seo-studio.vercel.app/extension");
 
     // All 12 templates must be represented
     TEMPLATES_DATA.forEach((tmpl) => {

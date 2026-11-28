@@ -82,7 +82,7 @@ export function TemplatesHubClient() {
           <button
             type="button"
             onClick={() => setSelectedCategory("all")}
-            className={`rounded-xl px-3 py-1.5 text-caption font-bold transition ${
+            className={`inline-flex min-h-11 items-center rounded-xl px-3 text-caption font-bold transition ${
               selectedCategory === "all"
                 ? "bg-slate-900 text-brand-light shadow-sm dark:bg-brand dark:text-slate-950"
                 : "border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-400 dark:hover:text-white"
@@ -98,7 +98,7 @@ export function TemplatesHubClient() {
                 key={cat.slug}
                 type="button"
                 onClick={() => setSelectedCategory(cat.slug)}
-                className={`rounded-xl px-3 py-1.5 text-caption font-semibold transition ${
+                className={`inline-flex min-h-11 items-center rounded-xl px-3 text-caption font-semibold transition ${
                   isActive
                     ? "bg-slate-900 text-brand-light shadow-sm dark:bg-brand dark:text-slate-950"
                     : "border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white hover:text-slate-900 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-400 dark:hover:text-white"
@@ -123,6 +123,12 @@ export function TemplatesHubClient() {
           </span>
         )}
       </div>
+
+      {filteredTemplates.length === 0 && (
+        <div className="rounded-xl border border-slate-200 bg-slate-50 px-4 py-8 text-center text-caption italic text-slate-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-400">
+          No Data
+        </div>
+      )}
 
       {/* Template Cards Grid */}
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

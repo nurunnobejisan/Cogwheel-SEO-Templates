@@ -28,23 +28,23 @@ export function SiteFooter() {
           </div>
 
           <nav aria-label="Footer Navigation" className="flex flex-wrap items-center gap-4 text-caption font-semibold">
-            <Link href="/" className="transition hover:text-slate-900 dark:hover:text-white">
+            <Link href="/" className="inline-flex min-h-11 items-center transition hover:text-slate-900 dark:hover:text-white">
               Studio
             </Link>
-            <Link href="/templates" className="transition hover:text-slate-900 dark:hover:text-white">
+            <Link href="/templates" className="inline-flex min-h-11 items-center transition hover:text-slate-900 dark:hover:text-white">
               Templates
             </Link>
-            <Link href="/strategy-matrix" className="transition hover:text-slate-900 dark:hover:text-white">
+            <Link href="/strategy-matrix" className="inline-flex min-h-11 items-center transition hover:text-slate-900 dark:hover:text-white">
               Strategy Matrix
             </Link>
-            <Link href="/architecture" className="transition hover:text-slate-900 dark:hover:text-white">
+            <Link href="/architecture" className="inline-flex min-h-11 items-center transition hover:text-slate-900 dark:hover:text-white">
               Architecture
             </Link>
             <a
               href="https://github.com/nurunnobejisan/SEO-Studio"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="inline-flex min-h-11 items-center text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               GitHub &rarr;
             </a>
@@ -53,7 +53,7 @@ export function SiteFooter() {
 
         <div className="mt-8 flex flex-col gap-2 border-t border-slate-200/60 pt-6 text-tiny text-slate-500 dark:border-slate-800/60 dark:text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} SEO Studio &amp;{" "}
+            &copy; {APP_YEAR} SEO Studio &amp;{" "}
             <a
               href="https://github.com/nurunnobejisan/SEO-Studio/graphs/contributors"
               target="_blank"

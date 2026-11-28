@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { APP_VERSION } from "@/config/app-meta";
 import matrixData from "../../../data/78-keyword-strategy-matrix.json";
 
 export const metadata: Metadata = {
@@ -19,7 +20,7 @@ export default function StrategyMatrixPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
+              className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
               CW
             </Link>
@@ -29,7 +30,7 @@ export default function StrategyMatrixPage() {
                   SEO &amp; GEO Studio
                 </h1>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                  v3.0.0
+                  {APP_VERSION}
                 </span>
               </div>
               <p className="text-tiny text-slate-500 dark:text-slate-400">78-Keyword Strategy Matrix</p>
@@ -39,25 +40,25 @@ export default function StrategyMatrixPage() {
           <nav aria-label="Header Navigation" className="flex items-center gap-2 text-caption font-semibold">
             <Link
               href="/"
-              className="rounded-lg px-3 py-1.5 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-lg px-3 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Studio
             </Link>
             <Link
               href="/templates"
-              className="rounded-lg px-3 py-1.5 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-lg px-3 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Templates
             </Link>
             <Link
               href="/strategy-matrix"
-              className="rounded-lg bg-slate-900 px-3 py-1.5 text-white shadow-xs dark:bg-brand dark:text-slate-950"
+              className="inline-flex min-h-11 items-center rounded-lg bg-slate-900 px-3 text-white shadow-xs dark:bg-brand dark:text-slate-950"
             >
               Strategy Matrix
             </Link>
             <Link
               href="/architecture"
-              className="rounded-lg px-3 py-1.5 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
+              className="inline-flex min-h-11 items-center rounded-lg px-3 text-slate-600 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             >
               Architecture
             </Link>
