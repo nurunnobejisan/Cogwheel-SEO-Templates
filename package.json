@@ -17,7 +17,7 @@
     "export:json-schemas": "tsx scripts/export-json-schemas.ts",
     "build:extension": "node scripts/build-extension.js",
     "extension:build": "cd chrome-extension && npm run build",
-    "extension:pack": "cd chrome-extension && npm run build && cd dist && rm -f ../../public/cogwheel-seo-studio.zip && zip -r ../../public/cogwheel-seo-studio.zip . -x '*.DS_Store'",
+    "extension:pack": "cd chrome-extension && npm run build && cd dist && rm -f ../../public/seo-studio.zip && zip -r ../../public/seo-studio.zip . -x '*.DS_Store'",
     "brain:eval": "tsx --conditions=react-server scripts/brain-eval.ts",
     "brain:export-lora": "tsx scripts/export-lora-dataset.ts",
     "train:validate": "node scripts/validate-training-data.mjs && tsx scripts/validate-ml-examples.ts && tsx scripts/check-golden-set.ts && tsx scripts/export-ml-sources.ts --check && python3 ml/dataset/cards.py --check",

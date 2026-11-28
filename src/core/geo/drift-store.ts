@@ -15,11 +15,11 @@ import type { GeoSnapshot } from "../../../rules/geo/types.ts";
 const MAX_HISTORY = 30;
 
 function storeDir(): string {
-  return path.join(process.env.COGWHEEL_DATA_DIR || path.join(os.tmpdir(), "seo-studio-geo"), "snapshots");
+  return path.join(process.env.SEO_STUDIO_DATA_DIR || path.join(os.tmpdir(), "seo-studio-geo"), "snapshots");
 }
 
 function storeEnabled(): boolean {
-  const flag = (process.env.COGWHEEL_GEO_STORE || "").toLowerCase();
+  const flag = (process.env.SEO_STUDIO_GEO_STORE || "").toLowerCase();
   return flag !== "off" && flag !== "false" && flag !== "0";
 }
 

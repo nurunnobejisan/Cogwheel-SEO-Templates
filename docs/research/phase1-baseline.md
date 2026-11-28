@@ -16,7 +16,7 @@
 | Pages | `src/app/page.tsx` (home), `templates`, `strategy-matrix`, `architecture`, `platform`. |
 | API | 24 route handlers under `src/app/api/**/route.ts` (see §4). |
 | Domain engines (outside `src`) | Top-level `rules/`, `validators/`, `schemas/`, `exporters/`, `healing/`, `platform/`, `cms/`, `ai/`, `python/`. This split is deliberate: the DOM/rule engine is framework-independent so the Chrome extension and the server share it. |
-| Extension | `chrome-extension/` (Manifest V3, Vite build); packaged to `public/cogwheel-seo-studio.zip` via `npm run extension:pack`. |
+| Extension | `chrome-extension/` (Manifest V3, Vite build); packaged to `public/seo-studio.zip` via `npm run extension:pack`. |
 | Python | `python/` (analyzer, crawler, generators, scraper, processor, scripts) with `tests/python` (pytest). |
 | Persistence | Supabase (SQL migrations in `supabase/migrations`) with in-memory fallback; local JSON/JSONL stores resolved through `src/lib/platform/data-dir.ts`. |
 | Deploy | Vercel (project `seo-3114/seo-studio`); CLI deploys recorded in `CHANGELOG.md`. |
@@ -122,7 +122,7 @@ Auth: `src/lib/platform/auth.ts` (`isAuthenticatedPrincipal`, `principalFromRequ
 
 **Gaps / debt:**
 - Crawler identifies as `SeoStudioCrawler` (branding aligned).
-- On Vercel the writable data dir falls back to temp (ephemeral); durable history needs `COGWHEEL_DATA_DIR`/Supabase (`src/lib/platform/data-dir.ts`, documented in `CHANGELOG.md`).
+- On Vercel the writable data dir falls back to temp (ephemeral); durable history needs `SEO_STUDIO_DATA_DIR`/Supabase (`src/lib/platform/data-dir.ts`, documented in `CHANGELOG.md`).
 - No background job/queue: all audits run synchronously inside route handlers (serverless duration limits).
 - No redirect-loop detection; no multi-page crawl; no JS rendering.
 

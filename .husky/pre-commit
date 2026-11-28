@@ -1,10 +1,10 @@
 #!/bin/sh
 # ==============================================================================
-# COGWHEEL SEO STUDIO — PRE-COMMIT HOOK
+# SEO STUDIO — PRE-COMMIT HOOK
 # Enforces strict typechecks, ESLint zero-any rules, Python tests, and SEO linter
 # ==============================================================================
 
-echo "🔍 Running Cogwheel pre-commit security and integrity checks..."
+echo "🔍 Running SEO Studio pre-commit security and integrity checks..."
 
 # 1. Secret Scanning Guardrail
 echo "▶ [1/6] Secret scanning..."

@@ -3,7 +3,7 @@
  *
  * Covers the settings reader, the fail-closed SSRF guard, the OpenAI-shaped
  * call, first-attempt ordering in `generateClaudeText` with fall-through on
- * failure, and router precedence for the `cogwheel-tuned` provider.
+ * failure, and router precedence for the `seo-studio-tuned` provider.
  */
 
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -76,7 +76,7 @@ describe("Phase 4 — custom model settings", () => {
     setEnv({ CUSTOM_MODEL_ENDPOINT: " https://models.example.com/v1/chat/completions " });
     const settings = getCustomModelSettings();
     expect(settings.endpoint).toBe("https://models.example.com/v1/chat/completions");
-    expect(settings.model).toBe("cogwheel-seo-unified");
+    expect(settings.model).toBe("seo-studio-unified");
     expect(settings.apiKey).toBeUndefined();
 
     setEnv({ CUSTOM_MODEL_ID: "seo-studio-tuned-v1", CUSTOM_MODEL_API_KEY: "k" });
@@ -119,7 +119,7 @@ describe("Phase 4 — callCustomModel", () => {
     expect(init.method).toBe("POST");
     expect((init.headers as Record<string, string>).authorization).toBe("Bearer secret");
     const body = JSON.parse(init.body as string);
-    expect(body.model).toBe("cogwheel-seo-unified");
+    expect(body.model).toBe("seo-studio-unified");
     expect(body.max_tokens).toBe(512);
     expect(body.messages).toEqual([
       { role: "system", content: "system prompt" },
@@ -202,7 +202,7 @@ describe("Phase 4 — generateClaudeText ordering", () => {
     );
 
     await expect(generateClaudeText({ system: "sys", prompt: "q" })).rejects.toThrow(
-      /Fine-tuned \(cogwheel-seo-unified\)/,
+      /Fine-tuned \(seo-studio-unified\)/,
     );
   });
 
@@ -232,10 +232,10 @@ describe("Phase 4 — generateClaudeText ordering", () => {
 
 describe("Phase 4 — router precedence", () => {
   const tuned: ProviderDescriptor = {
-    id: "cogwheel-tuned",
+    id: "seo-studio-tuned",
     label: "SEO Studio fine-tuned model",
     tier: "tier1",
-    model: "cogwheel-seo-unified",
+    model: "seo-studio-unified",
     configured: true,
   };
   const gemini: ProviderDescriptor = {
@@ -255,7 +255,7 @@ describe("Phase 4 — router precedence", () => {
 
   it("prefers the fine-tuned model for its tier when configured", () => {
     const decision = routeTask("metadata_generation", [claude, gemini, tuned]);
-    expect(decision.provider?.id).toBe("cogwheel-tuned");
+    expect(decision.provider?.id).toBe("seo-studio-tuned");
     expect(decision.rationale).toMatch(/fine-tuned SEO Studio model is configured/);
     expect(decision.fallback.map((p) => p.id)).toContain("gemini");
   });
@@ -271,17 +271,17 @@ describe("Phase 4 — router precedence", () => {
     expect(decision.provider?.id).toBe("gemini");
   });
 
-  it("marks cogwheel-tuned configured only for a guard-passing endpoint", () => {
+  it("marks seo-studio-tuned configured only for a guard-passing endpoint", () => {
     const configured = loadProviders({
       NODE_ENV: "test",
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
-    }).find((p) => p.id === "cogwheel-tuned");
+    }).find((p) => p.id === "seo-studio-tuned");
     expect(configured?.configured).toBe(true);
 
     const guarded = loadProviders({
       NODE_ENV: "test",
       CUSTOM_MODEL_ENDPOINT: PRIVATE_ENDPOINT,
-    }).find((p) => p.id === "cogwheel-tuned");
+    }).find((p) => p.id === "seo-studio-tuned");
     expect(guarded?.configured).toBe(false);
   });
 });

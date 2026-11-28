@@ -13,7 +13,7 @@
  */
 
 const PREFIX = "enc:v1:";
-const SALT = "cogwheel-extension-secret-salt-v1";
+const SALT = "seo-studio-extension-secret-salt-v1";
 
 function getRuntimeSecret(): string {
   try {
@@ -23,7 +23,7 @@ function getRuntimeSecret(): string {
   } catch {
     // ignore
   }
-  return "cogwheel-local-dev-secret";
+  return "seo-studio-local-dev-secret";
 }
 
 function toBase64(bytes: Uint8Array): string {

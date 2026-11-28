@@ -11,13 +11,13 @@ let previous: string | undefined;
 
 beforeAll(async () => {
   dir = await fs.mkdtemp(path.join(os.tmpdir(), "seo-studio-outcomes-"));
-  previous = process.env.COGWHEEL_DATA_DIR;
-  process.env.COGWHEEL_DATA_DIR = dir;
+  previous = process.env.SEO_STUDIO_DATA_DIR;
+  process.env.SEO_STUDIO_DATA_DIR = dir;
 });
 
 afterAll(async () => {
-  if (previous === undefined) delete process.env.COGWHEEL_DATA_DIR;
-  else process.env.COGWHEEL_DATA_DIR = previous;
+  if (previous === undefined) delete process.env.SEO_STUDIO_DATA_DIR;
+  else process.env.SEO_STUDIO_DATA_DIR = previous;
   await fs.rm(dir, { recursive: true, force: true });
 });
 

@@ -316,8 +316,8 @@ export async function POST(req: NextRequest) {
     //  1. PYTHON_SERVICE_URL set → POST the uploads to api/server.py over HTTP.
     //     The URL is server env only (never request-derived) and configuring it
     //     is the operator's explicit opt-in, so no local process is spawned and
-    //     COGWHEEL_ALLOW_LOCAL_PYTHON does not apply to this branch.
-    //  2. COGWHEEL_ALLOW_LOCAL_PYTHON=1 → spawn the local python-pptx builder
+    //     SEO_STUDIO_ALLOW_LOCAL_PYTHON does not apply to this branch.
+    //  2. SEO_STUDIO_ALLOW_LOCAL_PYTHON=1 → spawn the local python-pptx builder
     //     via execFile (argument array, no shell) on a trusted self-hosted
     //     machine. Never available on serverless deployments.
     //  3. Otherwise → 501 with instructions.
@@ -363,12 +363,12 @@ export async function POST(req: NextRequest) {
 
     // Local builder (python-pptx): a host-process execution path, so it is
     // disabled unless an operator explicitly opts in on a trusted machine.
-    if (process.env.COGWHEEL_ALLOW_LOCAL_PYTHON !== "1") {
+    if (process.env.SEO_STUDIO_ALLOW_LOCAL_PYTHON !== "1") {
       return NextResponse.json(
         {
           error:
             "Server-side report generation is disabled. Run `python3 api/seo_visibility_report.py --template <pptx> --xlsx <xlsx> --output <out.pptx>` locally, " +
-            "or set COGWHEEL_ALLOW_LOCAL_PYTHON=1 on a trusted self-hosted instance.",
+            "or set SEO_STUDIO_ALLOW_LOCAL_PYTHON=1 on a trusted self-hosted instance.",
           code: "report_generation_disabled",
         },
         { status: 501 }

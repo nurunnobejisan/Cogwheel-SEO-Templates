@@ -19,7 +19,7 @@ The SEO Studio engineering team takes the security of our hospitality search eng
 If you believe you have discovered a vulnerability, security flaw, or credential exposure:
 
 1. **Do not disclose the issue publicly** on GitHub Issues, pull requests, or social channels.
-2. Please report the issue privately by emailing **security@cogwheelmarketing.com** with:
+2. Please report the issue privately by emailing **jisanjomadder@gmail.com** with:
    - A clear description of the vulnerability.
    - Specific steps or proof-of-concept to reproduce the behavior.
    - Affected components (Chrome Extension Side Panel, Next.js API endpoints, Python CLI scripts, or OTA synchronization channels).
@@ -67,8 +67,8 @@ The following controls are enforced by the Next.js app (`src/middleware.ts`, `sr
 ### Host process execution
 
 - No request handler executes a shell string. Optional local bridges are **off by default** and only run through `execFile` with argument arrays:
-  - `COGWHEEL_ALLOW_LOCAL_MAIL_CLI=1` + `COGWHEEL_MAIL_CLI_PATH` for the desktop Gmail CLI.
-  - `COGWHEEL_ALLOW_LOCAL_PYTHON=1` for the python-pptx report builder.
+  - `SEO_STUDIO_ALLOW_LOCAL_MAIL_CLI=1` + `SEO_STUDIO_MAIL_CLI_PATH` for the desktop Gmail CLI.
+  - `SEO_STUDIO_ALLOW_LOCAL_PYTHON=1` for the python-pptx report builder.
 - Serverless deployments never have these binaries, and the routes return an explicit `501` instead of attempting execution.
 
 ### Data integrity

@@ -232,7 +232,7 @@ describe("local visibility store", () => {
 
   beforeEach(async () => {
     dir = await fs.mkdtemp(path.join(os.tmpdir(), "seo-studio-vis-"));
-    vi.stubEnv("COGWHEEL_DATA_DIR", dir);
+    vi.stubEnv("SEO_STUDIO_DATA_DIR", dir);
   });
 
   afterEach(async () => {

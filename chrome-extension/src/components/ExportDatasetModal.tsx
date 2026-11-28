@@ -371,7 +371,7 @@ export function ExportDatasetModal({
                     </label>
                     <input
                       type="url"
-                      placeholder="https://api.cogwheel-seo.com/v1/training-vault/sync"
+                      placeholder="https://api.seo-studio-one.vercel.app/v1/training-vault/sync"
                       value={endpointUrl}
                       onChange={(e) => setEndpointUrl(e.target.value)}
                       className="w-full rounded-md border border-[#27272A] bg-[#18181B] px-3 py-2 text-xs text-[#FAFAFA] placeholder-[#52525B] focus:border-emerald-500 focus:outline-none"

@@ -18,7 +18,7 @@ contract at the route level; the schemas are the source of truth for field shape
 | Mechanism | Where | Env var |
 | --- | --- | --- |
 | Platform principal (`principalFromRequest` → RBAC, rate limit, audit log) | 10 routes: `/platform/*`, `/outcomes`, `/usage*`, `/brain`, `/geo/check`, `/visibility*`, `/training-triples*` | `PLATFORM_OPERATOR_TOKEN` |
-| Bearer token | `/api/ai-training` | `COGWHEEL_API_BEARER_TOKEN` |
+| Bearer token | `/api/ai-training` | `SEO_STUDIO_API_BEARER_TOKEN` |
 | None (local/dev tooling) | remaining routes | — |
 
 `/api/platform/session` reports which of these are configured:
@@ -35,10 +35,10 @@ publicly without putting the platform principal in front of them.
 | Var | Enables |
 | --- | --- |
 | `SEMRUSH_API_KEY` | direct Semrush Analytics pull (`/semrush-pull`) |
-| `COGWHEEL_ALLOW_LOCAL_PYTHON` | routes that shell out to local Python |
+| `SEO_STUDIO_ALLOW_LOCAL_PYTHON` | routes that shell out to local Python |
 | `PYTHON_SERVICE_URL` + `SEO_PY_SERVICE_TOKEN` | HTTP bridge to the Python service (`api/server.py`) — enables `/api/content-similarity` and HTTP report generation for `/api/seo-visibility-report` |
-| `COGWHEEL_ALLOW_LOCAL_MAIL_CLI` + `COGWHEEL_MAIL_CLI_PATH` + `COGWHEEL_MAIL_ACCOUNT` | local mail send for `/client-email` |
-| `COGWHEEL_DATA_DIR` | override the local data directory |
+| `SEO_STUDIO_ALLOW_LOCAL_MAIL_CLI` + `SEO_STUDIO_MAIL_CLI_PATH` + `SEO_STUDIO_MAIL_ACCOUNT` | local mail send for `/client-email` |
+| `SEO_STUDIO_DATA_DIR` | override the local data directory |
 | `VERCEL` | set automatically; routes behave differently on serverless (see `/training-triples`) |
 
 ---
@@ -106,7 +106,7 @@ publicly without putting the platform principal in front of them.
 | `GET`, `POST` | `/api/visibility` | Visibility state. Reviewable only — nothing is applied without operator approval. |
 | `GET`, `POST` | `/api/visibility/gaps` | Keyword gap analysis. |
 | `POST` | `/api/visibility-suite` | Suite actions (`export_payload` \| `sync_api` \| `import_report`). |
-| `POST` | `/api/seo-visibility-report` | Monthly visibility report (15-minute in-memory cache). Generation chain: HTTP bridge to `api/server.py` when `PYTHON_SERVICE_URL` is set → local `execFile` builder behind `COGWHEEL_ALLOW_LOCAL_PYTHON=1` → `501` with instructions. Nothing runs by default. |
+| `POST` | `/api/seo-visibility-report` | Monthly visibility report (15-minute in-memory cache). Generation chain: HTTP bridge to `api/server.py` when `PYTHON_SERVICE_URL` is set → local `execFile` builder behind `SEO_STUDIO_ALLOW_LOCAL_PYTHON=1` → `501` with instructions. Nothing runs by default. |
 
 ### Platform gateway
 
@@ -157,7 +157,7 @@ The Node bridges read `PYTHON_SERVICE_URL` (base URL) and `SEO_PY_SERVICE_TOKEN`
 from server env only — never from a request — so a caller cannot steer those
 fetches. Unset `PYTHON_SERVICE_URL` disables the bridge entirely: `/api/content-similarity`
 answers `501` and report generation falls through to the local `execFile` path
-(behind `COGWHEEL_ALLOW_LOCAL_PYTHON=1`), then `501`.
+(behind `SEO_STUDIO_ALLOW_LOCAL_PYTHON=1`), then `501`.
 
 ---
 

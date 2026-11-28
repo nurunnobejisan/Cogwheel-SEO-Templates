@@ -28,7 +28,7 @@ export const WORDPRESS_META_KEYS: Record<
     og_title: "_yoast_wpseo_opengraph-title",
     og_description: "_yoast_wpseo_opengraph-description",
     twitter_card: "_yoast_wpseo_twitter-card",
-    json_ld_schema: "_cogwheel_schema_json",
+    json_ld_schema: "_seo_studio_schema_json",
   },
   rank_math: {
     title: "rank_math_title",
@@ -37,7 +37,7 @@ export const WORDPRESS_META_KEYS: Record<
     og_title: "rank_math_facebook_title",
     og_description: "rank_math_facebook_description",
     twitter_card: "rank_math_twitter_card_type",
-    json_ld_schema: "_cogwheel_schema_json",
+    json_ld_schema: "_seo_studio_schema_json",
   },
   aioseo: {
     title: "_aioseo_title",
@@ -46,19 +46,19 @@ export const WORDPRESS_META_KEYS: Record<
     og_title: "_aioseo_og_title",
     og_description: "_aioseo_og_description",
     twitter_card: "_aioseo_twitter_card",
-    json_ld_schema: "_cogwheel_schema_json",
+    json_ld_schema: "_seo_studio_schema_json",
   },
 };
 
 /** Fallback meta keys used when no SEO plugin is configured. */
 export const WORDPRESS_GENERIC_META_KEYS: Record<string, string> = {
-  title: "_cogwheel_seo_title",
-  meta_description: "_cogwheel_meta_description",
-  canonical_url: "_cogwheel_canonical_url",
-  og_title: "_cogwheel_og_title",
-  og_description: "_cogwheel_og_description",
-  twitter_card: "_cogwheel_twitter_card",
-  json_ld_schema: "_cogwheel_schema_json",
+  title: "_seo_studio_seo_title",
+  meta_description: "_seo_studio_meta_description",
+  canonical_url: "_seo_studio_canonical_url",
+  og_title: "_seo_studio_og_title",
+  og_description: "_seo_studio_og_description",
+  twitter_card: "_seo_studio_twitter_card",
+  json_ld_schema: "_seo_studio_schema_json",
 };
 
 export interface WordPressConnectorConfig {

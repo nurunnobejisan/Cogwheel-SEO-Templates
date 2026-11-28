@@ -43,7 +43,7 @@ export function getCustomModelSettings(
   env: Record<string, string | undefined> = process.env,
 ): CustomModelSettings {
   const endpoint = (env.CUSTOM_MODEL_ENDPOINT ?? "").trim();
-  const model = (env.CUSTOM_MODEL_ID ?? "").trim() || "cogwheel-seo-unified";
+  const model = (env.CUSTOM_MODEL_ID ?? "").trim() || "seo-studio-unified";
   const apiKey = (env.CUSTOM_MODEL_API_KEY ?? "").trim();
   return { endpoint, model, ...(apiKey ? { apiKey } : {}) };
 }

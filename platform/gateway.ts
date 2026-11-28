@@ -486,7 +486,7 @@ export function createPlatformGateway(options: GatewayOptions): PlatformGateway 
         limit(`cms:${host}`);
 
         const response = await fetchImpl(input.url, {
-          headers: { "user-agent": "CogwheelAuditor/1.0 (+https://cogwheel.dev)" },
+          headers: { "user-agent": "SeoStudioAuditor/1.0 (+https://seo-studio-one.vercel.app)" },
         });
         if (!response.ok) {
           throw badRequest(`failed to fetch ${input.url} (HTTP ${response.status})`);

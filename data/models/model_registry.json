@@ -1,8 +1,8 @@
 {
-  "activeModelId": "cogwheel-seo-unified-tuned_gemini-v1795487332",
+  "activeModelId": "seo-studio-unified-tuned_gemini-v1795487332",
   "models": [
     {
-      "modelId": "cogwheel-seo-unified-tuned_gemini-v1795487332",
+      "modelId": "seo-studio-unified-tuned_gemini-v1795487332",
       "modelVersion": "v1795487332",
       "baseModel": "gemini-1.5-flash-002",
       "provider": "tuned_gemini",
@@ -39,7 +39,7 @@
       "statusReason": "Base model gemini-1.5-flash-002 is retired and no serving endpoint has been confirmed since the SEO Studio rebrand. The stored evaluationBenchmark values are lexical proxies over the eval file, not model-quality measurements. Flip back to 'ready' only after a golden-set run (npm run ml:golden:check + ml/eval/run_eval.py)."
     },
     {
-      "modelId": "cogwheel-seo-unified-tuned_gemini-v1795486557",
+      "modelId": "seo-studio-unified-tuned_gemini-v1795486557",
       "modelVersion": "v1795486557",
       "baseModel": "gemini-1.5-flash-002",
       "provider": "tuned_gemini",

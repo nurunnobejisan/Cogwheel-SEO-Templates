@@ -48,7 +48,7 @@ if (!defined('ABSPATH')) {
     exit; // Exit if accessed directly
 }
 ?>
-<div class="cogwheel-wordpress-seo-entry post-<?php the_ID(); ?>">
+<div class="seo-studio-wordpress-seo-entry post-<?php the_ID(); ?>">
   <header class="entry-header">
     <h1 class="entry-title"><?php echo esc_html('${payload.postTitle.replace(/'/g, "\\'")}'); ?></h1>
   </header>

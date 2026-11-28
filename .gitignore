@@ -105,7 +105,7 @@ temp/
 # ------------------------------------------------------------------------------
 .platform-data/
 # Outcome log + per-page change log, and the AI usage meters: written at runtime
-# under `data/` in local/dev; durable storage belongs on COGWHEEL_DATA_DIR/Supabase.
+# under `data/` in local/dev; durable storage belongs on SEO_STUDIO_DATA_DIR/Supabase.
 /data/outcomes.jsonl
 /data/outcome-changes.jsonl
 /data/brain-usage.json

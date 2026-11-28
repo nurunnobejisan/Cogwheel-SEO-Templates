@@ -188,7 +188,7 @@ def main() -> int:
 
     # 2. Register New Model Checkpoint
     model_version = f"v{int(time.time())}"
-    model_id = f"cogwheel-seo-unified-{args.provider}-{model_version}"
+    model_id = f"seo-studio-unified-{args.provider}-{model_version}"
 
     model_metadata = {
         "modelId": model_id,

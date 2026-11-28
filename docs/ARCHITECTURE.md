@@ -18,7 +18,7 @@ SEO & GEO Studio is engineered as an enterprise hybrid web application, client-s
 - **Strict Deterministic Pixel Budgeting**: Character-width lookup tables based on Google SERP Arial typography replace rough character count heuristics with exact physical pixel measurements (580px Title ceiling, 920px Meta Description ceiling).
 - **Two-Layer Free Over-the-Air (OTA) Updates**: Decouples lightweight rule and keyword matrix updates (synced silently in the background via GitHub raw endpoints) from binary extension updates (notified via badge alerts and 1-click package downloads).
 - **Universal Privacy-Preserving AI Training Harvest**: Non-destructive, read-only DOM capture coupled with an automated PII redaction engine (scrubbing emails, telephone numbers, IP addresses, credit cards, and URL auth query tokens) allows continuous collection of high-quality hospitality training data directly in the browser.
-- **Client-Side IndexedDB Training Vault**: Local, persistent storage (`CogwheelTrainingVaultDB`) with deterministic canonical URL hashing, quality score algorithms (0-100), and multi-format Supervised Fine-Tuning (SFT) dataset builders (Gemini JSONL, ChatML OpenAI/Unsloth, and Alpaca).
+- **Client-Side IndexedDB Training Vault**: Local, persistent storage (`SeoStudioTrainingVaultDB`) with deterministic canonical URL hashing, quality score algorithms (0-100), and multi-format Supervised Fine-Tuning (SFT) dataset builders (Gemini JSONL, ChatML OpenAI/Unsloth, and Alpaca).
 - **Hybrid Inference & Automatic Fallback Routing**: Multi-provider inference router allowing properties to connect custom fine-tuned models (Google Cloud Vertex AI, fine-tuned Gemini, Ollama, vLLM, HuggingFace TGI) with seamless zero-latency fallback to SEO Studio's local deterministic rules engine.
 - **End-to-End Supervised Fine-Tuning (SFT) Pipeline**: Standalone Python pipeline (`python/scripts/fine_tune_pipeline.py`) providing dataset validation, deterministic 90/10 train-test splits, auto-generation of Unsloth/LoRA training scripts, and automated SERP/Schema accuracy benchmarking.
 
@@ -58,7 +58,7 @@ flowchart TD
     subgraph RemoteCloudTier ["Remote Cloud & API Infrastructure"]
         GitHubOTA["GitHub Main Distribution (OTA Rules & 78-KW Matrix)"]
         GitHubReleases["GitHub Releases (Binary ZIP & updates.xml)"]
-        CogwheelAPI["SEO Studio Web App API (Direct Dataset Sync)"]
+        SEO StudioAPI["SEO Studio Web App API (Direct Dataset Sync)"]
         
         subgraph InferenceProviders ["External & Local Model Inference"]
             VertexAI["Google Vertex AI / Tuned Gemini"]
@@ -77,7 +77,7 @@ flowchart TD
 
     ServiceWorker -->|"Layer A: 6h Silent Sync"| GitHubOTA
     ServiceWorker -->|"Layer B: SemVer Check"| GitHubReleases
-    DatasetBuilder -->|"HTTP POST (Bearer Auth)"| CogwheelAPI
+    DatasetBuilder -->|"HTTP POST (Bearer Auth)"| SEO StudioAPI
     ModelClient -->|"Tuned Inference"| InferenceProviders
     ModelClient -.->|"Automatic Failover"| PixelEngine
 
@@ -142,7 +142,7 @@ The browser extension is structured under Chrome Manifest V3 specifications to p
 
 ### 3.4 Persistent Storage Tier
 - **`chrome.storage.local` & `chrome.storage.sync`**: Stores active brand profiles, extension options, allowlists/blocklists, OTA rule overrides, and cached keyword matrices.
-- **IndexedDB (`CogwheelTrainingVaultDB` v3)**: High-capacity local database housing curated training pairs with:
+- **IndexedDB (`SeoStudioTrainingVaultDB` v3)**: High-capacity local database housing curated training pairs with:
   - `contentHash` versioning: tracks DOM content modifications over time while deduplicating identical samples.
   - `source`: tags records as `"auto"` or `"manual"`.
   - `pageType`: automatic heuristic classification (`hotel_homepage`, `room_details`, `amenities`, `booking`, `location`, `article`, `landing_page`).
@@ -223,7 +223,7 @@ flowchart LR
         PiiSanitizer --> HashCalc["SHA-256 Canonical Hash"]
     end
 
-    subgraph VaultDB ["IndexedDB: CogwheelTrainingVaultDB (v2)"]
+    subgraph VaultDB ["IndexedDB: SeoStudioTrainingVaultDB (v2)"]
         HashCalc --> Deduplication{"Exists in DB?"}
         Deduplication -->|"No"| QualityScorer["Quality Scorer (0-100)"]
         Deduplication -->|"Yes"| UpdateRecord["Update Existing Pair"]

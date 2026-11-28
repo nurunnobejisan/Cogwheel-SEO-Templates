@@ -106,7 +106,7 @@ describe("Task 2.4 — activePack in ExtensionOptions", () => {
 
     // …and a pack selection round-trips into storage.
     await real.saveExtensionOptions({ ...merged, activePack: "saas" });
-    const key = "cogwheel_extension_options_v1";
+    const key = "seo_studio_extension_options_v1";
     expect(captured[0]?.[key]).toMatchObject({ activePack: "saas" });
   });
 });

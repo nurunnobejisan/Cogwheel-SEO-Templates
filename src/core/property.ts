@@ -15,7 +15,7 @@ const memoryClients: Map<string, Client> = new Map([
     {
       id: "client-default",
       name: "SEO Studio Hospitality Portfolio",
-      contactEmail: "director@cogwheelmarketing.com",
+      contactEmail: "director@seo-studiomarketing.com",
       contactName: "Portfolio Director",
       industry: "Hospitality & Luxury Hotels",
       status: "active",

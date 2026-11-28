@@ -176,7 +176,7 @@ export function TemplateStudio({
   const [actionFeedback, setActionFeedback] = useState<string | null>(null);
   const [favorites, setFavorites] = useState<string[]>(() => {
     try {
-      return JSON.parse(localStorage.getItem("cogwheel_favorite_templates") || "[]");
+      return JSON.parse(localStorage.getItem("seo_studio_favorite_templates") || "[]");
     } catch {
       return [];
     }
@@ -312,7 +312,7 @@ export function TemplateStudio({
       ? favorites.filter((f) => f !== id)
       : [...favorites, id];
     setFavorites(next);
-    localStorage.setItem("cogwheel_favorite_templates", JSON.stringify(next));
+    localStorage.setItem("seo_studio_favorite_templates", JSON.stringify(next));
   };
 
   const categories = [

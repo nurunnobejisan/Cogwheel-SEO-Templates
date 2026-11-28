@@ -22,9 +22,9 @@ function tripleFile(): string {
 
 /** Temp-dir writes on serverless are ephemeral; surface that honestly. */
 function persistenceNote(): string | null {
-  if (process.env.COGWHEEL_DATA_DIR) return null;
+  if (process.env.SEO_STUDIO_DATA_DIR) return null;
   if (process.env.VERCEL) {
-    return "Written to the serverless temp filesystem; set COGWHEEL_DATA_DIR (or back this with Supabase/KV) for durable training storage.";
+    return "Written to the serverless temp filesystem; set SEO_STUDIO_DATA_DIR (or back this with Supabase/KV) for durable training storage.";
   }
   return null;
 }
@@ -45,7 +45,7 @@ async function robotsAllowed(url: string): Promise<boolean> {
     const robotsUrl = `${u.protocol}//${u.host}/robots.txt`;
     const fetched = await safeFetch(
       robotsUrl,
-      { method: "GET", headers: { "User-Agent": "CogwheelSeoBot/3.0 (+https://cogwheel.ai/bot)" } },
+      { method: "GET", headers: { "User-Agent": "SEO StudioSeoBot/3.0 (+https://seo-studio.ai/bot)" } },
       { timeoutMs: 5000, maxRedirects: 3 }
     ).catch(() => null);
     if (!fetched || !fetched.response.ok) return true;

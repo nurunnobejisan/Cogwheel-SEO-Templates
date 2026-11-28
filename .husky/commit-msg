@@ -1,6 +1,6 @@
 #!/bin/sh
 # ==============================================================================
-# COGWHEEL SEO STUDIO — COMMIT-MSG HOOK
+# SEO STUDIO — COMMIT-MSG HOOK
 # Enforces Conventional Commits specification: <type>(<scope>): <subject>
 # Allowed types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert
 # ==============================================================================

@@ -1,7 +1,7 @@
 /**
  * Outcome-logging persistence (JSONL, local-first).
  *
- * Uses `seoStudioDataFile` so the location honours `COGWHEEL_DATA_DIR` and falls
+ * Uses `seoStudioDataFile` so the location honours `SEO_STUDIO_DATA_DIR` and falls
  * back to the repo `data/` folder locally / temp dir on serverless. Outcome
  * records are upserted by id so re-measuring is idempotent.
  */

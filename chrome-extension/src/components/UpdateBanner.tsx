@@ -15,8 +15,8 @@ export function UpdateBanner({ onRulesSynced }: Props) {
   useEffect(() => {
     // 1. Check local storage for cached update state
     if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(["cogwheel_update_state"], (res) => {
-        const cached = res["cogwheel_update_state"] as ExtensionUpdateState | undefined;
+      chrome.storage.local.get(["seo_studio_update_state"], (res) => {
+        const cached = res["seo_studio_update_state"] as ExtensionUpdateState | undefined;
         if (cached) {
           setUpdateState(cached);
         }

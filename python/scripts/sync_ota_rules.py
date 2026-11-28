@@ -43,7 +43,7 @@ def fetch_remote_json(url: str, timeout: int = 10) -> dict[str, Any]:
     """
     req = urllib.request.Request(
         url,
-        headers={"User-Agent": "Cogwheel-Python-OTA-Sync/2.7", "Accept": "application/json"},
+        headers={"User-Agent": "SeoStudio-Python-OTA-Sync/2.7", "Accept": "application/json"},
     )
     with urllib.request.urlopen(req, timeout=timeout) as response:
         data = response.read().decode("utf-8")

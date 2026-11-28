@@ -232,7 +232,7 @@ and the extension continue to work with no model server and no network.
 
 | Variable | Consumed by | When unset |
 |---|---|---|
-| `CUSTOM_MODEL_ENDPOINT` | `ai/router.ts` → the existing `cogwheel-tuned` provider | provider reports `configured: false`, route falls back |
+| `CUSTOM_MODEL_ENDPOINT` | `ai/router.ts` → the existing `seo-studio-tuned` provider | provider reports `configured: false`, route falls back |
 | `CUSTOM_MODEL_ID` | same | model id from `src/core/ai/models.ts` |
 | `CUSTOM_MODEL_API_KEY` | same (optional bearer) | request sent without an `Authorization` header |
 | `SERVE_UPSTREAM` / `--upstream` | `ml/serve/server.py` (gateway in front of the adapter) | gateway answers `503 upstream_not_configured` — never a fabricated completion (D-022) |

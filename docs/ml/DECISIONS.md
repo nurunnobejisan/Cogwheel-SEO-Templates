@@ -366,7 +366,7 @@ operator passes `--allow-unverified`, and `/health` reports which mode is
 active. With no upstream or adapter configured every `POST
 /v1/chat/completions` answers `503 upstream_not_configured` — the gateway
 never emits a stand-in completion. `seo-studio-*` model ids migrate to the
-persisted `cogwheel-*` ids on read only; `/v1/models` advertises both
+persisted `seo-studio-*` ids on read only; `/v1/models` advertises both
 spellings. `SERVE_API_KEY` (optional) requires a bearer on `/v1/*`, and logs
 carry ids, status and latency only — never prompts.
 

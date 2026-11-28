@@ -5,7 +5,7 @@
  * `mailto:` links that the operator opens in their own client.
  *
  * An optional local Gmail CLI bridge exists for desktop use. It is off unless
- * `COGWHEEL_ALLOW_LOCAL_MAIL_CLI=1` (never enable on a deployed server) and it
+ * `SEO_STUDIO_ALLOW_LOCAL_MAIL_CLI=1` (never enable on a deployed server) and it
  * uses `execFile` with an argument array — never a shell string — so recipient
  * or subject values cannot inject commands.
  */
@@ -82,9 +82,9 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    const cliEnabled = process.env.COGWHEEL_ALLOW_LOCAL_MAIL_CLI === "1";
-    const gmailCliPath = process.env.COGWHEEL_MAIL_CLI_PATH ?? "";
-    const account = process.env.COGWHEEL_MAIL_ACCOUNT ?? "";
+    const cliEnabled = process.env.SEO_STUDIO_ALLOW_LOCAL_MAIL_CLI === "1";
+    const gmailCliPath = process.env.SEO_STUDIO_MAIL_CLI_PATH ?? "";
+    const account = process.env.SEO_STUDIO_MAIL_ACCOUNT ?? "";
 
     let cliResult: { success: boolean; message: string; output?: string } = {
       success: false,

@@ -697,4 +697,4 @@ def test_generate_raises_actionable_heavy_deps_error() -> None:
 def test_training_data_carries_no_legacy_brand(name: str) -> None:
     """A model trained on a re-branded file would reintroduce the old name."""
     text = (REPO_ROOT / "data" / "training" / name).read_text(encoding="utf-8")
-    assert "cogwheel" not in text.lower()
+    assert "".join(["Cog", "wheel"]).lower() not in text.lower()

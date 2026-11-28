@@ -44,8 +44,8 @@ from ml.serve.server import (  # noqa: E402
 )
 from ml.train.errors import HeavyDepsError  # noqa: E402
 
-READY_ID = "cogwheel-seo-unified-v9"
-LEGACY_ID = "cogwheel-seo-unified-tuned_gemini-v1795487332"
+READY_ID = "seo-studio-unified-v9"
+LEGACY_ID = "seo-studio-unified-tuned_gemini-v1795487332"
 
 
 def _write_registry(path: Path) -> Path:

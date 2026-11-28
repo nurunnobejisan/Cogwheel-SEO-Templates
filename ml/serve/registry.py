@@ -1,10 +1,8 @@
-"""Reader for ``data/models/model_registry.json`` with alias migration.
+"""Reader for ``data/models/model_registry.json``.
 
-De-brand rule: the persisted model ids keep their historical ``cogwheel-*``
-prefix and are **never renamed on disk**. The de-branded ``seo-studio-*``
-spelling is accepted as an alias and migrated on read, so a client may ask
-for either name and receive the same entry. Both spellings are advertised by
-``/v1/models``.
+Model ids use the ``seo-studio-*`` prefix. The migration helpers accept ids
+without changing them, so callers can pass an id through the same path if an
+alias is reintroduced later.
 
 Servability: an entry may be served only when its ``status`` is ``ready``.
 The legacy ``tuned_gemini`` entries are ``unverified`` (D-013) and are
@@ -31,8 +29,8 @@ __all__ = [
     "assert_servable",
 ]
 
-#: De-branded spelling -> persisted id. One-way: storage never changes.
-ALIASES: Dict[str, str] = {"seo-studio-": "cogwheel-"}
+#: Optional alias prefix -> canonical prefix. Empty: ids are already canonical.
+ALIASES: Dict[str, str] = {}
 
 DEFAULT_REGISTRY = Path("data/models/model_registry.json")
 

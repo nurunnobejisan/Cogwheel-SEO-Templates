@@ -33,7 +33,7 @@ import urllib.request
 import zipfile
 from datetime import datetime
 
-USER_AGENT = "Mozilla/5.0 (compatible; CogwheelHeadingAudit/2.8; +https://seo-studio-one.vercel.app)"
+USER_AGENT = "Mozilla/5.0 (compatible; SeoStudioHeadingAudit/2.8; +https://seo-studio-one.vercel.app)"
 
 
 # -----------------------------------------------------------------------------

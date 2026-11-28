@@ -32,7 +32,7 @@ export const DEFAULT_CUSTOM_MODEL_CONFIG: CustomModelConfig = {
 
 import { encryptSecret, decryptSecret } from "../utils/secureStorage";
 
-export const STORAGE_KEY_CUSTOM_MODEL = "cogwheel_custom_model_config";
+export const STORAGE_KEY_CUSTOM_MODEL = "seo_studio_custom_model_config";
 
 // In-memory fallback for headless or test environments
 let inMemoryConfig: CustomModelConfig = { ...DEFAULT_CUSTOM_MODEL_CONFIG };

@@ -4,7 +4,7 @@
  * 
  * 1. Verifies manifest.json update_url and version synchronization
  * 2. Compiles TypeScript and builds production bundle with Vite
- * 3. Packages cogwheel-seo-studio.zip in public/
+ * 3. Packages seo-studio.zip in public/
  * 4. Ensures updates.xml is bundled in public/ and dist/
  */
 
@@ -105,7 +105,7 @@ if (!fs.existsSync(PUBLIC_DIR)) {
   fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 }
 
-const zipPath = path.join(PUBLIC_DIR, "cogwheel-seo-studio.zip");
+const zipPath = path.join(PUBLIC_DIR, "seo-studio.zip");
 try {
   // Remove first: `zip -r` updates an existing archive and would keep stale files.
   fs.rmSync(zipPath, { force: true });

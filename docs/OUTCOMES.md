@@ -55,7 +55,7 @@ measureChange()  ──►  getGscSearchAnalytics(page rows × before/after)
 data/outcomes.jsonl   (upserted by id; re-measuring replaces)
 ```
 
-Storage honours `COGWHEEL_DATA_DIR` (see `src/lib/platform/data-dir.ts`): repo
+Storage honours `SEO_STUDIO_DATA_DIR` (see `src/lib/platform/data-dir.ts`): repo
 `data/` locally, temp dir on serverless, a real volume in production.
 
 ## API

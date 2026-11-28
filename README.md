@@ -16,13 +16,23 @@
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285f4?style=flat-square&logo=googlechrome&logoColor=white)](chrome-extension/)
 
 [Live application](https://seo-studio-one.vercel.app) ·
-[Download extension](https://seo-studio-one.vercel.app/cogwheel-seo-studio.zip) ·
+[Download extension](https://seo-studio-one.vercel.app/seo-studio.zip) ·
 [Documentation](docs/README.md) ·
 [Changelog](CHANGELOG.md)
 
 </div>
 
 ---
+
+**Problem:** auditing a site for technical SEO, schema and AI-search readiness usually means several tools and guessed numbers. SEO Studio crawls the page, labels each finding as measured, estimated or unavailable, and exports a client-ready report.
+
+**Demo:** the studio workspace and template catalog are shown below; the live app is linked above.
+
+**Quickstart:**
+```bash
+npm install
+npm run dev        # open http://localhost:3000
+```
 
 ## Overview
 
@@ -132,7 +142,7 @@ npm run build:extension
 
 Then open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select `chrome-extension/dist`.
 
-The same build also produces `public/cogwheel-seo-studio.zip` for release uploads.
+The same build also produces `public/seo-studio.zip` for release uploads.
 
 ### Production build
 
@@ -229,7 +239,7 @@ The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT
 
 - **Web app:** Vercel production at [seo-studio-one.vercel.app](https://seo-studio-one.vercel.app).
 - **CI:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request.
-- **Extension releases:** [`.github/workflows/auto-release.yml`](.github/workflows/auto-release.yml) builds and attaches `cogwheel-seo-studio.zip` when the manifest version changes.
+- **Extension releases:** [`.github/workflows/auto-release.yml`](.github/workflows/auto-release.yml) builds and attaches `seo-studio.zip` when the manifest version changes.
 - **Updates:** `updates.xml` and the packaged ZIP are served from `public/`.
 
 ## Contributing

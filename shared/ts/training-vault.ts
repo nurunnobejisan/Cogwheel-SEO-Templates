@@ -129,7 +129,7 @@ export interface TrainingVaultStats {
   avgQualityScore: number;
 }
 
-export const DB_NAME = "CogwheelTrainingVaultDB";
+export const DB_NAME = "SeoStudioTrainingVaultDB";
 export const DB_VERSION = 3;
 export const STORE_NAME = "training_samples";
 

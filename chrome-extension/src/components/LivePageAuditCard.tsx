@@ -36,9 +36,9 @@ export function LivePageAuditCard({ pageData, activeTabId, onRefresh, isLoading 
 
   useEffect(() => {
     if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(["cogwheel_ota_config"], (res) => {
-        if (res && res["cogwheel_ota_config"]) {
-          setOtaConfig(res["cogwheel_ota_config"] as OtaConfigPayload);
+      chrome.storage.local.get(["seo_studio_ota_config"], (res) => {
+        if (res && res["seo_studio_ota_config"]) {
+          setOtaConfig(res["seo_studio_ota_config"] as OtaConfigPayload);
         }
       });
     }

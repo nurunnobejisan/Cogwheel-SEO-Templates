@@ -64,7 +64,7 @@ export const DEFAULT_OPTIONS: ExtensionOptions = {
 
 import { encryptSecret, decryptSecret } from "./secureStorage";
 
-const STORAGE_KEY = "cogwheel_extension_options_v1";
+const STORAGE_KEY = "seo_studio_extension_options_v1";
 
 export async function loadExtensionOptions(): Promise<ExtensionOptions> {
   if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.sync) {

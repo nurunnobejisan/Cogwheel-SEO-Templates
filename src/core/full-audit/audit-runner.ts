@@ -40,7 +40,7 @@ import type {
   SeverityLevel,
 } from "./types.ts";
 
-const USER_AGENT = "CogwheelSeoBot/3.0 (+https://cogwheel.ai/bot)";
+const USER_AGENT = "SEO StudioSeoBot/3.0 (+https://seo-studio.ai/bot)";
 const FETCH_TIMEOUT_MS = 15000;
 
 /** Issue categories from rules/ → report dimension. */

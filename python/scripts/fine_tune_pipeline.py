@@ -505,7 +505,7 @@ def launch_vertex_ai_job(
     dry_run: bool = True,
 ) -> dict[str, Any]:
     """Prepares and launches a supervised fine-tuning job on Google Vertex AI / Gemini."""
-    actual_project = project_id or os.getenv("GOOGLE_CLOUD_PROJECT", "cogwheel-seo-prod")
+    actual_project = project_id or os.getenv("GOOGLE_CLOUD_PROJECT", "seo-studio-prod")
 
     spec: dict[str, Any] = {
         "job_type": "vertex_ai_supervised_fine_tuning",

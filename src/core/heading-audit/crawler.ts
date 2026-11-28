@@ -12,7 +12,7 @@ import {
 import { assertEgressAllowed, readTextCapped, safeFetch } from "../../lib/security/egress.ts";
 
 const CRAWLER_USER_AGENT =
-  "Mozilla/5.0 (compatible; CogwheelHeadingAudit/2.8; +https://seo-studio-one.vercel.app)";
+  "Mozilla/5.0 (compatible; SeoStudioHeadingAudit/2.8; +https://seo-studio-one.vercel.app)";
 
 function normalizeUrl(raw: string, baseUrl?: string): string | null {
   try {

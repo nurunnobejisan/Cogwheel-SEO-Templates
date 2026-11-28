@@ -825,10 +825,10 @@ function handleInjectPreview(payload: { title?: string; metaDesc?: string; h1?: 
   }
 
   if (payload.schemaJson) {
-    let script = document.getElementById("__cogwheel_preview_schema__");
+    let script = document.getElementById("__seo_studio_preview_schema__");
     if (!script) {
       script = document.createElement("script");
-      script.id = "__cogwheel_preview_schema__";
+      script.id = "__seo_studio_preview_schema__";
       script.setAttribute("type", "application/ld+json");
       document.head.appendChild(script);
     }
@@ -1005,10 +1005,10 @@ function handleFillActiveCmsField(payload: {
 
   // 1. If schema script injection requested
   if (payload.fieldType === "schema") {
-    let scriptTag = document.getElementById("__cogwheel_injected_schema__") as HTMLScriptElement | null;
+    let scriptTag = document.getElementById("__seo_studio_injected_schema__") as HTMLScriptElement | null;
     if (!scriptTag) {
       scriptTag = document.createElement("script");
-      scriptTag.id = "__cogwheel_injected_schema__";
+      scriptTag.id = "__seo_studio_injected_schema__";
       scriptTag.type = "application/ld+json";
       document.head.appendChild(scriptTag);
       injectedSchemaElement = scriptTag;

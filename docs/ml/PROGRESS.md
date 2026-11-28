@@ -257,7 +257,7 @@ produced.
 **Merged (PR #10).** Shipped:
 
 - **`ml/serve/`** — stdlib-only OpenAI-compatible gateway (D-014):
-  `registry.py` (alias migration `seo-studio-*` → persisted `cogwheel-*` on
+  `registry.py` (alias migration `seo-studio-*` → persisted `seo-studio-*` on
   read, storage never rewritten; servability gate: `ready` only, `unverified`
   needs `--allow-unverified` per D-013) and `server.py` (`/health`,
   `/v1/models`, `/v1/chat/completions`; optional `SERVE_API_KEY` bearer;
@@ -270,7 +270,7 @@ produced.
   then DNS-aware `safeFetch` — loopback/private refused). Wired as the
   **first** attempt in `generateClaudeText` with fall-through to the existing
   providers; `getActiveAiProviderLabel` / `isClaudeConfigured` report it;
-  router `cogwheel-tuned` descriptor is now guard-aware and owns its tier
+  router `seo-studio-tuned` descriptor is now guard-aware and owns its tier
   when configured, falling back when the endpoint is unset.
 - **Extension copy** — `chrome-extension/src/engine/custom-model-client.ts`
   already routed Auto-Fix / GEO Summary to `CUSTOM_MODEL_*` with rules-engine

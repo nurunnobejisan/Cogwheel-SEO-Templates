@@ -74,10 +74,10 @@ export function loadProviders(env: NodeJS.ProcessEnv = process.env): ProviderDes
       configured: Boolean(env.OPENROUTER_API_KEY),
     },
     {
-      id: "cogwheel-tuned",
+      id: "seo-studio-tuned",
       label: "SEO Studio fine-tuned model",
       tier: "tier1",
-      model: env.CUSTOM_MODEL_ID || "cogwheel-seo-unified",
+      model: env.CUSTOM_MODEL_ID || "seo-studio-unified",
       // Guard-aware: an endpoint that fails the SSRF check reports as
       // unconfigured so routing falls back instead of calling it (fail closed).
       configured: isCustomModelConfigured(env),
@@ -105,7 +105,7 @@ export function routeTask(
   // it is the purpose-built model for these tasks; otherwise fall back to
   // the first configured provider on the tier, then to any configured one.
   const primary =
-    providers.find((p) => p.configured && p.tier === tier && p.id === "cogwheel-tuned") ??
+    providers.find((p) => p.configured && p.tier === tier && p.id === "seo-studio-tuned") ??
     providers.find((p) => p.configured && p.tier === tier) ??
     null;
   const sameTier = providers.filter((p) => p.configured && p.tier === tier && p.id !== primary?.id);
@@ -113,7 +113,7 @@ export function routeTask(
   const fallback = [...sameTier, ...otherTier];
 
   let rationale = TIER_RATIONALE[tier];
-  if (primary?.id === "cogwheel-tuned") {
+  if (primary?.id === "seo-studio-tuned") {
     rationale = `${rationale} The fine-tuned SEO Studio model is configured and handles this tier.`;
   }
   if (!primary) {

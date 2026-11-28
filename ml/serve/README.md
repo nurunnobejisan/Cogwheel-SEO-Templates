@@ -40,7 +40,7 @@ use a tunnel or a public host for real deployments) plus optional
 - **No fabricated output** — no upstream ⇒ `503 upstream_not_configured`.
 - **No prompt logging** — logs method, path, status, model id, latency only.
 - **De-branded ids** — `seo-studio-*` aliases resolve to the persisted
-  `cogwheel-*` ids; storage is never rewritten.
+  `seo-studio-*` ids; storage is never rewritten.
 
 ## Promotion to `ready`
 

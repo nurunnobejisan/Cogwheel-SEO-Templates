@@ -25,7 +25,7 @@ import { POST as reportPost } from "@/app/api/seo-visibility-report/route";
 const ENV_KEYS = [
   "PYTHON_SERVICE_URL",
   "SEO_PY_SERVICE_TOKEN",
-  "COGWHEEL_ALLOW_LOCAL_PYTHON",
+  "SEO_STUDIO_ALLOW_LOCAL_PYTHON",
 ] as const;
 
 let savedEnv: Record<string, string | undefined> = {};
@@ -337,13 +337,13 @@ describe("POST /api/seo-visibility-report generation chain", () => {
   });
 
   it("keeps the local execFile opt-in working when the bridge is off", async () => {
-    // COGWHEEL_ALLOW_LOCAL_PYTHON is unset in this suite, so the local branch
+    // SEO_STUDIO_ALLOW_LOCAL_PYTHON is unset in this suite, so the local branch
     // must still answer 501 — proving the bridge branch did not swallow it.
-    setEnv({ PYTHON_SERVICE_URL: undefined, COGWHEEL_ALLOW_LOCAL_PYTHON: undefined });
+    setEnv({ PYTHON_SERVICE_URL: undefined, SEO_STUDIO_ALLOW_LOCAL_PYTHON: undefined });
     const res = await reportPost(reportRequest());
     expect(res.status).toBe(501);
     const body = (await res.json()) as { code: string; error: string };
     expect(body.code).toBe("report_generation_disabled");
-    expect(body.error).toContain("COGWHEEL_ALLOW_LOCAL_PYTHON=1");
+    expect(body.error).toContain("SEO_STUDIO_ALLOW_LOCAL_PYTHON=1");
   });
 });

@@ -45,7 +45,7 @@ jobs:
           npm ci
           npm run build
           cd dist
-          zip -r "$GITHUB_WORKSPACE/cogwheel-seo-studio.zip" .
+          zip -r "$GITHUB_WORKSPACE/seo-studio.zip" .
 
       - name: Publish GitHub Release
         if: steps.check.outputs.exists == 'false'
@@ -53,5 +53,5 @@ jobs:
         with:
           tag_name: v${{ steps.meta.outputs.version }}
           name: SEO Studio v${{ steps.meta.outputs.version }}
-          files: cogwheel-seo-studio.zip
+          files: seo-studio.zip
           generate_release_notes: true

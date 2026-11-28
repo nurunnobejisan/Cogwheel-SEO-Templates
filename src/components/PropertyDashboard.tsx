@@ -88,7 +88,7 @@ const CRAWL_TASK_IDS = new Set([
   "final-seo-geo-project-report",
 ]);
 
-const ACTIVE_PROPERTY_KEY = "razib_active_property_v1";
+const ACTIVE_PROPERTY_KEY = "seo_studio_active_property_v1";
 
 const QUICK_PROPERTY_PRESETS = [
   {
@@ -192,7 +192,7 @@ export default function PropertyDashboard() {
 
   useEffect(() => {
     try {
-      const savedTheme = window.localStorage.getItem("cogwheel_theme");
+      const savedTheme = window.localStorage.getItem("seo_studio_theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       if (savedTheme === "dark" || (!savedTheme && prefersDark)) {
         setIsDark(true);
@@ -212,12 +212,12 @@ export default function PropertyDashboard() {
     if (next) {
       document.documentElement.classList.add("dark");
       try {
-        window.localStorage.setItem("cogwheel_theme", "dark");
+        window.localStorage.setItem("seo_studio_theme", "dark");
       } catch { }
     } else {
       document.documentElement.classList.remove("dark");
       try {
-        window.localStorage.setItem("cogwheel_theme", "light");
+        window.localStorage.setItem("seo_studio_theme", "light");
       } catch { }
     }
   };
@@ -510,8 +510,8 @@ export default function PropertyDashboard() {
               Train AI ({aiStatus.activeRules})
             </button>
             <a
-              href="/cogwheel-seo-studio.zip"
-              download="cogwheel-seo-studio.zip"
+              href="/seo-studio.zip"
+              download="seo-studio.zip"
               className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-caption font-semibold text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               title="Download Chrome Extension (100-Point Live Inspector)"
             >
@@ -1610,7 +1610,7 @@ export default function PropertyDashboard() {
                 updateActiveProperty(batch.property);
                 if (batch.competitors && batch.competitors.length > 0) {
                   try {
-                    window.localStorage.setItem("cogwheel_compset_override", JSON.stringify(batch.competitors));
+                    window.localStorage.setItem("seo_studio_compset_override", JSON.stringify(batch.competitors));
                   } catch { }
                 }
               }}

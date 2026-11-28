@@ -11,7 +11,7 @@ import { collectGeoAudit } from "../../rules/geo/index.ts";
 import type { GeoAuditReport, GeoSnapshot } from "../../../rules/geo/types.ts";
 import { loadLatestGeoSnapshot, saveGeoSnapshot } from "./drift-store.ts";
 
-const USER_AGENT = "CogwheelSeoBot/3.0 (+https://cogwheel.ai/bot)";
+const USER_AGENT = "SEO StudioSeoBot/3.0 (+https://seo-studio.ai/bot)";
 
 export interface RunGeoCheckOptions {
   baseline?: GeoSnapshot | null;

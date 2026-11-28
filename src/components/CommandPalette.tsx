@@ -125,8 +125,8 @@ export function CommandPalette({
       action: () => {
         onClose();
         const a = document.createElement("a");
-        a.href = "/cogwheel-seo-studio.zip";
-        a.download = "cogwheel-seo-studio.zip";
+        a.href = "/seo-studio.zip";
+        a.download = "seo-studio.zip";
         a.click();
       },
     });

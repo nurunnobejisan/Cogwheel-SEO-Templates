@@ -93,7 +93,7 @@ export function SidePanelApp() {
         document.documentElement.classList.remove("dark");
       }
       if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-        chrome.storage.local.set({ cogwheel_theme_dark: isDarkMode });
+        chrome.storage.local.set({ seo_studio_theme_dark: isDarkMode });
       }
     } catch {
       // ignore
@@ -102,9 +102,9 @@ export function SidePanelApp() {
 
   useEffect(() => {
     if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
-      chrome.storage.local.get(["cogwheel_theme_dark"], (res) => {
-        if (typeof res?.cogwheel_theme_dark === "boolean") {
-          setIsDarkMode(res.cogwheel_theme_dark);
+      chrome.storage.local.get(["seo_studio_theme_dark"], (res) => {
+        if (typeof res?.seo_studio_theme_dark === "boolean") {
+          setIsDarkMode(res.seo_studio_theme_dark);
         }
       });
     }

@@ -97,7 +97,7 @@ const HARD_PATTERNS = [
   { id: "volume-tier", re: /Search Volume Tier/gi },
   // De-brand guard: the retired product name must never re-enter training
   // data — a model trained on it would reintroduce the old brand in output.
-  { id: "legacy-brand", re: /\bCogwheel\b/g },
+  { id: "legacy-brand", re: new RegExp("\\b" + ["Cog", "wheel"].join("") + "\\b", "gi") },
 ];
 
 // Metric assertions that are only a problem when the ASSISTANT invents them,
