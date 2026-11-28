@@ -24,7 +24,14 @@ interface TitleMetaDataBundle {
 }
 
 export interface TitleMetaDeps {
-  callClaude?: (opts: { system: string; prompt: string; maxTokens?: number; task?: TaskKind }) => Promise<string>;
+  callClaude?: (opts: {
+    system: string;
+    prompt: string;
+    maxTokens?: number;
+    task?: TaskKind;
+    propertyId?: string;
+    brand?: string;
+  }) => Promise<string>;
 }
 
 async function loadLatestKeywordMap(
@@ -178,7 +185,14 @@ export async function runTitleMetaTask(
         pages: data.pages,
         feedback,
       });
-      const raw = await callClaude({ system, prompt, maxTokens: 3000, task: "metadata_generation" });
+      const raw = await callClaude({
+        system,
+        prompt,
+        maxTokens: 3000,
+        task: "metadata_generation",
+        ...(propertyId ? { propertyId } : {}),
+        ...(data.property.brand ? { brand: data.property.brand } : {}),
+      });
       return parseTitleMetaDraft(raw, data.pages);
     },
     validate: async ({ data, draft }) =>

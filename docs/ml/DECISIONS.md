@@ -480,3 +480,20 @@ model produced a report.
 **Reason.** Next.js Edge Middleware cannot reliably import `node:crypto`, and failing closed in every non-development environment prevents test/production bypasses.
 
 **Reverse.** Swap `operatorAuthHeaders` / `requireOperator` for upstream SSO/JWT verification at the edge proxy.
+
+---
+
+## D-031 — Adapter rollout flag defaults to `off` (`AI_ADAPTER_MODE`)
+
+**Status:** accepted (2026-11-28, WP5).
+
+**Decision.** Add `AI_ADAPTER_MODE` (`off | shadow | canary | on`, defaulting to `off`) and `AI_ADAPTER_CANARY_PCT` (`0..100`, defaulting to `0`) in `src/core/ai/adapter-mode.ts` and enforce them inside `generateClaudeText` (`src/core/claude.ts`).
+
+- `off`: never calls the custom adapter; traffic uses the standard/free provider chain.
+- `shadow`: fires the adapter concurrently via `Promise.allSettled`, runs `gateOutput` on both results, records counter + latency metrics (`never` prompt or output text), and always returns the standard/free provider response.
+- `canary`: hashes `propertyId || requestId || "anonymous"` deterministically with FNV-1a mod 100 and routes buckets `< AI_ADAPTER_CANARY_PCT` to the adapter with WP3 gate fallback.
+- `on`: routes eligible v1 Tier 1 tasks (`schema_generation`, `metadata_generation`) to the adapter first with WP3 gate fallback.
+
+**Reason.** Safe progressive deployment ensures production never shifts traffic to a newly hosted adapter merely because `CUSTOM_MODEL_ENDPOINT` is populated; suites testing active adapter dispatch must opt in via `AI_ADAPTER_MODE=on`.
+
+**Reverse.** Remove `AI_ADAPTER_MODE` checks or default to `on` after production promotion gates pass.
