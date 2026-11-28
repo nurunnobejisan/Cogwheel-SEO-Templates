@@ -497,3 +497,51 @@ model produced a report.
 **Reason.** Safe progressive deployment ensures production never shifts traffic to a newly hosted adapter merely because `CUSTOM_MODEL_ENDPOINT` is populated; suites testing active adapter dispatch must opt in via `AI_ADAPTER_MODE=on`.
 
 **Reverse.** Remove `AI_ADAPTER_MODE` checks or default to `on` after production promotion gates pass.
+
+---
+
+## 2026-11-29 — v2
+
+### D-032 — `ml/generate/` stays as v1 shipped it; dataset generation keeps its existing home
+
+**Decision.** No restructuring of `ml/generate/` or `ml/dataset/` in v2. The
+v2 WPs consume the existing generation entry points and add builder CLIs
+(`build_dpo.py`) alongside `ml/train/build_sft.py`.
+
+**Reason.** v1 (WP7) already shipped `ml/generate/constrained.py` with lazy
+`outlines` import; moving or duplicating generation code adds drift risk with
+no behaviour change.
+
+**Reverse.** Move the entry points in one PR and update the runbook commands.
+
+### D-033 — The review queue's local source of truth is a JSONL data file; Supabase ships as a mirror migration
+
+**Decision.** Review rows and decisions persist through the existing
+`seoStudioDataFile` mechanism (`data/ml-review-queue.jsonl` locally, the
+`SEO_STUDIO_DATA_DIR` volume in deployment), mirroring the training-triples
+store. A Supabase table with the same shape ships as
+`supabase/migrations/0006_ml_review_queue.sql` for the deployment path.
+
+**Reason.** The app already persists operator data (triples, rules, healing
+events) through `seoStudioDataFile`; a second, Supabase-only write path would
+need credentials and client wiring this run cannot test end to end. The
+migration keeps the deployed schema in step so a later PR can switch the
+store without a data reshape.
+
+**Reverse.** Point `src/lib/review/store.ts` at the Supabase client (the table
+already matches), keep the JSONL as an export path, and backfill existing
+rows.
+
+### D-034 — Approving a teacher triple flips it to `reviewed`, not `gold`
+
+**Decision.** An approve in the review queue sets the underlying triple's
+quality to `reviewed` (training-eligible). `gold` stays a stronger, separate
+human judgement in the triple store.
+
+**Reason.** Conservative default: approval through this queue proves the
+output is usable, which is the definition of `reviewed`. Promoting to `gold`
+should be a deliberate act by a reviewer who has checked the case against the
+golden criteria.
+
+**Reverse.** Map `approve` → `gold` in `recordDecision`, or add an explicit
+`gold` action to the queue.

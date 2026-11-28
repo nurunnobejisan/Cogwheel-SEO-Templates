@@ -142,3 +142,89 @@ Running work-package log for v1 adapter readiness.
 
 ### 5. Status
 - **Ready for stacked GitHub PR creation (`ml/wp1-operator-auth`..`ml/wp11-progress-docs`) and final full-suite verification.**
+
+---
+
+# SEO-Studio AI SEO Model (v2) — Agent Log
+
+## v2 start — 2026-11-29
+
+### Step 0 — what v1 actually finished
+
+All eleven v1 work packages are **merged to `main`** (see the v1 log above;
+branches `ml/wp1`…`ml/wp11` arrived via stacked PRs; PR #78 restored files
+dropped during rebases). Verified on `origin/main` at `06ad170`:
+
+| v1 capability | Status | Where |
+|---|---|---|
+| Operator auth | merged | D-030: `requireOperator` in `src/lib/security/operator.ts`, fail-closed bearer guard |
+| Task routing through `ai/router.ts` | merged | `routeTask`, tiers, `V1_ADAPTER_TASKS` scope (D-025) |
+| Output gates with fallback | merged | `src/core/ai/output-gates.ts` (`gateOutput`), wired into `generateClaudeText` |
+| `AI_ADAPTER_MODE` (off/shadow/canary/on) | merged | D-031: `src/core/ai/adapter-mode.ts` + `src/core/claude.ts`, default `off` |
+| Per-client retrieval isolation | merged | `ml/retrieve/*` tenant scoping, `tests/rag-isolation.test.ts` |
+| `ml/generate/` | merged | WP7: `ml/generate/constrained.py` (lazy `outlines`), decoding schemas in `schemas/ml-v1-outputs.ts` |
+| Dataset v2 builder | merged | WP8: `ml/train/build_sft.py` (host split, source gates, report) |
+| Golden v2 scaffolding | merged | WP9: `ml/eval/golden_v2/cases.jsonl` (75+75 candidates, `humanReviewed: false`), `scripts/check-golden-v2.ts` |
+| GPU runbook | merged | WP10: `docs/ml/GPU_RUNBOOK.md` (v1 commands, ship gates, rollout) |
+| Serving + promotion | merged | `ml/serve/server.py`, `ml/serve/register.py` (11-gate chain), `ml/serve/registry.py` |
+| Endpoint evaluation | merged | `ml/train/evaluate.py --endpoint`, `ml/eval/run_eval.py` |
+| DPO trainer (gates) | merged | `ml/train/dpo.py` — no pair **builder** yet (v2 WP2 adds it) |
+
+Adapter reality:
+
+* **No adapter has `status: ready`.** Both registry entries are retired
+  (D-028); only QLoRA runs promoted via `ml.serve.register` may hold `ready`.
+* **No measured scores exist.** The score log has no numeric row — no GPU run
+  has happened. Nothing was fabricated.
+* Golden v2's 150 candidate cases and the teacher triples have **no
+  human-approved rows yet** (`humanReviewed: false` by design until an
+  operator decides).
+
+### Consequences for this run
+
+Base branch: `main`. Branches stacked `ml/v2-wp1-*` onward. Every
+`[needs measured adapter]` code path ships behind flags defaulting to off,
+tested with stubs; no result is faked.
+
+### Scoping note (honest)
+
+This run implements WP1 (review queue), WP2 (DPO builder), WP3 (readyTasks),
+WP8 (extension guard), WP9 (weekly refresh) and WP10 (model card template +
+proposal). WP4 (Tier 2 slices), WP5 (classifier training), WP6 (monitoring +
+circuit breaker) and WP7 (serving hardening) are **not started** here; the
+"v2 end" section records them as missing with reasons.
+
+---
+
+## WP1 — Human review queue (branch `ml/v2-wp1-review-queue`, PR #79)
+
+Built this run:
+
+- **Core** `src/core/review/queue.ts` — row/decision types and the pure
+  invariants: a decision requires an authenticated reviewer; decisions are
+  immutable; a rejected row is never train-eligible; `edit_and_approve` keeps
+  the original candidate output as `originalOutput` provenance.
+- **Store** `src/lib/review/store.ts` — JSONL store in the app's data
+  directory (D-033); idempotent `syncQueue` ingests raw-tier teacher triples
+  plus the `ml-review/golden-candidates.jsonl` and
+  `ml-review/shadow-disagreements.jsonl` producer files; `recordDecision`
+  mirrors an approve into the triple store (`reviewed` tier, D-034);
+  `exportApproved` emits the three consumer formats (sft chat rows, dpo
+  preference pairs, golden-v2 cases with deterministic 64-hex ids).
+- **API** `src/app/api/review-queue` — operator-only GET (snapshot + export)
+  and POST (approve / edit-and-approve / reject, optional reason). No auth →
+  401 on every handler; only these handlers set `reviewed: true`.
+- **Page** `/settings/ai-training/review` (`ReviewQueueClient`) inside the
+  Train AI area, linked from the AI Training page for operators.
+- **Migration** `supabase/migrations/0006_ml_review_queue.sql` (mirror table,
+  D-033).
+- **Tests** `tests/review-queue.test.ts` — 17 passing: auth 401s, immutable
+  decisions, anonymous refusal, reject-never-trains (all three exports empty,
+  triple stays `raw`), edit provenance, format exports, producer sync
+  idempotence.
+
+Notes: shadow-disagreement producer rows are consumed here but written by
+WP3; until then that queue is empty by design. No review row was approved in
+this run — approvals are human actions only.
+
+---
