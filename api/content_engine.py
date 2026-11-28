@@ -3,13 +3,30 @@
 Provides:
 - Batch thin-content detection & TF-IDF / Jaccard similarity checking (>70% duplicate blocker)
 - Semantic internal-link graph generator outputting clean JSON manifest for TypeScript compiler
+
+Thresholds are loaded from shared/engine/content-gate.json, the same defaults
+used by validators/uniquenessGate.ts. Two intentional differences remain: this
+engine combines Jaccard with TF-IDF cosine (max of the two), while the TypeScript
+gate uses Jaccard alone; the TypeScript gate also strips boilerplate phrases
+before counting words.
 """
 
 from __future__ import annotations
+import json
 import math
 import re
 from collections import Counter
+from pathlib import Path
 from typing import Dict, List, Set, Tuple, Any
+
+# Single source of truth shared with validators/uniquenessGate.ts.
+_CONFIG_PATH = Path(__file__).resolve().parents[1] / "shared" / "engine" / "content-gate.json"
+with _CONFIG_PATH.open(encoding="utf-8") as _config_file:
+    CONTENT_GATE_CONFIG = json.load(_config_file)
+
+DEFAULT_MAX_SIMILARITY = float(CONTENT_GATE_CONFIG["maxSimilarityThreshold"])
+DEFAULT_MIN_WORDS = int(CONTENT_GATE_CONFIG["minUniqueWordCount"])
+DEFAULT_NGRAM_SIZE = int(CONTENT_GATE_CONFIG["ngramSize"])
 
 
 def clean_text(text: str) -> str:
@@ -26,14 +43,14 @@ def count_words(text: str) -> int:
     return len(clean_text(text).split())
 
 
-def get_ngrams(words: List[str], n: int = 3) -> Set[str]:
+def get_ngrams(words: List[str], n: int = DEFAULT_NGRAM_SIZE) -> Set[str]:
     """Generates an n-gram set from word tokens."""
     if len(words) < n:
         return {" ".join(words)} if words else set()
     return {" ".join(words[i:i + n]) for i in range(len(words) - n + 1)}
 
 
-def calculate_jaccard_similarity(text1: str, text2: str, n: int = 3) -> float:
+def calculate_jaccard_similarity(text1: str, text2: str, n: int = DEFAULT_NGRAM_SIZE) -> float:
     """Calculates Jaccard similarity coefficient: |A ∩ B| / |A ∪ B|."""
     words1 = clean_text(text1).split()
     words2 = clean_text(text2).split()
@@ -93,8 +110,8 @@ def calculate_tfidf_similarity(documents: List[str]) -> List[List[float]]:
 
 def batch_similarity_audit(
     pages: List[Dict[str, Any]],
-    max_similarity: float = 0.70,
-    min_words: int = 250
+    max_similarity: float = DEFAULT_MAX_SIMILARITY,
+    min_words: int = DEFAULT_MIN_WORDS
 ) -> Dict[str, Any]:
     """Audits a batch of pages against thin-content and duplicate similarity ceilings.
     

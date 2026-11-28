@@ -44,10 +44,17 @@ const BINARY_EXTENSIONS = new Set([
   ".zip",
 ]);
 
-const SKIP_FILES = new Set(["package-lock.json", "tsconfig.tsbuildinfo"]);
+const SKIP_FILES = new Set([
+  "package-lock.json",
+  "tsconfig.tsbuildinfo",
+  // These two files must contain the forbidden strings in order to define and
+  // test the gate itself.
+  "scripts/check-brand-hygiene.ts",
+  "tests/ts/brand-hygiene.test.ts",
+]);
 
 export function isScannable(file: string): boolean {
-  if (SKIP_FILES.has(path.basename(file))) return false;
+  if (SKIP_FILES.has(file) || SKIP_FILES.has(path.basename(file))) return false;
   return !BINARY_EXTENSIONS.has(path.extname(file).toLowerCase());
 }
 

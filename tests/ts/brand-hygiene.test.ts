@@ -27,5 +27,6 @@ test("allows public hotel-chain vocabulary used by the audit engine", () => {
 test("skips binary and generated artifacts", () => {
   assert.equal(isScannable("public/seo-studio.zip"), false);
   assert.equal(isScannable("tsconfig.tsbuildinfo"), false);
+  assert.equal(isScannable("scripts/check-brand-hygiene.ts"), false);
   assert.equal(isScannable("docs/ENGINEERING_STANDARDS.md"), true);
 });

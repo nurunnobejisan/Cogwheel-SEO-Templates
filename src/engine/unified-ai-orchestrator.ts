@@ -79,7 +79,7 @@ export const UNIFIED_SEO_TOOLS: UnifiedToolDefinition[] = [
   },
   {
     name: "analyze_ai_visibility_geo",
-    description: "Measure Generative Engine Optimization (GEO) and citation share of voice in ChatGPT, Perplexity, Claude, and Google AI Overviews.",
+    description: "Estimate GEO readiness from on-page facts. AI-engine citation visibility is simulated only when ALLOW_SIMULATED_DATA is enabled; no live share-of-voice measurement is available.",
     category: "geo",
     parameters: {
       type: "object",

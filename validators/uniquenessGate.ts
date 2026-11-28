@@ -9,6 +9,8 @@
  * - Actionable validation reports
  */
 
+import contentGate from "../shared/engine/content-gate.json";
+
 export interface UniquenessGateConfig {
   maxSimilarityThreshold: number; // e.g. 0.70 (70%)
   minUniqueWordCount: number;      // e.g. 250 words
@@ -16,20 +18,20 @@ export interface UniquenessGateConfig {
   boilerplatePhrases?: string[];
 }
 
+/**
+ * Defaults come from `shared/engine/content-gate.json` so the TypeScript and
+ * Python gates cannot drift apart. Environment overrides are still honoured.
+ */
 export const DEFAULT_UNIQUENESS_CONFIG: UniquenessGateConfig = {
-  maxSimilarityThreshold: parseFloat(process.env.MAX_SIMILARITY_THRESHOLD || "0.70"),
-  minUniqueWordCount: parseInt(process.env.MIN_UNIQUE_WORD_COUNT || "250", 10),
-  ngramSize: 3,
-  boilerplatePhrases: [
-    "all rights reserved",
-    "privacy policy",
-    "terms and conditions",
-    "cookie policy",
-    "powered by seo studio",
-    "check-in time is",
-    "contact us today",
-    "book direct and save"
-  ]
+  maxSimilarityThreshold: parseFloat(
+    process.env.MAX_SIMILARITY_THRESHOLD || String(contentGate.maxSimilarityThreshold)
+  ),
+  minUniqueWordCount: parseInt(
+    process.env.MIN_UNIQUE_WORD_COUNT || String(contentGate.minUniqueWordCount),
+    10
+  ),
+  ngramSize: contentGate.ngramSize,
+  boilerplatePhrases: [...contentGate.boilerplatePhrases]
 };
 
 export interface PageContentItem {

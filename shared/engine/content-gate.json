@@ -1,0 +1,16 @@
+{
+  "_comment": "Canonical defaults for the TS and Python thin-content gates. Both languages still support per-run overrides. The TS gate additionally strips these boilerplate phrases before counting words.",
+  "maxSimilarityThreshold": 0.7,
+  "minUniqueWordCount": 250,
+  "ngramSize": 3,
+  "boilerplatePhrases": [
+    "all rights reserved",
+    "privacy policy",
+    "terms and conditions",
+    "cookie policy",
+    "powered by seo studio",
+    "check-in time is",
+    "contact us today",
+    "book direct and save"
+  ]
+}
