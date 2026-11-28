@@ -44,8 +44,12 @@ jobs:
         run: |
           set -uo pipefail
           VERSION="${{ steps.meta.outputs.version }}"
-          git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1
-          status=$?
+          # GitHub runs `run:` steps with an implicit `bash -e`. `git ls-remote
+          # --exit-code` exits 2 when the tag is absent — the normal first
+          # release — so the probe must be guarded with `|| status=$?`, or `-e`
+          # aborts the step before the status is inspected.
+          status=0
+          git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1 || status=$?
           case "$status" in
             0) echo "exists=true" >> "$GITHUB_OUTPUT"; echo "Tag v${VERSION} already exists — skipping." ;;
             2) echo "exists=false" >> "$GITHUB_OUTPUT" ;;
