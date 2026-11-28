@@ -13,7 +13,7 @@ const memoryClients: Map<string, Client> = new Map([
     "client-default",
     {
       id: "client-default",
-      name: "SEO Studio Hospitality Portfolio",
+      name: "Razib Marketing Hospitality Portfolio",
       contactEmail: "director@example.com",
       contactName: "Portfolio Director",
       industry: "Hospitality & Luxury Hotels",

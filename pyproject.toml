@@ -5,7 +5,7 @@ description = "Enterprise Hospitality Search & Generative Engine Optimization (G
 readme = "README.md"
 requires-python = ">=3.11"
 authors = [
-    { name = "SEO Studio", email = "{{CONTACT_EMAIL}}" }
+    { name = "Razib Marketing", email = "contact@razibmarketing.com" }
 ]
 dependencies = [
     "pydantic>=2.7.0",

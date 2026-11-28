@@ -98,7 +98,7 @@ export function SlideDeckPreview({
               <div className="flex items-center gap-2">
                 <div className="h-4 w-4 rounded-full bg-brand" />
                 <span className="font-display text-body font-extrabold tracking-wider uppercase text-purple-200">
-                  SEO STUDIO MARKETING
+                  RAZIB MARKETING
                 </span>
               </div>
               <span className="rounded-md bg-purple-900/60 px-3 py-1 font-mono text-caption text-purple-200 border border-purple-700/50">
@@ -139,7 +139,7 @@ export function SlideDeckPreview({
                 Tracked Rankings &amp; Insights
               </h2>
               <span className="text-caption font-bold text-brand uppercase tracking-wider">
-                SEO STUDIO MARKETING
+                RAZIB MARKETING
               </span>
             </div>
 
@@ -215,7 +215,7 @@ export function SlideDeckPreview({
                 Ancillary Keyword Position Summary
               </h2>
               <span className="text-caption font-bold text-brand uppercase tracking-wider">
-                SEO STUDIO MARKETING
+                RAZIB MARKETING
               </span>
             </div>
 
@@ -255,7 +255,7 @@ export function SlideDeckPreview({
                 Why Track &amp; Full Visibility Rationale
               </h2>
               <span className="text-caption font-bold text-brand uppercase tracking-wider">
-                SEO STUDIO MARKETING
+                RAZIB MARKETING
               </span>
             </div>
 
@@ -291,7 +291,7 @@ export function SlideDeckPreview({
                 Technical SEO Health &amp; Next Steps
               </h2>
               <span className="text-caption font-bold text-brand uppercase tracking-wider">
-                SEO STUDIO MARKETING
+                RAZIB MARKETING
               </span>
             </div>
 

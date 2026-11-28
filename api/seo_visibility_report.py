@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Build a monthly SEO visibility PowerPoint from a template, Semrush PDF and XLSX.
 
-Trained on historical SEO Studio Marketing / Analytics reports:
+Trained on historical Razib Marketing / Analytics reports:
 - Supports multi-style executive Insights (Executive Summary style & Named Highlights style)
 - Preserves Start of Project & Diff when a keyword drops to N/A (out of top 100)
 - Forces all table keywords to Source Sans Pro size 9.

@@ -579,7 +579,7 @@ export function LabsView({
             {/* Google Result Preview Mockup */}
             <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/70 p-4 dark:border-slate-800 dark:bg-slate-800/40">
               <div className="text-tiny text-slate-500 flex items-center gap-1.5 mb-1 truncate">
-                <span className="font-semibold text-slate-700 dark:text-slate-300">example.com</span>
+                <span className="font-semibold text-slate-700 dark:text-slate-300">razibmarketing.com</span>
                 <span>›</span>
                 <span>hotels</span>
                 <span>›</span>
@@ -1233,7 +1233,7 @@ export function LabsView({
       {/* Roadmap Banner */}
       <div className="rounded-2xl border border-dashed border-violet-300 bg-violet-50/50 p-4 text-center dark:border-violet-800/60 dark:bg-violet-950/20">
         <p className="text-caption font-semibold text-violet-800 dark:text-violet-300">
-          Enterprise SEO Labs Suite
+          Enterprise SEO Labs Suite — Powered by Razib Marketing
         </p>
         <p className="text-tiny text-slate-500 dark:text-slate-400 mt-0.5">
           Integrated with 10-Gate SEO Quality Engine • Multi-CMS Export Support (HTML5, Shopify Liquid, WordPress PHP, Webflow CSV)

@@ -1,6 +1,6 @@
 # Phase 1 — SEO Studio Baseline Report
 
-**Scope:** Read-only inspection of the SEO Studio repository (`nurunnobejisan/SEO-Studio`, branch `main`, HEAD `1afe937`) plus repository discovery of the three research accounts (`rifonix`, `mdrifatcom`, `Archived external account`).
+**Scope:** Read-only inspection of the SEO Studio repository (`jisan-razibmarketing/Cogwheel-SEO-Templates`, branch `main`, HEAD `1afe937`) plus repository discovery of the three research accounts (`rifonix`, `mdrifatcom`, `Archived external account`).
 
 **Purpose:** Establish the current architecture, capabilities, bugs, limitations, and technical debt *before* any change. No application code was modified to produce this report.
 

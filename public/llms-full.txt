@@ -3,7 +3,7 @@
 > Hospitality Search Engine and Generative Engine Optimization Suite with Real-Time Character and Pixel Budgeting, Dynamic Schema Ingestion, and Multi-Format Export Engines.
 
 Canonical Origin: https://seo-studio.vercel.app
-Repository: https://github.com/nurunnobejisan/SEO-Studio
+Repository: https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates
 
 ## System Overview
 SEO & GEO Studio is an enterprise-grade web application and browser extension suite designed specifically for hospitality brands (Marriott, Hilton, IHG, Hyatt, independent boutique luxury properties, and management groups). It enforces strict character boundaries (Title: 50–60 characters; Description: 145–155 characters), physical Arial desktop pixel limits (Title <= 580px; Description <= 920px), Schema.org semantic entity graph generation, and Generative Engine Optimization (GEO) direct answer structures.

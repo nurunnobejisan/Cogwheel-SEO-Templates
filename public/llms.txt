@@ -5,7 +5,7 @@ SEO & GEO Studio provides battle-tested SEO, GEO (Generative Engine Optimization
 
 - Website: https://seo-studio.vercel.app
 - Documentation: https://seo-studio.vercel.app/architecture
-- GitHub: https://github.com/nurunnobejisan/SEO-Studio
+- GitHub: https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates
 
 ## Core System Modules
 - Strategy Matrix: https://seo-studio.vercel.app/strategy-matrix (78-Keyword hospitality matrix across Brand, Local, Amenities, Meetings, Extended Stay, and GEO)

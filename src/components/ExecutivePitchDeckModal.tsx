@@ -31,7 +31,7 @@ export function ExecutivePitchDeckModal({
   const location = [property?.city, property?.state].filter(Boolean).join(", ");
 
   // White-label custom agency settings
-  const [agencyName, setAgencyName] = useState("Your Agency");
+  const [agencyName, setAgencyName] = useState("Razib Marketing");
   const [agencyTagline, setAgencyTagline] = useState("Hospitality Organic Growth & GEO Advisory");
   const [leadConsultant, setLeadConsultant] = useState("Senior Search Strategist");
   const [contactEmail, setContactEmail] = useState("");

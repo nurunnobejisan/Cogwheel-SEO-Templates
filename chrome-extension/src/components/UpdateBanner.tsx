@@ -69,7 +69,7 @@ export function UpdateBanner({ onRulesSynced }: Props) {
       window.open(updateState.releaseDownloadUrl, "_blank", "noopener,noreferrer");
     } else {
       window.open(
-        "https://github.com/nurunnobejisan/SEO-Studio/releases/latest",
+        "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/releases/latest",
         "_blank",
         "noopener,noreferrer"
       );

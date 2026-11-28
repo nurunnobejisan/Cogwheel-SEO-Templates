@@ -47,7 +47,7 @@ Every page and major layout MUST be constructed with explicit semantic HTML5 lan
 
 - Every internal route reference (`<Link href="...">` or `<a href="...">`) must resolve to a valid, existing route (e.g. `/`, `/templates`, `/strategy-matrix`, `/architecture`).
 - Every in-page hash anchor (e.g., `#onpage`, `#schema`) must map to an element with a matching `id`.
-- Asset URLs (`/nurunnobe-logo.png`, `/seo-studio.zip`, `/docs/assets/system-architecture.svg`) must exist in `public/` or `docs/assets/`.
+- Asset URLs (`/razib-marketing-logo.png`, `/seo-studio.zip`, `/docs/assets/system-architecture.svg`) must exist in `public/` or `docs/assets/`.
 - External URLs must point to valid canonical origins with `rel="noopener noreferrer"` and `target="_blank"`.
 - Run automated link verification before every release: zero 404s allowed.
 

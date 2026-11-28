@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "System Architecture & Technical Specs — SEO Studio",
+  title: "System Architecture & Technical Specs — Razib Marketing",
   description:
     "Complete technical architecture for Manifest V3 extension, AI training data vault, hybrid model inference routing, and Python fine-tuning pipelines.",
 };

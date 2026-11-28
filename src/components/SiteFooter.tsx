@@ -8,10 +8,10 @@ export function SiteFooter() {
           <div>
             <div className="flex items-center gap-2">
               <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950">
-                CW
+                RM
               </span>
               <span className="font-display text-body font-bold text-slate-900 dark:text-white">
-                SEO &amp; GEO Studio
+                Razib Marketing — SEO &amp; GEO Studio
               </span>
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                 v3.0.0
@@ -22,7 +22,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
-              Enterprise hospitality search, pixel budgeting &amp; generative engine optimization suite.
+              Razib Marketing's hospitality search, pixel budgeting &amp; generative engine optimization suite.
             </p>
           </div>
 
@@ -40,7 +40,7 @@ export function SiteFooter() {
               Architecture
             </Link>
             <a
-              href="https://github.com/nurunnobejisan/SEO-Studio"
+              href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -52,9 +52,9 @@ export function SiteFooter() {
 
         <div className="mt-8 flex flex-col gap-2 border-t border-slate-200/60 pt-6 text-tiny text-slate-500 dark:border-slate-800/60 dark:text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} SEO Studio Marketing &amp;{" "}
+            &copy; {new Date().getFullYear()} Razib Marketing &amp;{" "}
             <a
-              href="https://github.com/nurunnobejisan/SEO-Studio/graphs/contributors"
+              href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/graphs/contributors"
               target="_blank"
               rel="noopener noreferrer"
               className="underline decoration-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -63,7 +63,7 @@ export function SiteFooter() {
             </a>
             . Architected by{" "}
             <a
-              href="https://github.com/nurunnobejisan"
+              href="https://github.com/jisan-razibmarketing"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-slate-700 underline decoration-slate-400 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"

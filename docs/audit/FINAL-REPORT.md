@@ -4,7 +4,7 @@
 **Lead Architect:** Principal Enterprise Systems & SEO Architect  
 **Platform Version:** 3.0.0 (Enterprise Universal Release)  
 **Live Application:** https://seo-studio.vercel.app/
-**Repository:** https://github.com/nurunnobejisan/SEO-Studio
+**Repository:** https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates
 
 ---
 
