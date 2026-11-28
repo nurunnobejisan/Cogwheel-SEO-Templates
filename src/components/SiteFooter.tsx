@@ -1,80 +1,51 @@
 import Link from "next/link";
+import { BrandMark, OWNER_CREDIT, PRODUCT_NAME } from "./BrandMark";
 
 export function SiteFooter() {
   return (
-    <footer className="mt-16 border-t border-slate-200/80 bg-slate-50/80 py-10 text-slate-600 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-400">
-      <div className="mx-auto max-w-6xl px-6">
+    <footer className="border-t border-border bg-surface py-8 text-text-muted">
+      <div className="mx-auto max-w-[1200px] px-4 md:px-6">
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <div className="flex items-center gap-2">
-              <span className="flex h-6 w-6 items-center justify-center rounded-lg bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950">
-                SJ
-              </span>
-              <span className="font-display text-body font-bold text-slate-900 dark:text-white">
-                SEO &amp; GEO Studio
-              </span>
-              <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                v3.0.0
-              </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-micro font-bold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Updated: November 24, 2026
-              </span>
-            </div>
-            <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
-              Enterprise hospitality search, pixel budgeting &amp; generative engine optimization suite.
+          <div className="space-y-1.5">
+            <BrandMark compact />
+            <p className="max-w-[72ch] text-caption text-text-muted">
+              Universal search and generative engine optimization suite across six vertical packs, hotel first.
             </p>
           </div>
 
-          <nav aria-label="Footer Navigation" className="flex flex-wrap items-center gap-4 text-caption font-semibold">
-            <Link href="/" className="transition hover:text-slate-900 dark:hover:text-white">
+          <nav aria-label="Footer Navigation" className="flex flex-wrap items-center gap-4 text-caption font-medium">
+            <Link href="/" className="transition-colors hover:text-text">
               Studio
             </Link>
-            <Link href="/templates" className="transition hover:text-slate-900 dark:hover:text-white">
+            <Link href="/templates" className="transition-colors hover:text-text">
               Templates
             </Link>
-            <Link href="/strategy-matrix" className="transition hover:text-slate-900 dark:hover:text-white">
+            <Link href="/strategy-matrix" className="transition-colors hover:text-text">
               Strategy Matrix
             </Link>
-            <Link href="/architecture" className="transition hover:text-slate-900 dark:hover:text-white">
+            <Link href="/architecture" className="transition-colors hover:text-text">
               Architecture
             </Link>
-            <a
-              href="https://github.com/nurunnobejisan/SEO-Studio"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            >
-              GitHub &rarr;
-            </a>
+            <Link href="/extension" className="transition-colors hover:text-text">
+              Extension
+            </Link>
           </nav>
         </div>
 
-        <div className="mt-8 flex flex-col gap-2 border-t border-slate-200/60 pt-6 text-tiny text-slate-500 dark:border-slate-800/60 dark:text-slate-500 sm:flex-row sm:items-center sm:justify-between">
+        <div className="mt-6 flex flex-col gap-2 border-t border-border pt-5 text-caption text-text-muted sm:flex-row sm:items-center sm:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} Nurunnobe Jisan &amp;{" "}
-            <a
-              href="https://github.com/nurunnobejisan/SEO-Studio/graphs/contributors"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="underline decoration-slate-400 hover:text-slate-900 dark:hover:text-white"
-            >
-              Contributors
-            </a>
-            . Architected by{" "}
+            &copy; {new Date().getFullYear()} {PRODUCT_NAME}. Created by{" "}
             <a
               href="https://github.com/nurunnobejisan"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-slate-700 underline decoration-slate-400 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
+              className="font-medium text-text underline decoration-border-strong underline-offset-2 hover:text-link"
             >
-              Shah Jisan (SJ)
-            </a>
-            . Distributed under the MIT License.
+              {OWNER_CREDIT}
+            </a>{" "}
+            &amp; Contributors. MIT License.
           </p>
-          <p className="flex items-center gap-2">
-            <span>Marriott &bull; Hilton &bull; IHG &bull; Hyatt &bull; Independent Luxury</span>
-          </p>
+          <span>v3.0.0</span>
         </div>
       </div>
     </footer>

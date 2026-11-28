@@ -1,8 +1,8 @@
 import { describe, it, expect } from "vitest";
-import { metadata as homeMeta } from "../src/app/page";
-import { metadata as templatesMeta } from "../src/app/templates/page";
-import { generateMetadata as generateMatrixMetadata } from "../src/app/strategy-matrix/page";
-import { metadata as archMeta } from "../src/app/architecture/page";
+import { metadata as homeMeta } from "../src/app/(app)/page";
+import { metadata as templatesMeta } from "../src/app/(public)/templates/page";
+import { generateMetadata as generateMatrixMetadata } from "../src/app/(public)/strategy-matrix/page";
+import { metadata as archMeta } from "../src/app/(public)/architecture/page";
 import { TEMPLATES_DATA } from "../src/packs/hotel/templates";
 import { PACK_CATALOG } from "../src/packs/catalog";
 import sitemap from "../src/app/sitemap";

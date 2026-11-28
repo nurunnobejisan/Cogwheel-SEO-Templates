@@ -14,10 +14,10 @@
 import { describe, it, expect } from "vitest";
 import { createElement } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
-import StrategyMatrixPage, { generateMetadata } from "../src/app/strategy-matrix/page";
+import StrategyMatrixPage, { generateMetadata } from "../src/app/(public)/strategy-matrix/page";
 import {
   generateMetadata as generateTemplateMetadata,
-} from "../src/app/templates/[category]/[slug]/page";
+} from "../src/app/(public)/templates/[category]/[slug]/page";
 import { clusterByTargetPageType } from "../src/packs/clusters";
 import {
   PACK_MATRICES,
