@@ -32,7 +32,9 @@
     "icons:generate": "python3 python/scripts/generate_extension_icons.py",
     "gsc:mcp": "python3 api/gsc_server.py",
     "prepare": "husky",
-    "geo:drift": "tsx scripts/geo-drift.ts"
+    "geo:drift": "tsx scripts/geo-drift.ts",
+    "ml:sft:build": "python3 -m ml.train.build_sft",
+    "ml:dpo:build": "python3 -m ml.train.build_dpo"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

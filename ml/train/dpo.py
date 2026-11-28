@@ -47,6 +47,9 @@ from .config import (
 from .dataset import DEFAULT_GOLDEN, _refuses_golden, golden_fingerprints
 from .errors import ConfigError, DatasetError, HeavyDepsError
 
+#: Default pair file — the v2 WP2 builder output (gitignored data/build/).
+DEFAULT_PAIRS = Path(__file__).resolve().parents[2] / "data" / "build" / "dpo-v2.jsonl"
+
 __all__ = ["load_pairs", "prepare", "build_manifest", "train"]
 
 PAIR_FIELDS = ("prompt", "chosen", "rejected")
@@ -105,12 +108,18 @@ def prepare(
             metadata = pair.get("meta")
         metadata = metadata if isinstance(metadata, Mapping) else {}
 
+        # v2 WP2: a builder-produced row declares its own registry source
+        # (patches / vault / triples). Gate each row by its own source when
+        # present, falling back to the CLI --source.
+        row_source = str(metadata.get("source") or source).strip()
+        row_first_party = row_source in FIRST_PARTY_SOURCES
+
         reason: Optional[str] = None
-        if first_party:
+        if row_first_party:
             if metadata.get("consent") is not True:
-                reason = f"source {source!r} is first-party: metadata.consent must be true"
+                reason = f"source {row_source!r} is first-party: metadata.consent must be true"
             elif not metadata.get("tenantId"):
-                reason = f"source {source!r} is first-party: metadata.tenantId is required"
+                reason = f"source {row_source!r} is first-party: metadata.tenantId is required"
         if reason is None:
             for field_name in PAIR_FIELDS:
                 if _refuses_golden(pair[field_name], exact, fragments):
@@ -142,8 +151,17 @@ def prepare(
         seen.add(fingerprint)
         cleaned_rows.append(cleaned)
 
-    client_rows = len(cleaned_rows) if first_party else 0
-    gate_ready = (not first_party) or client_rows >= MIN_REVIEWED_PAIRS_FOR_TRAINING
+    # v2 WP2: count a row as client-derived when its own declared source (or
+    # the CLI --source fallback) is first-party.
+    client_rows = sum(
+        1
+        for row in cleaned_rows
+        if str((row.get("metadata") or {}).get("source") or source) in FIRST_PARTY_SOURCES
+    )
+    # The 2000-pair gate only applies when client-derived data is in scope:
+    # either --source is first-party, or the file carries first-party rows.
+    gate_applies = first_party or client_rows > 0
+    gate_ready = (not gate_applies) or client_rows >= MIN_REVIEWED_PAIRS_FOR_TRAINING
     manifest: Dict[str, Any] = {
         "generatedAt": datetime.now(timezone.utc)
         .replace(microsecond=0)
@@ -303,7 +321,13 @@ def train(config: DpoConfig, pairs: Sequence[Mapping[str, Any]]) -> Dict[str, An
 
 def main(argv: Optional[Sequence[str]] = None) -> int:
     parser = argparse.ArgumentParser(description="DPO training (dry-run by default)")
-    parser.add_argument("--pairs", type=Path, required=True, help="JSONL of prompt/chosen/rejected")
+    parser.add_argument(
+        "--pairs",
+        type=Path,
+        default=DEFAULT_PAIRS,
+        help="JSONL of prompt/chosen/rejected (default: the v2 WP2 builder output "
+        "data/build/dpo-v2.jsonl; run python3 -m ml.train.build_dpo to refresh it)",
+    )
     parser.add_argument(
         "--source", required=True, help="registry id (e.g. patches, repo-synthetic)"
     )
