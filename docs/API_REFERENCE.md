@@ -139,6 +139,7 @@ library modules and one MCP server:
 GET  /health                      liveness probe (no auth, status only)
 POST /v1/content/similarity       { pages[{id,url?,content}], max_similarity?, min_words? }
 POST /v1/content/link-graph       { items[{url,parentPage?,primaryKeyword?,...}], max_links_per_page? }
+POST /v1/audit                    { url, post_id? } → 200 { post_id, url, status, score|null, ... }
 POST /v1/content/validate         { kind, payload } → 200 { valid, data } | 413 field cap | 422 { detail: { valid: false, errors } }
 POST /v1/reports/seo-visibility   multipart: template (.pptx), xlsx (.xlsx), pdf? (.pdf) → pptx bytes
 ```
@@ -152,6 +153,13 @@ and `SEO_PY_SERVICE_ALLOW_REMOTE=1` are both set. Payload caps (50 pages,
 reject oversized input with 413/422 before any work starts; uploads land under
 server-generated names; no shell is involved anywhere; the service is stateless
 (env read per request, no module-level mutable state).
+
+`POST /v1/audit` serves the WordPress companion plugin. It fetches the supplied
+URL through the repo's DNS-pinned SSRF guard with an identifying User-Agent and
+a 2 MB body cap, derives on-page facts from the returned HTML, and scores only
+those facts with the existing scoring function. A refused, failed or non-HTML
+fetch returns `status: "not_measured"` and `score: null` — never a zero or a
+guess. The plugin sends its API key in `Authorization` from env/option only.
 
 The Node bridges read `PYTHON_SERVICE_URL` (base URL) and `SEO_PY_SERVICE_TOKEN`
 from server env only — never from a request — so a caller cannot steer those
