@@ -44,7 +44,8 @@ The core rule is simple: **measure, label, or leave blank.** Rankings, search vo
 
 - On-page GEO readiness derived from structured data, answer coverage, entity signals, and content depth.
 - Schema-family checks for Hotel/LodgingBusiness, Restaurant, Spa, FAQPage, Organization, WebSite, and BreadcrumbList.
-- VisibilitySuite import/export for teams that have a licensed AI-visibility provider. Without one, citation metrics stay explicitly unmeasured.
+- Measured visibility runs through opt-in free tiers: Gemini 2.x grounded search, Llama 3.3 on Groq, OpenRouter `:free` models, and keyless Pollinations. Web-grounded citations and model-memory mentions are counted separately. Google AI Overviews remains unavailable because it has no official API.
+- VisibilitySuite import/export for teams that have a licensed AI-visibility provider. Without a configured provider, citation metrics stay explicitly unmeasured.
 
 ### Produce client deliverables
 
@@ -97,7 +98,8 @@ See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the full component and da
 - **Node.js 20+**
 - **Python 3.11+**
 - **Chrome/Chromium** for the extension
-- Optional: Supabase, Google Search Console, Anthropic, Semrush, VisibilitySuite credentials
+- Optional free tiers: Gemini, Groq, OpenRouter `:free`, Pollinations (no key), Google Search Console
+- Optional paid add-ons / integrations: Supabase, Anthropic, OpenAI, Perplexity, Semrush, VisibilitySuite
 
 ### Run the web app
 
@@ -165,11 +167,16 @@ Copy [`.env.example`](.env.example) to `.env.local` and set only what you need.
 | `PLATFORM_OPERATOR_TOKEN` | Production `/platform` | Bootstrap operator sign-in token (32+ chars) |
 | `PLATFORM_SESSION_SECRET` | Production `/platform` | HMAC key for signed `cw_session` cookies (32+ chars) |
 | `CMS_VAULT_KEY` | CMS vault | Encryption key for stored CMS credentials |
-| `ANTHROPIC_API_KEY` | Optional | AI-assisted generation and analysis |
-| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Optional | Durable platform storage |
+| `ANTHROPIC_API_KEY` | Optional (paid) | AI-assisted generation and analysis |
+| `GEMINI_API_KEY`, `GROQ_API_KEY`, `OPENROUTER_API_KEY` | Optional (free tier) | Drafting plus measured AI/GEO visibility runs |
+| `VISIBILITY_FREE_PROVIDERS_ENABLED` | Optional | Opt in to the three free-tier visibility adapters (default off) |
+| `POLLINATIONS_ENABLED` | Optional | Opt in to the keyless, model-memory visibility adapter |
+| `SUPABASE_URL` / `SUPABASE_SERVICE_ROLE_KEY` | Optional | Durable platform storage and shared GSC cache |
 | `SEMRUSH_API_KEY` | Optional | Keyword and competitor data |
 | `GOOGLE_SERVICE_ACCOUNT_B64` | Optional | Search Console, Drive, and Docs integrations |
 | `ALLOW_SIMULATED_DATA` | Never in production | Enables synthetic demo data for local tests only |
+
+With zero keys the audit, GSC CSV/ZIP import, GEO readiness checks, exports, and the deterministic Audit Assistant still work. Provider-backed sections name the setup they need instead of showing a number. See [`docs/geo/VISIBILITY_TRACKING.md`](docs/geo/VISIBILITY_TRACKING.md) for the full provider matrix and caps.
 
 Secrets belong in environment variables or the platform vault — never in the repository.
 
@@ -216,6 +223,8 @@ The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT
 | [CMS integrations](docs/CMS_INTEGRATIONS.md) | WordPress, Shopify, Webflow, and HTML adapters |
 | [Self-healing pipeline](docs/SELF_HEALING_PIPELINE.md) | Patch generation, review, and application |
 | [AI SEO brain](docs/AI_SEO_BRAIN.md) | Agents, tools, and routing |
+| [Brain endpoints and provenance](docs/BRAIN.md) | Measured interpretation, visibility batches, and the Audit Assistant stream |
+| [AI visibility tracking](docs/geo/VISIBILITY_TRACKING.md) | Free-tier provider matrix, batching, caps, and honesty rules |
 | [SEO expert guide](docs/SEO_EXPERT_GUIDE.md) | Operator workflow |
 | [Repository audit](docs/REPOSITORY_AUDIT.md) | Findings, remediation status, and known limitations |
 | [Roadmap](docs/ROADMAP_UNIVERSAL_AUDIT_AND_CMS_AUTOFIX.md) | Phases and remaining work |

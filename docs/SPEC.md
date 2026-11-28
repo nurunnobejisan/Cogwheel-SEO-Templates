@@ -24,7 +24,7 @@ Browser UI (Next.js 14+ App Router / TypeScript / Tailwind)
      ├─ 1. Property Setup & Multi-CSV Dropzone (or Google Drive Folder Sync)
      ├─ 2. Template Selector (Catbird Standard Format vs. Reitz Union / SEO Studio Format)
      ├─ 3. 78-Keyword Pool & Page-to-Keyword Approval Matrix (Editable Checkpoint)
-     └─ 4. Hilton SEO/GEO Content Studio (Live Character Counter + Diff Viewer)
+     └─ 4. SEO & GEO Content Studio (Live Character Counter + Diff Viewer)
         │
         ▼
 Unified Task API & Legacy Wrappers (/api/*)
