@@ -1,0 +1,200 @@
+# Bangladesh hotels — AI visibility query set.
+# Each intent has English, Bangla and Banglish variants. Queries are
+# informational/comparative only; nothing is submitted to any site.
+
+intents:
+  - id: best_hotel_gulshan
+    variants:
+      en: "best hotel in Gulshan"
+      bn: "গুলশানে সেরা হোটেল"
+      banglish: "gulshan e best hotel kon ta"
+  - id: best_hotel_banani
+    variants:
+      en: "best hotel in Banani"
+      bn: "বনানীতে সেরা হোটেল"
+      banglish: "banani te best hotel"
+  - id: best_hotel_dhanmondi
+    variants:
+      en: "best hotel in Dhanmondi"
+      bn: "ধানমন্ডিতে সেরা হোটেল"
+      banglish: "dhanmondi te best hotel"
+  - id: best_hotel_uttara
+    variants:
+      en: "best hotel in Uttara"
+      bn: "উত্তরায় সেরা হোটেল"
+      banglish: "uttara te best hotel"
+  - id: best_hotel_motijheel
+    variants:
+      en: "best hotel in Motijheel"
+      bn: "মতিঝিলে সেরা হোটেল"
+      banglish: "motijheel e best hotel"
+  - id: cheap_hotel_dhaka
+    variants:
+      en: "cheap hotel in Dhaka"
+      bn: "ঢাকায় সস্তা হোটেল"
+      banglish: "dhaka te sasta hotel"
+  - id: budget_hotel_dhaka
+    variants:
+      en: "budget hotel in Dhaka"
+      bn: "ঢাকায় বাজেট হোটেল"
+      banglish: "dhaka te budget hotel"
+  - id: luxury_hotel_dhaka
+    variants:
+      en: "luxury hotel in Dhaka"
+      bn: "ঢাকায় লাক্সারি হোটেল"
+      banglish: "dhaka te luxury hotel"
+  - id: 5_star_hotel_dhaka
+    variants:
+      en: "5 star hotel in Dhaka"
+      bn: "ঢাকায় ৫ স্টার হোটেল"
+      banglish: "dhaka te 5 star hotel"
+  - id: hotel_near_airport
+    variants:
+      en: "hotel near Dhaka airport"
+      bn: "ঢাকা এয়ারপোর্টের কাছে হোটেল"
+      banglish: "dhaka airport er kache hotel"
+  - id: business_hotel_dhaka
+    variants:
+      en: "business hotel in Dhaka"
+      bn: "ঢাকায় বিজনেস হোটেল"
+      banglish: "dhaka te business hotel"
+  - id: family_hotel_dhaka
+    variants:
+      en: "family friendly hotel in Dhaka"
+      bn: "ঢাকায় ফ্যামিলি হোটেল"
+      banglish: "dhaka te family hotel"
+  - id: hotel_with_pool_dhaka
+    variants:
+      en: "hotel with swimming pool in Dhaka"
+      bn: "ঢাকায় সুইমিং পুলসহ হোটেল"
+      banglish: "dhaka te swimming pool hotel"
+  - id: hotel_with_breakfast
+    variants:
+      en: "hotel with free breakfast in Dhaka"
+      bn: "ঢাকায় ফ্রি ব্রেকফাস্টসহ হোটেল"
+      banglish: "dhaka te free breakfast hotel"
+  - id: hotel_coxs_bazar
+    variants:
+      en: "best hotel in Cox's Bazar"
+      bn: "কক্সবাজারে সেরা হোটেল"
+      banglish: "coxs bazar e best hotel"
+  - id: resort_coxs_bazar
+    variants:
+      en: "resort in Cox's Bazar"
+      bn: "কক্সবাজারে রিসোর্ট"
+      banglish: "coxs bazar e resort"
+  - id: hotel_sylhet
+    variants:
+      en: "best hotel in Sylhet"
+      bn: "সিলেটে সেরা হোটেল"
+      banglish: "sylhet e best hotel"
+  - id: hotel_chittagong
+    variants:
+      en: "best hotel in Chittagong"
+      bn: "চট্টগ্রামে সেরা হোটেল"
+      banglish: "chittagong e best hotel"
+  - id: hotel_rajshahi
+    variants:
+      en: "best hotel in Rajshahi"
+      bn: "রাজশাহীতে সেরা হোটেল"
+      banglish: "rajshahi te best hotel"
+  - id: hotel_khulna
+    variants:
+      en: "best hotel in Khulna"
+      bn: "খুলনায় সেরা হোটেল"
+      banglish: "khulna te best hotel"
+  - id: hotel_barishal
+    variants:
+      en: "best hotel in Barishal"
+      bn: "বরিশালে সেরা হোটেল"
+      banglish: "barishal e best hotel"
+  - id: hotel_rangpur
+    variants:
+      en: "best hotel in Rangpur"
+      bn: "রংপুরে সেরা হোটেল"
+      banglish: "rangpur e best hotel"
+  - id: hotel_mymensingh
+    variants:
+      en: "best hotel in Mymensingh"
+      bn: "ময়মনসিংহে সেরা হোটেল"
+      banglish: "mymensingh e best hotel"
+  - id: hotel_booking_online
+    variants:
+      en: "how to book hotel online in Bangladesh"
+      bn: "বাংলাদেশে অনলাইনে হোটেল বুকিং কিভাবে"
+      banglish: "bangladesh e online hotel booking kivabe"
+  - id: hotel_checkin_time
+    variants:
+      en: "hotel check-in time in Bangladesh"
+      bn: "বাংলাদেশে হোটেল চেক-ইন সময়"
+      banglish: "bangladesh hotel check in time"
+  - id: hotel_checkout_time
+    variants:
+      en: "hotel check-out time in Bangladesh"
+      bn: "বাংলাদেশে হোটেল চেক-আউট সময়"
+      banglish: "bangladesh hotel check out time"
+  - id: hotel_with_wifi
+    variants:
+      en: "hotel with free wifi in Dhaka"
+      bn: "ঢাকায় ফ্রি ওয়াইফাইসহ হোটেল"
+      banglish: "dhaka te free wifi hotel"
+  - id: hotel_with_ac
+    variants:
+      en: "AC hotel room in Dhaka"
+      bn: "ঢাকায় এসি হোটেল রুম"
+      banglish: "dhaka te AC hotel room"
+  - id: hotel_for_couple
+    variants:
+      en: "couple friendly hotel in Dhaka"
+      bn: "ঢাকায় কাপল ফ্রেন্ডলি হোটেল"
+      banglish: "dhaka te couple friendly hotel"
+  - id: hotel_for_family
+    variants:
+      en: "family room hotel in Dhaka"
+      bn: "ঢাকায় ফ্যামিলি রুম হোটেল"
+      banglish: "dhaka te family room hotel"
+  - id: hotel_daylong
+    variants:
+      en: "daylong hotel booking in Dhaka"
+      bn: "ঢাকায় ডেলং হোটেল বুকিং"
+      banglish: "dhaka te daylong hotel booking"
+  - id: hotel_hourly
+    variants:
+      en: "hourly hotel in Dhaka"
+      bn: "ঢাকায় আওয়ারলি হোটেল"
+      banglish: "dhaka te hourly hotel"
+  - id: resort_sreemangal
+    variants:
+      en: "resort in Sreemangal"
+      bn: "শ্রীমঙ্গলে রিসোর্ট"
+      banglish: "sreemangal e resort"
+  - id: hotel_saint_martin
+    variants:
+      en: "hotel in Saint Martin"
+      bn: "সেন্ট মার্টিনে হোটেল"
+      banglish: "saint martin e hotel"
+  - id: hotel_bandarban
+    variants:
+      en: "hotel in Bandarban"
+      bn: "বান্দরবানে হোটেল"
+      banglish: "bandarban e hotel"
+  - id: hotel_rangamati
+    variants:
+      en: "hotel in Rangamati"
+      bn: "রাঙামাটিতে হোটেল"
+      banglish: "rangamati te hotel"
+  - id: hotel_sajek
+    variants:
+      en: "resort in Sajek"
+      bn: "সাজেকে রিসোর্ট"
+      banglish: "sajek e resort"
+  - id: hotel_kuakata
+    variants:
+      en: "hotel in Kuakata"
+      bn: "কুয়াকাটায় হোটেল"
+      banglish: "kuakata te hotel"
+  - id: hotel_sundarbans
+    variants:
+      en: "resort near Sundarbans"
+      bn: "সুন্দরবনের কাছে রিসোর্ট"
+      banglish: "sundarbans er kache resort"

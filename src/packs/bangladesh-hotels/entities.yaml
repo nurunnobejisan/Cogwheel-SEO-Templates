@@ -1,0 +1,35 @@
+# Example entities for the Bangladesh hotels pack.
+# Replace with your own brand list. Each entity needs a brand name, official
+# domain, and aliases in English, Bangla script and common Banglish spellings.
+
+entities:
+  - brand: "Pan Pacific Sonargaon Dhaka"
+    domain: "panpacific.com"
+    aliases:
+      en: ["Pan Pacific Sonargaon", "Sonargaon Hotel", "Pan Pacific Dhaka"]
+      bn: ["প্যান প্যাসিফিক সোনারগাঁও", "সোনারগাঁও হোটেল"]
+      banglish: ["pan pacific sonargaon", "sonargaon hotel", "pan pacific dhaka"]
+  - brand: "Radisson Blu Dhaka"
+    domain: "radissonhotels.com"
+    aliases:
+      en: ["Radisson Blu Dhaka", "Radisson Dhaka", "Radisson Blu"]
+      bn: ["র‍্যাডিসন ব্লু ঢাকা", "র‍্যাডিসন ঢাকা"]
+      banglish: ["radisson blu dhaka", "radisson dhaka", "radisson blu"]
+  - brand: "InterContinental Dhaka"
+    domain: "ihg.com"
+    aliases:
+      en: ["InterContinental Dhaka", "InterContinental"]
+      bn: ["ইন্টারকন্টিনেন্টাল ঢাকা"]
+      banglish: ["intercontinental dhaka", "intercontinental"]
+  - brand: "The Westin Dhaka"
+    domain: "marriott.com"
+    aliases:
+      en: ["The Westin Dhaka", "Westin Dhaka", "Westin"]
+      bn: ["ওয়েস্টিন ঢাকা", "ওয়েস্টিন"]
+      banglish: ["westin dhaka", "the westin dhaka", "westin"]
+  - brand: "Le Méridien Dhaka"
+    domain: "marriott.com"
+    aliases:
+      en: ["Le Meridien Dhaka", "Le Meridien", "Meridien Dhaka"]
+      bn: ["ল্য মেরিডিয়ান ঢাকা", "মেরিডিয়ান ঢাকা"]
+      banglish: ["le meridien dhaka", "le meridien", "meridien dhaka"]
