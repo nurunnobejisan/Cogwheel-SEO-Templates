@@ -582,3 +582,26 @@ mechanism. With no ready entry the adapter serves no task — today's truth.
 **Reverse.** Restore the hard-coded `V1_ADAPTER_TASKS` two-task list in
 `ai/router.ts` (kept temporarily as a deprecated constant), or relax the
 baselines requirement to a single baseline.
+
+### D-037 — The extension never calls a model endpoint; inference is proxied through the app
+
+**Decision.** `chrome-extension/src/engine/custom-model-client.ts` no longer
+dials model endpoints and no longer sends model API keys anywhere: Auto-Fix,
+GEO Summary and the connection test go through the SEO Studio backend
+(`POST /api/extension/infer`, operator-token authed). The backend route runs
+the task through the same `generateClaudeText` plumbing as the app
+(`AI_ADAPTER_MODE`, output gates, canary, monitoring) and degrades with
+`{ ok: false }` instead of leaking provider errors. `model-proxy.ts` enforces
+an https-only (loopback-dev excepted), no-userinfo, no-private-IP origin
+guard; every proxy failure falls back to the deterministic rules engine.
+`CustomModelConfig.endpointId`/`apiKey` stay as legacy storage fields and are
+never used as a network target.
+
+**Reason.** The extension calling endpoints directly shipped user-stored
+model keys to arbitrary URLs (including plain-http hosts) and bypassed every
+output gate; the app backend already owns rollout state and gating, so
+proxying keeps one safety path.
+
+**Reverse.** Restore the direct-endpoint branches in
+`custom-model-client.ts` (v1 behaviour) — not recommended; keys would again
+leave the backend.

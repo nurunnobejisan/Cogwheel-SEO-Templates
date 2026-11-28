@@ -2,9 +2,15 @@
  * SEO & GEO Studio - Custom Fine-Tuned Model Inference Client
  *
  * Provides a unified inference client routing Auto-Fix and GEO Summary requests
- * to user-configured fine-tuned models (e.g., Google Vertex AI / tuned Gemini models,
- * custom REST endpoints, or open-weight LoRA servers) with seamless, zero-latency
- * automatic fallback to SEO Studio's deterministic rules engine.
+ * to user-configured fine-tuned models with seamless, zero-latency automatic
+ * fallback to SEO Studio's deterministic rules engine.
+ *
+ * v2 WP8 (decision D-037): the extension NEVER calls a model endpoint
+ * directly. All tuned inference goes through the SEO Studio backend
+ * (`/api/extension/infer`, operator-token authed) which owns the endpoint
+ * configuration, API keys, `AI_ADAPTER_MODE` rollout state, output gates and
+ * monitoring. `CustomModelConfig.endpointId`/`apiKey` are legacy settings
+ * fields; inference no longer uses them as a network target.
  */
 
 export interface CustomModelConfig {
@@ -31,11 +37,23 @@ export const DEFAULT_CUSTOM_MODEL_CONFIG: CustomModelConfig = {
 };
 
 import { encryptSecret, decryptSecret } from "../utils/secureStorage";
+import { loadExtensionOptions } from "../utils/extensionOptions";
+import { inferViaAppBackend, type ModelProxyOptions } from "./model-proxy";
 
 export const STORAGE_KEY_CUSTOM_MODEL = "seo_studio_custom_model_config";
 
 // In-memory fallback for headless or test environments
 let inMemoryConfig: CustomModelConfig = { ...DEFAULT_CUSTOM_MODEL_CONFIG };
+
+/**
+ * Proxy settings for model inference: the app origin + operator token from the
+ * extension options (same credentials as training-data sync). Test overrides
+ * can pass an explicit `ModelProxyOptions` instead.
+ */
+async function loadModelProxyOptions(): Promise<ModelProxyOptions> {
+  const options = await loadExtensionOptions();
+  return { apiUrl: options.apiUrl || "", apiToken: options.apiToken || "" };
+}
 
 /**
  * Loads the active custom model inference configuration.
@@ -120,130 +138,87 @@ export interface ModelConnectionTestResult {
 }
 
 /**
- * Tests connection to the configured custom model endpoint.
+ * Tests the model-inference path through the SEO Studio backend (v2 WP8,
+ * D-037). The extension does not dial model endpoints; a successful ping
+ * proves the app backend accepted the operator token and returned a gated
+ * output. `proxy` overrides are for tests.
  */
 export async function testCustomModelConnection(
   config: CustomModelConfig,
-  fetchFn: typeof fetch = fetch
+  fetchFn: typeof fetch = fetch,
+  proxy?: ModelProxyOptions
 ): Promise<ModelConnectionTestResult> {
   const start = Date.now();
-  const endpoint = (config.endpointId || "").trim();
+  const options = proxy ?? (await loadModelProxyOptions());
 
-  if (!endpoint) {
+  if (!options.apiUrl.trim()) {
     return {
       success: false,
       latencyMs: 0,
-      message: "Endpoint ID or URL is required.",
+      message: "No app backend URL configured — inference runs on the rules engine only.",
       endpoint: "",
       provider: config.provider,
-      error: "Missing endpointId",
+      error: "Missing apiUrl",
+    };
+  }
+  if (!options.apiToken.trim()) {
+    return {
+      success: false,
+      latencyMs: 0,
+      message: "No API token configured for the app backend.",
+      endpoint: options.apiUrl,
+      provider: config.provider,
+      error: "Missing apiToken",
     };
   }
 
   try {
-    let url = endpoint;
-    const headers: Record<string, string> = {
-      "Content-Type": "application/json",
-    };
-
-    let requestBody: Record<string, unknown>;
-
-    if (config.provider === "tuned_gemini") {
-      // If endpoint is a model name (e.g. tunedModels/hospitality-v1 or models/gemini-1.5-flash)
-      if (!endpoint.startsWith("http://") && !endpoint.startsWith("https://")) {
-        url = `https://generativelanguage.googleapis.com/v1beta/${endpoint}:generateContent`;
-      }
-      if (config.apiKey) {
-        headers["x-goog-api-key"] = config.apiKey.trim();
-      }
-
-      requestBody = {
-        contents: [
-          {
-            role: "user",
-            parts: [
-              {
-                text: "Ping test: Verify hospitality SEO model operational readiness.",
-              },
-            ],
-          },
-        ],
-        generationConfig: {
-          temperature: config.temperature ?? 0.1,
-          maxOutputTokens: 64,
-        },
-      };
-    } else {
-      // Custom REST / LoRA endpoint
-      if (config.apiKey) {
-        headers["Authorization"] = `Bearer ${config.apiKey.trim()}`;
-      }
-      requestBody = {
-        prompt: "Ping test: Verify hospitality SEO model operational readiness.",
-        model: endpoint,
-        max_tokens: 64,
-        temperature: config.temperature ?? 0.1,
-      };
-    }
-
-    const response = await fetchFn(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(requestBody),
-    });
-
+    const result = await inferViaAppBackend(
+      {
+        task: "metadata_generation",
+        prompt: 'Return exactly {"title":"ping ok"} — connectivity test, no invented facts.',
+        maxTokens: 64,
+      },
+      options,
+      fetchFn
+    );
     const latencyMs = Date.now() - start;
+    const endpointLabel = options.apiUrl;
 
-    if (response.ok) {
-      const data = await response.json().catch(() => ({}));
-      let sampleOutput = "Operational";
-      if (data && typeof data === "object") {
-        if ("candidates" in data && Array.isArray(data.candidates)) {
-          sampleOutput =
-            data.candidates[0]?.content?.parts?.[0]?.text?.trim() || "Operational";
-        } else if ("text" in data && typeof data.text === "string") {
-          sampleOutput = data.text.trim();
-        } else if ("choices" in data && Array.isArray(data.choices)) {
-          sampleOutput =
-            data.choices[0]?.message?.content?.trim() || "Operational";
-        }
-      }
+    const updatedConfig: CustomModelConfig = {
+      ...config,
+      lastTestedAt: new Date().toISOString(),
+      lastTestStatus: result.ok ? "success" : "failed",
+      lastTestLatencyMs: latencyMs,
+    };
+    await saveCustomModelConfig(updatedConfig);
 
-      const updatedConfig: CustomModelConfig = {
-        ...config,
-        lastTestedAt: new Date().toISOString(),
-        lastTestStatus: "success",
-        lastTestLatencyMs: latencyMs,
-      };
-      await saveCustomModelConfig(updatedConfig);
-
+    if (result.ok) {
       return {
         success: true,
         latencyMs,
-        message: `Successfully connected to ${config.provider} model in ${latencyMs}ms.`,
-        endpoint,
+        message: `App backend inference OK in ${latencyMs}ms (source: ${result.source}).`,
+        endpoint: endpointLabel,
         provider: config.provider,
-        sampleOutput: sampleOutput.slice(0, 150),
-      };
-    } else {
-      const errText = await response.text().catch(() => "");
-      return {
-        success: false,
-        latencyMs,
-        message: `Endpoint returned HTTP ${response.status}: ${errText.slice(0, 150)}`,
-        endpoint,
-        provider: config.provider,
-        error: errText,
+        sampleOutput: result.output.slice(0, 150),
       };
     }
+    return {
+      success: false,
+      latencyMs,
+      message: `App backend inference failed: ${result.reason}`,
+      endpoint: endpointLabel,
+      provider: config.provider,
+      error: result.reason,
+    };
   } catch (err) {
     const latencyMs = Date.now() - start;
     const msg = err instanceof Error ? err.message : String(err);
     return {
       success: false,
       latencyMs,
-      message: `Network failure connecting to model: ${msg}`,
-      endpoint,
+      message: `App backend inference failed: ${msg}`,
+      endpoint: options.apiUrl,
       provider: config.provider,
       error: msg,
     };
@@ -458,7 +433,8 @@ export async function generateSeoAutoFix(
     pageTitle?: string;
     pageMeta?: string;
   },
-  fetchFn: typeof fetch = fetch
+  fetchFn: typeof fetch = fetch,
+  proxyOverride?: ModelProxyOptions
 ): Promise<AutoFixInferenceResult> {
   const hotelName = params.hotelName || "";
   const brand = params.brand || "";
@@ -466,63 +442,35 @@ export async function generateSeoAutoFix(
 
   const config = await getCustomModelConfig();
 
-  // If the custom model is disabled or unconfigured — or there is no property
-  // to fix — route to the default rules engine, which never drafts unsourced copy.
-  if (!config.enabled || !config.endpointId.trim() || !hotelName) {
+  // If the model path is disabled — or there is no property to fix — route to
+  // the default rules engine, which never drafts unsourced copy.
+  if (!config.enabled || !hotelName) {
     return getDefaultAutoFix(params.issueId, hotelName, brand, canonicalUrl);
   }
 
   const start = Date.now();
 
   try {
-    let url = config.endpointId.trim();
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-
-    if (config.provider === "tuned_gemini") {
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent`;
-      }
-      if (config.apiKey) {
-        headers["x-goog-api-key"] = config.apiKey.trim();
-      }
-    } else if (config.apiKey) {
-      headers["Authorization"] = `Bearer ${config.apiKey.trim()}`;
-    }
-
+    // v2 WP8 (D-037): inference goes through the SEO Studio backend — never
+    // directly to a model endpoint from the extension.
+    const proxyOptions = proxyOverride ?? (await loadModelProxyOptions());
     const promptText = `Execute high-precision hospitality SEO auto-fix for issue '${params.issueId}':\nHotel: ${hotelName}\nBrand: ${brand}\nCanonical: ${canonicalUrl}\nTitle: ${params.pageTitle || ""}\nMeta: ${params.pageMeta || ""}\nOutput strict JSON matching TargetSeoGeoOutput schema.`;
 
-    const requestBody =
-      config.provider === "tuned_gemini"
-        ? {
-            contents: [{ role: "user", parts: [{ text: promptText }] }],
-            generationConfig: { temperature: config.temperature, maxOutputTokens: config.maxTokens },
-          }
-        : {
-            prompt: promptText,
-            temperature: config.temperature,
-            max_tokens: config.maxTokens,
-          };
+    const result = await inferViaAppBackend(
+      {
+        task: "metadata_generation",
+        prompt: promptText,
+        maxTokens: config.maxTokens,
+        temperature: config.temperature,
+      },
+      proxyOptions,
+      fetchFn
+    );
 
-    const res = await fetchFn(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(requestBody),
-    });
-
-    if (res.ok) {
-      const data = await res.json().catch(() => ({}));
-      const latencyMs = Date.now() - start;
-
-      let rawContent = "";
-      if (data && typeof data === "object") {
-        if ("candidates" in data && Array.isArray(data.candidates)) {
-          rawContent = data.candidates[0]?.content?.parts?.[0]?.text || "";
-        } else if ("choices" in data && Array.isArray(data.choices)) {
-          rawContent = data.choices[0]?.message?.content || "";
-        } else if ("text" in data && typeof data.text === "string") {
-          rawContent = data.text;
-        }
-      }
+    if (result.ok) {
+      const latencyMs = result.latencyMs;
+      const rawContent = result.output;
+      const modelIdentifier = `app-backend:${result.source}`;
 
       // Extract JSON payload from model response
       const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
@@ -549,16 +497,16 @@ export async function generateSeoAutoFix(
         return {
           source: "custom_tuned_model",
           issueId: params.issueId,
-          issueTitle: `Tuned Model Fix Applied (${config.endpointId})`,
+          issueTitle: `Tuned Model Fix Applied (${modelIdentifier})`,
           issueCategory: "AI Auto-Fix",
-          description: `Generated by fine-tuned model ${config.endpointId} in ${latencyMs}ms.`,
+          description: `Generated via the SEO Studio backend (${modelIdentifier}) in ${latencyMs}ms.`,
           codeSnippet: snippet,
           language: lang,
           optimalTitle: optTitle,
           optimalMeta: optMeta,
           optimalH1: optH1,
           latencyMs,
-          modelIdentifier: config.endpointId,
+          modelIdentifier,
         };
       }
     }
@@ -602,7 +550,8 @@ export async function generateGeoSummary(
     amenities?: string[];
     pageContent?: string;
   },
-  fetchFn: typeof fetch = fetch
+  fetchFn: typeof fetch = fetch,
+  proxyOverride?: ModelProxyOptions
 ): Promise<GeoSummaryInferenceResult> {
   const hotelName = params.hotelName || "";
   const brand = params.brand || "";
@@ -614,63 +563,35 @@ export async function generateGeoSummary(
 
   const config = await getCustomModelConfig();
 
-  if (!config.enabled || !config.endpointId.trim()) {
+  if (!config.enabled) {
     return getDefaultGeoSummary(hotelName, brand, params.amenities);
   }
 
   const start = Date.now();
 
   try {
-    let url = config.endpointId.trim();
-    const headers: Record<string, string> = { "Content-Type": "application/json" };
-
-    if (config.provider === "tuned_gemini") {
-      if (!url.startsWith("http://") && !url.startsWith("https://")) {
-        url = `https://generativelanguage.googleapis.com/v1beta/${url}:generateContent`;
-      }
-      if (config.apiKey) {
-        headers["x-goog-api-key"] = config.apiKey.trim();
-      }
-    } else if (config.apiKey) {
-      headers["Authorization"] = `Bearer ${config.apiKey.trim()}`;
-    }
+    // v2 WP8 (D-037): through the SEO Studio backend — never direct.
+    const proxyOptions = proxyOverride ?? (await loadModelProxyOptions());
 
     const amenityList = (params.amenities || []).map((a) => a.trim()).filter(Boolean);
     const amenityClause = amenityList.length > 0 ? ` Amenities: ${amenityList.join(", ")}.` : "";
     const promptText = `Generate a dense, factual GEO (Generative Engine Optimization) knowledge block and FAQ schema for ${hotelName} under ${brand} brand standards.${amenityClause} Output clean JSON with 'geoEntityBlock' and 'faqSchema'.`;
 
-    const requestBody =
-      config.provider === "tuned_gemini"
-        ? {
-            contents: [{ role: "user", parts: [{ text: promptText }] }],
-            generationConfig: { temperature: config.temperature, maxOutputTokens: config.maxTokens },
-          }
-        : {
-            prompt: promptText,
-            temperature: config.temperature,
-            max_tokens: config.maxTokens,
-          };
+    const result = await inferViaAppBackend(
+      {
+        task: "rag_synthesis",
+        prompt: promptText,
+        maxTokens: config.maxTokens,
+        temperature: config.temperature,
+      },
+      proxyOptions,
+      fetchFn
+    );
 
-    const res = await fetchFn(url, {
-      method: "POST",
-      headers,
-      body: JSON.stringify(requestBody),
-    });
-
-    if (res.ok) {
-      const data = await res.json().catch(() => ({}));
-      const latencyMs = Date.now() - start;
-
-      let rawContent = "";
-      if (data && typeof data === "object") {
-        if ("candidates" in data && Array.isArray(data.candidates)) {
-          rawContent = data.candidates[0]?.content?.parts?.[0]?.text || "";
-        } else if ("choices" in data && Array.isArray(data.choices)) {
-          rawContent = data.choices[0]?.message?.content || "";
-        } else if ("text" in data && typeof data.text === "string") {
-          rawContent = data.text;
-        }
-      }
+    if (result.ok) {
+      const latencyMs = result.latencyMs;
+      const rawContent = result.output;
+      const modelIdentifier = `app-backend:${result.source}`;
 
       const jsonMatch = rawContent.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -681,7 +602,7 @@ export async function generateGeoSummary(
             geoSummary: parsed.geoEntityBlock,
             faqSchema: parsed.faqSchema || parsed.jsonLdSchema,
             latencyMs,
-            modelIdentifier: config.endpointId,
+            modelIdentifier,
           };
         }
       } else if (rawContent.trim().length > 50) {
@@ -689,7 +610,7 @@ export async function generateGeoSummary(
           source: "custom_tuned_model",
           geoSummary: rawContent.trim(),
           latencyMs,
-          modelIdentifier: config.endpointId,
+          modelIdentifier,
         };
       }
     }
