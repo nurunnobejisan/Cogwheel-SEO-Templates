@@ -22,10 +22,22 @@
 import modelRegistryJson from "../../../data/models/model_registry.json";
 import { isSafeEmbeddingsEndpoint } from "../../../ai/rag/embedder.ts";
 
+export interface ReadyTasksProvenance {
+  /** Must be "ml.serve.register" — the only writer allowed to widen scope. */
+  by?: string;
+  /** sha256 of the run_eval report the measured decision came from. */
+  reportSha256?: string;
+  /** ISO-8601 timestamp of the measured promotion decision. */
+  measuredAt?: string;
+}
+
 export interface RegistryEntryShape {
   modelId?: string;
   baseModel?: string;
   status?: string;
+  /** Per-task adapter scope (v2 D-036). Empty until register.py widens it. */
+  readyTasks?: string[];
+  readyTasksProvenance?: ReadyTasksProvenance;
 }
 
 export interface ModelRegistryShape {
