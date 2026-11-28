@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import trainedPropertiesData from "@/data/trained-properties.json";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
+import { APP_VERSION } from "@/config/app-meta";
+import type { MainTab } from "@/config/main-tabs";
 import { Button, Card, Stat } from "./ui";
 
 interface TrainedProperty {
@@ -144,8 +146,8 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
   Flagged: "bg-amber-50 text-amber-800 border-amber-200",
 };
 
-export default function PropertyDashboard() {
-  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo">("home");
+export default function PropertyDashboard({ initialTab = "home" }: { initialTab?: MainTab }) {
+  const [mainTab, setMainTab] = useState<MainTab>(initialTab);
   const [labsSubTab, setLabsSubTab] = useState<"geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture">("geo");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
   const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
@@ -199,6 +201,11 @@ export default function PropertyDashboard() {
       // ignore localStorage
     }
   }, []);
+
+  // `?tab=` links are real anchors; keep state in step when the URL changes.
+  useEffect(() => {
+    setMainTab(initialTab);
+  }, [initialTab]);
 
   useEffect(() => {
     let cancelled = false;
@@ -454,7 +461,7 @@ export default function PropertyDashboard() {
                 </h1>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/40 bg-brand-50 px-2 py-0.5 text-eyebrow font-semibold text-brand-800 dark:border-brand/30 dark:bg-brand-950/50 dark:text-brand-light">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                  v3.0.0
+                  {APP_VERSION}
                 </span>
                 {aiProvidersConfigured && (
                   <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-2 py-0.5 text-eyebrow font-semibold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/40 dark:text-emerald-300 lg:inline-flex">
@@ -479,23 +486,25 @@ export default function PropertyDashboard() {
                 { id: "labs", label: "Labs" },
               ] as const
             ).map((tab) => (
-              <button
+              <Link
                 key={tab.id}
-                type="button"
+                href={`/?tab=${tab.id}`}
+                scroll={false}
                 onClick={() => setMainTab(tab.id)}
-                className={`rounded-lg px-3 py-1.5 text-caption font-semibold transition-all ${
+                aria-current={mainTab === tab.id ? "page" : undefined}
+                className={`inline-flex min-h-11 items-center rounded-lg px-3 text-caption font-semibold transition-all ${
                   mainTab === tab.id
                     ? "bg-white text-slate-900 shadow-soft dark:bg-slate-900 dark:text-white"
                     : "text-slate-500 hover:bg-white/60 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-white"
                 }`}
               >
                 {tab.label}
-              </button>
+              </Link>
             ))}
             <button
               type="button"
               onClick={() => setShowAiTraining((v) => !v)}
-              className={`rounded-lg px-3 py-1.5 text-caption font-semibold transition-all ${
+              className={`inline-flex min-h-11 items-center rounded-lg px-3 text-caption font-semibold transition-all ${
                 showAiTraining
                   ? "bg-slate-900 text-brand-light shadow-soft dark:bg-slate-700 dark:text-brand-light"
                   : "text-slate-500 hover:bg-white/60 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/60 dark:hover:text-white"
@@ -506,7 +515,7 @@ export default function PropertyDashboard() {
             <a
               href="/seo-studio.zip"
               download="seo-studio.zip"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-caption font-semibold text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 text-caption font-semibold text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               title="Download Chrome Extension (100-Point Live Inspector)"
             >
               <svg className="h-3.5 w-3.5 text-emerald-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -517,7 +526,7 @@ export default function PropertyDashboard() {
             <button
               type="button"
               onClick={() => setShowCommandPalette(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 py-1.5 text-caption font-semibold text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="inline-flex min-h-11 items-center gap-1.5 rounded-lg border border-slate-200/80 bg-white px-2.5 text-caption font-semibold text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               title="Open Command Palette (Cmd + K)"
             >
               <svg className="h-3.5 w-3.5 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -529,7 +538,7 @@ export default function PropertyDashboard() {
               type="button"
               onClick={toggleTheme}
               aria-label="Toggle theme"
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
+              className="flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-700 shadow-soft transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:bg-slate-700"
               title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >
               {isDark ? (

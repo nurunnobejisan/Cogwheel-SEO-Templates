@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { APP_UPDATED_LABEL, APP_VERSION, APP_YEAR } from "@/config/app-meta";
 
 export function SiteFooter() {
   return (
@@ -14,11 +15,11 @@ export function SiteFooter() {
                 SEO &amp; GEO Studio
               </span>
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                v3.0.0
+                {APP_VERSION}
               </span>
               <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-100 px-2 py-0.5 text-micro font-bold text-slate-700 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                Updated: November 24, 2026
+                Updated: {APP_UPDATED_LABEL}
               </span>
             </div>
             <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
