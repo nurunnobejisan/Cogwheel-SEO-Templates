@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { requireOperator } from "@/lib/auth/requireOperator";
 import { getActiveAiProviderLabel } from "@/core/claude";
 import {
   addTrainingRule,
@@ -100,9 +101,14 @@ const batchSyncSchema = z.object({
 });
 
 export async function GET(req: Request) {
+  const denied = await requireOperator({ headers: req.headers });
+  if (denied) {
+    return denied;
+  }
   const { searchParams } = new URL(req.url);
   const taskId = searchParams.get("taskId") || undefined;
   const rules = await listTrainingRules(taskId);
+  // Auth is enforced above; without a token no rule titles/text are returned.
   return NextResponse.json({
     rules,
     provider: getActiveAiProviderLabel(),
@@ -112,15 +118,11 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const denied = await requireOperator({ headers: req.headers });
+  if (denied) {
+    return denied;
+  }
   try {
-    const authHeader = req.headers.get("Authorization");
-    const expectedToken = process.env.SEO_STUDIO_API_BEARER_TOKEN;
-    if (expectedToken && expectedToken.trim().length > 0) {
-      if (authHeader !== `Bearer ${expectedToken.trim()}`) {
-        return NextResponse.json({ error: "Unauthorized: Invalid or missing Bearer token" }, { status: 401 });
-      }
-    }
-
     const body = (await req.json()) as Record<string, unknown>;
 
     // Handle Extension Batch Sync
@@ -185,6 +187,10 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const denied = await requireOperator({ headers: req.headers });
+  if (denied) {
+    return denied;
+  }
   try {
     const body = await req.json();
     const parsed = toggleRuleSchema.parse(body);
@@ -200,6 +206,10 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const denied = await requireOperator({ headers: req.headers });
+  if (denied) {
+    return denied;
+  }
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   if (!id) {

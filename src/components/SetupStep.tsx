@@ -1,30 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { HILTON_BRANDS, isHalfAndHalfEligible } from "@/config/hilton-rules";
-import portfolioProperties from "@/data/trained-properties.json";
+import { usePropertySearch, type PropertySummary } from "@/hooks/usePropertySearch";
 import { DEFAULT_RULES } from "@/config/rules";
 import { BUCKETS } from "@/lib/engine/bucket";
 import type { Property, SitemapPage, TemplateId } from "@/lib/types";
 import { Button, Card } from "./ui";
 
 const splitList = (s: string) => s.split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
-
-interface PortfolioEntry {
-  name: string;
-  url: string;
-  propertyType?: string;
-  category?: string;
-  managementGroup?: string;
-  brand?: string;
-  city?: string;
-  state?: string;
-  seoAssignee?: string;
-  slidesUrl?: string;
-  backlinkSlidesUrl?: string;
-}
-
-const PORTFOLIO = portfolioProperties as PortfolioEntry[];
 
 export function PropertySetup({
   property,
@@ -42,23 +26,12 @@ export function PropertySetup({
   crawling?: boolean;
 }) {
   const [portfolioFilter, setPortfolioFilter] = useState("");
-  const filteredPortfolio = useMemo(() => {
-    const q = portfolioFilter.trim().toLowerCase();
-    if (!q) return PORTFOLIO;
-    return PORTFOLIO.filter(
-      (p) =>
-        p.name.toLowerCase().includes(q) ||
-        p.url.toLowerCase().includes(q) ||
-        (p.category ?? "").toLowerCase().includes(q) ||
-        (p.brand ?? "").toLowerCase().includes(q) ||
-        (p.city ?? "").toLowerCase().includes(q),
-    );
-  }, [portfolioFilter]);
+  const { properties: portfolio, total: portfolioTotal, status: portfolioStatus } = usePropertySearch(portfolioFilter);
 
   const set = <K extends keyof Property>(k: K, v: Property[K]) => onChange({ ...property, [k]: v });
 
   function selectPortfolioProperty(name: string) {
-    const picked = PORTFOLIO.find((p) => p.name === name);
+    const picked: PropertySummary | undefined = portfolio.find((p) => p.name === name);
     if (!picked) return;
     const metaNotes = [
       picked.propertyType || picked.category ? `Type: ${picked.propertyType || picked.category}` : "",
@@ -82,7 +55,8 @@ export function PropertySetup({
       <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <label className="text-caption font-bold uppercase tracking-wider text-slate-600">
-            Portfolio Quick-Pick ({filteredPortfolio.length} of {PORTFOLIO.length} properties)
+            Portfolio Quick-Pick ({portfolio.length} of {portfolioTotal} properties
+            {portfolioStatus === "unauthorized" ? " — sign in to search" : ""})
           </label>
           <input
             type="search"
@@ -94,11 +68,11 @@ export function PropertySetup({
         </div>
         <select
           className="input bg-white"
-          value={PORTFOLIO.some((p) => p.name === property.name) ? property.name : ""}
+          value={portfolio.some((p) => p.name === property.name) ? property.name : ""}
           onChange={(e) => selectPortfolioProperty(e.target.value)}
         >
-          <option value="">Select a property from portfolio ({PORTFOLIO.length})…</option>
-          {filteredPortfolio.map((p) => (
+          <option value="">Select a property from portfolio ({portfolioTotal})…</option>
+          {portfolio.map((p) => (
             <option key={`${p.name}-${p.url}`} value={p.name}>
               {p.name}
               {p.category || p.propertyType ? ` [${p.category || p.propertyType}]` : ""}
@@ -107,7 +81,7 @@ export function PropertySetup({
           ))}
         </select>
         {(() => {
-          const activeEntry = PORTFOLIO.find((p) => p.name === property.name);
+          const activeEntry = portfolio.find((p) => p.name === property.name);
           if (!activeEntry?.slidesUrl && !activeEntry?.backlinkSlidesUrl) return null;
           return (
             <div className="mt-2 flex flex-wrap gap-4 text-caption text-slate-600">

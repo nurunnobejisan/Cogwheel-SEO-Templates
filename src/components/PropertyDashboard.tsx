@@ -3,23 +3,9 @@
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import trainedPropertiesData from "@/data/trained-properties.json";
+import { usePropertySearch } from "@/hooks/usePropertySearch";
 import { TASK_SECTIONS, TASKS_CONFIG, type TaskConfig, type TaskSection, type TaskStatus } from "@/tasks/tasks.config";
 import { Button, Card, Stat } from "./ui";
-
-interface TrainedProperty {
-  name: string;
-  brand: string;
-  city: string;
-  state: string;
-  url: string;
-  propertyType: string;
-  category: string;
-  projectType: string;
-  status: string;
-}
-
-const TRAINED_PROPERTIES = trainedPropertiesData as TrainedProperty[];
 
 const Studio = dynamic(() => import("./Studio"), {
   loading: () => (
@@ -170,6 +156,8 @@ export default function PropertyDashboard() {
     state: "",
     url: "",
   });
+  const [propertyQuery, setPropertyQuery] = useState("");
+  const { properties: trainedProperties, total: trainedTotal, status: propertySearchStatus } = usePropertySearch(propertyQuery);
   const [autofillUrl, setAutofillUrl] = useState("");
   const [autofillBusy, setAutofillBusy] = useState(false);
   const [autofillError, setAutofillError] = useState<string | null>(null);
@@ -587,34 +575,46 @@ export default function PropertyDashboard() {
                       </span>
                     </div>
                     <div className="flex flex-wrap items-center gap-1.5">
-                      <select
-                        aria-label="Pick Trained Client Property"
-                        value=""
-                        onChange={(e) => {
-                          const picked = TRAINED_PROPERTIES.find((p) => p.name === e.target.value);
-                          if (picked) {
-                            updateActiveProperty({
-                              name: picked.name,
-                              brand: picked.brand,
-                              city: picked.city,
-                              state: picked.state,
-                              url: picked.url,
-                            });
-                            setAutofillUrl(picked.url);
-                            setAutofillError(null);
+                      <div className="flex w-full min-w-0 flex-wrap items-center gap-1.5 sm:w-auto">
+                        <input
+                          type="search"
+                          aria-label="Search trained client properties"
+                          value={propertyQuery}
+                          onChange={(e) => setPropertyQuery(e.target.value)}
+                          placeholder={
+                            propertySearchStatus === "unauthorized" ? "Sign in to search" : "Search trained clients…"
                           }
-                        }}
-                        className="h-9 rounded-xl border border-slate-200 bg-slate-50 px-3 text-caption font-semibold text-slate-700 transition focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-                      >
-                        <option value="">Pick Trained Client ({TRAINED_PROPERTIES.length})...</option>
-                        {TRAINED_PROPERTIES.map((p, idx) => (
-                          <option key={`${p.name}-${p.category}-${idx}`} value={p.name}>
-                            {p.name}
-                            {p.category ? ` [${p.category}]` : ""}
-                            {p.url ? " • URL" : ""}
-                          </option>
-                        ))}
-                      </select>
+                          className="h-9 w-full min-w-0 max-w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-caption font-semibold text-slate-700 transition focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 sm:w-52"
+                        />
+                        <select
+                          aria-label="Pick Trained Client Property"
+                          value=""
+                          onChange={(e) => {
+                            const picked = trainedProperties.find((p) => p.name === e.target.value);
+                            if (picked) {
+                              updateActiveProperty({
+                                name: picked.name,
+                                brand: picked.brand,
+                                city: picked.city,
+                                state: picked.state,
+                                url: picked.url,
+                              });
+                              setAutofillUrl(picked.url);
+                              setAutofillError(null);
+                            }
+                          }}
+                          className="h-9 w-full min-w-0 max-w-full rounded-xl border border-slate-200 bg-slate-50 px-3 text-caption font-semibold text-slate-700 transition focus:border-brand focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand/20 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 sm:w-auto"
+                        >
+                          <option value="">Pick Trained Client ({trainedTotal})...</option>
+                          {trainedProperties.map((p, idx) => (
+                            <option key={`${p.name}-${p.category}-${idx}`} value={p.name}>
+                              {p.name}
+                              {p.category ? ` [${p.category}]` : ""}
+                              {p.url ? " • URL" : ""}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
                       {QUICK_PROPERTY_PRESETS.map((preset) => (
                         <button
                           key={preset.name}

@@ -1,23 +1,13 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import trainedPropertiesData from "@/data/trained-properties.json";
+import { usePropertySearch, type PropertySummary } from "@/hooks/usePropertySearch";
 import { TASKS_CONFIG, type TaskConfig } from "@/tasks/tasks.config";
-
-interface TrainedProperty {
-  name: string;
-  brand: string;
-  city: string;
-  state: string;
-  url: string;
-}
-
-const TRAINED_PROPERTIES = trainedPropertiesData as TrainedProperty[];
 
 export interface CommandPaletteProps {
   isOpen: boolean;
   onClose: () => void;
-  onSelectProperty: (property: TrainedProperty) => void;
+  onSelectProperty: (property: PropertySummary) => void;
   onNavigateTab: (tab: "home" | "tasks" | "labs" | "crawl" | "keywords") => void;
   onNavigateLabsSubTab?: (subTab: "geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture") => void;
   onOpenDeliverables?: (initialTab?: "deck" | "pptx" | "memo") => void;
@@ -53,6 +43,7 @@ export function CommandPalette({
   onToggleTheme,
 }: CommandPaletteProps) {
   const [query, setQuery] = useState("");
+  const { properties: trainedProperties } = usePropertySearch(query);
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -267,8 +258,8 @@ export function CommandPalette({
       },
     });
 
-    // Trained Properties
-    for (const prop of TRAINED_PROPERTIES) {
+    // Trained Properties (loaded from the authenticated search endpoint)
+    for (const prop of trainedProperties) {
       list.push({
         id: `prop-${prop.name.toLowerCase().replace(/\s+/g, "-")}`,
         title: prop.name,
@@ -310,6 +301,7 @@ export function CommandPalette({
     onSelectProperty,
     onSelectTask,
     onToggleTheme,
+    trainedProperties,
   ]);
 
   const filteredItems = useMemo(() => {

@@ -126,3 +126,78 @@ export function limitForRequest(pathname: string, method: string): RateLimitRule
   }
   return isRead ? RATE_LIMITS.apiRead : RATE_LIMITS.apiWrite;
 }
+
+/**
+ * Shared-store adapter. Upstash/Vercel KV uses the same REST protocol; without
+ * credentials the in-memory limiter stays as the per-instance fallback.
+ */
+export interface RateLimitAdapter {
+  consume(key: string, rule: RateLimitRule, now?: number): Promise<RateLimitResult>;
+}
+
+function upstashAdapter(url: string, token: string): RateLimitAdapter {
+  const endpoint = `${url.replace(/\/$/, "")}/pipeline`;
+  const headers = { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
+
+  return {
+    async consume(key, rule, now = Date.now()) {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers,
+        body: JSON.stringify([
+          ["INCR", key],
+          ["PTTL", key],
+        ]),
+      });
+      if (!response.ok) {
+        throw new Error(`Rate-limit store returned ${response.status}`);
+      }
+      const payload = (await response.json()) as Array<{ result: number | string }>;
+      const count = Number(payload[0]?.result);
+      const ttlMs = Number(payload[1]?.result);
+      if (!Number.isFinite(count) || count < 1) {
+        throw new Error("Invalid rate-limit store response");
+      }
+      let resetAt = now + rule.windowMs;
+      if (ttlMs > 0) {
+        resetAt = now + ttlMs;
+      } else {
+        await fetch(endpoint, {
+          method: "POST",
+          headers,
+          body: JSON.stringify([["PEXPIRE", key, Math.ceil(rule.windowMs / 1000)]]),
+        });
+      }
+      return {
+        allowed: count <= rule.limit,
+        remaining: Math.max(0, rule.limit - count),
+        resetAt,
+        retryAfter: Math.max(1, Math.ceil((resetAt - now) / 1000)),
+      };
+    },
+  };
+}
+
+let cached: { id: string; adapter: RateLimitAdapter } | null = null;
+
+export function rateLimitAdapter(): RateLimitAdapter {
+  const url = process.env.UPSTASH_REDIS_REST_URL?.trim();
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  if (!url || !token) {
+    return { consume: async (key, rule, now) => consume(key, rule, now) };
+  }
+  const id = `${url}:${token}`;
+  if (cached?.id !== id) {
+    cached = { id, adapter: upstashAdapter(url, token) };
+  }
+  return cached.adapter;
+}
+
+/** Middleware entry point: shared store when configured, memory otherwise. */
+export async function consumeShared(key: string, rule: RateLimitRule, now = Date.now()): Promise<RateLimitResult> {
+  try {
+    return await rateLimitAdapter().consume(key, rule, now);
+  } catch {
+    return consume(key, rule, now);
+  }
+}
