@@ -1,5 +1,27 @@
 import { PageContext } from '../../content/context-extractor';
-import { SiteConfig } from '../config/site-config';
+
+// Ported from the deleted orphan `src/core/config/site-config.ts`: the only
+// consumer is this module, so the type lives here now (no separate module).
+export type SiteType =
+  | 'hospitality'
+  | 'ecommerce'
+  | 'saas'
+  | 'local_business'
+  | 'editorial'
+  | 'general';
+
+export type EngineMode = 'auto' | 'hospitality' | 'universal';
+
+export interface SiteConfig {
+  siteType: SiteType;
+  mode: EngineMode;
+  brandName: string;
+  domain: string;
+  locale: string;
+  targetAudience: string;
+  primaryKeywords: string[];
+  competitors: string[];
+}
 
 export interface AuditIssue {
   issueId: string;

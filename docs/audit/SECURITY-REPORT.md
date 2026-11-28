@@ -9,7 +9,7 @@
 
 ### 1.1 Server-Side Request Forgery (SSRF) Protection
 - **Vulnerability**: Website crawlers can be tricked into scanning internal private subnets, cloud metadata endpoints, or localhost services.
-- **Mitigation Implemented (`src/core/crawler/ssrf.ts`)**:
+- **Mitigation Implemented (`src/core/crawler/url.ts`)**:
   - Validates protocol strictly to `http:` or `https:`.
   - Performs DNS resolution and checks IPv4 and IPv6 addresses against private subnets.
   - Rigorously blocks:

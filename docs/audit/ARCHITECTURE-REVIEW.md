@@ -70,7 +70,7 @@ The core pipeline follows a strictly typed 5-stage lifecycle:
 5. **Template Rendering & Output Persistence**: Generates documents (Docs, Sheets, Slides, JSON) and records flags in `task_runs`.
 
 ### 2.3 Crawler & Property Intelligence Layer (`src/core/crawler/`)
-- **SSRF Protection**: `src/core/crawler/ssrf.ts` parses URLs, enforces `http`/`https` protocols, resolves DNS, and rigorously blocks loopback (`127.0.0.0/8`, `::1`), RFC 1918 private IPv4 subnets, link-local, multicast, and metadata service IP addresses (`169.254.169.254`).
+- **SSRF Protection**: `src/core/crawler/url.ts` parses URLs, enforces `http`/`https` protocols, resolves DNS, and rigorously blocks loopback (`127.0.0.0/8`, `::1`), RFC 1918 private IPv4 subnets, link-local, multicast, and metadata service IP addresses (`169.254.169.254`).
 - **Discovery**: Automatically fetches `robots.txt` and locates XML sitemaps through `Sitemap:` directives.
 - **Chunked Queue**: Crawl state is divided into chunks allowing resuming without hitting serverless timeout limits.
 
