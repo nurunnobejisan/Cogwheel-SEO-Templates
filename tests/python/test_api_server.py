@@ -395,3 +395,66 @@ def test_validate_content_model_requires_bearer_when_token_is_configured(client)
 def test_content_model_kinds_match_the_models_registry():
     kinds = get_args(ContentModelValidationRequest.model_fields["kind"].annotation)
     assert set(kinds) == set(CONTENT_MODELS)
+
+
+# ─────────────────────────────────────────────────────────────────────────────
+# WordPress companion audit endpoint
+# ─────────────────────────────────────────────────────────────────────────────
+def test_audit_requires_bearer_when_token_is_configured(client):
+    resp = client.post("/v1/audit", json={"url": "https://example.com/post"})
+    assert resp.status_code == 401
+
+
+def test_audit_validates_payload(client):
+    assert client.post("/v1/audit", json={"url": ""}, headers=auth()).status_code == 422
+    assert client.post(
+        "/v1/audit",
+        json={"url": "https://example.com", "post_id": -1},
+        headers=auth(),
+    ).status_code == 422
+
+
+def test_audit_returns_measured_score_from_fetched_html(client, monkeypatch):
+    html = (
+        "<html><head><title>A reasonably long and descriptive page title</title>"
+        '<meta name="description" content="A measured description">'
+        '<meta name="viewport" content="width=device-width">'
+        '<link rel="canonical" href="https://example.com/post">'
+        '<meta property="og:title" content="Title">'
+        '<meta property="og:image" content="https://example.com/image.png">'
+        "</head><body><h1>One heading</h1><img src=\"a.png\" alt=\"A\">"
+        '<img src="b.png"><p>Measured body copy about this page.</p></body></html>'
+    )
+    monkeypatch.setattr("api.wordpress_audit.fetch_html", lambda _url: html)
+    resp = client.post(
+        "/v1/audit",
+        json={"url": "https://example.com/post", "post_id": 7},
+        headers=auth(),
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "measured"
+    assert isinstance(data["score"], int)
+    assert 0 <= data["score"] <= 100
+    assert data["post_id"] == 7
+    assert data["facts"]["h1_count"] == 1
+    assert data["facts"]["images_without_alt"] == 1
+    assert data["facts"]["has_canonical"] is True
+    assert data["components"]["onPage"] >= 0
+
+
+def test_audit_fetch_failure_is_not_measured(client, monkeypatch):
+    def refuse(_url):
+        raise ValueError("blocked private target")
+
+    monkeypatch.setattr("api.wordpress_audit.fetch_html", refuse)
+    resp = client.post(
+        "/v1/audit",
+        json={"url": "https://example.com/post", "post_id": 3},
+        headers=auth(),
+    )
+    assert resp.status_code == 200
+    data = resp.json()
+    assert data["status"] == "not_measured"
+    assert data["score"] is None
+    assert "blocked private target" in data["reason"]
