@@ -91,8 +91,8 @@ jobs:
             CHANGED=$(git diff --cached --name-only | tr '\n' ' ')
             git commit -m "chore: [auto-sync] regenerate schemas & build-info on ${{ github.ref_name }} (run #${{ github.run_number }})
 
-Updated files: ${CHANGED}
-Triggered by: ${{ github.actor }} @ ${{ github.sha }}"
+            Updated files: ${CHANGED}
+            Triggered by: ${{ github.actor }} @ ${{ github.sha }}"
             git push origin HEAD:${{ github.ref }}
             echo "✅ Pushed auto-sync commit."
           fi
