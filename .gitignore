@@ -116,6 +116,7 @@ temp/
 # ------------------------------------------------------------------------------
 data/raw/
 data/build/
+data/geo_visibility/
 ml/**/outputs/
 ml/**/checkpoints/
 ml/**/.venv*/
