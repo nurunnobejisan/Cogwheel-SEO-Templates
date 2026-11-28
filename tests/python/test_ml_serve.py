@@ -78,20 +78,17 @@ def _messages() -> list:
 # Registry: alias migration and servability
 # --------------------------------------------------------------------------- #
 
-def test_alias_migration_is_one_way():
-    assert migrate_model_id("seo-studio-seo-unified-v9") == READY_ID
+def test_model_id_helpers_are_identity():
     assert migrate_model_id(READY_ID) == READY_ID
-    assert debranded_id(READY_ID) == "seo-studio-seo-unified-v9"
-    # storage never changes: the de-branded spelling maps back to persisted
-    assert migrate_model_id(debranded_id(LEGACY_ID)) == LEGACY_ID
+    assert debranded_id(READY_ID) == READY_ID
+    assert migrate_model_id(LEGACY_ID) == LEGACY_ID
 
 
-def test_resolve_accepts_both_spellings(registry_path: Path):
+def test_resolve_accepts_canonical_id(registry_path: Path):
     registry = load_registry(registry_path)
-    for spelling in (READY_ID, "seo-studio-seo-unified-v9"):
-        entry = resolve_model(registry, spelling)
-        assert entry is not None
-        assert entry["modelId"] == READY_ID
+    entry = resolve_model(registry, READY_ID)
+    assert entry is not None
+    assert entry["modelId"] == READY_ID
     assert resolve_model(registry, "seo-studio-does-not-exist") is None
     assert resolve_model(registry, "") is None
 
@@ -104,11 +101,9 @@ def test_real_registry_loads_and_resolves_its_own_ids():
             assert resolve_model(registry, spelling)["modelId"] == entry["modelId"]
 
 
-def test_model_ids_advertises_every_spelling(registry_path: Path):
+def test_model_ids_advertises_canonical_spelling(registry_path: Path):
     entry = resolve_model(load_registry(registry_path), READY_ID)
-    ids = model_ids(entry)
-    assert READY_ID in ids
-    assert "seo-studio-seo-unified-v9" in ids
+    assert model_ids(entry) == [READY_ID]
 
 
 def test_assert_servable_gates_on_status():
@@ -157,7 +152,6 @@ def test_list_models_hides_unservable(registry_path: Path):
     strict = ModelGateway(_config(registry_path)).list_models()
     ids = {m["id"] for m in strict["data"]}
     assert READY_ID in ids
-    assert "seo-studio-seo-unified-v9" in ids
     assert LEGACY_ID not in ids
 
     lax = ModelGateway(_config(registry_path, allow_unverified=True)).list_models()
@@ -180,7 +174,7 @@ def test_chat_forwards_openai_shape(registry_path: Path):
     gateway = ModelGateway(
         _config(registry_path, upstream="https://infer.example.com/v1", fetch_impl=fake_fetch)
     )
-    result = gateway.chat({"model": "seo-studio-seo-unified-v9", "messages": _messages()})
+    result = gateway.chat({"model": READY_ID, "messages": _messages()})
     assert result["choices"][0]["message"]["content"] == "new title"
     # the client's id is echoed back, not the upstream's internal name
     assert result["model"] == READY_ID
