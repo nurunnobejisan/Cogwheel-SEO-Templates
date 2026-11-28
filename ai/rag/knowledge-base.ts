@@ -73,10 +73,15 @@ export function createKnowledgeBase(embedder: Embedder): KnowledgeBaseHandle {
     options: KnowledgeBaseSearchOptions = {},
   ): ScoredChunk[] => {
     const { topK = 4, tags, minScore = 0 } = options;
+    const targetPropertyId = options.propertyId?.trim() || undefined;
     const queryTokens = query.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
     const scored: ScoredChunk[] = [];
 
     for (const { chunk, vector } of index.values()) {
+      const chunkPropertyId = chunk.propertyId?.trim() || undefined;
+      if (chunkPropertyId !== undefined && chunkPropertyId !== targetPropertyId) {
+        continue;
+      }
       if (tags && tags.length > 0 && !chunk.tags.some((tag) => tags.includes(tag))) {
         continue;
       }
@@ -163,6 +168,8 @@ export interface ChunkDocumentInput {
   source: string;
   url?: string;
   tags?: string[];
+  /** Optional owning property id (`undefined` for shared docs). */
+  propertyId?: string;
   /** Soft target size per chunk. */
   maxChars?: number;
 }
@@ -172,6 +179,7 @@ export interface ChunkDocumentInput {
  */
 export function chunkDocument(input: ChunkDocumentInput): RagChunk[] {
   const { id, title, text, source, url, tags = [], maxChars = 700 } = input;
+  const scopedPropertyId = input.propertyId?.trim() || undefined;
   const paragraphs = text
     .split(/\n{2,}/)
     .map((paragraph) => paragraph.trim())
@@ -192,6 +200,7 @@ export function chunkDocument(input: ChunkDocumentInput): RagChunk[] {
       source,
       url,
       tags,
+      ...(scopedPropertyId ? { propertyId: scopedPropertyId } : {}),
     });
     part += 1;
     buffer = "";
@@ -213,7 +222,15 @@ export function chunkDocument(input: ChunkDocumentInput): RagChunk[] {
   flush();
 
   if (chunks.length === 0) {
-    chunks.push({ id: `${id}#1`, title, text, source, url, tags });
+    chunks.push({
+      id: `${id}#1`,
+      title,
+      text,
+      source,
+      url,
+      tags,
+      ...(scopedPropertyId ? { propertyId: scopedPropertyId } : {}),
+    });
   }
   return chunks;
 }

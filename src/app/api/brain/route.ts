@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
       targetUrl,
       question: typeof body.question === "string" ? body.question : undefined,
       maxPages: typeof body.maxPages === "number" ? body.maxPages : undefined,
+      propertyId: typeof body.propertyId === "string" ? body.propertyId.trim() || undefined : undefined,
     });
     await recordClientUsage(principal.id);
     return NextResponse.json({ success: true, ...result });
@@ -44,8 +45,9 @@ export async function GET(req: NextRequest) {
   }
   const { searchParams } = new URL(req.url);
   const targetUrl = searchParams.get("targetUrl") || "https://example.com";
+  const propertyId = searchParams.get("propertyId")?.trim() || undefined;
   try {
-    const result = await runBrain({ targetUrl, maxPages: 5 });
+    const result = await runBrain({ targetUrl, maxPages: 5, ...(propertyId ? { propertyId } : {}) });
     return NextResponse.json({ success: true, ...result });
   } catch (err) {
     if (err instanceof BrainProvenanceError) {

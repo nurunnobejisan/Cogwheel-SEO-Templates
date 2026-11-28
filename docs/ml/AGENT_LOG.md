@@ -55,3 +55,13 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Unset/unknown `AI_ADAPTER_MODE` fails conservatively to `"off"` (`D-031`), and missing seed falls back to `"anonymous"` so canary bucketing remains deterministic.
 - **Remaining**: Proceed to WP6 (`ml/wp6-retrieval-isolation`).
+
+## WP6 — Per-Client Retrieval Isolation (`ml/wp6-retrieval-isolation`)
+- **Changed**:
+  - Added optional `propertyId?: string` to `RagChunk`, `KnowledgeBaseSearchOptions`, and `ChunkDocumentInput` (`ai/types.ts`, `ai/rag/knowledge-base.ts`). Queries scoped to `propertyId` see only shared docs + that client's chunks; unscoped queries see shared docs only.
+  - Updated `BrainRequest` / `runBrain` (`src/core/brain/index.ts`) and `/api/brain` (`src/app/api/brain/route.ts`) to forward optional `propertyId` into RAG lookup cleanly.
+  - Added matching `property_id` isolation in `ml/retrieve/chunk.py` (`chunk_document`), `ml/retrieve/corpus.py` (`build_from_html`), and `ml/retrieve/store.py` (`VectorStore.search`/`search_text`, `PGVECTOR_DDL` `property_id` column + index, `export_rows`, `write_pgvector`, `pgvector_where_clause`).
+  - Added `tests/rag-isolation.test.ts` and Python isolation tests in `tests/python/test_ml_retrieve.py`.
+- **Defaults taken**:
+  - Chunks with missing/empty `propertyId` are treated as shared public docs (`Google Search Central`, `schema.org`), while any non-empty `propertyId` stays strictly tenant-scoped.
+- **Remaining**: Proceed to WP7 (`ml/wp7-constrained-decoding`).

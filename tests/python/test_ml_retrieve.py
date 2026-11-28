@@ -438,8 +438,109 @@ def test_export_rows_shape_and_pgvector_ddl_mentions_dims() -> None:
     store, _ = _store_with()
     rows = store_mod.export_rows(store)
     assert len(rows) == 2
-    assert set(rows[0]) == {"id", "title", "text", "source", "url", "tags", "embedding"}
+    assert set(rows[0]) == {
+        "id",
+        "title",
+        "text",
+        "source",
+        "url",
+        "tags",
+        "property_id",
+        "embedding",
+    }
+    assert rows[0]["property_id"] is None
+    assert "property_id" in store_mod.PGVECTOR_DDL
     assert "vector(%(dims)s)" in store_mod.PGVECTOR_DDL
+
+
+def test_store_property_isolation_and_persistence(tmp_path: Path) -> None:
+    embedder = embed_mod.HashingEmbedder(dimensions=64)
+    chunks = [
+        {
+            "id": "shared-doc#1",
+            "title": "Google Hotel Schema",
+            "text": "Hotel structured data should specify Hotel or LodgingBusiness.",
+            "source": "google-search-central",
+            "tags": ["schema"],
+        },
+        {
+            "id": "client-a#1",
+            "title": "Hotel Alpha Notes",
+            "text": "Hotel structured data private override for Hotel Alpha suites.",
+            "source": "client-vault",
+            "tags": ["schema"],
+            "propertyId": "prop-a",
+        },
+        {
+            "id": "client-b#1",
+            "title": "Hotel Beta Notes",
+            "text": "Hotel structured data private override for Hotel Beta suites.",
+            "source": "client-vault",
+            "tags": ["schema"],
+            "propertyId": "prop-b",
+        },
+    ]
+    store = store_mod.VectorStore(embedder_id=embedder.id)
+    store.upsert(chunks, embedder.embed_batch([f"{c['title']}. {c['text']}" for c in chunks]))
+
+    a_ids = [r["id"] for r in store.search_text("Hotel structured data", embedder, top_k=10, property_id="prop-a")]
+    assert "shared-doc#1" in a_ids
+    assert "client-a#1" in a_ids
+    assert "client-b#1" not in a_ids
+
+    b_ids = [r["id"] for r in store.search_text("Hotel structured data", embedder, top_k=10, property_id="prop-b")]
+    assert "shared-doc#1" in b_ids
+    assert "client-b#1" in b_ids
+    assert "client-a#1" not in b_ids
+
+    unscoped_ids = [r["id"] for r in store.search_text("Hotel structured data", embedder, top_k=10)]
+    assert unscoped_ids == ["shared-doc#1"]
+
+    path = tmp_path / "isolated-store.json"
+    store.save(path)
+    reloaded = store_mod.VectorStore.load(path)
+    reloaded_a = [r["id"] for r in reloaded.search_text("Hotel structured data", embedder, top_k=10, property_id="prop-a")]
+    assert "client-a#1" in reloaded_a
+    assert "client-b#1" not in reloaded_a
+
+    exported = {row["id"]: row["property_id"] for row in store_mod.export_rows(store)}
+    assert exported == {"shared-doc#1": None, "client-a#1": "prop-a", "client-b#1": "prop-b"}
+
+    where_scoped, params_scoped = store_mod.pgvector_where_clause("prop-a")
+    assert "property_id IS NULL OR property_id = %(property_id)s" in where_scoped
+    assert params_scoped == {"property_id": "prop-a"}
+
+    where_unscoped, params_unscoped = store_mod.pgvector_where_clause(None)
+    assert where_unscoped == "property_id IS NULL"
+    assert params_unscoped == {}
+
+
+def test_chunk_and_build_html_preserve_property_id() -> None:
+    chunks = chunk_mod.chunk_document(
+        doc_id="priv-1",
+        title="Private Guide",
+        text="Private hotel canonical checklist for Tenant One.",
+        source="client-vault",
+        property_id="tenant-1",
+    )
+    assert chunks[0]["propertyId"] == "tenant-1"
+
+    shared_chunks = chunk_mod.chunk_document(
+        doc_id="pub-1",
+        title="Public Guide",
+        text="Shared Google structured data guide.",
+        source="google-search-central",
+    )
+    assert "propertyId" not in shared_chunks[0]
+
+    html = "<html><head><title>Tenant Hotel</title></head><body><p>Private copy for tenant.</p></body></html>"
+    produced, _ = corpus_mod.build_from_html(
+        [{"url": "https://example.com/p", "html": html}],
+        source=VALID_SOURCE,
+        property_id="tenant-html",
+        attribution=f"Content from {VALID_SOURCE}",
+    )
+    assert produced[0]["propertyId"] == "tenant-html"
 
 
 def test_write_pgvector_needs_psycopg_with_actionable_error(tmp_path: Path) -> None:
