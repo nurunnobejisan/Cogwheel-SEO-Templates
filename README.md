@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="public/nurunnobe-logo.png" alt="SEO & GEO Studio" width="104" />
-
 # SEO & GEO Studio
 
 **Universal SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace, with six vertical packs (Hotel &amp; Hospitality as Pack #1).**
