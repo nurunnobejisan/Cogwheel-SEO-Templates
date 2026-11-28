@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { FullWebsiteAuditReport, ActionItem } from "@/core/full-audit/types";
 import GscPerformancePanel from "./GscPerformancePanel.tsx";
-import type { GscPanelPayload } from "@/core/gsc/panel.ts";
+import type { GscPanelPayload } from "@/core/gsc/panel-types.ts";
 
 interface UnifiedSeoSuiteViewProps {
   property?: {

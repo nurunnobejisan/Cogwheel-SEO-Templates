@@ -16,31 +16,10 @@ import {
   detectCannibalizationFromRows,
   fetchAllGscRows,
 } from "./rows.ts";
-import type {
-  GscCannibalizationIssue,
-  GscPerformanceOverview,
-  GscPeriodComparison,
-  GscSearchRow,
-  GscSite,
-  GscSitemapInfo,
-} from "./types.ts";
+import type { GscPerformanceOverview, GscSearchRow } from "./types.ts";
+import type { GscPanelPayload } from "./panel-types.ts";
 
-export type GscPanelSource = "google-api" | "csv-upload";
-
-export interface GscPanelPayload {
-  siteUrl: string;
-  periodDays: number;
-  source: GscPanelSource;
-  window: { startDate: string; endDate: string; previousStartDate: string; previousEndDate: string };
-  dataState: "final" | "all";
-  overview: GscPerformanceOverview;
-  comparison: GscPeriodComparison | null;
-  cannibalization: GscCannibalizationIssue[];
-  properties: GscSite[];
-  sitemaps: GscSitemapInfo[];
-  notes: string[];
-  limitations: string[];
-}
+export type { GscPanelPayload, GscPanelSource } from "./panel-types.ts";
 
 function emptyOverview(siteUrl: string, days: number): GscPerformanceOverview {
   return {

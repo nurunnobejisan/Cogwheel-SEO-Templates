@@ -3,7 +3,7 @@ import { z } from "zod";
 import { getServiceAccountEmail, isGoogleConfigured, isServiceAccountFailure, listGscProperties } from "@/core/gsc/client.ts";
 import { gscCacheKey, getCachedGscPanel } from "@/core/gsc/cache.ts";
 import { buildLiveGscPanel, unavailableGscPanel } from "@/core/gsc/panel.ts";
-import { GSC_RANGE_PRESETS } from "@/core/gsc/rows.ts";
+import { GSC_RANGE_PRESETS } from "@/core/gsc/presets.ts";
 import { isAuthenticatedPrincipal, principalFromRequest } from "@/lib/platform/auth.ts";
 
 export const dynamic = "force-dynamic";

@@ -24,7 +24,7 @@ import { calculatePixelWidth } from "../../../validators/serpOptimizer.ts";
 import { assertEgressAllowed, readTextCapped, safeFetch as egressFetch } from "../../lib/security/egress.ts";
 import { validateTargetUrl } from "../crawler/url.ts";
 import { isGoogleConfigured, UnifiedGscClient } from "../gsc/client.ts";
-import type { GscPanelPayload } from "../gsc/panel.ts";
+import type { GscPanelPayload } from "../gsc/panel-types.ts";
 import { checkAlgorithmImpact } from "../claude-seo/index.ts";
 import { isSimulatedDataAllowed } from "../data-policy.ts";
 import { collectGeoAudit } from "../../rules/geo/index.ts";

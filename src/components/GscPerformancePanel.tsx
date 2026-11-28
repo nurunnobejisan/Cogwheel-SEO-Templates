@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import type { GscPanelPayload } from "@/core/gsc/panel.ts";
-import { GSC_RANGE_PRESETS } from "@/core/gsc/rows.ts";
+import type { GscPanelPayload } from "@/core/gsc/panel-types.ts";
+import { GSC_RANGE_PRESETS } from "@/core/gsc/presets.ts";
 
 interface GscPerformancePanelProps {
   property?: { name?: string; brand?: string; url?: string; websiteUrl?: string };
