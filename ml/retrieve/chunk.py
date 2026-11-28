@@ -101,6 +101,7 @@ def chunk_document(
     source: str,
     url: Optional[str] = None,
     tags: Sequence[str] = (),
+    property_id: Optional[str] = None,
     max_chars: int = DEFAULT_MAX_CHARS,
     overlap: int = DEFAULT_OVERLAP,
 ) -> List[Dict[str, Any]]:
@@ -109,11 +110,13 @@ def chunk_document(
     Ids are ``<doc_id>#<part>`` (matching the TypeScript chunker in
     ``ai/rag/knowledge-base.ts``) and ``charStart``/``charEnd`` record where
     the chunk came from, so a citation can be verified against the original.
+    Optional ``property_id`` scopes client-owned chunks for isolated retrieval.
     """
     pieces = chunk_text(text, max_chars=max_chars, overlap=overlap)
     if not pieces:
         pieces = [text.strip()] if text.strip() else []
 
+    normalized_property_id = (property_id or "").strip() or None
     chunks: List[Dict[str, Any]] = []
     cursor = 0
     for part, piece in enumerate(pieces, start=1):
@@ -124,19 +127,20 @@ def chunk_document(
             start = cursor
         end = start + len(piece)
         cursor = end
-        chunks.append(
-            {
-                "id": f"{doc_id}#{part}",
-                "title": title,
-                "text": piece,
-                "source": source,
-                "url": url,
-                "tags": list(tags),
-                "chunkIndex": part,
-                "charStart": start,
-                "charEnd": end,
-            }
-        )
+        record: Dict[str, Any] = {
+            "id": f"{doc_id}#{part}",
+            "title": title,
+            "text": piece,
+            "source": source,
+            "url": url,
+            "tags": list(tags),
+            "chunkIndex": part,
+            "charStart": start,
+            "charEnd": end,
+        }
+        if normalized_property_id:
+            record["propertyId"] = normalized_property_id
+        chunks.append(record)
     return chunks
 
 

@@ -47,6 +47,8 @@ export interface BrainRequest {
   targetUrl: string;
   question?: string;
   maxPages?: number;
+  /** Optional tenant scope for isolated per-property RAG retrieval. */
+  propertyId?: string;
 }
 
 /** Thrown when even the deterministic fallback cannot trace a claim. */
@@ -107,7 +109,11 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
   const query =
     request.question?.trim() ||
     `SEO audit findings for ${targetUrl}: ${audit.actionPlan?.map((i) => i.title).join(" ") ?? ""}`;
-  const retrieved = await pipeline.knowledgeBase.searchAsync(query, { topK: 6 });
+  const scopedPropertyId = request.propertyId?.trim() || undefined;
+  const retrieved = await pipeline.knowledgeBase.searchAsync(query, {
+    topK: 6,
+    ...(scopedPropertyId ? { propertyId: scopedPropertyId } : {}),
+  });
 
   const compactAudit = {
     targetUrl: audit.targetUrl,
