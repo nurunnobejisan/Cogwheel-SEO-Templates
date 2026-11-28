@@ -30,6 +30,28 @@ import {
 import { loadProviders, routeTask, V1_ADAPTER_TASKS as ROUTER_V1_TASKS } from "../ai/router.ts";
 import type { ProviderDescriptor } from "../ai/types.ts";
 
+// v2 WP3 (D-036): adapter eligibility is measured registry scope. These tests
+// grant a measured `readyTasks` scope explicitly; null falls back to the real
+// (fail-closed) registry read — today that is "no task".
+const adapterScope = vi.hoisted(() => ({ tasks: null as string[] | null }));
+
+vi.mock("../src/core/ai/custom-model.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../src/core/ai/custom-model.ts")>();
+  return {
+    ...actual,
+    isAdapterTaskReady: (task: string | undefined | null) =>
+      adapterScope.tasks !== null
+        ? adapterScope.tasks.includes(task ?? "")
+        : actual.isAdapterTaskReady(task),
+    getAdapterReadyTasks: () => (adapterScope.tasks !== null ? adapterScope.tasks : actual.getAdapterReadyTasks()),
+  };
+});
+
+// Shadow mode records review-queue rows on the filesystem; keep tests pure.
+vi.mock("@/lib/review/shadow-recorder", () => ({
+  recordShadowDisagreement: vi.fn(async () => null),
+}));
+
 const SAFE_ENDPOINT = "https://example.com/v1/chat/completions";
 const PRIVATE_ENDPOINT = "http://127.0.0.1:8000/v1/chat/completions";
 
@@ -68,6 +90,7 @@ function jsonResponse(payload: unknown, status = 200): Response {
 }
 
 afterEach(() => {
+  adapterScope.tasks = null;
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   for (const [key, value] of Object.entries(savedEnv)) {
@@ -211,6 +234,7 @@ describe("Phase 4 / WP2 — generateClaudeText task routing", () => {
   });
 
   it("uses the custom adapter first for v1 Tier 1 tasks when AI_ADAPTER_MODE=on", async () => {
+    adapterScope.tasks = ["schema_generation", "metadata_generation"];
     snapshotEnv();
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
@@ -277,6 +301,7 @@ describe("Phase 4 / WP2 — generateClaudeText task routing", () => {
   });
 
   it("falls through to the error path when a v1 task fails on the tuned endpoint", async () => {
+    adapterScope.tasks = ["schema_generation"];
     snapshotEnv();
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
@@ -415,6 +440,7 @@ describe("WP5 — AI_ADAPTER_MODE rollout modes", () => {
   });
 
   it("runs concurrently in shadow mode, always returns standard output, and records latency + gate counters without logging content", async () => {
+    adapterScope.tasks = ["schema_generation"];
     snapshotEnv();
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
@@ -465,6 +491,7 @@ describe("WP5 — AI_ADAPTER_MODE rollout modes", () => {
   });
 
   it("still returns the standard response in shadow mode even if the adapter errors", async () => {
+    adapterScope.tasks = ["schema_generation"];
     snapshotEnv();
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
@@ -490,6 +517,7 @@ describe("WP5 — AI_ADAPTER_MODE rollout modes", () => {
   });
 
   it("buckets canary traffic deterministically by propertyId / requestId", async () => {
+    adapterScope.tasks = ["schema_generation"];
     const b1 = computeCanaryBucket("prop-alpha");
     const b2 = computeCanaryBucket("prop-alpha");
     expect(b1).toBe(b2);

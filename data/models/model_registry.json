@@ -26,7 +26,7 @@
         },
         "provenance": "lexical-proxy",
         "measured": false,
-        "note": "Lexical proxy computed from the eval file (format, grounding, SERP-budget and schema keyword checks) — not a model-quality measurement and not a golden-set run. A measured number requires ml/eval/run_eval.py --endpoint."
+        "note": "Lexical proxy computed from the eval file (format, grounding, SERP-budget and schema keyword checks) \u2014 not a model-quality measurement and not a golden-set run. A measured number requires ml/eval/run_eval.py --endpoint."
       },
       "capabilities": [
         "full_website_audit",
@@ -36,7 +36,9 @@
         "keyword_intent_matrix",
         "serp_pixel_budgeting"
       ],
-      "statusReason": "Retired under D-028: base model gemini-1.5-flash-002 is retired and never selectable as an active model. The stored evaluationBenchmark values are lexical proxies over the eval file, not model-quality measurements. Only QLoRA runs promoted via python3 -m ml.serve.register may hold status 'ready'."
+      "statusReason": "Retired under D-028: base model gemini-1.5-flash-002 is retired and never selectable as an active model. The stored evaluationBenchmark values are lexical proxies over the eval file, not model-quality measurements. Only QLoRA runs promoted via python3 -m ml.serve.register may hold status 'ready'.",
+      "readyTasks": [],
+      "readyTasksNote": "v2 D-036: per-task adapter scope. Only ml.serve.register adds tasks (gates pass + beats both baselines on the same cases)."
     },
     {
       "modelId": "seo-studio-unified-tuned_gemini-v1795486557",
@@ -63,7 +65,7 @@
         },
         "provenance": "lexical-proxy",
         "measured": false,
-        "note": "Lexical proxy computed from the eval file (format, grounding, SERP-budget and schema keyword checks) — not a model-quality measurement and not a golden-set run. A measured number requires ml/eval/run_eval.py --endpoint."
+        "note": "Lexical proxy computed from the eval file (format, grounding, SERP-budget and schema keyword checks) \u2014 not a model-quality measurement and not a golden-set run. A measured number requires ml/eval/run_eval.py --endpoint."
       },
       "capabilities": [
         "full_website_audit",
@@ -73,7 +75,9 @@
         "keyword_intent_matrix",
         "serp_pixel_budgeting"
       ],
-      "statusReason": "Retired under D-028: base model gemini-1.5-flash-002 is retired and never selectable as an active model. The stored evaluationBenchmark values are lexical proxies over the eval file, not model-quality measurements. Only QLoRA runs promoted via python3 -m ml.serve.register may hold status 'ready'."
+      "statusReason": "Retired under D-028: base model gemini-1.5-flash-002 is retired and never selectable as an active model. The stored evaluationBenchmark values are lexical proxies over the eval file, not model-quality measurements. Only QLoRA runs promoted via python3 -m ml.serve.register may hold status 'ready'.",
+      "readyTasks": [],
+      "readyTasksNote": "v2 D-036: per-task adapter scope. Only ml.serve.register adds tasks (gates pass + beats both baselines on the same cases)."
     }
   ],
   "lastUpdated": "2026-11-24T02:28:52.813488Z"

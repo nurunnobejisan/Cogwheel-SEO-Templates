@@ -15,12 +15,15 @@ Standard library only (D-014).
 from __future__ import annotations
 
 import json
+import re
+from collections.abc import Mapping
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional
+from typing import Any, Optional
 
 __all__ = [
     "RegistryError",
     "DEFAULT_REGISTRY",
+    "READY_TASKS_WRITER",
     "REGISTRY_STATUSES",
     "migrate_model_id",
     "debranded_id",
@@ -28,12 +31,14 @@ __all__ = [
     "resolve_model",
     "model_ids",
     "assert_servable",
+    "effective_ready_tasks",
+    "assert_ready_tasks_provenance",
 ]
 
 REGISTRY_STATUSES = frozenset({"unverified", "retired", "ready"})
 
 #: Optional alias prefix -> canonical prefix. Empty: ids are already canonical.
-ALIASES: Dict[str, str] = {}
+ALIASES: dict[str, str] = {}
 
 DEFAULT_REGISTRY = Path("data/models/model_registry.json")
 
@@ -60,7 +65,7 @@ def debranded_id(model_id: str) -> str:
     return model_id
 
 
-def load_registry(path: Path = DEFAULT_REGISTRY) -> Dict[str, Any]:
+def load_registry(path: Path = DEFAULT_REGISTRY) -> dict[str, Any]:
     """Load and shape-validate the registry JSON."""
     try:
         payload = json.loads(path.read_text(encoding="utf-8"))
@@ -86,7 +91,7 @@ def load_registry(path: Path = DEFAULT_REGISTRY) -> Dict[str, Any]:
     return dict(payload)
 
 
-def resolve_model(registry: Mapping[str, Any], requested: str) -> Optional[Dict[str, Any]]:
+def resolve_model(registry: Mapping[str, Any], requested: str) -> Optional[dict[str, Any]]:
     """Find an entry by exact id, by migrated alias, or by recorded alias."""
     if not isinstance(requested, str) or not requested:
         return None
@@ -102,10 +107,10 @@ def resolve_model(registry: Mapping[str, Any], requested: str) -> Optional[Dict[
     return None
 
 
-def model_ids(entry: Mapping[str, Any]) -> List[str]:
+def model_ids(entry: Mapping[str, Any]) -> list[str]:
     """Every spelling an entry answers to: persisted id, alias, de-branded id."""
     persisted = str(entry["modelId"])
-    ids: List[str] = [persisted]
+    ids: list[str] = [persisted]
     aliases = entry.get("aliases")
     if isinstance(aliases, list):
         ids.extend(str(a) for a in aliases if isinstance(a, str) and a)
@@ -115,8 +120,56 @@ def model_ids(entry: Mapping[str, Any]) -> List[str]:
     return ids
 
 
+#: The only writer allowed to widen an entry's `readyTasks` (v2 D-036).
+READY_TASKS_WRITER = "ml.serve.register"
+
+_HEX64 = set("0123456789abcdef")
+
+
+def _is_hex64(value: Any) -> bool:
+    text = str(value or "")
+    return len(text) == 64 and all(char in _HEX64 for char in text)
+
+
+def effective_ready_tasks(entry: Mapping[str, Any]) -> list[str]:
+    """The measured per-task scope an entry may serve (v2 D-036).
+
+    Fail closed: a non-empty ``readyTasks`` is honoured only when it carries
+    ``readyTasksProvenance`` written by :mod:`ml.serve.register` (a 64-hex
+    report sha and an ISO measuredAt). Hand-edited scope without provenance is
+    treated as empty — nothing outside ``register.py`` can widen the adapter's
+    task set.
+    """
+    tasks = entry.get("readyTasks")
+    if not isinstance(tasks, list) or not tasks:
+        return []
+    provenance = entry.get("readyTasksProvenance")
+    if not isinstance(provenance, Mapping):
+        return []
+    if str(provenance.get("by") or "") != READY_TASKS_WRITER:
+        return []
+    if not _is_hex64(provenance.get("reportSha256")):
+        return []
+    measured_at = str(provenance.get("measuredAt") or "")
+    if not re.match(r"^\d{4}-\d{2}-\d{2}T", measured_at):
+        return []
+    return [str(task) for task in tasks if isinstance(task, str) and task]
+
+
+def assert_ready_tasks_provenance(entry: Mapping[str, Any]) -> None:
+    """Raise ``RegistryError`` when ``readyTasks`` is set without provenance."""
+    tasks = entry.get("readyTasks")
+    if isinstance(tasks, list) and tasks and not effective_ready_tasks(entry):
+        raise RegistryError(
+            f"model {entry['modelId']!r} declares readyTasks without valid "
+            f"readyTasksProvenance written by {READY_TASKS_WRITER} — hand-edited "
+            "scope is refused (v2 D-036)"
+        )
+
+
 def assert_servable(entry: Mapping[str, Any], *, allow_unverified: bool = False) -> None:
     """Raise ``RegistryError`` unless the entry may be served."""
+    assert_ready_tasks_provenance(entry)
     status = str(entry.get("status", ""))
     if status == "ready":
         return

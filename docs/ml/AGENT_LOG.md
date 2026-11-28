@@ -265,3 +265,44 @@ Data reality: with no healing/vault producer exports and no approved review
 rows yet, a builder run today writes 0 pairs and a truthful zero report. The
 feedback loop fills as operators use the WP1 queue and the healing/vault
 exports land.
+## WP3 — Per-task measured readiness (`readyTasks`) (branch `ml/v2-wp3-readytasks`)
+
+Built this run (decision D-036):
+
+- **Registry** `data/models/model_registry.json` — every entry now carries
+  `readyTasks: []` + a note; `ml/serve/registry.py` adds
+  `effective_ready_tasks` / `assert_ready_tasks_provenance` (fail-closed: a
+  non-empty scope without `ml.serve.register` provenance — writer, 64-hex
+  report sha, measuredAt — is ignored, and `assert_servable` refuses such an
+  entry outright).
+- **Promotion** `ml/serve/register.py` — `--ready-task` (repeatable) +
+  `--baseline-report` (×2). `TASK_SHIP_GATES` defines per-task thresholds
+  (schema: jsonld_valid ≥95%; metadata: title_budget ≥90%; entity gap:
+  grounding ≥80%; rag: explainer_citation 100%; invented_metrics = 0
+  everywhere). A task is written into `readyTasks` only when all its gates
+  pass **and** the candidate strictly beats both baselines on the same golden
+  cases; a failing requested task refuses the entire promotion. The written
+  provenance records the report sha, golden sha and baseline names.
+- **Router** `ai/router.ts` — `isV1AdapterTask` now reads the measured scope
+  via `getAdapterReadyTasks`/`isAdapterTaskReady`
+  (`src/core/ai/custom-model.ts`, same fail-closed provenance rule in TS).
+  `V1_ADAPTER_TASKS` stays only as a deprecated constant. **Tier 2 tasks can
+  now graduate through exactly the same measured path** (no tier constraint).
+  `src/core/claude.ts` uses the registry-based check; with today's registry
+  (no ready entry) the adapter serves no task.
+- **Shadow producer** `src/lib/review/shadow-recorder.ts` — in
+  `AI_ADAPTER_MODE=shadow`, adapter-vs-standard disagreements are appended to
+  the WP1 queue file `ml-review/shadow-disagreements.jsonl` (bounded at 5000
+  rows, deduped, `consent: false` until the v3 per-property flag exists, so
+  the DPO builder refuses them by default). Failures are swallowed — never
+  breaks generation.
+- **Tests** — `tests/python/test_ml_ready_tasks.py` (22): provenance variants,
+  hand-edit refusal, gate thresholds, missing/tying baselines, promote
+  end-to-end writes provenance, refused promotion leaves the registry
+  untouched, CLI errors. `tests/adapter-ready-tasks.test.ts` (7): no-ready
+  registry → no task; provenance variants; Tier 2 graduation; router wiring.
+  Existing adapter-path tests updated to grant an explicit measured scope
+  (mock), keeping the default fail-closed.
+
+Data reality: `readyTasks` is empty everywhere; nothing was promoted. A real
+GPU run + baseline evals are prerequisites for the first measured scope.

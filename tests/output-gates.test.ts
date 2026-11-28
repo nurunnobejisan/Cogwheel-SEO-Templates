@@ -9,6 +9,26 @@ import {
   resetAdapterGateCounters,
 } from "../src/core/claude";
 
+// v2 WP3 (D-036): adapter eligibility is measured registry scope; grant it
+// explicitly for the adapter-path tests below.
+const adapterScope = vi.hoisted(() => ({ tasks: null as string[] | null }));
+
+vi.mock("../src/core/ai/custom-model.ts", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("../src/core/ai/custom-model.ts")>();
+  return {
+    ...actual,
+    isAdapterTaskReady: (task: string | undefined | null) =>
+      adapterScope.tasks !== null
+        ? adapterScope.tasks.includes(task ?? "")
+        : actual.isAdapterTaskReady(task),
+    getAdapterReadyTasks: () => (adapterScope.tasks !== null ? adapterScope.tasks : actual.getAdapterReadyTasks()),
+  };
+});
+
+vi.mock("@/lib/review/shadow-recorder", () => ({
+  recordShadowDisagreement: vi.fn(async () => null),
+}));
+
 const SAFE_ENDPOINT = "https://example.com/v1/chat/completions";
 
 const ENV_KEYS = [
@@ -47,6 +67,7 @@ function jsonResponse(payload: unknown, status = 200): Response {
 }
 
 afterEach(() => {
+  adapterScope.tasks = null;
   resetAdapterGateCounters();
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
@@ -139,6 +160,7 @@ describe("WP3 — shared schema types and output gates", () => {
   });
 
   it("retries once on the free chain when adapter fails its gate and never logs prompts or outputs", async () => {
+    adapterScope.tasks = ["schema_generation"];
     snapshotEnv();
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
@@ -190,6 +212,7 @@ describe("WP3 — shared schema types and output gates", () => {
   });
 
   it("passes adapter output directly when gate succeeds", async () => {
+    adapterScope.tasks = ["schema_generation"];
     snapshotEnv();
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
