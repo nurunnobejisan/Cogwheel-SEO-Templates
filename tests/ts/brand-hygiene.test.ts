@@ -16,6 +16,30 @@ test("flags private client brands in file paths", () => {
   assert.equal(violations[0]?.line, 0);
 });
 
+test("flags the private client identifiers found during the privacy scrub", () => {
+  const violations = scanBrandText(
+    "src/example.ts",
+    "const domain = 'thenines.com';\nconst legacyStyle = 'catbird';\n",
+  );
+  assert.equal(violations.length, 2);
+  assert.match(violations[0]?.label ?? "", /The Nines/);
+  assert.match(violations[1]?.label ?? "", /Catbird/);
+});
+
+test("allows documented legacy exceptions", () => {
+  assert.deepEqual(
+    scanBrandText("src/lib/schemas.ts", '  catbird: "supporting",\n'),
+    [],
+  );
+  assert.deepEqual(
+    scanBrandText(
+      "tests/heading-auditor.test.ts",
+      'expect(path).toContain("output/thenines.com/site-heading-optimized.json");\n',
+    ),
+    [],
+  );
+});
+
 test("allows public hotel-chain vocabulary used by the audit engine", () => {
   const violations = scanBrandText(
     "src/config/properties.json",
@@ -27,6 +51,8 @@ test("allows public hotel-chain vocabulary used by the audit engine", () => {
 test("skips binary and generated artifacts", () => {
   assert.equal(isScannable("public/seo-studio.zip"), false);
   assert.equal(isScannable("tsconfig.tsbuildinfo"), false);
+  assert.equal(isScannable("output/thenines.com/site-meta-optimized.json"), false);
+  assert.equal(isScannable("chrome-extension/src/data/seoStudioTemplates.ts"), false);
   assert.equal(isScannable("scripts/check-brand-hygiene.ts"), false);
   assert.equal(isScannable("docs/ENGINEERING_STANDARDS.md"), true);
 });

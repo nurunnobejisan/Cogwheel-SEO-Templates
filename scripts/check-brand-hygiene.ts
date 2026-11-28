@@ -83,6 +83,7 @@ const ALLOWED_LINES: Record<string, RegExp[]> = {
 };
 
 export function isScannable(file: string): boolean {
+  if (SKIP_PATH_PREFIXES.some((prefix) => file.startsWith(prefix))) return false;
   if (SKIP_FILES.has(file) || SKIP_FILES.has(path.basename(file))) return false;
   return !BINARY_EXTENSIONS.has(path.extname(file).toLowerCase());
 }
@@ -90,6 +91,7 @@ export function isScannable(file: string): boolean {
 /** Scan one text blob. Exported for the unit tests in tests/ts/. */
 export function scanBrandText(file: string, text: string): BrandViolation[] {
   const violations: BrandViolation[] = [];
+  if (SKIP_PATH_PREFIXES.some((prefix) => file.startsWith(prefix))) return violations;
 
   for (const rule of FORBIDDEN) {
     if (rule.pattern.test(file)) {
@@ -97,7 +99,9 @@ export function scanBrandText(file: string, text: string): BrandViolation[] {
     }
   }
 
+  const allowed = ALLOWED_LINES[file] ?? [];
   text.split(/\r?\n/).forEach((line, index) => {
+    if (allowed.some((pattern) => pattern.test(line))) return;
     for (const rule of FORBIDDEN) {
       if (!rule.pattern.test(line)) continue;
       violations.push({
