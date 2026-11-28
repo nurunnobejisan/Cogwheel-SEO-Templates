@@ -34,7 +34,7 @@ def _requirement_names() -> set[str]:
         line = line.split("#", 1)[0].strip()
         if not line:
             continue
-        name = line.split("==")[0].split(">=")[0].split("<=")[0].split("[")[0].strip()
+        name = line.split("==")[0].split(">=")[0].split("<=")[0].split("<")[0].split(">")[0].split("[")[0].strip()
         names.add(name.lower())
     return names
 

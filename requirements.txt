@@ -15,7 +15,7 @@ platformdirs
 google-auth
 google-auth-oauthlib
 google-api-python-client
-mcp
+mcp<2
 # HTTP service (api/server.py) + its test client — Phase D.
 fastapi>=0.115.0
 uvicorn>=0.30.0
