@@ -119,11 +119,18 @@ afterEach(() => {
   vi.unstubAllEnvs();
 });
 
-function ndjsonEvents(text: string): Array<Record<string, any>> {
+interface AssistantEvent {
+  type?: string;
+  text?: string;
+  provider?: string;
+  provenance?: { ok?: boolean };
+}
+
+function ndjsonEvents(text: string): AssistantEvent[] {
   return text
     .split("\n")
     .filter((line) => line.trim())
-    .map((line) => JSON.parse(line));
+    .map((line) => JSON.parse(line) as AssistantEvent);
 }
 
 describe("audit assistant", () => {
@@ -168,7 +175,7 @@ describe("audit assistant", () => {
     const done = events.find((event) => event.type === "done");
     const text = events.filter((event) => event.type === "delta").map((event) => event.text).join("");
     expect(done?.provider).toMatch(/Rules engine/);
-    expect(done?.provenance.ok).toBe(true);
+    expect(done?.provenance?.ok).toBe(true);
     expect(text).toContain("71/100");
     expect(text).toContain("Search Console");
   });

@@ -7,8 +7,6 @@ import {
   getRelatedTemplates,
 } from "@/data/templates";
 import { TemplateCustomizerView } from "@/components/TemplateCustomizerView";
-import { JsonLd } from "@/components/JsonLd";
-import { brand, pageTitle } from "@/config/brand";
 
 interface PageProps {
   params: {
@@ -28,13 +26,12 @@ export function generateMetadata({ params }: PageProps): Metadata {
   const template = getTemplateBySlug(params.category, params.slug);
   if (!template) {
     return {
-      title: "Template Not Found",
+      title: "Template Not Found — SEO Studio",
       description: "The requested SEO and GEO template could not be located in the SEO templates repository catalog.",
     };
   }
 
-  const canonicalUrl = `${brand.siteUrl}/templates/${template.categorySlug}/${template.slug}`;
-  const ogTitle = pageTitle(template.metaTitle);
+  const canonicalUrl = `https://seo-studio.vercel.app/templates/${template.categorySlug}/${template.slug}`;
 
   return {
     title: template.metaTitle,
@@ -43,15 +40,15 @@ export function generateMetadata({ params }: PageProps): Metadata {
       canonical: canonicalUrl,
     },
     openGraph: {
-      title: ogTitle,
+      title: template.metaTitle,
       description: template.metaDescription,
       url: canonicalUrl,
-      siteName: brand.name,
+      siteName: "SEO & GEO Studio",
       type: "article",
     },
     twitter: {
       card: "summary_large_image",
-      title: ogTitle,
+      title: template.metaTitle,
       description: template.metaDescription,
     },
   };
@@ -66,72 +63,70 @@ export default function TemplateDetailPage({ params }: PageProps) {
 
   const relatedTemplates = getRelatedTemplates(template);
 
-  // Breadcrumbs + Article/HowTo; FAQPage mainEntity only where Q&A is rendered.
-  const baseUrl = brand.siteUrl;
+  // Dynamic JSON-LD structured data for BreadcrumbList + Article/HowTo schema
   const breadcrumbSchema = {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
-      { "@type": "ListItem", position: 2, name: "Templates", item: `${baseUrl}/templates` },
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://seo-studio.vercel.app",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Templates",
+        item: "https://seo-studio.vercel.app/templates",
+      },
       {
         "@type": "ListItem",
         position: 3,
         name: template.category,
-        item: `${baseUrl}/templates#${template.categorySlug}`,
+        item: `https://seo-studio.vercel.app/templates#${template.categorySlug}`,
       },
       {
         "@type": "ListItem",
         position: 4,
         name: template.title,
-        item: `${baseUrl}/templates/${template.categorySlug}/${template.slug}`,
+        item: `https://seo-studio.vercel.app/templates/${template.categorySlug}/${template.slug}`,
       },
     ],
   };
 
-  const faqEntities =
-    template.schemaType === "FAQPage"
-      ? template.contentMarkdown
-          .split(/\n## /)
-          .slice(1)
-          .map((block) => {
-            const lines = block.trim().split("\n");
-            const question = (lines.shift() ?? "").replace(/^Question \d+:\s*/, "");
-            const answer = lines
-              .join("\n")
-              .replace(/^\*\*Direct Answer\*\*:\s*/, "")
-              .trim();
-            return {
-              "@type": "Question",
-              name: question,
-              acceptedAnswer: { "@type": "Answer", text: answer },
-            };
-          })
-          .filter((entry) => entry.name.length > 0 && entry.acceptedAnswer.text.length > 0)
-      : [];
-
   const primarySchema = {
     "@context": "https://schema.org",
-    "@type":
-      template.schemaType === "FAQPage"
-        ? "FAQPage"
-        : template.schemaType === "HowTo"
-          ? "HowTo"
-          : "Article",
+    "@type": template.schemaType === "FAQPage" ? "FAQPage" : "TechArticle",
     headline: template.title,
     description: template.metaDescription,
-    author: { "@type": "Organization", name: brand.owner },
-    publisher: { "@type": "Organization", name: brand.name, url: baseUrl },
+    author: {
+      "@type": "Organization",
+      name: "SEO & GEO Studio",
+      url: "https://seo-studio.vercel.app",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "SEO Studio",
+      url: "https://example.com",
+    },
     mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": `${baseUrl}/templates/${template.categorySlug}/${template.slug}`,
+      "@id": `https://seo-studio.vercel.app/templates/${template.categorySlug}/${template.slug}`,
     },
-    ...(faqEntities.length > 0 ? { mainEntity: faqEntities } : {}),
   };
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <JsonLd data={[breadcrumbSchema, primarySchema]} />
+      {/* Dynamic JSON-LD Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(primarySchema) }}
+      />
 
       {/* Top Section Header */}
       <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90">
@@ -141,14 +136,14 @@ export default function TemplateDetailPage({ params }: PageProps) {
               href="/"
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              SG
+              CW
             </Link>
             <div>
               <Link
                 href="/templates"
                 className="font-display text-base font-extrabold text-slate-900 hover:text-brand dark:text-white dark:hover:text-brand"
               >
-                {brand.name}
+                SEO &amp; GEO Studio
               </Link>
               <p className="text-tiny text-slate-500 dark:text-slate-400">
                 Hospitality Production Template Hub

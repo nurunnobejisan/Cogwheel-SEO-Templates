@@ -1,57 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { brand, pageTitle } from "@/config/brand";
-import { JsonLd } from "@/components/JsonLd";
 import { TemplatesHubClient } from "./TemplatesHubClient";
 
-const title = "Hospitality SEO & GEO Template Library";
-const description =
-  `${brand.name}'s production-ready on-page, lodging schema, GEO visibility, and GBP NAP audit templates for Marriott, Hilton, IHG, Hyatt and luxury stays.`;
-
 export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/templates" },
-  openGraph: {
-    title: pageTitle(title),
-    description,
-    url: "/templates",
-    type: "website",
-    siteName: brand.name,
-    images: ["/opengraph-image"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: pageTitle(title),
-    description,
-    images: ["/opengraph-image"],
-  },
+  title: "Hospitality SEO & GEO Template Library — SEO Studio",
+  description:
+    "SEO Studio's production-ready on-page, lodging schema, GEO visibility, and GBP NAP audit templates for Marriott, Hilton, IHG, Hyatt, and luxury stays.",
 };
-
-const structuredData = [
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: title,
-    description,
-    author: { "@type": "Organization", name: brand.owner },
-    publisher: { "@type": "Organization", name: brand.name, url: brand.siteUrl },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${brand.siteUrl}/templates` },
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: brand.siteUrl },
-      { "@type": "ListItem", position: 2, name: "Templates", item: `${brand.siteUrl}/templates` },
-    ],
-  },
-];
 
 export default function TemplatesPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <JsonLd data={structuredData} />
       {/* Top Section Header */}
       <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
@@ -60,12 +19,12 @@ export default function TemplatesPage() {
               href="/"
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              SG
+              CW
             </Link>
             <div>
-              <p className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                {brand.name}
-              </p>
+              <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
+                SEO &amp; GEO Studio
+              </h1>
               <p className="text-tiny text-slate-500 dark:text-slate-400">Master Hospitality Templates Catalog</p>
             </div>
           </div>
@@ -113,9 +72,9 @@ export default function TemplatesPage() {
           <span className="inline-block rounded-md bg-emerald-50 px-2 py-0.5 text-micro font-bold text-emerald-700 uppercase tracking-wider dark:bg-emerald-950/60 dark:text-emerald-300">
             Battle-Tested SEO &amp; GEO Blueprints
           </span>
-          <h1 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
             Hospitality SEO &amp; GEO Templates Hub
-          </h1>
+          </h2>
           <p className="max-w-3xl text-body text-slate-600 dark:text-slate-400">
             12 complete, production-ready SEO templates across 6 core categories. Filter by category, test queries in real time, customize variables, and preview SERP snippet pixels.
           </p>

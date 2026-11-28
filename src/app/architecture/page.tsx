@@ -1,57 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { brand, pageTitle } from "@/config/brand";
-import { JsonLd } from "@/components/JsonLd";
-
-const title = "System Architecture & Technical Specs";
-const description =
-  `${brand.name}'s technical architecture for the Manifest V3 extension, AI training vault, model routing, and Python fine-tuning pipelines in detail.`;
 
 export const metadata: Metadata = {
-  title,
-  description,
-  alternates: { canonical: "/architecture" },
-  openGraph: {
-    title: pageTitle(title),
-    description,
-    url: "/architecture",
-    type: "website",
-    siteName: brand.name,
-    images: ["/opengraph-image"],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: pageTitle(title),
-    description,
-    images: ["/opengraph-image"],
-  },
+  title: "System Architecture & Technical Specs — SEO Studio",
+  description:
+    "SEO Studio's technical architecture for the Manifest V3 extension, AI training vault, hybrid model routing, and Python fine-tuning pipelines in detail.",
 };
-
-const structuredData = [
-  {
-    "@context": "https://schema.org",
-    "@type": "Article",
-    headline: title,
-    description,
-    author: { "@type": "Organization", name: brand.owner },
-    publisher: { "@type": "Organization", name: brand.name, url: brand.siteUrl },
-    mainEntityOfPage: { "@type": "WebPage", "@id": `${brand.siteUrl}/architecture` },
-  },
-  {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: brand.siteUrl },
-      { "@type": "ListItem", position: 2, name: "Architecture", item: `${brand.siteUrl}/architecture` },
-    ],
-  },
-];
 
 export default function ArchitecturePage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
-      <JsonLd data={structuredData} />
       {/* Top Header */}
       <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
@@ -60,13 +19,13 @@ export default function ArchitecturePage() {
               href="/"
               className="flex h-8 w-8 items-center justify-center rounded-xl bg-slate-900 text-caption font-bold text-brand-light dark:bg-brand dark:text-slate-950"
             >
-              SG
+              CW
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <p className="font-display text-base font-extrabold text-slate-900 dark:text-white">
-                  {brand.name}
-                </p>
+                <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">
+                  SEO &amp; GEO Studio
+                </h1>
                 <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                   v3.0.0
                 </span>
@@ -118,9 +77,9 @@ export default function ArchitecturePage() {
           <span className="inline-block rounded-md bg-purple-50 px-2 py-0.5 text-micro font-bold text-purple-700 uppercase tracking-wider dark:bg-purple-950/60 dark:text-purple-300">
             Enterprise Multi-Tier Topology &bull; Manifest V3 &bull; React 18 &bull; Python 3.11+
           </span>
-          <h1 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
+          <h2 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
             System Architecture &amp; Technical Specifications
-          </h1>
+          </h2>
           <p className="max-w-3xl text-body text-slate-600 dark:text-slate-400">
             Engineering specifications detailing client-side inspection boundaries, physical pixel calculation tables, AI training data harvesting, hybrid inference routing, and Python fine-tuning pipelines.
           </p>
@@ -142,7 +101,7 @@ export default function ArchitecturePage() {
           <div className="w-full overflow-x-auto">
             <Image
               src="/system-architecture.svg"
-              alt={`${brand.name} System Architecture Diagram`}
+              alt="SEO Studio System Architecture Diagram"
               width={1200}
               height={780}
               className="w-full min-w-[700px] rounded-lg"
