@@ -22,7 +22,7 @@ describe("Heading Structure Optimization Audit Engine (Example Hotel)", () => {
     assert.strictEqual(classifyPageUrl("https://example-hotel.com/meetings-events/").category, "MEETING & EVENTS");
     assert.strictEqual(classifyPageUrl("https://example-hotel.com/explore-portland/").category, "General Pages");
 
-    const homeKw = deriveTargetKeyword("https://example-hotel.com/", "Example Hotel Hotel Downtown Portland");
+    const homeKw = deriveTargetKeyword("https://example-hotel.com/", "Example Hotel Downtown Portland");
     assert.strictEqual(homeKw, "Downtown Portland Hotels");
 
     const roomKw = deriveTargetKeyword(
@@ -94,7 +94,7 @@ describe("Heading Structure Optimization Audit Engine (Example Hotel)", () => {
     const analysis = analyzeAndOptimizeHeadings(
       rawHeadings,
       "https://example-hotel.com/rooms/",
-      "Accommodations - Example Hotel Hotel"
+      "Accommodations - Example Hotel"
     );
 
     assert.strictEqual(analysis.h1Count, 2);
@@ -179,7 +179,7 @@ describe("Heading Structure Optimization Audit Engine (Example Hotel)", () => {
           },
           {
             id: "hdg-2",
-            originalText: "Example Hotel Hotel Downtown Portland",
+            originalText: "Example Hotel Downtown Portland",
             tag: "H1",
             position: 2,
             optimizedText: "Downtown Portland Hotels | Dressed To Impress",
@@ -294,7 +294,7 @@ describe("Heading Structure Optimization Audit Engine (Example Hotel)", () => {
   });
 
   it("formats title case accurately without mangling Roman numerals or contractions", () => {
-    assert.strictEqual(toTitleCase("example hotel hotel"), "Example Hotel Hotel");
+    assert.strictEqual(toTitleCase("example hotel"), "Example Hotel");
     assert.strictEqual(toTitleCase("ROOFTOP RESTAURANT AND LOUNGE"), "Rooftop Restaurant and Lounge");
     assert.strictEqual(toTitleCase("DELUXE ROOM WITH KING BED"), "Deluxe Room with King Bed");
     assert.strictEqual(toTitleCase("SUITE LEVEL II"), "Suite Level II");

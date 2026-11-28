@@ -61,7 +61,7 @@ describe("seo-only-visibility-report task module", () => {
     expect(result.taskId).toBe("seo-only-visibility-report");
     expect(result.status).toBe("Done");
     expect(result.flags.some((f) => f.code === "MISSING_AUDIT_PDF")).toBe(true);
-    expect(result.outputUrl).toBe("download://seo_visibility_report_The_Nines.pptx");
+    expect(result.outputUrl).toBe("download://seo_visibility_report_Example_Hotel.pptx");
     expect(result.output.propertyName).toBe("Example Hotel Portland");
     expect(result.output.flagSummary.hasWarnings).toBe(true);
     expect(result.output.highlights).toHaveLength(2);

@@ -11,9 +11,9 @@ import {
 
 describe("HeadingAuditor TypeScript Engine", () => {
   it("converts strings to proper title case", () => {
-    expect(toTitleCase("WELCOME TO EXAMPLE HOTEL")).toBe("Welcome to the Nines");
+    expect(toTitleCase("WELCOME TO EXAMPLE HOTEL")).toBe("Welcome to Example Hotel");
     expect(toTitleCase("OUR LUXURY AMENITIES IN PORTLAND")).toBe("Our Luxury Amenities in Portland");
-    expect(toTitleCase("steakhouse")).toBe("The Steakhouse");
+    expect(toTitleCase("steakhouse")).toBe("Steakhouse");
   });
 
   it("detects non-semantic stat counters and metrics", () => {

@@ -108,7 +108,7 @@ def classify_page_url(url_str: str) -> tuple[str, str]:
         if "accommodation" in path or "room" in path or "suite" in path:
             slug = path.split("/")[-1]
             return "Accommodations", to_title_case(slug.replace("-", " "))
-        if "dining" in path or "restaurant" in path or "departure" in path or "steakhouse" in path:
+        if "dining" in path or "restaurant" in path or "rooftop" in path or "steakhouse" in path:
             slug = path.split("/")[-1]
             return "DINING", to_title_case(slug.replace("-", " "))
         if "gather" in path or "meeting" in path or "event" in path or "wedding" in path or "rfp" in path:
@@ -158,7 +158,7 @@ def derive_target_keyword(url_str: str, page_title: str) -> str:
         return "Portland Hotel Deals & Vacation Packages"
     if "steakhouse" in path:
         return "Steakhouse In Portland: The Steakhouse"
-    if "departure" in path:
+    if "rooftop" in path:
         return "Rooftop Restaurant In Portland"
     if "in-room-dining" in path:
         return "Portland Luxury In-Room Dining"
@@ -179,7 +179,7 @@ def derive_target_keyword(url_str: str, page_title: str) -> str:
     if "frequently-asked-questions" in path:
         return "Example Hotel Portland Hotel FAQs"
     if "gallery" in path:
-        return "Example Hotel Hotel Photo Gallery"
+        return "Example Hotel Photo Gallery"
 
     clean_t = re.sub(r"\s*[-|–|—]\s*.*$", "", page_title).strip()
     if clean_t:

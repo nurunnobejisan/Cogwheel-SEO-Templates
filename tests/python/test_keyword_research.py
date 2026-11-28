@@ -19,7 +19,7 @@ class TestSiteMapperArchetypes:
     def test_classify_archetypes(self):
         mapper = SiteMapper("https://example-hotel.com", max_pages=10)
 
-        assert mapper._classify_page_archetype("/", "Example Hotel Hotel", "Welcome", "") == "home"
+        assert mapper._classify_page_archetype("/", "Example Hotel", "Welcome", "") == "home"
         assert mapper._classify_page_archetype("/rooms", "Guest Rooms", "Our Rooms", "") == "category_overview"
         assert mapper._classify_page_archetype("/rooms/deluxe-king", "Deluxe King Room", "Deluxe King", "") == "product_or_room"
         assert mapper._classify_page_archetype("/amenities/spa", "Luxury Spa", "Spa & Wellness", "") == "service_or_amenity"
@@ -59,7 +59,7 @@ class TestKeywordResearchEngine:
         engine.inventory = SiteInventory(
             domain="example-hotel.com",
             target_url="https://example-hotel.com",
-            brand_name="Example Hotel Hotel",
+            brand_name="Example Hotel",
             primary_location="Charleston, SC",
             core_offerings=["Oceanfront Suites", "Rooftop Dining"],
             pages=[
@@ -73,7 +73,7 @@ class TestKeywordResearchEngine:
         kws = engine._generate_seed_expansion_keywords()
         assert len(kws) >= 20
         # Check brand and city presence
-        assert any("grand palace hotel" in k.keyword.lower() for k in kws)
+        assert any("example hotel" in k.keyword.lower() for k in kws)
         assert any("charleston" in k.keyword.lower() for k in kws)
         # Check opportunity flagging
         assert any(k.is_opportunity for k in kws)
@@ -87,11 +87,11 @@ class TestKeywordResearchEngine:
             engine.inventory = SiteInventory(
                 domain="example-hotel.com",
                 target_url="https://example-hotel.com",
-                brand_name="Example Hotel Hotel",
+                brand_name="Example Hotel",
                 primary_location="Charleston, SC",
                 core_offerings=["Luxury Suites", "Fine Dining"],
                 pages=[
-                    DiscoveredPage(url="https://example-hotel.com/", path="/", title="Example Hotel Hotel Home", archetype="home"),
+                    DiscoveredPage(url="https://example-hotel.com/", path="/", title="Example Hotel Home", archetype="home"),
                     DiscoveredPage(url="https://example-hotel.com/accommodations", path="/accommodations", title="Suites & Rooms", archetype="category_overview"),
                     DiscoveredPage(url="https://example-hotel.com/dining", path="/dining", title="Rooftop Restaurant & Bar", archetype="dining_or_outlet"),
                     DiscoveredPage(url="https://example-hotel.com/weddings", path="/weddings", title="Weddings & Receptions", archetype="events_or_offers"),

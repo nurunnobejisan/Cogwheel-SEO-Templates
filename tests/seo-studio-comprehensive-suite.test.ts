@@ -256,7 +256,7 @@ describe("SEO & GEO Studio — Comprehensive Unit Test Suite", () => {
         const result = validateBrandCompliance("Independent", {
           title: "Example Hotel Lake Tahoe | Official Site",
           metaDesc: "Boutique South Lake Tahoe hotel near Heavenly Village with fire pits, craft beer, and direct booking perks.",
-          h1: "The Example Hotel Hotel",
+          h1: "Example Hotel",
           requireSuffix: true,
         });
         expect(result.valid).toBe(true);

@@ -31,7 +31,7 @@ export function classifyPageUrl(urlStr: string): { category: string; subCategory
       const slug = pathname.split("/").filter(Boolean).pop() || "overview";
       return { category: "Accommodations", subCategory: toTitleCase(slug.replace(/[-_]+/g, " ")) };
     }
-    if (pathname.includes("/dining") || pathname.includes("/restaurant") || pathname.includes("/departure") || pathname.includes("/steakhouse")) {
+    if (pathname.includes("/dining") || pathname.includes("/restaurant") || pathname.includes("/rooftop") || pathname.includes("/steakhouse")) {
       const slug = pathname.split("/").filter(Boolean).pop() || "overview";
       return { category: "DINING", subCategory: toTitleCase(slug.replace(/[-_]+/g, " ")) };
     }
@@ -70,7 +70,7 @@ export function deriveTargetKeyword(urlStr: string, pageTitle: string): string {
     if (pathname.includes("signature-suite")) return "Luxury Suite Downtown Portland";
     if (pathname.includes("superior-room")) return "Superior Hotel Rooms Portland";
     if (pathname.includes("historic-suite")) return "Historic Suite";
-    if (pathname.includes("departure")) return "Rooftop Restaurant In Portland";
+    if (pathname.includes("rooftop")) return "Rooftop Restaurant In Portland";
     if (pathname.includes("steakhouse")) return "Steakhouse In Portland: The Steakhouse";
     if (pathname.includes("in-room-dining")) return "Portland Luxury In-Room Dining";
     if (pathname.includes("dining")) return "Downtown Portland Restaurants At Example Hotel";
@@ -86,7 +86,7 @@ export function deriveTargetKeyword(urlStr: string, pageTitle: string): string {
     if (pathname.includes("blogs")) return "Portland Travel Blog & Stories";
     if (pathname.includes("events-calendar")) return "Downtown Portland Events Calendar";
     if (pathname.includes("frequently-asked-questions")) return "Example Hotel Portland Hotel FAQs";
-    if (pathname.includes("gallery")) return "Example Hotel Hotel Photo Gallery";
+    if (pathname.includes("gallery")) return "Example Hotel Photo Gallery";
 
     // Fallback based on clean page title
     const cleanTitle = pageTitle

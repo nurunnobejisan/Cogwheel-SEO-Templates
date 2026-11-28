@@ -866,7 +866,7 @@ def is_brand_excluded(
                 if len(t) >= 4 and SequenceMatcher(None, t, brand_clean).ratio() >= 0.80:
                     return True
 
-    # 3. Exclude property-specific brand words, spaceless variants (e.g. 'examplehotel'), and typos (e.g. 'tiatro', 'treato')
+    # 3. Exclude property-specific brand words, spaceless variants (e.g. 'example-hotel'), and typos (e.g. 'example', 'exmple')
     for bw in prop_brand_words:
         if re.search(r"\b" + re.escape(bw) + r"\b", kw_clean):
             return True

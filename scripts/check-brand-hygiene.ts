@@ -25,10 +25,20 @@ const FORBIDDEN: Rule[] = [
   { label: "private client brand 'Razib'", pattern: /razib/i },
   { label: "private client brand 'Cogwheel'", pattern: /cogwheel/i },
   { label: "legacy product name 'Hilton SEO/GEO Studio'", pattern: /hilton\s+seo\s*\/?\s*geo\s+studio/i },
+  { label: "private client brand 'The Nines'", pattern: /\bthenines\b|\bthe\s+nines\b/i },
+  { label: "private client brand 'Catbird'", pattern: /\bcatbird\b/i },
+  { label: "private client brand 'Reitz Union'", pattern: /\breitz\b/i },
+  { label: "private client brand 'Arrive Hotels'", pattern: /\barrivehotels\b|\barrive\s+hotels\b/i },
+  { label: "private client property 'Coachman'", pattern: /\bcoachman(?:hotel|tahoe)?\b/i },
+  { label: "private client property 'The Curtis'", pattern: /\bthecurtis\b/i },
+  { label: "private client property 'The Charter Seattle'", pattern: /\bthe\s+charter\s+seattle\b/i },
+  { label: "private client venue names", pattern: /\burban\s+farmer\b|\bmeier\s*&\s*frank\b|\bdeparture\s+restaurant\b/i },
+  { label: "legacy hardcoded template ID", pattern: /1TIGp2n1UAfz_UKGyJl4ZK-jdcITxsjO6EgqRvy1CVSw/ },
 ];
 
 const BINARY_EXTENSIONS = new Set([
   ".bin",
+  ".docx",
   ".gif",
   ".ico",
   ".jpeg",
@@ -41,8 +51,16 @@ const BINARY_EXTENSIONS = new Set([
   ".webp",
   ".woff",
   ".woff2",
+  ".xlsx",
   ".zip",
 ]);
+
+/**
+ * Historical artefacts are deliberately left in place. The extension bundle is
+ * out of scope for this web-app cleanup, and `output/` contains tracked client
+ * deliverables plus the path assertions that read them.
+ */
+const SKIP_PATH_PREFIXES = ["output/", "chrome-extension/"];
 
 const SKIP_FILES = new Set([
   "package-lock.json",
@@ -52,6 +70,17 @@ const SKIP_FILES = new Set([
   "scripts/check-brand-hygiene.ts",
   "tests/ts/brand-hygiene.test.ts",
 ]);
+
+/** Lines that intentionally retain a legacy identifier. */
+const ALLOWED_LINES: Record<string, RegExp[]> = {
+  // Legacy values are accepted by the zod schema and normalised on read.
+  "src/lib/schemas.ts": [/^\s*(arrive|catbird|reitz):\s*"/],
+  // These tests read the historical output/thenines.com artefacts.
+  "tests/heading-auditor.test.ts": [/thenines\.com/],
+  "tests/image-auditor.test.ts": [/thenines\.com/],
+  "tests/meta-optimizer-generator.test.ts": [/thenines\.com/],
+  "tests/keyword-research-generator.test.ts": [/thenines\.com/],
+};
 
 export function isScannable(file: string): boolean {
   if (SKIP_FILES.has(file) || SKIP_FILES.has(path.basename(file))) return false;

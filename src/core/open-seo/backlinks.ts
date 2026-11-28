@@ -86,7 +86,7 @@ export function analyzeBacklinkProfile(targetUrlOrDomain: string): BacklinkProfi
     ],
     topAnchors: [
       { anchorText: "example hotel", referringDomainsCount: 420, backlinksCount: 12500, percentage: 38.5, isBrandTarget: true },
-      { anchorText: "example hotel hotel", referringDomainsCount: 310, backlinksCount: 8400, percentage: 24.0, isBrandTarget: true },
+      { anchorText: "example hotel", referringDomainsCount: 310, backlinksCount: 8400, percentage: 24.0, isBrandTarget: true },
       { anchorText: "rooftop restaurant", referringDomainsCount: 180, backlinksCount: 4200, percentage: 12.5, isBrandTarget: true },
       { anchorText: "downtown portland hotel", referringDomainsCount: 95, backlinksCount: 1800, percentage: 6.8, isBrandTarget: false },
       { anchorText: "website", referringDomainsCount: 140, backlinksCount: 2400, percentage: 8.2, isBrandTarget: false },

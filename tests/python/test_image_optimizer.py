@@ -71,7 +71,7 @@ class TestImageOptimizationRules:
             city="Portland",
         )
         assert len(alt2) <= 125
-        assert "The Steakhouse" in alt2
+        assert "Steakhouse" in alt2
         assert "Example Hotel" in alt2
 
 
