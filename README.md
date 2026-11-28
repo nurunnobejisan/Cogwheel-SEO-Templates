@@ -7,7 +7,7 @@
 [![CI](https://img.shields.io/github/actions/workflow/status/nurunnobejisan/SEO-Studio/ci.yml?style=flat-square&logo=githubactions&logoColor=white)](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml)
 [![Live](https://img.shields.io/badge/live-app-0f172a?style=flat-square&logo=vercel&logoColor=white)](https://seo-studio-one.vercel.app)
 [![License: MIT](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square&logo=opensourceinitiative&logoColor=white)](LICENSE)
-[![Version](https://img.shields.io/badge/version-3.0.0-7c3aed?style=flat-square&logo=github&logoColor=white)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-3.1.0-7c3aed?style=flat-square&logo=github&logoColor=white)](CHANGELOG.md)
 [![Next.js](https://img.shields.io/badge/Next.js-14-000000?style=flat-square&logo=nextdotjs&logoColor=white)](https://nextjs.org)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?style=flat-square&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Python](https://img.shields.io/badge/Python-3.11+-3776ab?style=flat-square&logo=python&logoColor=white)](https://www.python.org)
@@ -68,6 +68,13 @@ The core rule is simple: **measure, label, or leave blank.** Rankings, search vo
 - CMS connectors and reviewable self-healing patch plans for WordPress, Shopify, Webflow, and HTML.
 - Chrome side panel for live page inspection, audit overlays, training capture, and OTA rule updates.
 - Optional Supabase-backed durable storage; local-first by default.
+
+### Design system
+
+- The operator workspace is built on documented design tokens (`tailwind.config.ts`), Geist fonts, and a `src/components/ui/` primitive library.
+- Navigation runs through an `AppShell` and Next.js route groups (`src/app/(app)/`, `src/app/(public)/`), with a property switcher and URL-driven views.
+- Data-heavy screens use TanStack Table views and telemetry charts (`src/components/data/`).
+- A `/dev/ui` gallery renders every primitive, and `npm run lint` / `npm test` guard the token and component contracts.
 
 ### Quality and security
 
