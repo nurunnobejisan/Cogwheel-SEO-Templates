@@ -68,21 +68,11 @@ OUTPUT_META_FIELDS = (
     "requestedModel",
 )
 
-#: Schema.org types we accept as a valid ``@type``. A type outside this set is
-#: either misspelled or not something this pipeline validates against.
+#: Schema.org types loaded from the single shared JSON list consumed by both
+#: Python eval and the TypeScript runtime output gate (`schemas/known-schema-types.json`).
+KNOWN_SCHEMA_TYPES_PATH = REPO_ROOT / "schemas" / "known-schema-types.json"
 KNOWN_SCHEMA_TYPES = frozenset(
-    {
-        "Hotel", "LodgingBusiness", "Motel", "Hostel", "BedAndBreakfast",
-        "Resort", "VacationRental", "Apartment", "House", "Room",
-        "Restaurant", "Cafe", "BarOrPub", "Bakery", "FoodEstablishment",
-        "Menu", "MenuItem", "Offer", "OfferCatalog",
-        "FAQPage", "Question", "Answer", "HowTo", "HowToStep",
-        "BreadcrumbList", "ListItem", "Organization", "Corporation",
-        "LocalBusiness", "WebSite", "WebPage", "AboutPage", "ContactPage",
-        "Product", "Article", "BlogPosting", "NewsArticle",
-        "Event", "Place", "PostalAddress", "GeoCoordinates", "Rating",
-        "AggregateRating", "Review", "Person", "ImageObject", "VideoObject",
-    }
+    json.loads(KNOWN_SCHEMA_TYPES_PATH.read_text(encoding="utf-8"))
 )
 
 #: Priority / severity vocabularies — closed enums, not facts.

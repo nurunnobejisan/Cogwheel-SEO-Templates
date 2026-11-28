@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { apiFetch } from "@/lib/api";
 import {
   HILTON_BRANDS,
   isHalfAndHalfEligible,
@@ -91,7 +92,7 @@ export function ContentStudio({ property, onPropertyChange, matrix, runId }: Pro
     setBusy(true);
     setError(null);
     try {
-      const res = await fetch("/api/generate-hc", {
+      const res = await apiFetch("/api/generate-hc", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

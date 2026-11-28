@@ -1,4 +1,5 @@
 import { generateClaudeText, isClaudeConfigured } from "@/core/claude";
+import type { TaskKind } from "../../../ai/types";
 import { getCrawlPages } from "@/core/crawler";
 import { runTaskPipeline, type PipelineResult } from "@/core/pipeline";
 import type { TaskRunFlag } from "@/core/runs";
@@ -21,7 +22,15 @@ interface SchemaMarkupDataBundle {
 }
 
 export interface SchemaMarkupDeps {
-  callClaude?: (opts: { system: string; prompt: string; maxTokens?: number; taskId?: string }) => Promise<string>;
+  callClaude?: (opts: {
+    system: string;
+    prompt: string;
+    maxTokens?: number;
+    taskId?: string;
+    task?: TaskKind;
+    propertyId?: string;
+    brand?: string;
+  }) => Promise<string>;
 }
 
 export async function runSchemaMarkupTask(
@@ -90,7 +99,15 @@ export async function runSchemaMarkupTask(
         candidates: data.candidates,
         feedback,
       });
-      const text = await callClaude({ system, prompt, maxTokens: 4096, taskId: "schema-markup" });
+      const text = await callClaude({
+        system,
+        prompt,
+        maxTokens: 4096,
+        taskId: "schema-markup",
+        task: "schema_generation",
+        ...(propertyId ? { propertyId } : {}),
+        ...(data.property.brand ? { brand: data.property.brand } : {}),
+      });
       return parseSchemaMarkupDraft(text);
     },
     validate: ({ data, draft }) => {

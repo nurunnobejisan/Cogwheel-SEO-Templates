@@ -144,6 +144,7 @@ def build_from_html(
     source: str,
     tags: Sequence[str] = (),
     split: Optional[str] = None,
+    property_id: Optional[str] = None,
     max_chars: int = 700,
     attribution: Optional[str] = None,
 ) -> Tuple[List[Dict[str, Any]], CorpusReport]:
@@ -178,6 +179,10 @@ def build_from_html(
         body = extract_text(html, url)
         title = str(page.get("title") or markup.get("title") or url)
         doc_id = str(page.get("id") or url)
+        page_property_id = (
+            str(page.get("propertyId") or page.get("property_id") or property_id or "").strip()
+            or None
+        )
 
         produced = chunk_document(
             doc_id=doc_id,
@@ -186,6 +191,7 @@ def build_from_html(
             source=source,
             url=url,
             tags=list(tags),
+            property_id=page_property_id,
             max_chars=max_chars,
         )
         if attribution:

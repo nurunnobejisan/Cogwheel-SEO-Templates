@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api";
 import { GenerationProgressModal } from "./GenerationProgressModal";
 import { Button } from "@/components/ui/index";
 import { PanelCard as Card } from "@/components/data/index";
@@ -50,7 +51,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
     let cancelled = false;
     async function loadLatestCrawlCount() {
       try {
-        const res = await fetch("/api/tasks/site-crawl/runs", { cache: "no-store" });
+        const res = await apiFetch("/api/tasks/site-crawl/runs", { cache: "no-store" });
         if (!res.ok) return;
         const json = (await res.json()) as {
           runs?: Array<{
@@ -109,7 +110,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
       const br = numOrUndef(brandKeywords);
       const total = nb !== undefined && br !== undefined ? nb + br : undefined;
 
-      const res = await fetch("/api/tasks/seo-baseline-ai-visibility/run", {
+      const res = await apiFetch("/api/tasks/seo-baseline-ai-visibility/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

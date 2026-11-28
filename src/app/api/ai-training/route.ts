@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { getActiveAiProviderLabel, isFreeOnlineAiEnabled } from "@/core/claude";
+import { hasOperatorToken, requireOperator } from "@/lib/security/operator";
 import {
   addTrainingRule,
   deleteTrainingRule,
@@ -102,25 +103,41 @@ const batchSyncSchema = z.object({
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const taskId = searchParams.get("taskId") || undefined;
-  const rules = await listTrainingRules(taskId);
+  const [rules, authenticated] = await Promise.all([
+    listTrainingRules(taskId),
+    hasOperatorToken(req),
+  ]);
+  const history = listChangeHistory();
+
+  if (!authenticated) {
+    return NextResponse.json({
+      authenticated: false,
+      rulesCount: rules.length,
+      historyCount: history.length,
+      provider: getActiveAiProviderLabel(),
+      // True only when the keyless Pollinations fallback was explicitly opted in.
+      providerIsFreeOnline: isFreeOnlineAiEnabled(),
+    });
+  }
+
   return NextResponse.json({
+    authenticated: true,
     rules,
+    rulesCount: rules.length,
+    historyCount: history.length,
     provider: getActiveAiProviderLabel(),
     // True only when the keyless Pollinations fallback was explicitly opted in.
     providerIsFreeOnline: isFreeOnlineAiEnabled(),
     designSettings: getDesignSettings(),
-    history: listChangeHistory(),
+    history,
   });
 }
 
 export async function POST(req: Request) {
   try {
-    const authHeader = req.headers.get("Authorization");
-    const expectedToken = process.env.SEO_STUDIO_API_BEARER_TOKEN;
-    if (expectedToken && expectedToken.trim().length > 0) {
-      if (authHeader !== `Bearer ${expectedToken.trim()}`) {
-        return NextResponse.json({ error: "Unauthorized: Invalid or missing Bearer token" }, { status: 401 });
-      }
+    const auth = await requireOperator(req);
+    if (!auth.ok) {
+      return NextResponse.json({ error: auth.message, code: auth.code }, { status: 401 });
     }
 
     const body = (await req.json()) as Record<string, unknown>;
@@ -187,6 +204,10 @@ export async function POST(req: Request) {
 }
 
 export async function PATCH(req: Request) {
+  const auth = await requireOperator(req);
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.message, code: auth.code }, { status: 401 });
+  }
   try {
     const body = await req.json();
     const parsed = toggleRuleSchema.parse(body);
@@ -202,6 +223,10 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
+  const auth = await requireOperator(req);
+  if (!auth.ok) {
+    return NextResponse.json({ error: auth.message, code: auth.code }, { status: 401 });
+  }
   const { searchParams } = new URL(req.url);
   const id = searchParams.get("id");
   if (!id) {

@@ -60,19 +60,19 @@ jobs:
 
       # ── 2. Stamp build-info.json ─────────────────────────────────────────────
       - name: Write public/build-info.json
+        env:
+          GH_SHA: ${{ github.sha }}
+          GH_BRANCH: ${{ github.ref_name }}
+          GH_ACTOR: ${{ github.actor }}
+          GH_WORKFLOW: ${{ github.workflow }}
+          GH_RUN: ${{ github.run_number }}
         run: |
           mkdir -p public
-          cat > public/build-info.json <<EOF
-          {
-            "sha":       "${{ github.sha }}",
-            "shortSha":  "$(echo '${{ github.sha }}' | cut -c1-7)",
-            "branch":    "${{ github.ref_name }}",
-            "actor":     "${{ github.actor }}",
-            "workflow":  "${{ github.workflow }}",
-            "runNumber": ${{ github.run_number }},
-            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          }
-          EOF
+          SHORT_SHA="${GH_SHA:0:7}"
+          TIMESTAMP="$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          printf '{\n  "sha": "%s",\n  "shortSha": "%s",\n  "branch": "%s",\n  "actor": "%s",\n  "workflow": "%s",\n  "runNumber": %s,\n  "timestamp": "%s"\n}\n' \
+            "$GH_SHA" "$SHORT_SHA" "$GH_BRANCH" "$GH_ACTOR" "$GH_WORKFLOW" "$GH_RUN" "$TIMESTAMP" \
+            > public/build-info.json
           echo "build-info.json written:"
           cat public/build-info.json
 

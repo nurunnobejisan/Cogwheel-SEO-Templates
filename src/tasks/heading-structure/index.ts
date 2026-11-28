@@ -1,4 +1,5 @@
 import { generateClaudeText, isClaudeConfigured } from "@/core/claude";
+import type { TaskKind } from "../../../ai/types";
 import { getCrawlPages, getCrawlRun, getLatestCrawlRunForProperty, listCrawlRuns } from "@/core/crawler";
 import { runTaskPipeline, type PipelineResult } from "@/core/pipeline";
 import { getPropertyProfile, upsertPropertyProfile } from "@/core/property";
@@ -27,7 +28,14 @@ interface HeadingStructureDataBundle {
 }
 
 export interface HeadingStructureDeps {
-  callClaude?: (opts: { system: string; prompt: string; maxTokens?: number }) => Promise<string>;
+  callClaude?: (opts: {
+    system: string;
+    prompt: string;
+    maxTokens?: number;
+    task?: TaskKind;
+    propertyId?: string;
+    brand?: string;
+  }) => Promise<string>;
 }
 
 async function loadLatestKeywordMap(
@@ -185,7 +193,14 @@ export async function runHeadingStructureTask(
         pages: data.pages,
         feedback,
       });
-      const raw = await callClaude({ system, prompt, maxTokens: 3000 });
+      const raw = await callClaude({
+        system,
+        prompt,
+        maxTokens: 3000,
+        task: "metadata_generation",
+        ...(propertyId ? { propertyId } : {}),
+        ...(data.property.brand ? { brand: data.property.brand } : {}),
+      });
       return parseHeadingStructureDraft(raw, data.pages);
     },
     validate: async ({ data, draft }) =>

@@ -1,12 +1,31 @@
 /**
- * Global middleware: API rate limiting, CSRF origin checks and security
- * headers.
+ * Global middleware: API operator authentication, CSRF origin checks, rate
+ * limiting, and security headers.
+ *
+ * Operator-protected `/api/*` routes (via `requireOperator` in `lib/security/operator.ts`):
+ *   1. All non-GET/HEAD/OPTIONS `/api/*` requests:
+ *      `/api/ai-training`, `/api/audit-report`, `/api/brain`, `/api/bucket`,
+ *      `/api/client-email`, `/api/content-similarity`, `/api/crawl-property`,
+ *      `/api/daily-session`, `/api/daily-session/run`, `/api/drive-sync`,
+ *      `/api/full-audit`, `/api/generate-hc`, `/api/generate-kr`,
+ *      `/api/geo/check`, `/api/heading-audit`, `/api/image-audit`, `/api/ingest`,
+ *      `/api/outcomes`, `/api/platform/*`, `/api/platform/session`,
+ *      `/api/property-autofill`, `/api/runs`, `/api/select-kw`,
+ *      `/api/semrush-pull`, `/api/seo-visibility-report`, `/api/sitemap-audit`,
+ *      `/api/tasks/[taskId]/run`, `/api/tasks/site-crawl/run`,
+ *      `/api/templates/inspect`, `/api/training-triples`,
+ *      `/api/training-triples/review`, `/api/visibility`,
+ *      `/api/visibility/gaps`, `/api/visibility-suite`.
+ *   2. Costly / crawl / LLM GET routes (`PROTECTED_GET_ROUTE_PREFIXES`):
+ *      `/api/brain`, `/api/full-audit`, `/api/heading-audit`,
+ *      `/api/image-audit`, `/api/geo/check`.
  *
  * Rate-limit state is per instance (see `lib/security/rate-limit.ts`); it is an
  * abuse brake, not a billing quota.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
+import { requireOperator, requiresOperatorAuth } from "./lib/security/operator";
 import { clientKey, consume, limitForRequest } from "./lib/security/rate-limit";
 
 const SECURITY_HEADERS: Record<string, string> = {
@@ -58,7 +77,7 @@ function isCrossOriginWrite(req: NextRequest): boolean {
   }
 }
 
-export function middleware(req: NextRequest): NextResponse {
+export async function middleware(req: NextRequest): Promise<NextResponse> {
   const { pathname } = req.nextUrl;
 
   if (!pathname.startsWith("/api/")) {
@@ -71,6 +90,13 @@ export function middleware(req: NextRequest): NextResponse {
 
   if (isCrossOriginWrite(req)) {
     return jsonError(403, "cross_origin_blocked", "Cross-origin request blocked.");
+  }
+
+  if (requiresOperatorAuth(pathname, req.method)) {
+    const auth = await requireOperator(req);
+    if (!auth.ok) {
+      return jsonError(auth.status, auth.code, auth.message);
+    }
   }
 
   const rule = limitForRequest(pathname, req.method);

@@ -12,13 +12,22 @@ import {
   callCustomModel,
   getCustomModelSettings,
   isCustomModelConfigured,
+  isRegistryModelSelectable,
 } from "../src/core/ai/custom-model.ts";
 import {
+  computeCanaryBucket,
   getActiveAiProviderLabel,
+  getAdapterCanaryPct,
+  getAdapterGateCounters,
+  getAdapterLatencyStats,
+  getAdapterMode,
   isClaudeConfigured,
   generateClaudeText,
+  resetAdapterGateCounters,
+  shouldRouteCanary,
+  V1_ADAPTER_TASKS,
 } from "../src/core/claude.ts";
-import { loadProviders, routeTask } from "../ai/router.ts";
+import { loadProviders, routeTask, V1_ADAPTER_TASKS as ROUTER_V1_TASKS } from "../ai/router.ts";
 import type { ProviderDescriptor } from "../ai/types.ts";
 
 const SAFE_ENDPOINT = "https://example.com/v1/chat/completions";
@@ -28,6 +37,8 @@ const MANAGED_KEYS = [
   "CUSTOM_MODEL_ENDPOINT",
   "CUSTOM_MODEL_ID",
   "CUSTOM_MODEL_API_KEY",
+  "AI_ADAPTER_MODE",
+  "AI_ADAPTER_CANARY_PCT",
   "ANTHROPIC_API_KEY",
   "GEMINI_API_KEY",
   "GOOGLE_AI_API_KEY",
@@ -175,25 +186,101 @@ describe("Phase 4 — callCustomModel", () => {
   });
 });
 
-describe("Phase 4 — generateClaudeText ordering", () => {
-  it("tries the fine-tuned endpoint first when configured", async () => {
+describe("Phase 4 / WP2 — generateClaudeText task routing", () => {
+  it("exports V1_ADAPTER_TASKS scoped strictly to schema_generation and metadata_generation", () => {
+    expect(V1_ADAPTER_TASKS).toEqual(["schema_generation", "metadata_generation"]);
+    expect(ROUTER_V1_TASKS).toEqual(["schema_generation", "metadata_generation"]);
+  });
+
+  it("skips the custom adapter for untagged calls and falls back to the main provider chain", async () => {
     snapshotEnv();
-    setEnv({ CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT, CUSTOM_MODEL_ID: "seo-studio-tuned-v1" });
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      GROQ_API_KEY: "groq-test-key",
+    });
     const fetchMock = vi.fn(async (..._args: unknown[]) =>
-      jsonResponse({ choices: [{ message: { content: "from the tuned model" } }] }),
+      jsonResponse({ choices: [{ message: { content: "from groq chain" } }] }),
     );
     vi.stubGlobal("fetch", fetchMock);
 
     const text = await generateClaudeText({ system: "sys", prompt: "q" });
-    expect(text).toBe("from the tuned model");
+    expect(text).toBe("from groq chain");
     expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(SAFE_ENDPOINT);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("api.groq.com");
   });
 
-  it("falls through to the error path when the tuned endpoint fails", async () => {
+  it("uses the custom adapter first for v1 Tier 1 tasks when AI_ADAPTER_MODE=on", async () => {
     snapshotEnv();
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      AI_ADAPTER_MODE: "on",
+    });
+    const schemaReply = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Hotel",
+      name: "Tuned Hotel",
+    });
+    const metaReply = JSON.stringify({
+      title: "Tuned Hotel — Boutique Stay",
+      metaDescription: "Book direct at Tuned Hotel for waterfront suites, dining, and flexible member rates.",
+    });
+    const fetchMock = vi.fn(async (url: unknown, init?: RequestInit) => {
+      void url;
+      const body = JSON.parse(String(init?.body ?? "{}")) as { messages?: Array<{ content?: string }> };
+      const userPrompt = body.messages?.[1]?.content ?? "";
+      const content = userPrompt.includes("schema_req") ? schemaReply : metaReply;
+      return jsonResponse({ choices: [{ message: { content } }] });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const schemaText = await generateClaudeText({
+      system: "sys",
+      prompt: "schema_req for Tuned Hotel",
+      task: "schema_generation",
+    });
+    expect(schemaText).toBe(schemaReply);
+
+    const metaText = await generateClaudeText({
+      system: "sys",
+      prompt: "meta_req for Tuned Hotel",
+      task: "metadata_generation",
+    });
+    expect(metaText).toBe(metaReply);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(SAFE_ENDPOINT);
+    expect(String(fetchMock.mock.calls[1]?.[0])).toBe(SAFE_ENDPOINT);
+  });
+
+  it("never calls the custom adapter for Tier 2 or non-v1 Tier 1 tasks", async () => {
+    snapshotEnv();
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      AI_ADAPTER_MODE: "on",
+      GROQ_API_KEY: "groq-test-key",
+    });
+    const fetchMock = vi.fn(async (..._args: unknown[]) =>
+      jsonResponse({ choices: [{ message: { content: "standard chain output" } }] }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    for (const task of ["rag_synthesis", "entity_gap_analysis", "alt_text_generation"] as const) {
+      await generateClaudeText({ system: "sys", prompt: "q", task });
+    }
+    expect(fetchMock).toHaveBeenCalledTimes(3);
+    for (const call of fetchMock.mock.calls) {
+      expect(String(call[0])).not.toBe(SAFE_ENDPOINT);
+      expect(String(call[0])).toContain("api.groq.com");
+    }
+  });
+
+  it("falls through to the error path when a v1 task fails on the tuned endpoint", async () => {
+    snapshotEnv();
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      AI_ADAPTER_MODE: "on",
       ENABLE_FREE_ONLINE_AI: "false",
     });
     vi.stubGlobal(
@@ -201,32 +288,261 @@ describe("Phase 4 — generateClaudeText ordering", () => {
       vi.fn(async () => jsonResponse({ error: "busy" }, 500)),
     );
 
-    await expect(generateClaudeText({ system: "sys", prompt: "q" })).rejects.toThrow(
-      /Fine-tuned \(seo-studio-unified\)/,
-    );
+    await expect(
+      generateClaudeText({ system: "sys", prompt: "q", task: "schema_generation" }),
+    ).rejects.toThrow(/Fine-tuned \(seo-studio-unified\)/);
   });
 
   it("does not touch the network when the endpoint fails the guard", async () => {
     snapshotEnv();
-    setEnv({ CUSTOM_MODEL_ENDPOINT: PRIVATE_ENDPOINT, ENABLE_FREE_ONLINE_AI: "false" });
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: PRIVATE_ENDPOINT,
+      AI_ADAPTER_MODE: "on",
+      ENABLE_FREE_ONLINE_AI: "false",
+    });
     const fetchMock = vi.fn();
     vi.stubGlobal("fetch", fetchMock);
 
-    await expect(generateClaudeText({ system: "sys", prompt: "q" })).rejects.toThrow(
-      /All online AI providers failed/,
-    );
+    await expect(
+      generateClaudeText({ system: "sys", prompt: "q", task: "schema_generation" }),
+    ).rejects.toThrow(/All online AI providers failed/);
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
-  it("reports the tuned provider in the label and configured check", () => {
+  it("reports the tuned provider in the label and configured check only when rollout mode serves traffic", () => {
     snapshotEnv();
-    setEnv({ CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT, CUSTOM_MODEL_ID: "seo-studio-tuned-v1" });
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      AI_ADAPTER_MODE: "on",
+    });
     expect(getActiveAiProviderLabel()).toBe("SEO Studio fine-tuned (seo-studio-tuned-v1)");
     expect(isClaudeConfigured()).toBe(true);
 
-    setEnv({ CUSTOM_MODEL_ENDPOINT: PRIVATE_ENDPOINT });
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      AI_ADAPTER_MODE: "shadow",
+    });
+    expect(getActiveAiProviderLabel()).toBe("Not Configured");
+    expect(isClaudeConfigured()).toBe(false);
+
+    setEnv({ CUSTOM_MODEL_ENDPOINT: PRIVATE_ENDPOINT, AI_ADAPTER_MODE: "on" });
     expect(getActiveAiProviderLabel()).not.toContain("fine-tuned");
     expect(isClaudeConfigured()).toBe(false);
+  });
+
+  it("refuses retired Gemini 1.5 Flash and any non-ready registry entries (WP4)", async () => {
+    snapshotEnv();
+    expect(isRegistryModelSelectable("seo-studio-unified-tuned_gemini-v1795487332")).toBe(false);
+    expect(isRegistryModelSelectable("seo-studio-unified-tuned_gemini-v1795486557")).toBe(false);
+    expect(isRegistryModelSelectable("gemini-1.5-flash-002")).toBe(false);
+    expect(
+      isRegistryModelSelectable("seo-studio-unverified", {
+        activeModelId: null,
+        models: [{ modelId: "seo-studio-unverified", status: "unverified" }],
+      }),
+    ).toBe(false);
+    expect(
+      isRegistryModelSelectable("seo-studio-qwen-ready", {
+        activeModelId: "seo-studio-qwen-ready",
+        models: [{ modelId: "seo-studio-qwen-ready", status: "ready" }],
+      }),
+    ).toBe(true);
+
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-unified-tuned_gemini-v1795487332",
+    });
+    expect(isCustomModelConfigured()).toBe(false);
+
+    await expect(
+      callCustomModel({
+        system: "s",
+        prompt: "p",
+        maxTokens: 64,
+        fetchImpl: vi.fn() as unknown as typeof fetch,
+      }),
+    ).rejects.toThrow(/retired or not ready/i);
+  });
+});
+
+describe("WP5 — AI_ADAPTER_MODE rollout modes", () => {
+  afterEach(() => {
+    resetAdapterGateCounters();
+  });
+
+  const validSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "Hotel",
+    name: "Canary Hotel",
+  });
+
+  it("parses AI_ADAPTER_MODE defaulting safely to off and clamps AI_ADAPTER_CANARY_PCT", () => {
+    expect(getAdapterMode({})).toBe("off");
+    expect(getAdapterMode({ AI_ADAPTER_MODE: "SHADOW" })).toBe("shadow");
+    expect(getAdapterMode({ AI_ADAPTER_MODE: "canary" })).toBe("canary");
+    expect(getAdapterMode({ AI_ADAPTER_MODE: "on" })).toBe("on");
+    expect(getAdapterMode({ AI_ADAPTER_MODE: "invalid-mode" })).toBe("off");
+
+    expect(getAdapterCanaryPct({})).toBe(0);
+    expect(getAdapterCanaryPct({ AI_ADAPTER_CANARY_PCT: "-5" })).toBe(0);
+    expect(getAdapterCanaryPct({ AI_ADAPTER_CANARY_PCT: "25" })).toBe(25);
+    expect(getAdapterCanaryPct({ AI_ADAPTER_CANARY_PCT: "250" })).toBe(100);
+    expect(getAdapterCanaryPct({ AI_ADAPTER_CANARY_PCT: "abc" })).toBe(0);
+  });
+
+  it("skips the custom adapter when AI_ADAPTER_MODE is off or unset", async () => {
+    snapshotEnv();
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      GROQ_API_KEY: "groq-test-key",
+    });
+    const fetchMock = vi.fn(async (..._args: unknown[]) =>
+      jsonResponse({ choices: [{ message: { content: "from standard chain" } }] }),
+    );
+    vi.stubGlobal("fetch", fetchMock);
+
+    const out = await generateClaudeText({
+      system: "sys",
+      prompt: "q",
+      task: "schema_generation",
+    });
+    expect(out).toBe("from standard chain");
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toContain("api.groq.com");
+  });
+
+  it("runs concurrently in shadow mode, always returns standard output, and records latency + gate counters without logging content", async () => {
+    snapshotEnv();
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      AI_ADAPTER_MODE: "shadow",
+      GROQ_API_KEY: "groq-test-key",
+    });
+
+    const adapterOut = '{"@context":"https://schema.org","@type":"InvalidShadowType"}';
+    const standardOut = validSchema;
+
+    const fetchMock = vi.fn(async (url: unknown) => {
+      if (String(url) === SAFE_ENDPOINT) {
+        return jsonResponse({ choices: [{ message: { content: adapterOut } }] });
+      }
+      return jsonResponse({ choices: [{ message: { content: standardOut } }] });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const logSpy = vi.spyOn(console, "log").mockImplementation(() => {});
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    const errSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    const out = await generateClaudeText({
+      system: "sys",
+      prompt: "SHADOW_SECRET_PROMPT Hotel",
+      task: "schema_generation",
+      propertyId: "prop-shadow-1",
+    });
+
+    expect(out).toBe(standardOut);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+    const urls = fetchMock.mock.calls.map((c) => String(c[0]));
+    expect(urls).toContain(SAFE_ENDPOINT);
+    expect(urls.some((u) => u.includes("api.groq.com"))).toBe(true);
+
+    const counters = getAdapterGateCounters();
+    expect(counters["schema_generation|shadow|adapter:fail"]).toBe(1);
+    expect(counters["schema_generation|shadow|standard:pass"]).toBe(1);
+
+    const latencies = getAdapterLatencyStats();
+    expect(latencies["schema_generation|shadow|adapter"]?.count).toBe(1);
+    expect(latencies["schema_generation|shadow|standard"]?.count).toBe(1);
+
+    const allLogs = [...logSpy.mock.calls.flat(), ...warnSpy.mock.calls.flat(), ...errSpy.mock.calls.flat()].join(" ");
+    expect(allLogs).not.toContain("SHADOW_SECRET_PROMPT");
+    expect(allLogs).not.toContain("InvalidShadowType");
+  });
+
+  it("still returns the standard response in shadow mode even if the adapter errors", async () => {
+    snapshotEnv();
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      AI_ADAPTER_MODE: "shadow",
+      GROQ_API_KEY: "groq-test-key",
+    });
+
+    const fetchMock = vi.fn(async (url: unknown) => {
+      if (String(url) === SAFE_ENDPOINT) {
+        return jsonResponse({ error: "timeout" }, 504);
+      }
+      return jsonResponse({ choices: [{ message: { content: validSchema } }] });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const out = await generateClaudeText({
+      system: "sys",
+      prompt: "Property: Canary Hotel",
+      task: "schema_generation",
+    });
+    expect(out).toBe(validSchema);
+    expect(getAdapterGateCounters()["schema_generation|shadow|adapter:transport_error"]).toBe(1);
+  });
+
+  it("buckets canary traffic deterministically by propertyId / requestId", async () => {
+    const b1 = computeCanaryBucket("prop-alpha");
+    const b2 = computeCanaryBucket("prop-alpha");
+    expect(b1).toBe(b2);
+    expect(b1).toBeGreaterThanOrEqual(0);
+    expect(b1).toBeLessThan(100);
+
+    expect(shouldRouteCanary("prop-alpha", 0)).toBe(false);
+    expect(shouldRouteCanary("prop-alpha", 100)).toBe(true);
+
+    snapshotEnv();
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      AI_ADAPTER_MODE: "canary",
+      AI_ADAPTER_CANARY_PCT: "50",
+      GROQ_API_KEY: "groq-test-key",
+    });
+
+    let inSliceSeed = "seed-0";
+    let outSliceSeed = "seed-1";
+    for (let i = 0; i < 500; i += 1) {
+      const candidate = `prop-${i}`;
+      const bucket = computeCanaryBucket(candidate);
+      if (bucket < 50) inSliceSeed = candidate;
+      if (bucket >= 50) outSliceSeed = candidate;
+      if (computeCanaryBucket(inSliceSeed) < 50 && computeCanaryBucket(outSliceSeed) >= 50) break;
+    }
+
+    const fetchMock = vi.fn(async (url: unknown) => {
+      if (String(url) === SAFE_ENDPOINT) {
+        return jsonResponse({ choices: [{ message: { content: validSchema } }] });
+      }
+      return jsonResponse({ choices: [{ message: { content: "from groq" } }] });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const selectedOut = await generateClaudeText({
+      system: "sys",
+      prompt: "Property: Canary Hotel",
+      task: "schema_generation",
+      propertyId: inSliceSeed,
+    });
+    expect(selectedOut).toBe(validSchema);
+    expect(String(fetchMock.mock.calls[0]?.[0])).toBe(SAFE_ENDPOINT);
+
+    const bypassedOut = await generateClaudeText({
+      system: "sys",
+      prompt: "Property: Canary Hotel",
+      task: "schema_generation",
+      requestId: outSliceSeed,
+    });
+    expect(bypassedOut).toBe("from groq");
+    expect(String(fetchMock.mock.calls[1]?.[0])).toContain("api.groq.com");
   });
 });
 

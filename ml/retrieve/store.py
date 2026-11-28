@@ -19,7 +19,15 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence, Tuple
 
-__all__ = ["VectorStore", "ScoredChunk", "cosine", "PGVECTOR_DDL", "export_rows", "write_pgvector"]
+__all__ = [
+    "VectorStore",
+    "ScoredChunk",
+    "cosine",
+    "PGVECTOR_DDL",
+    "pgvector_where_clause",
+    "export_rows",
+    "write_pgvector",
+]
 
 KEYWORD_WEIGHT = 0.3
 EMBEDDING_WEIGHT = 0.7
@@ -94,17 +102,27 @@ class VectorStore:
         top_k: int = 4,
         tags: Optional[Sequence[str]] = None,
         min_score: Optional[float] = None,
+        property_id: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """Hybrid rank: embeddings + keyword overlap, best first.
+
+        ``property_id`` enforces tenant isolation: chunks belonging to another
+        property are excluded, and when ``property_id`` is omitted only shared
+        (unscoped) chunks are returned.
 
         ``min_score`` defaults to no threshold — a hybrid score can be
         negative (cosine of unrelated vectors), so a 0-default would silently
         drop weakly-related chunks that ``top_k`` was asked for. Pass an
         explicit value to filter.
         """
+        target_property_id = (property_id or "").strip() or None
         tokens = _TOKEN_SPLIT.findall(query.lower()) if query else []
         scored: List[ScoredChunk] = []
         for chunk, vector in self._vectors.values():
+            raw_prop = chunk.get("propertyId") or chunk.get("property_id")
+            chunk_property_id = str(raw_prop).strip() if raw_prop is not None else ""
+            if chunk_property_id and chunk_property_id != (target_property_id or ""):
+                continue
             if tags and not any(tag in chunk.get("tags", []) for tag in tags):
                 continue
             cos = cosine(query_vector, vector)
@@ -127,11 +145,17 @@ class VectorStore:
         top_k: int = 4,
         tags: Optional[Sequence[str]] = None,
         min_score: Optional[float] = None,
+        property_id: Optional[str] = None,
     ) -> List[Dict[str, Any]]:
         """Embed ``query`` with ``embedder`` then rank."""
         vector = embedder.embed(query)
         return self.search(
-            vector, query=query, top_k=top_k, tags=tags, min_score=min_score
+            vector,
+            query=query,
+            top_k=top_k,
+            tags=tags,
+            min_score=min_score,
+            property_id=property_id,
         )
 
     # ------------------------------------------------------------ persist ----
@@ -178,17 +202,30 @@ CREATE TABLE IF NOT EXISTS ml_chunks (
   source      TEXT NOT NULL,
   url         TEXT,
   tags        TEXT[] NOT NULL DEFAULT '{}',
+  property_id TEXT,
   embedding   vector(%(dims)s)
 );
+CREATE INDEX IF NOT EXISTS ml_chunks_property_idx
+  ON ml_chunks (property_id);
 CREATE INDEX IF NOT EXISTS ml_chunks_embedding_idx
   ON ml_chunks USING hnsw (embedding vector_cosine_ops);
 """
+
+
+def pgvector_where_clause(property_id: Optional[str] = None) -> Tuple[str, Dict[str, Any]]:
+    """Build parameterized pgvector SQL WHERE predicate for tenant isolation."""
+    target = (property_id or "").strip() or None
+    if target is None:
+        return ("property_id IS NULL", {})
+    return ("(property_id IS NULL OR property_id = %(property_id)s)", {"property_id": target})
 
 
 def export_rows(store: VectorStore) -> List[Dict[str, Any]]:
     """Rows shaped for ``psycopg``'s ``executemany`` / ``COPY``."""
     rows: List[Dict[str, Any]] = []
     for chunk, vector in store._vectors.values():  # noqa: SLF001 - same package
+        raw_prop = chunk.get("propertyId") or chunk.get("property_id")
+        normalized_prop = str(raw_prop).strip() or None if raw_prop is not None else None
         rows.append(
             {
                 "id": str(chunk["id"]),
@@ -197,6 +234,7 @@ def export_rows(store: VectorStore) -> List[Dict[str, Any]]:
                 "source": str(chunk.get("source", "")),
                 "url": chunk.get("url"),
                 "tags": list(chunk.get("tags", [])),
+                "property_id": normalized_prop,
                 "embedding": vector,
             }
         )
@@ -224,9 +262,9 @@ def write_pgvector(store: VectorStore, dsn: str) -> int:
             for row in rows:
                 cursor.execute(
                     """
-                    INSERT INTO ml_chunks (id, title, text, source, url, tags, embedding)
+                    INSERT INTO ml_chunks (id, title, text, source, url, tags, property_id, embedding)
                     VALUES (%(id)s, %(title)s, %(text)s, %(source)s,
-                            %(url)s, %(tags)s, %(embedding)s)
+                            %(url)s, %(tags)s, %(property_id)s, %(embedding)s)
                     """,
                     row,
                 )

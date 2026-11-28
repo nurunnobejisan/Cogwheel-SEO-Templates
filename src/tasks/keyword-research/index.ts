@@ -159,6 +159,7 @@ export async function runKeywordResearchTask(
             prompt,
             maxTokens: 3000,
             taskId: "keyword-research",
+            task: "intent_mapping",
           });
           return {
             rationales: parseRationales(raw, data.matrix),

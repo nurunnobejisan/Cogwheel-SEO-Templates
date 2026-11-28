@@ -428,29 +428,96 @@ model produced a report.
 **Reverse.** Delete the `--endpoint` branch and `OUTPUT_META_FIELDS`;
 `--generate` and plain `run_eval --outputs` behave exactly as before.
 
+
+---
+
+## 2026-11-28 — AI SEO Model (v1) Readiness
+
+### D-025 — v1 adapter scope locked to Tier 1 `schema_generation` and `metadata_generation`
+
+**Decision.** Only Tier 1 `schema_generation` and `metadata_generation` route to the fine-tuned adapter. `rag_synthesis` and `entity_gap_analysis` stay on the Tier 2 frontier/free provider chain until a fine-tuned adapter beats Tier 2 on the frozen golden set.
+
+**Reason.** Narrowing v1 to the two strictly structured, objectively gateable tasks minimizes hallucination blast radius while validating end-to-end training and serving.
+
+**Reverse.** Expand `V1_ADAPTER_TASKS` in `src/core/claude.ts` once golden-set metrics show net improvement over Tier 2.
+
+### D-026 — Teacher-model synthetic drafts require human review marks before training
+
+**Decision.** Teacher-model synthetic outputs may enter training only after human review as `TrainingTriple` records; `ml/train/build_sft.py` excludes `repo-synthetic` (and `synthetic: true`) rows unless they carry an explicit human review mark, without editing `ml/sources.yaml`.
+
+**Reason.** Preserves the immutability contract on `ml/sources.yaml` while preventing unreviewed synthetic contamination from entering weights.
+
+**Reverse.** Pass an explicit reviewed flag on curated triples or adjust `is_human_reviewed` filter rules in `ml/train/build_sft.py`.
+
+### D-027 — Qwen3 Apache-2.0 progression with 1.7B GGUF default serving target
+
+**Decision.** Standardize v1 training progression on `Qwen/Qwen3-0.6B` (smoke test) -> `Qwen/Qwen3-1.7B` (baseline) -> `Qwen/Qwen3-4B` (candidate, all Apache-2.0 allow-listed). Default CPU/low-budget serving target is Qwen3-1.7B quantized to GGUF behind `ml/serve/server.py`.
+
+**Reason.** Zero paid GPU serving budget means CPU/GGUF inference on 1.7B gives predictable latency and cost while preserving Apache-2.0 commercial safety.
+
+**Reverse.** Update `ml/train/config.py` / `docs/ml/GPU_RUNBOOK.md` and `CUSTOM_MODEL_ID` after provisioning dedicated GPU serving.
+
+### D-028 — Retire legacy Gemini 1.5 Flash registry entry
+
+**Decision.** Retire the unverified `gemini-1.5-flash` entry in `data/models/model_registry.json` (`status: "retired"`, `activeModelId: null`) and refuse non-`ready` entries in both the app and `ml/serve/`.
+
+**Reason.** Gemini 1.5 Flash is deprecated and was never verified on the golden set; leaving an unverified entry selectable risks silent misrouting.
+
+**Reverse.** Only a newly trained model passing `python3 -m ml.serve.register` can earn `status: "ready"` and become `activeModelId`.
+
+### D-029 — Ship `schema_generation` before `metadata_generation`
+
+**Decision.** Ship and roll out `schema_generation` first (strictly machine-checkable JSON-LD `@type` and zero invented metrics), followed by `metadata_generation` (SERP pixel budgets + brand presence).
+
+**Reason.** Objective deterministic verification makes schema quality regressions immediately catchable before broader copy rollout.
+
+**Reverse.** Toggle `V1_ADAPTER_TASKS` or adapter mode gates per task.
+
+### D-030 — Operator bearer token guard uses Web Crypto for Edge + Node parity
+
+**Decision.** Implement `requireOperator(req)` in `src/lib/security/operator.ts` using `globalThis.crypto.subtle` SHA-256 digest normalization + constant-time XOR comparison. Unset `SEO_STUDIO_API_BEARER_TOKEN` allows with a one-line warning only when `NODE_ENV === "development"` and fails closed (`401`) otherwise; `GET /api/ai-training` returns counts + safe provider metadata unless a valid token is present.
+
+**Reason.** Next.js Edge Middleware cannot reliably import `node:crypto`, and failing closed in every non-development environment prevents test/production bypasses.
+
+**Reverse.** Swap `operatorAuthHeaders` / `requireOperator` for upstream SSO/JWT verification at the edge proxy.
+
+---
+
+## D-031 — Adapter rollout flag defaults to `off` (`AI_ADAPTER_MODE`)
+
+**Status:** accepted (2026-11-28, WP5).
+
+**Decision.** Add `AI_ADAPTER_MODE` (`off | shadow | canary | on`, defaulting to `off`) and `AI_ADAPTER_CANARY_PCT` (`0..100`, defaulting to `0`) in `src/core/ai/adapter-mode.ts` and enforce them inside `generateClaudeText` (`src/core/claude.ts`).
+
+- `off`: never calls the custom adapter; traffic uses the standard/free provider chain.
+- `shadow`: fires the adapter concurrently via `Promise.allSettled`, runs `gateOutput` on both results, records counter + latency metrics (`never` prompt or output text), and always returns the standard/free provider response.
+- `canary`: hashes `propertyId || requestId || "anonymous"` deterministically with FNV-1a mod 100 and routes buckets `< AI_ADAPTER_CANARY_PCT` to the adapter with WP3 gate fallback.
+- `on`: routes eligible v1 Tier 1 tasks (`schema_generation`, `metadata_generation`) to the adapter first with WP3 gate fallback.
+
+**Reason.** Safe progressive deployment ensures production never shifts traffic to a newly hosted adapter merely because `CUSTOM_MODEL_ENDPOINT` is populated; suites testing active adapter dispatch must opt in via `AI_ADAPTER_MODE=on`.
+
+**Reverse.** Remove `AI_ADAPTER_MODE` checks or default to `on` after production promotion gates pass.
+
 ---
 
 ## 2026-11-29 — v2
 
-### D-025 — `ml/generate/` is not recreated; `ml/dataset/` stays the generation home
+### D-032 — `ml/generate/` stays as v1 shipped it; dataset generation keeps its existing home
 
-**Decision.** The v2 prompt lists `ml/generate/` as a v1 deliverable, but no
-such package exists and the generation work it would contain already lives in
-`ml/dataset/` (`wdc.py`, `wikidata.py`, `cards.py`) and `scripts/`. Rather
-than recreate a package for naming's sake, this run keeps the existing layout
-and records the difference here.
+**Decision.** No restructuring of `ml/generate/` or `ml/dataset/` in v2. The
+v2 WPs consume the existing generation entry points and add builder CLIs
+(`build_dpo.py`) alongside `ml/train/build_sft.py`.
 
-**Reason.** Moving or duplicating generation code adds drift risk with no
-behaviour change. The v2 work packages need builder CLIs (`build_sft.py`,
-`build_dpo.py`), not a new package.
+**Reason.** v1 (WP7) already shipped `ml/generate/constrained.py` with lazy
+`outlines` import; moving or duplicating generation code adds drift risk with
+no behaviour change.
 
-**Reverse.** Create `ml/generate/` and move the generation entry points into
-it, updating the runbook commands in one PR.
+**Reverse.** Move the entry points in one PR and update the runbook commands.
 
-### D-026 — The review queue's local source of truth is a JSONL data file; Supabase ships as a mirror migration
+### D-033 — The review queue's local source of truth is a JSONL data file; Supabase ships as a mirror migration
 
 **Decision.** Review rows and decisions persist through the existing
-`seoStudioDataFile` mechanism (`data/ml-review-queue.jsonl` locally, the SEO
+`seoStudioDataFile` mechanism (`data/ml-review-queue.jsonl` locally, the
 `SEO_STUDIO_DATA_DIR` volume in deployment), mirroring the training-triples
 store. A Supabase table with the same shape ships as
 `supabase/migrations/0006_ml_review_queue.sql` for the deployment path.
@@ -465,7 +532,7 @@ store without a data reshape.
 already matches), keep the JSONL as an export path, and backfill existing
 rows.
 
-### D-027 — Approving a teacher triple flips it to `reviewed`, not `gold`
+### D-034 — Approving a teacher triple flips it to `reviewed`, not `gold`
 
 **Decision.** An approve in the review queue sets the underlying triple's
 quality to `reviewed` (training-eligible). `gold` stays a stronger, separate
@@ -478,17 +545,3 @@ golden criteria.
 
 **Reverse.** Map `approve` → `gold` in `recordDecision`, or add an explicit
 `gold` action to the queue.
-
-### D-028 — Missing v1-equivalent pieces are finished inside the v2 WPs that consume them
-
-**Decision.** `AI_ADAPTER_MODE` and the adapter output gates (v1 scope) are
-built as part of v2 WP3; the `build_sft.py` CLI entry point is built as part
-of WP2, wrapping the existing `ml/train/dataset.py`. The mapping is recorded
-in the AGENT_LOG v2-start table.
-
-**Reason.** The v1 prompt is not available; rebuilding each missing piece
-standalone first would duplicate work the v2 WPs already specify, and the
-consumers (router, runbook) define the needed shape precisely.
-
-**Reverse.** None needed — this only affects where the code lands, not what
-it does.

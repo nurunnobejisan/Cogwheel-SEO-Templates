@@ -38,6 +38,7 @@ import { SiteBundleModal } from "../components/SiteBundleModal";
 import { ExtensionSiteBundle } from "../types/extension";
 import { calculatePixelWidth } from "../utils/pixelCalculator";
 import { isRestrictedUrl } from "../utils/urlSecurity";
+import { loadExtensionOptions } from "../utils/extensionOptions";
 import { useActivePack } from "../utils/useActivePack";
 import { getActiveScoringWeights } from "../utils/activePack";
 import { suggestPack } from "../../../src/packs/suggest";
@@ -66,10 +67,16 @@ export function SidePanelApp() {
     setBrainLoading(true);
     setBrainAnswer("");
     try {
+      const extOptions = await loadExtensionOptions();
+      const bearer = extOptions.apiToken?.trim();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (bearer) {
+        headers.Authorization = `Bearer ${bearer}`;
+      }
       const res = await fetch("https://seo-studio-one.vercel.app/api/brain", {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ targetUrl: pageData?.url || (typeof window !== "undefined" ? window.location.href : ""), question: brainQuestion }),
       });
       const data = await res.json();

@@ -61,6 +61,11 @@ export interface RagChunk {
   source: string;
   url?: string;
   tags: string[];
+  /**
+   * Optional owning property id. Shared documentation (Google docs, schema.org)
+   * omits `propertyId`; client-scoped chunks set it so retrieval isolates tenants.
+   */
+  propertyId?: string;
 }
 
 export interface ScoredChunk extends RagChunk {
@@ -87,6 +92,11 @@ export interface KnowledgeBaseSearchOptions {
   topK?: number;
   tags?: string[];
   minScore?: number;
+  /**
+   * Tenant scope for RAG lookup. Returns chunks matching this `propertyId` OR
+   * shared chunks (omitting `propertyId`); when unset, returns ONLY shared chunks.
+   */
+  propertyId?: string;
 }
 
 export interface KnowledgeBase {
