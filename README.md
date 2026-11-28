@@ -238,6 +238,11 @@ The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT
 | [Repository audit](docs/REPOSITORY_AUDIT.md) | Findings, remediation status, and known limitations |
 | [Daily Session](docs/DAILY_SESSION.md) | Learn · Build · Community routine, agents, and GitHub permissions |
 | [Roadmap](docs/ROADMAP_UNIVERSAL_AUDIT_AND_CMS_AUTOFIX.md) | Phases and remaining work |
+| [ML plan & progress](docs/ml/PROGRESS.md) | Data registry, training, eval, promotion phases |
+| [ML model card](docs/ml/MODEL_CARD.md) | Adapter scope, gates, data and evaluation status |
+| [ML decisions](docs/ml/DECISIONS.md) | Numbered ML decisions with reversal paths |
+| [GPU runbook](docs/ml/GPU_RUNBOOK.md) | Manual GPU training / eval / promotion commands |
+| [ML agent log](docs/ml/AGENT_LOG.md) | What each autonomous run built and left for humans |
 | [Changelog](CHANGELOG.md) | Release history |
 
 ## Deployment

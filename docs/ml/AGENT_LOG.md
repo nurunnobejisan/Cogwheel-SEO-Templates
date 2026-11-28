@@ -359,3 +359,121 @@ Built this run:
 Verified locally: zero-source SFT + DPO builds produce truthful zero reports,
 report staging prints `0 rows kept/exported`, `train:validate` green, 472
 pytest green. The PR itself can only be exercised on GitHub after merge.
+## WP10 — Model card + proposal (branch `ml/v2-wp10-model-card`)
+
+Built this run:
+
+- **`docs/ml/MODEL_CARD.md`** — full card as a TEMPLATE: every measured field
+  is `_unset_` (no GPU run, no ready adapter, no scores). Documents intended
+  use, out-of-scope use, data (registry, host split, consent rules), eval
+  table with the ship-gate thresholds, limitations, provenance, and
+  instructions for the operator who fills it after the first run.
+- **`docs/ml/PROPOSAL-commoncrawl-metadata.md`** (D-038) — investigation-only
+  proposal for a Common Crawl metadata slice: what it would be, why it could
+  help `metadata_generation`, the five open licence/governance questions
+  (robots, copyright of metadata, PII, host overlap, recency), the minimal
+  implementation path if accepted, and an explicit statement that
+  `ml/sources.yaml` was NOT touched.
+- **`docs/ml/PROGRESS.md`** — v2 phases 13–19 added to the table (PRs #79,
+  #82, #84, #85, #86, stacked WP10; phases 19 marks WP4–WP7 not started).
+- **`README.md`** — docs table now links PROGRESS, MODEL_CARD, DECISIONS,
+  GPU_RUNBOOK and AGENT_LOG.
+
+---
+
+# SEO-Studio AI SEO Model (v2) — End of run
+
+## Status table
+
+| WP | Title | Branch | PR | Status |
+|---|---|---|---|---|
+| WP1 | Human review queue | `ml/v2-wp1-review-queue` | [#79](https://github.com/nurunnobejisan/SEO-Studio/pull/79) | **built, merged into stack** |
+| WP2 | DPO pair builder + feedback loop | `ml/v2-wp2-dpo-builder` | [#82](https://github.com/nurunnobejisan/SEO-Studio/pull/82) | **built** |
+| WP3 | Per-task measured readiness (`readyTasks`) | `ml/v2-wp3-readytasks` | [#84](https://github.com/nurunnobejisan/SEO-Studio/pull/84) | **built** |
+| WP4 | Tier 2 training slices | — | — | **not started** (see below) |
+| WP5 | Page-type classifier training | — | — | **not started** (see below) |
+| WP6 | Monitoring dashboards + circuit breaker | — | — | **not started** (see below) |
+| WP7 | Serving hardening | — | — | **not started** (see below) |
+| WP8 | Extension inference guard | `ml/v2-wp8-extension-guard` | [#85](https://github.com/nurunnobejisan/SEO-Studio/pull/85) | **built** |
+| WP9 | Weekly dataset refresh workflow | `ml/v2-wp9-weekly-refresh` | [#86](https://github.com/nurunnobejisan/SEO-Studio/pull/86) | **built** |
+| WP10 | Model card + CC proposal + docs | `ml/v2-wp10-model-card` | stacked on #86 | **built** |
+
+Branches are stacked in merge order: #79 → #82 → #84 → #85 → #86 → WP10.
+None was merged by the agent — merging is a human action.
+
+## Check results (final, on `ml/v2-wp10-model-card`)
+
+- `npm run typecheck` — clean
+- `npm run lint` — no warnings/errors
+- `npx vitest run` — 109 files, **853 tests passed**
+- `npm run test:ts` — green
+- `npm run test:seo` — green
+- `npm run train:validate` — golden v2 + sources + 17 dataset cards in sync
+- `npm run ml:golden:check` — golden set matches frozen hash
+- `python3 -m pytest tests/python -q` — **472 passed, 1 skipped**
+- `ruff check` on newly written/edited Python files — clean (pre-existing v1
+  files carry older-style lint debt and were left untouched)
+- `npm run build` — production build succeeds
+- Chrome extension `tsc` — clean
+
+## What is honest about the data
+
+- **No adapter is trained, promoted or deployed.** Registry `readyTasks` is
+  empty; both v1 registry entries remain retired/unverified; `AI_ADAPTER_MODE`
+  defaults to `off`. No score anywhere is fabricated.
+- The DPO/SFT builders run today write **zero rows and truthful zero
+  reports** — the feedback sources (healing/vault exports, approved review
+  rows) do not exist yet.
+- Golden v2 candidates remain `humanReviewed: false`; no review row was
+  approved by the agent (hard limit).
+
+## Why WP4–WP7 were not started
+
+- **WP4 (Tier 2 slices):** the measured-graduation path (D-036) and the ship
+  gates now exist; the missing piece is training data for Tier 2 tasks, which
+  requires the human GPU run and source pulls — building unmeasurable slices
+  would have produced untestable scaffolding only.
+- **WP5 (classifier training):** needs an actual training run + labelled
+  data; the eval-side classifier reporting already exists in `run_eval.py`.
+- **WP6 (monitoring + circuit breaker):** the gate counters and shadow
+  latency metrics from v1 already exist and are now also fed by the extension
+  proxy; a breaker that can only *drop* to shadow (never raise) needs live
+  traffic semantics to test honestly — deferred rather than stubbed.
+- **WP7 (serving hardening):** `ml/serve/server.py` exists from v1; hardening
+  (rate limits, authz for the GPU endpoint) is best done with the deployed
+  serving topology in front of us, not guessed.
+
+## Defaults the agent took
+
+- D-035 pair semantics (paired human decisions, input fingerprint).
+- D-036 `readyTasks` fail-closed provenance (writer + 64-hex sha + measuredAt)
+  enforced in both Python and TS.
+- D-037 extension proxies all tuned inference through the app backend.
+- D-038 Common Crawl metadata slice recorded as proposal only.
+- Weekly cron scheduled Mondays 06:00 UTC; reports-only PRs.
+
+## What the human should do next
+
+1. Merge the stacked PRs in order (#79 → #82 → #84 → #85 → #86 → WP10).
+2. Review/act on the golden v2 candidates in the review queue
+   (`/settings/ai-training/review`) — approvals are human-only.
+3. Pull raw sources into the private dataset repo and run the GPU job per
+   `docs/ml/GPU_RUNBOOK.md` (baselines → SFT → DPO → eval → register).
+4. First promotion: `ml.serve.register --ready-task <task> --baseline-report …`
+   — only a human runs it; the PRs' tooling refuses hand-edited scope.
+5. Answer the five licence questions in
+   `docs/ml/PROPOSAL-commoncrawl-metadata.md` before considering registry
+   changes.
+6. Set `ML_PRIVATE_DATASET_REPO` / `ML_PRIVATE_DATASET_TOKEN` secrets if the
+   weekly workflow should pull raw sources; without them it still opens
+   truthful zero reports.
+
+## Out-of-scope problems noticed (not fixed here)
+
+- Multiple agent sessions commit to the same working checkout; concurrent
+  work should use dedicated worktrees.
+- Pre-existing ruff lint debt in v1 Python modules (`build_sft.py`,
+  `dpo.py`, `register.py`) — new files were kept clean but old ones were not
+  "fixed" to avoid churn.
+- `CustomModelConfig.endpointId/apiKey` remain in extension storage as legacy
+  fields; a v3 cleanup could remove them from the settings UI entirely.
