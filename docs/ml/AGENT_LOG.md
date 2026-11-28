@@ -55,3 +55,35 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Unset/unknown `AI_ADAPTER_MODE` fails conservatively to `"off"` (`D-031`), and missing seed falls back to `"anonymous"` so canary bucketing remains deterministic.
 - **Remaining**: Proceed to WP6 (`ml/wp6-retrieval-isolation`).
+
+## WP6 — Per-Client Retrieval Isolation (`ml/wp6-retrieval-isolation`)
+- **Changed**:
+  - Added optional `propertyId?: string` to `RagChunk`, `KnowledgeBaseSearchOptions`, and `ChunkDocumentInput` (`ai/types.ts`, `ai/rag/knowledge-base.ts`). Queries scoped to `propertyId` see only shared docs + that client's chunks; unscoped queries see shared docs only.
+  - Updated `BrainRequest` / `runBrain` (`src/core/brain/index.ts`) and `/api/brain` (`src/app/api/brain/route.ts`) to forward optional `propertyId` into RAG lookup cleanly.
+  - Added matching `property_id` isolation in `ml/retrieve/chunk.py` (`chunk_document`), `ml/retrieve/corpus.py` (`build_from_html`), and `ml/retrieve/store.py` (`VectorStore.search`/`search_text`, `PGVECTOR_DDL` `property_id` column + index, `export_rows`, `write_pgvector`, `pgvector_where_clause`).
+  - Added `tests/rag-isolation.test.ts` and Python isolation tests in `tests/python/test_ml_retrieve.py`.
+- **Defaults taken**:
+  - Chunks with missing/empty `propertyId` are treated as shared public docs (`Google Search Central`, `schema.org`), while any non-empty `propertyId` stays strictly tenant-scoped.
+- **Remaining**: Proceed to WP7 (`ml/wp7-constrained-decoding`).
+
+## WP7 — Constrained Decoding Schema & `ml/generate/` (`ml/wp7-constrained-decoding`)
+- **Changed**:
+  - Defined `SchemaGenerationAnswerSchema` and `MetadataGenerationAnswerSchema` in `schemas/ml-v1-outputs.ts` reusing `schemas/known-schema-types.json` and `schemaMarkupItemSchema`.
+  - Updated `scripts/export-json-schemas.ts` to export self-contained Draft-07 JSON Schemas (`schemas/ml-schema-generation.schema.json` and `schemas/ml-metadata-generation.schema.json`).
+  - Created `ml/generate/` (`constrained.py`, `__init__.py`) loading the exported JSON Schemas directly (`load_task_json_schema`, `build_json_schema_response_format`, `generate_structured`) with lazy `outlines` import raising `HeavyDepsError` when absent.
+  - Wired optional `task` support (`schema_generation`, `metadata_generation`) into `ml/serve/server.py` (`ModelGateway.chat`) to constrain local adapter generation via `ml/generate` and attach OpenAI-compatible `response_format` when forwarding to `--upstream`.
+  - Added `tests/python/test_ml_generate.py` and `tests/ml-schema-exports.test.ts`.
+- **Defaults taken**:
+  - Inline `$refStrategy: "none"` for the two v1 decoding schemas so downstream constrained generators receive self-contained schemas without local `$ref` resolution.
+- **Remaining**: Proceed to WP8 (`ml/wp8-dataset-v2`).
+
+## WP8 — Host-Split Dataset Builder v2 (`ml/wp8-dataset-v2`)
+- **Changed**:
+  - Created `ml/train/build_sft.py` writing gitignored `data/build/sft-v2.jsonl` + `data/build/sft-v2.report.json`.
+  - Restricted jobs strictly to `schema_generation` (`wdc-2024`, `wdc-tables-2023`, `vault`, `patches`, `triples` passing `jsonld_valid` and `scripts/ml-label-cli.ts` clean validation when HTML is present) and `metadata_generation` (`vault`, `patches`, `triples` only — no Common Crawl or Lighthouse).
+  - Refuses `synthetic: true` and `repo-synthetic` rows lacking explicit human review marks (`D-026`), strips PII, enforces 90/10 deterministic host-hash splits with zero host overlap, and excludes frozen golden-set hosts.
+  - Updated `ml/train/sft.py` `DEFAULT_DATA` to `data/build/sft-v2.jsonl` and extended `scripts/validate-training-data.mjs` (`npm run train:validate`) to validate `data/build/sft-v2.jsonl` automatically when present.
+  - Added `tests/python/test_ml_build_sft.py` verifying source gates, synthetic/review rejection, host isolation, golden exclusion, report counts, and JS validator roundtrip.
+- **Defaults taken**:
+  - Normalized registrable hosts collapse `www.` and multi-label subdomains (handling common 2-level public suffixes) into one `hostHash` per domain so subpages share the same split.
+- **Remaining**: Proceed to WP9 (`ml/wp9-golden-v2`).
