@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Plus_Jakarta_Sans } from "next/font/google";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 import { DownloadFeedbackModal } from "@/components/DownloadFeedbackModal";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SpeedInsights } from "@vercel/speed-insights/next";
