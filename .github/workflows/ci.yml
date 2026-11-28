@@ -65,6 +65,8 @@ jobs:
         run: |
           pip install ruff==0.17.6
           ruff check python/
+      - name: Type check (mypy)
+        run: mypy python/
       - name: Tests (pytest)
         run: pytest tests/python -q
 

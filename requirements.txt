@@ -7,6 +7,7 @@ pandas
 Pillow
 pydantic>=2.0.0
 pytest>=8.0.0
+mypy==1.19.1
 beautifulsoup4>=4.12.0
 python-docx>=1.1.0
 # GSC MCP server (api/gsc_server.py) — FastMCP + Google API clients (Phase G).
