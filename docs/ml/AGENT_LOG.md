@@ -87,3 +87,14 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Normalized registrable hosts collapse `www.` and multi-label subdomains (handling common 2-level public suffixes) into one `hostHash` per domain so subpages share the same split.
 - **Remaining**: Proceed to WP9 (`ml/wp9-golden-v2`).
+
+## WP9 — Golden Set v2 Scaffolding & Candidate CLI (`ml/wp9-golden-v2`)
+- **Changed**:
+  - Kept the frozen 52-case `ml/eval/golden/cases.jsonl` and its `docs/ml/DATA_CARD.md` hash untouched.
+  - Created `ml/eval/golden_v2/README.md` + `ml/eval/golden_v2/cases.jsonl` targeting `>= 75` `schema_generation` and `>= 75` `metadata_generation` human-reviewed cases on held-out hosts.
+  - Created `scripts/check-golden-v2.ts` (`evaluateGoldenV2`) enforcing `MlGoldenCaseSchema`, `humanReviewed: true`, licence/registry parity, zero host/hash overlap with train split, and `--strict` 75/75 coverage (wired `--allow-partial` into `npm run train:validate` and added `ml:golden-v2:check` / `ml:golden-v2:propose` scripts to `package.json`).
+  - Created `ml/eval/propose_golden_v2.py` to generate unreviewed (`humanReviewed: false`) candidates strictly excluding training & frozen golden hosts.
+  - Added `tests/golden-v2-check.test.ts` and `tests/python/test_ml_golden_v2.py`.
+- **Defaults taken**:
+  - Scaffolding starts `ml/eval/golden_v2/cases.jsonl` empty (`--allow-partial` in CI `train:validate`) rather than committing unreviewed or fabricated rows, while `--strict` blocks promotion until `75` schema + `75` metadata human-reviewed cases exist.
+- **Remaining**: Proceed to WP10 (`ml/wp10-gpu-runbook`).
