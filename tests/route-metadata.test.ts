@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { describe, it, expect } from "vitest";
 import { pageTitle } from "../src/config/brand";
 import { metadata as homeMeta } from "../src/app/page";
@@ -106,6 +107,12 @@ describe("Engineering Standards Rules Enforcement — Route Metadata & SEO Stand
         `https://seo-studio.vercel.app/templates/${tmpl.categorySlug}/${tmpl.slug}`
       );
     });
+  });
+
+  it("uses the commit date rather than the current time for lastmod", () => {
+    const iso = execFileSync("git", ["log", "-1", "--format=%cI"], { encoding: "utf8" }).trim();
+    const expected = new Date(iso).getTime();
+    expect(sitemap().every((entry) => (entry.lastModified as Date).getTime() === expected)).toBe(true);
   });
 
   it("generates valid robots.txt rules", () => {

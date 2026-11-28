@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { brand } from "@/config/brand";
 
 export function SiteFooter() {
   return (
@@ -11,7 +12,7 @@ export function SiteFooter() {
                 SS
               </span>
               <span className="font-display text-body font-bold text-slate-900 dark:text-white">
-                SEO &amp; GEO Studio
+                {brand.name}
               </span>
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
                 v3.0.0
@@ -22,7 +23,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
-              SEO Studio&apos;s hospitality search, pixel budgeting &amp; generative engine optimization suite.
+              {brand.name}&apos;s hospitality search, pixel budgeting &amp; generative engine optimization suite.
             </p>
           </div>
 
@@ -52,7 +53,7 @@ export function SiteFooter() {
 
         <div className="mt-8 flex flex-col gap-2 border-t border-slate-200/60 pt-6 text-tiny text-slate-500 dark:border-slate-800/60 dark:text-slate-500 sm:flex-row sm:items-center sm:justify-between">
           <p>
-            &copy; {new Date().getFullYear()} SEO Studio &amp;{" "}
+            &copy; {new Date().getFullYear()} {brand.name} &amp;{" "}
             <a
               href="https://github.com/nurunnobejisan/SEO-Studio/graphs/contributors"
               target="_blank"
@@ -68,7 +69,7 @@ export function SiteFooter() {
               rel="noopener noreferrer"
               className="font-medium text-slate-700 underline decoration-slate-400 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"
             >
-              Shah Jisan (SJ)
+              {brand.owner}
             </a>
             . Distributed under the MIT License.
           </p>

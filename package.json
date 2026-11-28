@@ -11,6 +11,7 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint:seo": "tsx tests/ts/seoLinter.ts",
+    "check:seo-html": "node scripts/check-seo-html.mjs",
     "test:seo": "tsx tests/ts/seoLinter.ts && node --import tsx --test tests/schemas.test.ts tests/internalLinker.test.ts tests/securityGuardrails.test.ts tests/variableResolver.test.ts tests/exporters.test.ts tests/uniquenessGate.test.ts tests/serpOptimizer.test.ts tests/heading-structure-audit.test.ts tests/image-optimization-audit.test.ts tests/unified-seo-platform.test.ts tests/hotel-seo.test.ts",
     "preview:seo": "tsx scripts/seo-preview-cli.ts",
     "test:ts": "node --import tsx --test tests/ts/*.test.ts",
