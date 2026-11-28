@@ -76,3 +76,14 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Inline `$refStrategy: "none"` for the two v1 decoding schemas so downstream constrained generators receive self-contained schemas without local `$ref` resolution.
 - **Remaining**: Proceed to WP8 (`ml/wp8-dataset-v2`).
+
+## WP8 — Host-Split Dataset Builder v2 (`ml/wp8-dataset-v2`)
+- **Changed**:
+  - Created `ml/train/build_sft.py` writing gitignored `data/build/sft-v2.jsonl` + `data/build/sft-v2.report.json`.
+  - Restricted jobs strictly to `schema_generation` (`wdc-2024`, `wdc-tables-2023`, `vault`, `patches`, `triples` passing `jsonld_valid` and `scripts/ml-label-cli.ts` clean validation when HTML is present) and `metadata_generation` (`vault`, `patches`, `triples` only — no Common Crawl or Lighthouse).
+  - Refuses `synthetic: true` and `repo-synthetic` rows lacking explicit human review marks (`D-026`), strips PII, enforces 90/10 deterministic host-hash splits with zero host overlap, and excludes frozen golden-set hosts.
+  - Updated `ml/train/sft.py` `DEFAULT_DATA` to `data/build/sft-v2.jsonl` and extended `scripts/validate-training-data.mjs` (`npm run train:validate`) to validate `data/build/sft-v2.jsonl` automatically when present.
+  - Added `tests/python/test_ml_build_sft.py` verifying source gates, synthetic/review rejection, host isolation, golden exclusion, report counts, and JS validator roundtrip.
+- **Defaults taken**:
+  - Normalized registrable hosts collapse `www.` and multi-label subdomains (handling common 2-level public suffixes) into one `hostHash` per domain so subpages share the same split.
+- **Remaining**: Proceed to WP9 (`ml/wp9-golden-v2`).

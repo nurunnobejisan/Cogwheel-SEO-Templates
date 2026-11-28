@@ -36,7 +36,7 @@ from .errors import ConfigError, DatasetError, HeavyDepsError
 
 __all__ = ["build_manifest", "train", "load_dataset", "run_id_for"]
 
-DEFAULT_DATA = Path("data/sft-dataset.jsonl")
+DEFAULT_DATA = Path("data/build/sft-v2.jsonl")
 DEFAULT_OUT_DIR = Path("ml/train/outputs")
 
 

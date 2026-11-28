@@ -201,9 +201,23 @@ function scanMetaGovernance({ meta, trainFile, registry }) {
   return hits;
 }
 
+const OPTIONAL_SFT_V2_FILE = "data/build/sft-v2.jsonl";
+const SFT_V2_ALLOWED_SOURCES = {
+  schema_generation: new Set(["wdc-2024", "wdc-tables-2023", "vault", "patches", "triples"]),
+  metadata_generation: new Set(["vault", "patches", "triples"]),
+};
+
 async function main() {
   const args = process.argv.slice(2).filter((a) => !a.startsWith("--"));
-  const files = args.length ? args : DEFAULT_FILES;
+  const files = args.length ? args : [...DEFAULT_FILES];
+  if (!args.length) {
+    try {
+      await fs.access(path.join(process.cwd(), OPTIONAL_SFT_V2_FILE));
+      files.push(OPTIONAL_SFT_V2_FILE);
+    } catch {
+      console.log(`${OPTIONAL_SFT_V2_FILE}: not present (skipped)`);
+    }
+  }
   const errors = [];
   const seenKeys = new Map();
   let total = 0;
@@ -219,6 +233,9 @@ async function main() {
 
   for (const rel of files) {
     const trainFile = isTrainFile(rel);
+    const isSftV2File = rel.replace(/\\/g, "/").endsWith("sft-v2.jsonl");
+    const sftV2TrainHosts = new Set();
+    const sftV2EvalHosts = new Set();
     const abs = path.isAbsolute(rel) ? rel : path.join(process.cwd(), rel);
     let lines;
     try {
@@ -270,8 +287,34 @@ async function main() {
       if (!ALLOWED_PROVENANCE.has(meta.provenance)) {
         errors.push(`${where}: meta.provenance missing or unrecognised (${meta.provenance ?? "none"})`);
       }
-      for (const hit of scanMetaGovernance({ meta, trainFile, registry })) {
+      const rowIsTrain = isSftV2File ? meta.split === "train" : trainFile;
+      for (const hit of scanMetaGovernance({ meta, trainFile: rowIsTrain, registry })) {
         errors.push(`${where}: ${hit}`);
+      }
+
+      if (isSftV2File) {
+        const jobAllowed = SFT_V2_ALLOWED_SOURCES[meta.category];
+        if (!jobAllowed) {
+          errors.push(`${where}: sft-v2 only permits v1 tasks (got ${meta.category ?? "none"})`);
+        } else if (!jobAllowed.has(meta.source)) {
+          errors.push(`${where}: sft-v2 source "${meta.source}" not allowed for ${meta.category}`);
+        }
+        if (meta.synthetic === true && meta.humanReviewed !== true) {
+          errors.push(`${where}: sft-v2 refuses synthetic row without humanReviewed=true`);
+        }
+        if (meta.source === "repo-synthetic" && meta.humanReviewed !== true) {
+          errors.push(`${where}: sft-v2 refuses repo-synthetic without humanReviewed=true`);
+        }
+        const hostHash = typeof meta.hostHash === "string" ? meta.hostHash : "";
+        if (!hostHash) {
+          errors.push(`${where}: sft-v2 requires meta.hostHash for host-split isolation`);
+        } else if (meta.split === "train") {
+          sftV2TrainHosts.add(hostHash);
+        } else if (meta.split === "eval") {
+          sftV2EvalHosts.add(hostHash);
+        } else {
+          errors.push(`${where}: sft-v2 split must be train|eval (got ${meta.split ?? "none"})`);
+        }
       }
 
       const key = contentKey(msgs);
@@ -279,6 +322,13 @@ async function main() {
         errors.push(`${where}: duplicate content with ${seenKeys.get(key)}`);
       } else {
         seenKeys.set(key, where);
+      }
+    }
+    if (isSftV2File) {
+      for (const h of sftV2TrainHosts) {
+        if (sftV2EvalHosts.has(h)) {
+          errors.push(`${rel}: hostHash ${h} leaked across train and eval splits`);
+        }
       }
     }
     console.log(`${rel}: ${rows} rows scanned`);
