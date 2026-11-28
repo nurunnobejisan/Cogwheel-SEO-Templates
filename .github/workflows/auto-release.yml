@@ -7,45 +7,70 @@ on:
     paths:
       - 'chrome-extension/**'
 
+# Two pushes in a row must not race to create the same tag. Let an in-flight
+# release finish; the tag-existence check below will then skip the duplicate.
+concurrency:
+  group: chrome-extension-release
+  cancel-in-progress: false
+
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   release:
+    name: Package and tag extension
     runs-on: ubuntu-latest
+    timeout-minutes: 20
+    # workflow_dispatch must not publish a tag built from an arbitrary branch.
+    if: github.event_name == 'push' || github.ref == 'refs/heads/main'
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
 
       - name: Read extension version from manifest.json
         id: meta
         run: |
+          set -euo pipefail
           VERSION=$(node -p "require('./chrome-extension/public/manifest.json').version")
+          if ! printf '%s' "$VERSION" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+            echo "::error::manifest version must be X.Y.Z, got '$VERSION'"
+            exit 1
+          fi
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
 
       - name: Skip if this version is already released
         id: check
         run: |
-          if git ls-remote --tags origin "refs/tags/v${{ steps.meta.outputs.version }}" | grep -q .; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-            echo "Tag v${{ steps.meta.outputs.version }} already exists — skipping."
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
-          fi
+          set -uo pipefail
+          VERSION="${{ steps.meta.outputs.version }}"
+          git ls-remote --exit-code --tags origin "refs/tags/v${VERSION}" >/dev/null 2>&1
+          status=$?
+          case "$status" in
+            0) echo "exists=true" >> "$GITHUB_OUTPUT"; echo "Tag v${VERSION} already exists — skipping." ;;
+            2) echo "exists=false" >> "$GITHUB_OUTPUT" ;;
+            *) echo "::error::could not check remote tags (git exit ${status})"; exit 1 ;;
+          esac
 
       - name: Setup Node.js
         if: steps.check.outputs.exists == 'false'
         uses: actions/setup-node@v4
         with:
           node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: 'chrome-extension/package-lock.json'
 
       - name: Build & package extension
         if: steps.check.outputs.exists == 'false'
         run: |
+          set -euo pipefail
           cd chrome-extension
           npm ci
           npm run build
+          test -d dist
           cd dist
-          zip -r "$GITHUB_WORKSPACE/seo-studio.zip" .
+          zip -r "${GITHUB_WORKSPACE}/seo-studio.zip" .
+          test -s "${GITHUB_WORKSPACE}/seo-studio.zip"
 
       - name: Publish GitHub Release
         if: steps.check.outputs.exists == 'false'
