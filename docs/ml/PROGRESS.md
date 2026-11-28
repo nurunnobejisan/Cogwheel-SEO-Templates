@@ -18,6 +18,13 @@ Status values: `not started` · `in progress` · `done`.
 | 10 | Golden v2 set, GPU runbook & docs (`WP9`–`WP11`) | in progress | stacked `ml/wp9`..`ml/wp11` |
 | 11 | GPU baselines & QLoRA training (`0.6B` -> `1.7B` -> `4B`) | not started | — |
 | 12 | Golden eval promotion & progressive rollout (`shadow` -> `canary` -> `on`) | not started | — |
+| 13 | v2: human review queue (`WP1`) | in progress | [#79](https://github.com/nurunnobejisan/SEO-Studio/pull/79) |
+| 14 | v2: DPO pair builder (`WP2`) | in progress | [#82](https://github.com/nurunnobejisan/SEO-Studio/pull/82) |
+| 15 | v2: per-task measured readiness (`WP3`) | in progress | [#84](https://github.com/nurunnobejisan/SEO-Studio/pull/84) |
+| 16 | v2: extension inference guard (`WP8`) | in progress | [#85](https://github.com/nurunnobejisan/SEO-Studio/pull/85) |
+| 17 | v2: weekly dataset refresh (`WP9`) | in progress | [#86](https://github.com/nurunnobejisan/SEO-Studio/pull/86) |
+| 18 | v2: model card + proposal (`WP10`) | in progress | stacked `ml/v2-wp10-model-card` |
+| 19 | v2: Tier 2 slices (`WP4`), classifier (`WP5`), monitoring + circuit breaker (`WP6`), serving hardening (`WP7`) | not started | — |
 
 ---
 
