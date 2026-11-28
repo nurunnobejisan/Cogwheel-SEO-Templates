@@ -1,12 +1,18 @@
-import type { KeywordStrategyMatrix, KeywordItem } from "../schemas/validation";
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import type { ColumnDef } from "@tanstack/react-table";
+import { Search } from "lucide-react";
+import type { KeywordItem, KeywordStrategyMatrix } from "../schemas/validation";
 import { validateKeywordMatrix } from "../schemas/validation";
 import { DEFAULT_PACK_ID, getPackMeta, type PackMeta } from "../packs/catalog";
 import { clusterByTargetPageType } from "../packs/clusters";
 import hotelMatrixJson from "../packs/hotel/keywords.json";
+import { DataTable, FilterTabs, InlineAlert, KpiTile } from "@/components/data/index";
+import { Badge, Card, Input } from "@/components/ui/index";
 
 /**
- * Defaults keep the original callers (LabsView's dynamic import) working with
- * the canonical hotel dataset — the same JSON this component always shipped.
+ * Defaults keep existing callers working with the canonical hotel dataset.
  */
 const DEFAULT_MATRIX: KeywordStrategyMatrix = validateKeywordMatrix(hotelMatrixJson);
 const DEFAULT_PACK: PackMeta = getPackMeta(DEFAULT_PACK_ID) as PackMeta;
@@ -20,89 +26,36 @@ interface StrategyMatrixContentProps {
   view?: "funnel" | "clusters";
 }
 
-function KeywordCard({
-  kw,
-  badge,
-  highlight = false,
-}: {
-  kw: KeywordItem;
-  badge?: string;
-  highlight?: boolean;
-}) {
-  return (
-    <article
-      className={`card-hover flex flex-col justify-between rounded-2xl border p-4 shadow-card ${
-        highlight
-          ? "border-amber-300 bg-amber-50/60 dark:border-amber-700 dark:bg-amber-950/30"
-          : "border-slate-200/80 bg-white dark:border-slate-800 dark:bg-slate-900"
-      }`}
-    >
-      <div>
-        <div className="flex items-center justify-between gap-1 text-micro">
-          <span className="font-mono text-slate-400 dark:text-slate-500">{kw.id}</span>
-          <span className="flex items-center gap-1">
-            {badge && (
-              <span
-                className={`rounded px-1.5 py-0.5 font-bold ${
-                  highlight
-                    ? "bg-amber-100 text-amber-800 dark:bg-amber-900/60 dark:text-amber-200"
-                    : "bg-sky-50 font-bold text-sky-700 dark:bg-sky-950/60 dark:text-sky-300"
-                }`}
-              >
-                {badge}
-              </span>
-            )}
-            <span className="rounded bg-emerald-50 px-1.5 py-0.5 font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-              {kw.searchIntent}
-            </span>
-          </span>
-        </div>
+interface MatrixTableRow {
+  id: string;
+  keyword: string;
+  subCategory: string;
+  category: string;
+  searchIntent: KeywordItem["searchIntent"];
+  searchVolumeTier: KeywordItem["searchVolumeTier"];
+  targetPageType: string;
+  recommendedSchema: string;
+  cpcValue: string;
+  geoEngines: string[];
+  role?: "Primary" | "Overlaps primary" | "Variant";
+}
 
-        <h4 className="mt-2 font-mono text-caption font-bold text-slate-900 dark:text-white">
-          {kw.keyword}
-        </h4>
-        <p className="mt-1 text-tiny text-slate-500 dark:text-slate-400">{kw.subCategory}</p>
+function intentBadgeVariant(intent: KeywordItem["searchIntent"]): "notice" | "success" | "warning" | "neutral" {
+  if (intent === "Transactional") return "success";
+  if (intent === "Commercial") return "warning";
+  if (intent === "Informational" || intent === "Navigational") return "notice";
+  return "neutral";
+}
 
-        <div className="mt-3 space-y-1.5 rounded-lg bg-slate-50 p-2.5 text-tiny dark:bg-slate-950/40">
-          <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
-            <span>Target Page:</span>
-            <span className="font-semibold text-slate-800 dark:text-slate-200">
-              {kw.targetPageType}
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
-            <span>Recommended Schema:</span>
-            <span className="font-mono text-micro text-brand-dark dark:text-brand">
-              {kw.recommendedSchema}
-            </span>
-          </div>
-          <div className="flex items-center justify-between text-slate-600 dark:text-slate-400">
-            <span>Est. CPC:</span>
-            <span className="font-semibold text-slate-800 dark:text-slate-200">
-              {kw.cpcEstimate.value}
-              <span className="ml-1 text-slate-400 dark:text-slate-500">(illustrative)</span>
-            </span>
-          </div>
-        </div>
-
-        {kw.targetEntityPrompt && (
-          <div className="mt-2.5 text-micro italic text-slate-500 dark:text-slate-400">
-            &ldquo;{kw.targetEntityPrompt}&rdquo;
-          </div>
-        )}
-      </div>
-
-      <div className="mt-3 border-t border-slate-100 pt-2 text-micro text-slate-400 dark:border-slate-800">
-        Engines: {kw.geoEngineRelevance.slice(0, 3).join(", ")}
-      </div>
-    </article>
-  );
+function roleBadgeVariant(role: MatrixTableRow["role"]): "brand" | "warning" | "neutral" {
+  if (role === "Primary") return "brand";
+  if (role === "Overlaps primary") return "warning";
+  return "neutral";
 }
 
 /**
- * Pack-driven strategy matrix body (docs/TASKS.md Tasks 4.1–4.4): renders a
- * pack's 78-row dataset with an honest disclaimer, either grouped by funnel
- * category or clustered by target page with one primary keyword per cluster.
+ * Pack-driven strategy matrix body: renders a pack's 78-row dataset with an
+ * honest disclaimer inside an expandable DataTable instead of a card stack.
  */
 export function StrategyMatrixContent({
   matrix = DEFAULT_MATRIX,
@@ -110,126 +63,304 @@ export function StrategyMatrixContent({
   view = "funnel",
 }: StrategyMatrixContentProps) {
   const { metadata: meta, categories, keywords } = matrix;
-  const targetPageTypes = new Set(keywords.map((k) => k.targetPageType));
-  const clusters = view === "clusters" ? clusterByTargetPageType(keywords) : [];
+  const targetPageTypes = useMemo(() => new Set(keywords.map((k) => k.targetPageType)), [keywords]);
+  const clusters = useMemo(
+    () => (view === "clusters" ? clusterByTargetPageType(keywords) : []),
+    [view, keywords]
+  );
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCluster, setSelectedCluster] = useState<string>(
+    clusters[0]?.targetPageType ?? ""
+  );
+  const [searchQuery, setSearchQuery] = useState("");
+
+  useEffect(() => {
+    setSelectedCategory("all");
+  }, [pack.id, view]);
+
+  useEffect(() => {
+    if (view === "clusters") {
+      setSelectedCluster(clusters[0]?.targetPageType ?? "");
+    }
+  }, [view, pack.id, clusters]);
+
+  const activeCluster = useMemo(
+    () => clusters.find((c) => c.targetPageType === selectedCluster) ?? clusters[0],
+    [clusters, selectedCluster]
+  );
+
+  const categoryOptions = useMemo(
+    () => [
+      { id: "all", label: "All categories", count: keywords.length },
+      ...categories.map((cat) => ({
+        id: cat,
+        label: cat,
+        count: keywords.filter((k) => k.category === cat).length,
+      })),
+    ],
+    [categories, keywords]
+  );
+
+  const clusterOptions = useMemo(
+    () =>
+      clusters.map((cluster) => ({
+        id: cluster.targetPageType,
+        label: cluster.targetPageType,
+        count: 1 + cluster.variants.length,
+      })),
+    [clusters]
+  );
+
+  const tableRows: MatrixTableRow[] = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    const matchesQuery = (kw: KeywordItem) =>
+      !query ||
+      kw.keyword.toLowerCase().includes(query) ||
+      kw.subCategory.toLowerCase().includes(query) ||
+      kw.targetPageType.toLowerCase().includes(query) ||
+      kw.recommendedSchema.toLowerCase().includes(query);
+
+    if (view === "clusters" && activeCluster) {
+      const items: MatrixTableRow[] = [
+        {
+          id: activeCluster.primary.id,
+          keyword: activeCluster.primary.keyword,
+          subCategory: activeCluster.primary.subCategory,
+          category: activeCluster.primary.category,
+          searchIntent: activeCluster.primary.searchIntent,
+          searchVolumeTier: activeCluster.primary.searchVolumeTier,
+          targetPageType: activeCluster.primary.targetPageType,
+          recommendedSchema: activeCluster.primary.recommendedSchema,
+          cpcValue: activeCluster.primary.cpcEstimate.value,
+          geoEngines: activeCluster.primary.geoEngineRelevance,
+          role: "Primary",
+        },
+        ...activeCluster.variants.map((v) => ({
+          id: v.keyword.id,
+          keyword: v.keyword.keyword,
+          subCategory: v.keyword.subCategory,
+          category: v.keyword.category,
+          searchIntent: v.keyword.searchIntent,
+          searchVolumeTier: v.keyword.searchVolumeTier,
+          targetPageType: v.keyword.targetPageType,
+          recommendedSchema: v.keyword.recommendedSchema,
+          cpcValue: v.keyword.cpcEstimate.value,
+          geoEngines: v.keyword.geoEngineRelevance,
+          role: (v.overlapsPrimary ? "Overlaps primary" : "Variant") as MatrixTableRow["role"],
+        })),
+      ];
+      return items.filter((row) =>
+        !query
+          ? true
+          : row.keyword.toLowerCase().includes(query) ||
+            row.subCategory.toLowerCase().includes(query) ||
+            row.recommendedSchema.toLowerCase().includes(query)
+      );
+    }
+
+    return keywords
+      .filter((k) => selectedCategory === "all" || k.category === selectedCategory)
+      .filter(matchesQuery)
+      .map((kw) => ({
+        id: kw.id,
+        keyword: kw.keyword,
+        subCategory: kw.subCategory,
+        category: kw.category,
+        searchIntent: kw.searchIntent,
+        searchVolumeTier: kw.searchVolumeTier,
+        targetPageType: kw.targetPageType,
+        recommendedSchema: kw.recommendedSchema,
+        cpcValue: kw.cpcEstimate.value,
+        geoEngines: kw.geoEngineRelevance,
+      }));
+  }, [view, activeCluster, keywords, selectedCategory, searchQuery]);
+
+  const columns: ColumnDef<MatrixTableRow, unknown>[] = useMemo(
+    () => [
+      {
+        accessorKey: "keyword",
+        header: "Keyword formula",
+        cell: ({ row }) => (
+          <div className="min-w-[220px] space-y-0.5 py-0.5">
+            <div className="font-mono text-caption font-medium text-text">{row.original.keyword}</div>
+            <div className="text-caption text-text-muted">{row.original.subCategory}</div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: view === "clusters" ? "role" : "category",
+        header: view === "clusters" ? "Cluster role" : "Category",
+        cell: ({ row }) =>
+          view === "clusters" && row.original.role ? (
+            <Badge variant={roleBadgeVariant(row.original.role)}>{row.original.role}</Badge>
+          ) : (
+            <span className="text-caption text-text">{row.original.category}</span>
+          ),
+      },
+      {
+        accessorKey: "searchIntent",
+        header: "Intent",
+        cell: ({ row }) => (
+          <Badge variant={intentBadgeVariant(row.original.searchIntent)}>
+            {row.original.searchIntent}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "targetPageType",
+        header: "Target page",
+        cell: ({ row }) => (
+          <span className="text-caption font-medium text-text">{row.original.targetPageType}</span>
+        ),
+      },
+      {
+        accessorKey: "recommendedSchema",
+        header: "Schema",
+        cell: ({ row }) => (
+          <code className="rounded-sm bg-surface-2 px-1.5 py-0.5 font-mono text-caption text-text">
+            {row.original.recommendedSchema}
+          </code>
+        ),
+      },
+      {
+        accessorKey: "searchVolumeTier",
+        header: "Volume band",
+        cell: ({ row }) => (
+          <span className="text-caption text-text-muted">{row.original.searchVolumeTier}</span>
+        ),
+      },
+      {
+        accessorKey: "cpcValue",
+        header: "Illustrative CPC",
+        cell: ({ row }) => (
+          <span className="font-mono text-caption tabular-nums text-text">
+            {row.original.cpcValue}
+          </span>
+        ),
+      },
+    ],
+    [view]
+  );
 
   return (
-    <div className="space-y-8">
-      {/* Badge + Title — adapts to the selected vertical (Task 4.2) */}
+    <div className="space-y-6">
       <header className="space-y-2">
-        <span className="inline-block rounded-md bg-blue-50 px-2 py-0.5 text-micro font-bold text-blue-700 uppercase tracking-wider dark:bg-blue-950/60 dark:text-blue-300">
-          {pack.name} Dataset &bull; {meta.totalKeywords} Targeted Query Formulas
-        </span>
-        <h2 className="font-display text-2xl font-extrabold text-slate-900 dark:text-white">
+        <Badge variant="notice">
+          {pack.name} Dataset · {meta.totalKeywords} query formulas
+        </Badge>
+        <h2 className="text-title text-text">
           {meta.totalKeywords}-Keyword Search &amp; GEO Strategy Matrix
         </h2>
-        <p className="max-w-3xl text-body text-slate-600 dark:text-slate-400">
-          {pack.description} Six funnel categories and {targetPageTypes.size} target page
-          types, ready to map onto your own pages.
+        <p className="max-w-[72ch] text-body text-text-muted">
+          {pack.description} Six funnel categories and {targetPageTypes.size} target page types ready to map onto client architecture.
         </p>
       </header>
 
-      {/* Explanatory disclaimer (Task 4.4) */}
-      <div
-        data-testid="dataset-disclaimer"
-        className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-tiny text-amber-900 dark:border-amber-800 dark:bg-amber-950/30 dark:text-amber-200"
-      >
-        <p className="font-bold">About this dataset</p>
-        <p className="mt-1">
-          <code className="font-mono">{"{{placeholder}}"}</code> tokens inside keyword
-          formulas (for example <code className="font-mono">{"{{topic}}"}</code> or{" "}
-          <code className="font-mono">{"{{brandName}}"}</code>) are variables resolved by
-          the template engine when you customize a template — they are not live content on
-          this page.
-        </p>
-        <p className="mt-1">
-          <code className="font-mono">searchVolumeTier</code> and{" "}
-          <code className="font-mono">cpcEstimate</code> values are illustrative planning
-          bands authored with this pack, not measured search data. This page makes no
-          traffic, ranking or volume claims.
-        </p>
-        {meta.notes && <p className="mt-1">{meta.notes}</p>}
+      <div data-testid="dataset-disclaimer">
+        <InlineAlert
+          variant="warning"
+          title="About this dataset"
+          description={
+            "{{placeholder}} tokens inside keyword formulas (for example {{topic}} or {{brandName}}) are variables resolved by the template engine when you customize a template — they are not live content on this page. searchVolumeTier and cpcEstimate values are illustrative planning bands authored with this pack, not measured search data. This page makes no traffic, ranking, or volume claims." +
+            (meta.notes ? ` ${meta.notes}` : "")
+          }
+        />
       </div>
 
       {view === "clusters" ? (
-        <>
-          {/* Target-page cluster view (Task 4.3) */}
-          <p className="max-w-3xl text-tiny text-slate-500 dark:text-slate-400">
-            One section per target page. The primary keyword is the cluster&apos;s highest
-            illustrative volume tier (ties broken by row id — deterministic ordering, not a
-            measurement); variants sharing the primary&apos;s schema or intent are flagged
-            as overlapping so two rows never fight over one page.
+        <div className="space-y-4">
+          <p className="max-w-[72ch] text-caption text-text-muted">
+            One table per target page. The primary keyword is the cluster&apos;s highest illustrative volume tier (ties broken deterministically by row id); variants sharing the primary&apos;s schema or intent are flagged as overlapping so two rows never compete for one page.
           </p>
-          <div className="space-y-10">
-            {clusters.map((cluster) => (
-              <section key={cluster.targetPageType} className="space-y-4">
-                <header className="flex items-center justify-between border-b border-slate-200 pb-2 dark:border-slate-800">
-                  <h3 className="font-display text-lg font-bold text-slate-900 dark:text-white">
-                    {cluster.targetPageType}{" "}
-                    <span className="text-caption font-normal text-slate-500">
-                      ({1 + cluster.variants.length} keywords &rarr; 1 primary)
-                    </span>
-                  </h3>
-                </header>
-                <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <KeywordCard kw={cluster.primary} badge="Primary" />
-                  {cluster.variants.map((variant) => (
-                    <KeywordCard
-                      key={variant.keyword.id}
-                      kw={variant.keyword}
-                      badge={variant.overlapsPrimary ? "Overlaps primary" : "Variant"}
-                      highlight={variant.overlapsPrimary}
-                    />
-                  ))}
+
+          <FilterTabs
+            options={clusterOptions}
+            value={activeCluster?.targetPageType ?? ""}
+            onChange={setSelectedCluster}
+            layoutId="strategy-matrix-clusters"
+          />
+
+          {activeCluster && (
+            <Card className="p-4">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3">
+                <div>
+                  <h3 className="text-heading text-text">{activeCluster.targetPageType}</h3>
+                  <p className="text-caption text-text-muted">
+                    {1 + activeCluster.variants.length} keywords · 1 primary
+                  </p>
                 </div>
-              </section>
-            ))}
-          </div>
-        </>
+                <Badge variant="brand">Primary: {activeCluster.primary.keyword}</Badge>
+              </div>
+
+              <DataTable
+                data={tableRows}
+                columns={columns}
+                pageSize={20}
+                getRowId={(r) => r.id}
+                toolbar={
+                  <div className="relative w-full max-w-xs">
+                    <Search
+                      className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-subtle"
+                      aria-hidden="true"
+                    />
+                    <Input
+                      type="text"
+                      aria-label="Filter cluster keywords"
+                      placeholder="Filter keywords or schema..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+                }
+              />
+            </Card>
+          )}
+        </div>
       ) : (
-        <>
-          {/* Category Summary KPIs */}
+        <div className="space-y-4">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
             {categories.map((cat) => (
-              <div
+              <KpiTile
                 key={cat}
-                className="rounded-xl border border-slate-200/80 bg-white p-3 text-center shadow-xs dark:border-slate-800 dark:bg-slate-900"
-              >
-                <div className="truncate text-micro font-semibold text-slate-500 dark:text-slate-400">
-                  {cat}
-                </div>
-                <div className="mt-1 font-display text-lg font-bold text-slate-900 dark:text-white">
-                  {keywords.filter((k) => k.category === cat).length} Keywords
-                </div>
-              </div>
+                label={cat}
+                value={keywords.filter((k) => k.category === cat).length}
+                suffix=" rows"
+              />
             ))}
           </div>
 
-          {/* Categories Section */}
-          <div className="space-y-10">
-            {categories.map((category) => {
-              const catKeywords = keywords.filter((k) => k.category === category);
-              return (
-                <section key={category} className="space-y-4">
-                  <header className="flex items-center justify-between border-b border-slate-200 pb-2 dark:border-slate-800">
-                    <h3 className="font-display text-lg font-bold text-slate-900 dark:text-white">
-                      {category}{" "}
-                      <span className="text-caption font-normal text-slate-500">
-                        ({catKeywords.length} targets)
-                      </span>
-                    </h3>
-                  </header>
+          <FilterTabs
+            options={categoryOptions}
+            value={selectedCategory}
+            onChange={setSelectedCategory}
+            layoutId="strategy-matrix-categories"
+          />
 
-                  <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                    {catKeywords.map((kw) => (
-                      <KeywordCard key={kw.id} kw={kw} />
-                    ))}
-                  </div>
-                </section>
-              );
-            })}
-          </div>
-        </>
+          <DataTable
+            data={tableRows}
+            columns={columns}
+            pageSize={15}
+            getRowId={(r) => r.id}
+            toolbar={
+              <div className="relative w-full max-w-xs">
+                <Search
+                  className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-text-subtle"
+                  aria-hidden="true"
+                />
+                <Input
+                  type="text"
+                  aria-label="Filter matrix keywords"
+                  placeholder="Search formula, page type, or schema..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9"
+                />
+              </div>
+            }
+          />
+        </div>
       )}
     </div>
   );

@@ -1,14 +1,15 @@
 "use client";
 
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { Bookmark, Check, Copy, Download, Monitor, Printer, RotateCcw, Smartphone } from "lucide-react";
+import { toast } from "sonner";
 import { type SeoTemplate, type TemplateVariables } from "@/packs/hotel/templates";
 import {
-  calculatePixelWidth,
-  getTitlePixelStatus,
   getMetaDescPixelStatus,
-  TITLE_PIXEL_LIMIT,
+  getTitlePixelStatus,
   META_DESC_PIXEL_LIMIT,
+  TITLE_PIXEL_LIMIT,
 } from "@/engine/pixelCalculator";
 import {
   resolveTemplate,
@@ -17,11 +18,27 @@ import {
 } from "../../validators/variableResolver";
 import { escapeHtml } from "../../validators/xssProtection";
 import { renderBracketTokens } from "../../shared/ts/template-render";
+import { InlineAlert } from "@/components/data/index";
+import {
+  Badge,
+  Button,
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+  Checkbox,
+  Input,
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/index";
+import { cn } from "@/lib/utils";
 
 /**
- * Schema every customizer render validates against (Phase E wiring of
- * `validators/variableResolver`): all five catalog variables are required for
- * a complete export — clearing any field surfaces it in the preview audit.
+ * Schema every customizer render validates against: all five catalog variables
+ * are required for a complete export — clearing any field surfaces it in the audit.
  */
 const CUSTOMIZER_SCHEMA: TemplateSchema = {
   id: "template-customizer",
@@ -41,9 +58,8 @@ export function csvEscapeField(value: string): string {
 }
 
 /**
- * Clipboard-ready HTML for the customizer export. Every interpolated field
- * goes through `escapeHtml` (validators/xssProtection) — title and meta
- * description previously reached the clipboard unescaped.
+ * Clipboard-ready HTML for customizer export. Every interpolated field passes
+ * through `escapeHtml`.
  */
 export function buildCustomizerExportHtml(title: string, description: string, markdown: string): string {
   return `<article>\n  <h1>${escapeHtml(title)}</h1>\n  <p>${escapeHtml(description)}</p>\n  <hr/>\n  <pre>${escapeHtml(markdown)}</pre>\n</article>`;
@@ -55,25 +71,12 @@ interface Props {
 }
 
 export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
-  // 1. Dynamic Variables State
   const [vars, setVars] = useState<TemplateVariables>({ ...template.defaultVariables });
-
-  // 2. Tab Navigation inside detail
   const [activeTab, setActiveTab] = useState<"customizer" | "serp" | "schema" | "mistakes">("customizer");
-
-  // 3. SERP View Mode (Desktop vs. Mobile)
   const [serpMode, setSerpMode] = useState<"desktop" | "mobile">("desktop");
-
-  // 4. Checklist Progress State (persisted in localStorage)
   const [checkedTasks, setCheckedTasks] = useState<Record<string, boolean>>({});
-
-  // 5. Bookmarked state
   const [isBookmarked, setIsBookmarked] = useState(false);
 
-  // 6. Toast Notification State
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-
-  // Load persistence from localStorage on mount
   useEffect(() => {
     try {
       const storedProgress = localStorage.getItem(`seo-studio_progress_${template.id}`);
@@ -86,28 +89,22 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
         setIsBookmarked(bookmarks.includes(template.id));
       }
     } catch {
-      // Ignore localStorage errors
+      // Ignore storage access errors in restricted modes
     }
   }, [template.id]);
 
-  // Helper to trigger toast
-  const showToast = (msg: string) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
-
-  // Toggle task completion
   const toggleTask = (taskId: string) => {
     setCheckedTasks((prev) => {
       const updated = { ...prev, [taskId]: !prev[taskId] };
       try {
         localStorage.setItem(`seo-studio_progress_${template.id}`, JSON.stringify(updated));
-      } catch {}
+      } catch {
+        // Ignore storage errors
+      }
       return updated;
     });
   };
 
-  // Toggle bookmark
   const toggleBookmark = () => {
     try {
       const stored = localStorage.getItem("seo_studio_bookmarks");
@@ -115,18 +112,18 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
       if (list.includes(template.id)) {
         list = list.filter((id) => id !== template.id);
         setIsBookmarked(false);
-        showToast("Removed from Saved Templates");
+        toast.info("Removed from saved templates");
       } else {
         list.push(template.id);
         setIsBookmarked(true);
-        showToast("Template Saved to Bookmarks");
+        toast.success("Template saved to bookmarks");
       }
       localStorage.setItem("seo_studio_bookmarks", JSON.stringify(list));
-    } catch {}
+    } catch {
+      toast.error("Unable to access browser storage");
+    }
   };
 
-  // One renderer (Phase E): bracket tokens from the shared engine, then the
-  // variableResolver validation layers (required-variable check + leak scan).
   const renderText = useCallback(
     (text: string): ResolutionResult => {
       if (!text) {
@@ -145,7 +142,6 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
     [vars]
   );
 
-  // Compute customized Title and Meta Description
   const customizedTitle = useMemo(() => {
     return `${vars.brandName} — ${vars.primaryKeyword} in ${vars.locationNiche}`;
   }, [vars.brandName, vars.primaryKeyword, vars.locationNiche]);
@@ -154,18 +150,15 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
     return `Discover luxury at ${vars.brandName}. Book direct for ${vars.primaryKeyword} in ${vars.locationNiche} with waterfront views, verified reviews, and best rates at ${vars.targetUrl}.`;
   }, [vars.brandName, vars.primaryKeyword, vars.locationNiche, vars.targetUrl]);
 
-  // Pixel calculations
   const titlePixel = useMemo(() => getTitlePixelStatus(customizedTitle), [customizedTitle]);
   const descPixel = useMemo(() => getMetaDescPixelStatus(customizedDesc), [customizedDesc]);
 
-  // Customized Markdown — full resolution (output + validation audit)
   const markdownResolution = useMemo(
     () => renderText(template.contentMarkdown),
     [template.contentMarkdown, renderText]
   );
   const customizedMarkdown = markdownResolution.output;
 
-  // Dynamic JSON-LD Schema
   const dynamicSchema = useMemo(() => {
     const baseUrl = vars.targetUrl || "https://www.example.com";
     if (template.schemaType === "Hotel") {
@@ -184,7 +177,8 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
           { "@type": "LocationFeatureSpecification", name: "Valet Parking", value: true },
         ],
       };
-    } else if (template.schemaType === "LocalBusiness") {
+    }
+    if (template.schemaType === "LocalBusiness") {
       return {
         "@context": "https://schema.org",
         "@type": "LocalBusiness",
@@ -194,7 +188,8 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
         telephone: "+1-800-555-0199",
         areaServed: vars.locationNiche,
       };
-    } else if (template.schemaType === "FAQPage") {
+    }
+    if (template.schemaType === "FAQPage") {
       return {
         "@context": "https://schema.org",
         "@type": "FAQPage",
@@ -209,42 +204,40 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
           },
         ],
       };
-    } else {
-      return {
-        "@context": "https://schema.org",
-        "@type": "Article",
-        headline: customizedTitle,
-        description: customizedDesc,
-        author: {
-          "@type": "Organization",
-          name: vars.brandName,
-        },
-        publisher: {
-          "@type": "Organization",
-          name: "SEO Studio",
-          url: baseUrl,
-        },
-      };
     }
+    return {
+      "@context": "https://schema.org",
+      "@type": "Article",
+      headline: customizedTitle,
+      description: customizedDesc,
+      author: {
+        "@type": "Organization",
+        name: vars.brandName,
+      },
+      publisher: {
+        "@type": "Organization",
+        name: "SEO Studio",
+        url: baseUrl,
+      },
+    };
   }, [vars, customizedTitle, customizedDesc, template.schemaType]);
 
   const schemaString = useMemo(() => JSON.stringify(dynamicSchema, null, 2), [dynamicSchema]);
 
-  // Export actions
   const handleCopyMarkdown = () => {
-    navigator.clipboard.writeText(customizedMarkdown);
-    showToast("Markdown copied to clipboard!");
+    void navigator.clipboard.writeText(customizedMarkdown);
+    toast.success("Markdown copied to clipboard");
   };
 
   const handleCopyHtml = () => {
     const html = buildCustomizerExportHtml(customizedTitle, customizedDesc, customizedMarkdown);
-    navigator.clipboard.writeText(html);
-    showToast("Clean HTML copied to clipboard!");
+    void navigator.clipboard.writeText(html);
+    toast.success("Clean HTML copied to clipboard");
   };
 
   const handleCopySchema = () => {
-    navigator.clipboard.writeText(schemaString);
-    showToast("JSON-LD Schema copied to clipboard!");
+    void navigator.clipboard.writeText(schemaString);
+    toast.success("JSON-LD schema copied to clipboard");
   };
 
   const handleDownloadCsv = () => {
@@ -270,7 +263,8 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast("Checklist CSV downloaded!");
+    URL.revokeObjectURL(url);
+    toast.success("Checklist CSV downloaded");
   };
 
   const handleDownloadJson = () => {
@@ -292,325 +286,245 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    showToast("JSON payload downloaded!");
+    URL.revokeObjectURL(url);
+    toast.success("JSON configuration downloaded");
   };
 
   const completedCount = template.checklist.filter((c) => checkedTasks[c.id]).length;
   const progressPercent = Math.round((completedCount / template.checklist.length) * 100);
 
   return (
-    <div className="space-y-8">
-      {/* Toast Notification */}
-      {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2.5 text-caption font-semibold text-white shadow-2xl transition animate-in fade-in slide-in-from-bottom-2 dark:bg-emerald-600">
-          <svg className="h-4 w-4 text-emerald-400 dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-          </svg>
-          <span>{toastMessage}</span>
-        </div>
-      )}
-
-      {/* Multi-Format Export Bar & Action Header */}
-      <section className="print:hidden rounded-2xl border border-slate-200/90 bg-white p-4 shadow-card dark:border-slate-800 dark:bg-slate-900">
+    <div className="space-y-6">
+      {/* Export Bar & Progress Header */}
+      <Card id="export-bar" className="print:hidden p-4">
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-center gap-3">
-            <button
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
               type="button"
+              variant="secondary"
+              size="sm"
+              className={cn(isBookmarked && "border-warning/40 bg-warning-soft text-warning-fg hover:bg-warning-soft")}
               onClick={toggleBookmark}
-              className={`inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-caption font-semibold transition ${
-                isBookmarked
-                  ? "border-amber-400 bg-amber-50 text-amber-900 dark:border-amber-500/60 dark:bg-amber-950/40 dark:text-amber-300"
-                  : "border-slate-200 bg-slate-50 text-slate-700 hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-              }`}
             >
-              <svg className={`h-4 w-4 ${isBookmarked ? "text-amber-500 fill-amber-500" : "text-slate-400"}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z" />
-              </svg>
-              <span>{isBookmarked ? "Bookmarked" : "Save Template"}</span>
-            </button>
+              <Bookmark className={cn("h-3.5 w-3.5", isBookmarked && "fill-current text-warning-fg")} aria-hidden="true" />
+              <span>{isBookmarked ? "Bookmarked" : "Save template"}</span>
+            </Button>
 
-            <div className="flex items-center gap-2 text-caption text-slate-500 dark:text-slate-400">
-              <span className="font-semibold text-slate-800 dark:text-slate-200">Progress:</span>
-              <div className="h-2 w-24 rounded-full bg-slate-100 overflow-hidden dark:bg-slate-800">
-                <div className="h-full bg-emerald-500 transition-all duration-300" style={{ width: `${progressPercent}%` }} />
+            <div className="flex items-center gap-2 text-caption text-text-muted">
+              <span className="font-medium text-text">Progress</span>
+              <div className="h-2 w-24 overflow-hidden rounded-full bg-surface-2">
+                <div
+                  className="h-full bg-success transition-all duration-fast"
+                  style={{ width: `${progressPercent}%` }}
+                />
               </div>
-              <span className="font-mono text-tiny">{completedCount}/{template.checklist.length}</span>
+              <span className="font-mono tabular-nums text-text">
+                {completedCount}/{template.checklist.length}
+              </span>
             </div>
           </div>
 
-          {/* Export Buttons */}
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              type="button"
-              onClick={handleCopyMarkdown}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-caption font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-            >
+            <Button type="button" variant="secondary" size="sm" onClick={handleCopyMarkdown}>
+              <Copy className="h-3.5 w-3.5" aria-hidden="true" />
               Copy Markdown
-            </button>
-            <button
-              type="button"
-              onClick={handleCopyHtml}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-caption font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-            >
+            </Button>
+            <Button type="button" variant="secondary" size="sm" onClick={handleCopyHtml}>
+              <Copy className="h-3.5 w-3.5" aria-hidden="true" />
               Copy HTML
-            </button>
-            <button
-              type="button"
-              onClick={handleDownloadCsv}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-caption font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-            >
-              Download .CSV
-            </button>
-            <button
-              type="button"
-              onClick={handleDownloadJson}
-              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-caption font-semibold text-slate-700 shadow-xs transition hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
-            >
-              Download .JSON
-            </button>
-            <button
-              type="button"
-              onClick={() => window.print()}
-              className="rounded-xl bg-slate-900 px-3 py-1.5 text-caption font-bold text-white shadow-xs transition hover:bg-slate-800 dark:bg-brand dark:text-slate-950"
-            >
+            </Button>
+            <Button type="button" variant="secondary" size="sm" onClick={handleDownloadCsv}>
+              <Download className="h-3.5 w-3.5" aria-hidden="true" />
+              CSV
+            </Button>
+            <Button type="button" variant="secondary" size="sm" onClick={handleDownloadJson}>
+              <Download className="h-3.5 w-3.5" aria-hidden="true" />
+              JSON
+            </Button>
+            <Button type="button" variant="primary" size="sm" onClick={() => window.print()}>
+              <Printer className="h-3.5 w-3.5" aria-hidden="true" />
               Print / PDF
-            </button>
+            </Button>
           </div>
         </div>
-      </section>
+      </Card>
 
-      {/* Dynamic Placeholder Customizer Bar */}
-      <section className="print:hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
+      {/* Dynamic Variable Customizer */}
+      <Card id="variable-customizer" className="print:hidden">
+        <CardHeader className="flex flex-row flex-wrap items-start justify-between gap-3 border-b border-border pb-3">
           <div>
-            <h3 className="font-display text-body font-bold text-slate-900 dark:text-white">
-              Dynamic Template Customizer &amp; Placeholder Replacer
-            </h3>
-            <p className="text-caption text-slate-500 dark:text-slate-400">
-              Type your property details below to update copy, checklist items, and SERP simulator in real time.
-            </p>
+            <CardTitle className="text-heading">Dynamic variable customizer</CardTitle>
+            <CardDescription>
+              Type property details below to update blueprint copy, checklist tasks, and SERP pixel widths in real time.
+            </CardDescription>
           </div>
-          <button
+          <Button
             type="button"
+            variant="ghost"
+            size="sm"
             onClick={() => setVars({ ...template.defaultVariables })}
-            className="text-caption font-semibold text-brand-dark hover:underline dark:text-brand"
           >
-            Reset Defaults
-          </button>
-        </div>
+            <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+            Reset defaults
+          </Button>
+        </CardHeader>
 
-        <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div>
-            <label className="text-tiny font-bold text-slate-700 dark:text-slate-300">
+        <CardContent className="grid gap-3 pt-4 sm:grid-cols-2 lg:grid-cols-5">
+          <div className="space-y-1">
+            <label htmlFor="var-brandName" className="text-caption font-medium text-text">
               [Brand Name]
             </label>
-            <input
+            <Input
+              id="var-brandName"
               type="text"
               value={vars.brandName}
               onChange={(e) => setVars((v) => ({ ...v, brandName: e.target.value }))}
               placeholder="e.g. Ocean Palms Resort"
-              className="mt-1 h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-caption text-slate-900 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
-
-          <div>
-            <label className="text-tiny font-bold text-slate-700 dark:text-slate-300">
+          <div className="space-y-1">
+            <label htmlFor="var-primaryKeyword" className="text-caption font-medium text-text">
               [Primary Keyword]
             </label>
-            <input
+            <Input
+              id="var-primaryKeyword"
               type="text"
               value={vars.primaryKeyword}
               onChange={(e) => setVars((v) => ({ ...v, primaryKeyword: e.target.value }))}
               placeholder="e.g. luxury beachfront hotel"
-              className="mt-1 h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-caption text-slate-900 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
-
-          <div>
-            <label className="text-tiny font-bold text-slate-700 dark:text-slate-300">
+          <div className="space-y-1">
+            <label htmlFor="var-targetUrl" className="text-caption font-medium text-text">
               [Target URL]
             </label>
-            <input
+            <Input
+              id="var-targetUrl"
               type="url"
               value={vars.targetUrl}
               onChange={(e) => setVars((v) => ({ ...v, targetUrl: e.target.value }))}
               placeholder="https://www.example.com"
-              className="mt-1 h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-caption text-slate-900 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
-
-          <div>
-            <label className="text-tiny font-bold text-slate-700 dark:text-slate-300">
+          <div className="space-y-1">
+            <label htmlFor="var-locationNiche" className="text-caption font-medium text-text">
               [Location/Niche]
             </label>
-            <input
+            <Input
+              id="var-locationNiche"
               type="text"
               value={vars.locationNiche}
               onChange={(e) => setVars((v) => ({ ...v, locationNiche: e.target.value }))}
               placeholder="e.g. Miami Beach, FL"
-              className="mt-1 h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-caption text-slate-900 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
-
-          <div>
-            <label className="text-tiny font-bold text-slate-700 dark:text-slate-300">
+          <div className="space-y-1">
+            <label htmlFor="var-competitorDomain" className="text-caption font-medium text-text">
               [Competitor Domain]
             </label>
-            <input
+            <Input
+              id="var-competitorDomain"
               type="text"
               value={vars.competitorDomain}
               onChange={(e) => setVars((v) => ({ ...v, competitorDomain: e.target.value }))}
               placeholder="https://competitor.com"
-              className="mt-1 h-9 w-full rounded-xl border border-slate-200 bg-slate-50 px-2.5 text-caption text-slate-900 focus:border-brand focus:bg-white focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
             />
           </div>
-        </div>
-      </section>
+        </CardContent>
+      </Card>
 
-      {/* Main Tab Navigation */}
-      <nav aria-label="Template Detail Sections" className="print:hidden flex items-center gap-2 border-b border-slate-200 pb-2 dark:border-slate-800">
-        <button
-          type="button"
-          onClick={() => setActiveTab("customizer")}
-          className={`rounded-xl px-3 py-1.5 text-caption font-bold transition ${
-            activeTab === "customizer"
-              ? "bg-slate-900 text-brand-light shadow-sm dark:bg-brand dark:text-slate-950"
-              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-          }`}
-        >
-          Template &amp; Checklist ({template.checklist.length})
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("serp")}
-          className={`rounded-xl px-3 py-1.5 text-caption font-bold transition ${
-            activeTab === "serp"
-              ? "bg-slate-900 text-brand-light shadow-sm dark:bg-brand dark:text-slate-950"
-              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-          }`}
-        >
-          Live SERP Simulator ({titlePixel.pixelWidth}px)
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("schema")}
-          className={`rounded-xl px-3 py-1.5 text-caption font-bold transition ${
-            activeTab === "schema"
-              ? "bg-slate-900 text-brand-light shadow-sm dark:bg-brand dark:text-slate-950"
-              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-          }`}
-        >
-          JSON-LD Schema Generator
-        </button>
-        <button
-          type="button"
-          onClick={() => setActiveTab("mistakes")}
-          className={`rounded-xl px-3 py-1.5 text-caption font-bold transition ${
-            activeTab === "mistakes"
-              ? "bg-slate-900 text-brand-light shadow-sm dark:bg-brand dark:text-slate-950"
-              : "text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-          }`}
-        >
-          Mistakes &amp; KPI Benchmarks
-        </button>
-      </nav>
+      {/* Main Workbench Tabs */}
+      <Tabs
+        id="template-workbench"
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as typeof activeTab)}
+      >
+        <TabsList className="print:hidden">
+          <TabsTrigger value="customizer">
+            Template &amp; Checklist ({template.checklist.length})
+          </TabsTrigger>
+          <TabsTrigger value="serp">Live SERP Simulator ({titlePixel.pixelWidth} px)</TabsTrigger>
+          <TabsTrigger value="schema">JSON-LD Schema Generator</TabsTrigger>
+          <TabsTrigger value="mistakes">Mistakes &amp; KPI Benchmarks</TabsTrigger>
+        </TabsList>
 
-      {/* Tab 1: Template & Checklist */}
-      {activeTab === "customizer" && (
-        <div className="grid gap-8 lg:grid-cols-3">
-          {/* Main Markdown Content */}
-          <article className="space-y-6 lg:col-span-2">
-            <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3 dark:border-slate-800">
-                <span className="text-caption font-mono text-slate-500 dark:text-slate-400">
-                  Customized Blueprint Preview
-                </span>
-                <button
-                  type="button"
-                  onClick={handleCopyMarkdown}
-                  className="text-caption font-bold text-brand-dark hover:underline dark:text-brand"
-                >
-                  Copy All &rarr;
-                </button>
-              </div>
-              <div className="prose prose-slate max-w-none pt-4 text-caption dark:prose-invert">
-                <pre className="whitespace-pre-wrap rounded-xl bg-slate-50 p-4 font-mono text-slate-800 dark:bg-slate-950/80 dark:text-slate-200">
+        <TabsContent value="customizer">
+          <div className="grid gap-6 lg:grid-cols-3">
+            <Card className="lg:col-span-2">
+              <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-3">
+                <CardTitle className="font-mono text-caption text-text-muted">
+                  Customized blueprint preview
+                </CardTitle>
+                <Button type="button" variant="ghost" size="sm" onClick={handleCopyMarkdown}>
+                  <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                  Copy all
+                </Button>
+              </CardHeader>
+              <CardContent className="space-y-4 pt-4">
+                <pre className="max-w-full overflow-x-auto whitespace-pre-wrap rounded-sm border border-border bg-surface-2 p-4 font-mono text-caption text-text">
                   {customizedMarkdown}
                 </pre>
-              </div>
-              {(markdownResolution.missingVariables.length > 0 ||
-                markdownResolution.unresolvedPlaceholders.length > 0) && (
-                <div
-                  role="status"
-                  className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3 text-tiny text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/20 dark:text-amber-300"
-                >
-                  Unresolved:{" "}
-                  {Array.from(
-                    new Set([
-                      ...markdownResolution.missingVariables,
-                      ...markdownResolution.unresolvedPlaceholders,
-                    ])
-                  ).join(", ")}{" "}
-                  — fill the variable fields to complete substitution.
-                </div>
-              )}
-            </div>
-          </article>
 
-          {/* Interactive Checklist Sidebar */}
-          <aside aria-label="Action Checklist" className="space-y-6">
-            <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-card dark:border-slate-800 dark:bg-slate-900">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-slate-800">
-                <h4 className="font-display text-body font-bold text-slate-900 dark:text-white">
-                  Step-by-Step Task Checklist
-                </h4>
-                <span className="text-tiny font-mono font-bold text-emerald-600">
-                  {progressPercent}% Done
-                </span>
-              </div>
+                {(markdownResolution.missingVariables.length > 0 ||
+                  markdownResolution.unresolvedPlaceholders.length > 0) && (
+                  <InlineAlert
+                    variant="warning"
+                    title="Unresolved:"
+                    description={`${Array.from(
+                      new Set([
+                        ...markdownResolution.missingVariables,
+                        ...markdownResolution.unresolvedPlaceholders,
+                      ])
+                    ).join(", ")} — fill the variable fields above to complete substitution.`}
+                  />
+                )}
+              </CardContent>
+            </Card>
 
-              <div className="mt-4 space-y-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between border-b border-border pb-3">
+                <CardTitle className="text-heading">Task checklist</CardTitle>
+                <Badge variant={progressPercent === 100 ? "success" : "neutral"}>
+                  {progressPercent}% done
+                </Badge>
+              </CardHeader>
+              <CardContent className="space-y-2.5 pt-4">
                 {template.checklist.map((c) => {
                   const isDone = Boolean(checkedTasks[c.id]);
                   return (
                     <div
                       key={c.id}
                       onClick={() => toggleTask(c.id)}
-                      className={`cursor-pointer rounded-xl border p-3 transition ${
+                      className={cn(
+                        "cursor-pointer rounded-sm border p-3 transition-colors",
                         isDone
-                          ? "border-emerald-200 bg-emerald-50/40 dark:border-emerald-900/60 dark:bg-emerald-950/20"
-                          : "border-slate-200/80 bg-slate-50/50 hover:bg-white dark:border-slate-800 dark:bg-slate-950/40"
-                      }`}
+                          ? "border-success/30 bg-success-soft"
+                          : "border-border bg-surface-2 hover:border-border-strong"
+                      )}
                     >
                       <div className="flex items-start gap-2.5">
-                        <input
-                          type="checkbox"
+                        <Checkbox
                           checked={isDone}
-                          onChange={() => {}}
-                          className="mt-0.5 h-4 w-4 rounded accent-emerald-600"
+                          onCheckedChange={() => toggleTask(c.id)}
+                          aria-label={renderText(c.task).output}
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-0.5"
                         />
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
+                        <div className="min-w-0 flex-1 space-y-1">
+                          <div className="flex items-center justify-between gap-2">
                             <span
-                              className={`text-caption font-bold ${
-                                isDone
-                                  ? "line-through text-slate-400 dark:text-slate-500"
-                                  : "text-slate-900 dark:text-white"
-                              }`}
+                              className={cn(
+                                "text-caption font-medium",
+                                isDone ? "text-text-muted line-through" : "text-text"
+                              )}
                             >
                               {renderText(c.task).output}
                             </span>
-                            <span
-                              className={`rounded px-1.5 py-0.5 text-micro font-bold ${
-                                c.priority === "Critical"
-                                  ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300"
-                                  : "bg-blue-50 text-blue-700 dark:bg-blue-950/60 dark:text-blue-300"
-                              }`}
-                            >
+                            <Badge variant={c.priority === "Critical" ? "error" : "notice"}>
                               {c.priority}
-                            </span>
+                            </Badge>
                           </div>
-                          <p className="mt-1 text-tiny text-slate-500 dark:text-slate-400">
+                          <p className="text-caption text-text-muted">
                             {renderText(c.description).output}
                           </p>
                         </div>
@@ -618,251 +532,233 @@ export function TemplateCustomizerView({ template, relatedTemplates }: Props) {
                     </div>
                   );
                 })}
-              </div>
-            </div>
-          </aside>
-        </div>
-      )}
-
-      {/* Tab 2: Live SERP Simulator */}
-      {activeTab === "serp" && (
-        <section className="space-y-6 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-3 dark:border-slate-800">
-            <div>
-              <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
-                Live Google SERP Pixel Simulator
-              </h3>
-              <p className="text-caption text-slate-500 dark:text-slate-400">
-                Exact physical width measurement in Arial 20px (Title: max {TITLE_PIXEL_LIMIT}px) and Arial 14px (Meta Description: max {META_DESC_PIXEL_LIMIT}px).
-              </p>
-            </div>
-
-            {/* Desktop / Mobile Switcher */}
-            <div className="flex items-center rounded-xl bg-slate-100 p-1 dark:bg-slate-800">
-              <button
-                type="button"
-                onClick={() => setSerpMode("desktop")}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-caption font-semibold transition ${
-                  serpMode === "desktop"
-                    ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
-                    : "text-slate-600 dark:text-slate-400"
-                }`}
-              >
-                Desktop Preview
-              </button>
-              <button
-                type="button"
-                onClick={() => setSerpMode("mobile")}
-                className={`flex items-center gap-1.5 rounded-lg px-3 py-1 text-caption font-semibold transition ${
-                  serpMode === "mobile"
-                    ? "bg-white text-slate-900 shadow-sm dark:bg-slate-900 dark:text-white"
-                    : "text-slate-600 dark:text-slate-400"
-                }`}
-              >
-                Mobile Preview
-              </button>
-            </div>
+              </CardContent>
+            </Card>
           </div>
+        </TabsContent>
 
-          {/* Pixel Gauges & Counter Cards */}
-          <div className="grid gap-4 sm:grid-cols-2">
-            {/* Title Pixel Meter */}
-            <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-950/40">
-              <div className="flex items-center justify-between text-caption">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Title Tag Width</span>
-                <span
-                  className={`rounded px-1.5 py-0.5 text-micro font-bold ${
-                    titlePixel.isOver
-                      ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300"
-                      : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
-                  }`}
+        <TabsContent value="serp">
+          <Card>
+            <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+              <div>
+                <CardTitle className="text-heading">Live Google SERP pixel simulator</CardTitle>
+                <CardDescription>
+                  Physical glyph measurement in Arial 20px (title limit {TITLE_PIXEL_LIMIT} px) and Arial 14px (description limit {META_DESC_PIXEL_LIMIT} px).
+                </CardDescription>
+              </div>
+              <div className="inline-flex items-center gap-1 rounded-sm border border-border bg-surface-2 p-1">
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={serpMode === "desktop" ? "secondary" : "ghost"}
+                  onClick={() => setSerpMode("desktop")}
                 >
-                  {titlePixel.pixelWidth}px / {TITLE_PIXEL_LIMIT}px
-                </span>
-              </div>
-              <div className="mt-2 h-2.5 w-full rounded-full bg-slate-200 overflow-hidden dark:bg-slate-800">
-                <div
-                  className={`h-full transition-all duration-300 ${
-                    titlePixel.isOver ? "bg-red-500" : titlePixel.pixelWidth > TITLE_PIXEL_LIMIT - 40 ? "bg-amber-500" : "bg-emerald-500"
-                  }`}
-                  style={{ width: `${Math.min(titlePixel.percentage, 100)}%` }}
-                />
-              </div>
-              <div className="mt-2 flex items-center justify-between text-tiny text-slate-500 dark:text-slate-400">
-                <span>{customizedTitle.length} Characters</span>
-                <span>{titlePixel.isOver ? `Truncated by ${titlePixel.pixelWidth - TITLE_PIXEL_LIMIT}px` : `${titlePixel.remainingPx}px buffer remaining`}</span>
-              </div>
-            </div>
-
-            {/* Description Pixel Meter */}
-            <div className="rounded-xl border border-slate-200/80 bg-slate-50/50 p-4 dark:border-slate-800 dark:bg-slate-950/40">
-              <div className="flex items-center justify-between text-caption">
-                <span className="font-bold text-slate-700 dark:text-slate-300">Meta Description Width</span>
-                <span
-                  className={`rounded px-1.5 py-0.5 text-micro font-bold ${
-                    descPixel.isOver
-                      ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300"
-                      : "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
-                  }`}
+                  <Monitor className="h-3.5 w-3.5" aria-hidden="true" />
+                  Desktop
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant={serpMode === "mobile" ? "secondary" : "ghost"}
+                  onClick={() => setSerpMode("mobile")}
                 >
-                  {descPixel.pixelWidth}px / {META_DESC_PIXEL_LIMIT}px
-                </span>
+                  <Smartphone className="h-3.5 w-3.5" aria-hidden="true" />
+                  Mobile
+                </Button>
               </div>
-              <div className="mt-2 h-2.5 w-full rounded-full bg-slate-200 overflow-hidden dark:bg-slate-800">
-                <div
-                  className={`h-full transition-all duration-300 ${
-                    descPixel.isOver ? "bg-red-500" : descPixel.pixelWidth > META_DESC_PIXEL_LIMIT - 60 ? "bg-amber-500" : "bg-emerald-500"
-                  }`}
-                  style={{ width: `${Math.min(descPixel.percentage, 100)}%` }}
-                />
-              </div>
-              <div className="mt-2 flex items-center justify-between text-tiny text-slate-500 dark:text-slate-400">
-                <span>{customizedDesc.length} Characters</span>
-                <span>{descPixel.isOver ? `Truncated by ${descPixel.pixelWidth - META_DESC_PIXEL_LIMIT}px` : `${descPixel.remainingPx}px buffer remaining`}</span>
-              </div>
-            </div>
-          </div>
+            </CardHeader>
 
-          {/* Rendered Google SERP Preview Box */}
-          <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-slate-700 dark:bg-slate-900">
-            <div className="text-micro font-mono font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">
-              Google SERP Result Preview &bull; {serpMode.toUpperCase()} VIEWPORT
-            </div>
-
-            <div
-              className={`space-y-1 font-sans ${
-                serpMode === "mobile" ? "max-w-sm rounded-xl border border-slate-200 p-4 shadow-sm dark:border-slate-800" : "max-w-2xl"
-              }`}
-            >
-              {/* URL & Breadcrumb */}
-              <div className="flex items-center gap-2 text-caption">
-                <span className="flex h-5 w-5 items-center justify-center rounded-full bg-slate-100 text-micro font-bold text-slate-700">
-                  {vars.brandName ? vars.brandName.charAt(0) : "G"}
-                </span>
-                <div className="min-w-0 leading-tight">
-                  <div className="truncate text-tiny font-medium text-slate-800 dark:text-slate-200">
-                    {vars.brandName || "Hotel Brand"}
+            <CardContent className="space-y-5 pt-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2 rounded-sm border border-border bg-surface-2 p-4">
+                  <div className="flex items-center justify-between text-caption">
+                    <span className="font-medium text-text">Title tag width</span>
+                    <Badge variant={titlePixel.isOver ? "error" : "success"}>
+                      {titlePixel.pixelWidth} px / {TITLE_PIXEL_LIMIT} px
+                    </Badge>
                   </div>
-                  <div className="truncate text-tiny text-slate-500">
-                    {vars.targetUrl || "https://www.example.com"}
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-surface">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-fast",
+                        titlePixel.isOver
+                          ? "bg-error"
+                          : titlePixel.pixelWidth > TITLE_PIXEL_LIMIT - 40
+                          ? "bg-warning"
+                          : "bg-success"
+                      )}
+                      style={{ width: `${Math.min(titlePixel.percentage, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-caption text-text-muted tabular-nums">
+                    <span>{customizedTitle.length} characters</span>
+                    <span>
+                      {titlePixel.isOver
+                        ? `Truncated by ${titlePixel.pixelWidth - TITLE_PIXEL_LIMIT} px`
+                        : `${titlePixel.remainingPx} px buffer remaining`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="space-y-2 rounded-sm border border-border bg-surface-2 p-4">
+                  <div className="flex items-center justify-between text-caption">
+                    <span className="font-medium text-text">Meta description width</span>
+                    <Badge variant={descPixel.isOver ? "error" : "success"}>
+                      {descPixel.pixelWidth} px / {META_DESC_PIXEL_LIMIT} px
+                    </Badge>
+                  </div>
+                  <div className="h-2 w-full overflow-hidden rounded-full bg-surface">
+                    <div
+                      className={cn(
+                        "h-full transition-all duration-fast",
+                        descPixel.isOver
+                          ? "bg-error"
+                          : descPixel.pixelWidth > META_DESC_PIXEL_LIMIT - 60
+                          ? "bg-warning"
+                          : "bg-success"
+                      )}
+                      style={{ width: `${Math.min(descPixel.percentage, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between text-caption text-text-muted tabular-nums">
+                    <span>{customizedDesc.length} characters</span>
+                    <span>
+                      {descPixel.isOver
+                        ? `Truncated by ${descPixel.pixelWidth - META_DESC_PIXEL_LIMIT} px`
+                        : `${descPixel.remainingPx} px buffer remaining`}
+                    </span>
                   </div>
                 </div>
               </div>
 
-              {/* Title Link */}
-              <h4 className="pt-1 text-base font-medium text-[#1a0dab] hover:underline cursor-pointer dark:text-[#8ab4f8] leading-snug">
-                {customizedTitle}
-              </h4>
-
-              {/* Snippet Description */}
-              <p className="text-caption text-[#4d5156] dark:text-[#bdc1c6] leading-relaxed pt-0.5">
-                {customizedDesc}
-              </p>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Tab 3: JSON-LD Schema Generator */}
-      {activeTab === "schema" && (
-        <section className="space-y-6 rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900">
-          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-100 pb-3 dark:border-slate-800">
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-display text-base font-bold text-slate-900 dark:text-white">
-                  JSON-LD Structured Data Generator
-                </h3>
-                <span className="rounded-md bg-emerald-50 px-2 py-0.5 text-micro font-bold text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300">
-                  &check; Validated Schema ({template.schemaType})
-                </span>
+              <div className="rounded-sm border border-border bg-surface p-5">
+                <div className="mb-3 font-mono text-overline uppercase text-text-muted">
+                  Google SERP preview · {serpMode} viewport
+                </div>
+                <div
+                  className={cn(
+                    "space-y-1.5",
+                    serpMode === "mobile"
+                      ? "max-w-sm rounded-sm border border-border bg-surface-2 p-4"
+                      : "max-w-[72ch]"
+                  )}
+                >
+                  <div className="flex items-center gap-2 text-caption">
+                    <span className="flex h-6 w-6 items-center justify-center rounded-full bg-surface-2 text-caption font-semibold text-text">
+                      {vars.brandName ? vars.brandName.charAt(0) : "S"}
+                    </span>
+                    <div className="min-w-0 leading-tight">
+                      <div className="truncate text-caption font-medium text-text">
+                        {vars.brandName || "Property Name"}
+                      </div>
+                      <div className="truncate text-caption text-text-muted">
+                        {vars.targetUrl || "https://www.example.com"}
+                      </div>
+                    </div>
+                  </div>
+                  <h4 className="pt-1 text-heading font-medium text-link hover:underline">
+                    {customizedTitle}
+                  </h4>
+                  <p className="text-caption leading-relaxed text-text-muted">{customizedDesc}</p>
+                </div>
               </div>
-              <p className="text-caption text-slate-500 dark:text-slate-400">
-                Production-ready JSON-LD markup dynamically tailored to your customized inputs.
-              </p>
-            </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-            <button
-              type="button"
-              onClick={handleCopySchema}
-              className="rounded-xl bg-slate-900 px-4 py-2 text-caption font-bold text-white shadow-xs transition hover:bg-brand-dark dark:bg-brand dark:text-slate-950"
-            >
-              Copy Schema &rarr;
-            </button>
-          </div>
+        <TabsContent value="schema">
+          <Card>
+            <CardHeader className="flex flex-row flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <CardTitle className="text-heading">JSON-LD structured data generator</CardTitle>
+                  <Badge variant="success">
+                    <Check className="h-3 w-3" aria-hidden="true" />
+                    Validated ({template.schemaType})
+                  </Badge>
+                </div>
+                <CardDescription>
+                  Structured JSON-LD payload generated from your customized template variables.
+                </CardDescription>
+              </div>
+              <Button type="button" variant="primary" size="sm" onClick={handleCopySchema}>
+                <Copy className="h-3.5 w-3.5" aria-hidden="true" />
+                Copy schema
+              </Button>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <pre className="overflow-x-auto whitespace-pre rounded-sm border border-border bg-sidebar p-4 font-mono text-caption text-sidebar-text">
+                {schemaString}
+              </pre>
+            </CardContent>
+          </Card>
+        </TabsContent>
 
-          <div className="rounded-xl bg-slate-950 p-4 font-mono text-caption text-emerald-400 overflow-x-auto">
-            <pre className="whitespace-pre">{schemaString}</pre>
-          </div>
-        </section>
-      )}
-
-      {/* Tab 4: Common Mistakes & KPI Benchmarks */}
-      {activeTab === "mistakes" && (
-        <section className="space-y-6">
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900">
-            <h3 className="font-display text-base font-bold text-slate-900 dark:text-white mb-4">
-              Common Mistakes &amp; Remediation Table
-            </h3>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-caption">
-                <thead>
-                  <tr className="border-b border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950/40">
-                    <th className="py-2.5 px-3 font-bold text-slate-700 dark:text-slate-300">Common Mistake</th>
-                    <th className="py-2.5 px-3 font-bold text-red-600 dark:text-red-400">SEO Impact</th>
-                    <th className="py-2.5 px-3 font-bold text-emerald-600 dark:text-emerald-400">Remediation Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                  {template.commonMistakes.map((m, i) => (
-                    <tr key={i} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/40">
-                      <td className="py-3 px-3 font-semibold text-slate-900 dark:text-white">{m.mistake}</td>
-                      <td className="py-3 px-3 text-red-700 dark:text-red-300">{m.impact}</td>
-                      <td className="py-3 px-3 text-slate-700 dark:text-slate-300">{m.remediation}</td>
+        <TabsContent value="mistakes">
+          <div className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-heading">Common mistakes &amp; remediation</CardTitle>
+              </CardHeader>
+              <CardContent className="overflow-x-auto">
+                <table className="w-full text-left text-caption">
+                  <thead>
+                    <tr className="border-b border-border bg-surface-2">
+                      <th className="px-3 py-2.5 font-medium text-text">Common mistake</th>
+                      <th className="px-3 py-2.5 font-medium text-error-fg">SEO impact</th>
+                      <th className="px-3 py-2.5 font-medium text-success-fg">Remediation action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {template.commonMistakes.map((m, i) => (
+                      <tr key={i} className="hover:bg-surface-2">
+                        <td className="px-3 py-3 font-medium text-text">{m.mistake}</td>
+                        <td className="px-3 py-3 text-error-fg">{m.impact}</td>
+                        <td className="px-3 py-3 text-text-muted">{m.remediation}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </CardContent>
+            </Card>
 
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900">
-            <h3 className="font-display text-base font-bold text-slate-900 dark:text-white mb-4">
-              Expected KPI Benchmarks &amp; Targets
-            </h3>
-            <div className="grid gap-4 sm:grid-cols-3">
-              {template.kpiBenchmarks.map((kpi, i) => (
-                <div key={i} className="rounded-xl border border-slate-100 bg-slate-50/60 p-4 dark:border-slate-800 dark:bg-slate-950/40">
-                  <div className="text-micro font-bold text-slate-400 uppercase tracking-wider">{kpi.timeframe}</div>
-                  <div className="mt-1 font-display text-base font-bold text-slate-900 dark:text-white">{kpi.target}</div>
-                  <div className="mt-1 text-caption text-slate-600 dark:text-slate-400">{kpi.metric}</div>
-                </div>
-              ))}
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-heading">Expected KPI benchmarks</CardTitle>
+              </CardHeader>
+              <CardContent className="grid gap-4 sm:grid-cols-3">
+                {template.kpiBenchmarks.map((kpi, i) => (
+                  <div key={i} className="rounded-sm border border-border bg-surface-2 p-4">
+                    <div className="text-overline uppercase text-text-muted">{kpi.timeframe}</div>
+                    <div className="mt-1 text-heading font-semibold text-text tabular-nums">{kpi.target}</div>
+                    <div className="mt-1 text-caption text-text-muted">{kpi.metric}</div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
           </div>
-        </section>
-      )}
+        </TabsContent>
+      </Tabs>
 
-      {/* Contextual Internal Links to 4 Related Templates */}
-      <section className="print:hidden rounded-2xl border border-slate-200/90 bg-white p-6 shadow-card dark:border-slate-800 dark:bg-slate-900">
-        <h3 className="font-display text-body font-bold text-slate-900 dark:text-white mb-3">
-          Related SEO Blueprints &amp; Checklists
-        </h3>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {/* Related Templates */}
+      <Card id="related-templates" className="print:hidden p-5">
+        <h3 className="mb-3 text-heading text-text">Related SEO blueprints &amp; checklists</h3>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {relatedTemplates.map((rel) => (
             <Link
               key={rel.id}
               href={`/templates/${rel.categorySlug}/${rel.slug}`}
-              className="card-hover group rounded-xl border border-slate-200/80 p-3.5 transition hover:border-brand dark:border-slate-800 dark:hover:border-brand"
+              className="group rounded-sm border border-border bg-surface-2 p-3.5 transition-colors hover:border-border-strong"
             >
-              <div className="text-micro font-bold text-slate-400 uppercase">{rel.category}</div>
-              <h4 className="mt-1 text-caption font-bold text-slate-900 group-hover:text-brand-dark dark:text-white dark:group-hover:text-brand line-clamp-1">
+              <div className="text-overline uppercase text-text-muted">{rel.category}</div>
+              <h4 className="mt-1 text-caption font-semibold text-text group-hover:text-link line-clamp-1">
                 {rel.title}
               </h4>
-              <p className="mt-1 text-tiny text-slate-500 line-clamp-2">{rel.metaDescription}</p>
+              <p className="mt-1 text-caption text-text-muted line-clamp-2">{rel.metaDescription}</p>
             </Link>
           ))}
         </div>
-      </section>
+      </Card>
     </div>
   );
 }

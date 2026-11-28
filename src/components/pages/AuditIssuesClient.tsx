@@ -258,7 +258,7 @@ export function AuditIssuesClient() {
             emptyDescription={
               auditReport
                 ? "All checks in this category and severity filter passed."
-                : "Click Run audit above to populate the 11-dimension issue breakdown."
+                : "Click Run audit above to populate the issue breakdown."
             }
           />
         </div>

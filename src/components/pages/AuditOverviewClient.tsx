@@ -91,7 +91,7 @@ export function AuditOverviewClient() {
         title="Website Audit"
         description={
           activeProperty.url
-            ? `11-dimension site audit for ${activeProperty.url}`
+            ? `Technical, content, and schema audit for ${activeProperty.url}`
             : "Select a property or enter a URL to audit technical health, headings, images, and GEO signals."
         }
         breadcrumbs={[{ label: "Dashboard", href: "/" }, { label: "Website Audit" }]}
@@ -124,7 +124,7 @@ export function AuditOverviewClient() {
       {auditLoading && (
         <CrawlPulseScene
           active
-          label="Executing 11-dimension website audit..."
+          label="Executing full website audit..."
           sublabel="Inspecting security headers, crawlability, headings, image alt coverage, schema, and GEO signals"
         />
       )}

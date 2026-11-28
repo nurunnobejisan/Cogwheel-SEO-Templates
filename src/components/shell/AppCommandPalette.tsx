@@ -18,7 +18,7 @@ import { useWorkspace, type ActiveProperty } from "./WorkspaceContext";
 
 const ROUTE_SHORTCUTS: Array<{ label: string; subtitle: string; href: string }> = [
   { label: "Dashboard", subtitle: "Property health, issues, and recent runs", href: "/" },
-  { label: "Audit Overview", subtitle: "11-dimension website audit metrics", href: "/audit" },
+  { label: "Audit Overview", subtitle: "Technical, content, and schema audit metrics", href: "/audit" },
   { label: "Issue Report", subtitle: "Filterable SEO & GEO issue breakdown", href: "/audit/issues" },
   { label: "Crawled Pages", subtitle: "Status codes, titles, H1, and word counts", href: "/audit/pages" },
   { label: "Headings Audit", subtitle: "H1–H6 outline hierarchy diagnostics", href: "/audit/headings" },

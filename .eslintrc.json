@@ -18,6 +18,13 @@
         "src/components/motion/**/*.tsx",
         "src/components/pages/**/*.tsx",
         "src/components/BrandMark.tsx",
+        "src/components/SiteFooter.tsx",
+        "src/components/TemplatesHubClient.tsx",
+        "src/components/StrategyMatrixContent.tsx",
+        "src/components/ArchitectureContent.tsx",
+        "src/components/TemplateCustomizerView.tsx",
+        "src/app/(public)/**/*.tsx",
+        "src/app/(app)/**/*.tsx",
         "src/app/dev/**/*.tsx",
         "src/app/layout.tsx"
       ],
