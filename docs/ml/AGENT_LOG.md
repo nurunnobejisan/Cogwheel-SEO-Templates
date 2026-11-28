@@ -34,3 +34,13 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Supports both bare JSON-LD objects/`@graph` and task-wrapped `{ jsonLd }` / `{ rows: [{ proposedTitle, proposedMeta }] }` arrays so real task callers pass without translation glue.
 - **Remaining**: Proceed to WP4 (`ml/wp4-registry-retirement`).
+
+## WP4 — Registry Hygiene (`ml/wp4-registry-retirement`)
+- **Changed**:
+  - Updated `data/models/model_registry.json`: set `"activeModelId": null` and marked both legacy `gemini-1.5-flash-002` entries `"status": "retired"` under D-028.
+  - Updated `ml/serve/registry.py` (`REGISTRY_STATUSES`, explicit refusal of `"retired"` even when `--allow-unverified` is passed).
+  - Added `isRegistryModelSelectable` to `src/core/ai/custom-model.ts`, blocking retired Gemini 1.5 Flash IDs and any registry entry whose status is not `"ready"` in both `isCustomModelConfigured` and `callCustomModel`.
+  - Updated `tests/python/test_model_registry_benchmark_labels.py`, `tests/python/test_ml_serve.py`, and `tests/custom-model-provider.test.ts` with retirement & non-ready refusal tests.
+- **Defaults taken**:
+  - Custom model IDs not listed in `data/models/model_registry.json` (excluding `gemini-1.5-flash*`) remain allowed when explicitly configured by env vars so pre-registration smoke tests keep working.
+- **Remaining**: Proceed to WP5 (`ml/wp5-adapter-modes`).

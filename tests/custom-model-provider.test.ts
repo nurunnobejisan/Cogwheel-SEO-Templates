@@ -12,6 +12,7 @@ import {
   callCustomModel,
   getCustomModelSettings,
   isCustomModelConfigured,
+  isRegistryModelSelectable,
 } from "../src/core/ai/custom-model.ts";
 import {
   getActiveAiProviderLabel,
@@ -298,6 +299,40 @@ describe("Phase 4 / WP2 — generateClaudeText task routing", () => {
     setEnv({ CUSTOM_MODEL_ENDPOINT: PRIVATE_ENDPOINT });
     expect(getActiveAiProviderLabel()).not.toContain("fine-tuned");
     expect(isClaudeConfigured()).toBe(false);
+  });
+
+  it("refuses retired Gemini 1.5 Flash and any non-ready registry entries (WP4)", async () => {
+    snapshotEnv();
+    expect(isRegistryModelSelectable("seo-studio-unified-tuned_gemini-v1795487332")).toBe(false);
+    expect(isRegistryModelSelectable("seo-studio-unified-tuned_gemini-v1795486557")).toBe(false);
+    expect(isRegistryModelSelectable("gemini-1.5-flash-002")).toBe(false);
+    expect(
+      isRegistryModelSelectable("seo-studio-unverified", {
+        activeModelId: null,
+        models: [{ modelId: "seo-studio-unverified", status: "unverified" }],
+      }),
+    ).toBe(false);
+    expect(
+      isRegistryModelSelectable("seo-studio-qwen-ready", {
+        activeModelId: "seo-studio-qwen-ready",
+        models: [{ modelId: "seo-studio-qwen-ready", status: "ready" }],
+      }),
+    ).toBe(true);
+
+    setEnv({
+      CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
+      CUSTOM_MODEL_ID: "seo-studio-unified-tuned_gemini-v1795487332",
+    });
+    expect(isCustomModelConfigured()).toBe(false);
+
+    await expect(
+      callCustomModel({
+        system: "s",
+        prompt: "p",
+        maxTokens: 64,
+        fetchImpl: vi.fn() as unknown as typeof fetch,
+      }),
+    ).rejects.toThrow(/retired or not ready/i);
   });
 });
 

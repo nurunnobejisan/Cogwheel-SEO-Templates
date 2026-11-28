@@ -109,13 +109,26 @@ def test_model_ids_advertises_canonical_spelling(registry_path: Path):
 def test_assert_servable_gates_on_status():
     ready = {"modelId": READY_ID, "status": "ready"}
     legacy = {"modelId": LEGACY_ID, "status": "unverified"}
+    retired = {"modelId": LEGACY_ID, "status": "retired"}
     missing = {"modelId": "x", "status": "deprecated"}
     assert_servable(ready)  # ready always passes
     with pytest.raises(RegistryError, match="may not be served"):
         assert_servable(legacy)
     assert_servable(legacy, allow_unverified=True)
+    with pytest.raises(RegistryError, match="retired"):
+        assert_servable(retired, allow_unverified=True)
     with pytest.raises(RegistryError, match="may not be served"):
         assert_servable(missing)
+
+
+def test_real_registry_has_no_active_gemini_and_retires_legacy_entries():
+    real = load_registry(Path(str(DEFAULT_REGISTRY)))
+    assert real.get("activeModelId") is None
+    for entry in real["models"]:
+        if str(entry.get("baseModel", "")).startswith("gemini-1.5-flash"):
+            assert entry["status"] == "retired"
+            with pytest.raises(RegistryError, match="retired"):
+                assert_servable(entry, allow_unverified=True)
 
 
 def test_load_registry_validates_shape(tmp_path: Path):

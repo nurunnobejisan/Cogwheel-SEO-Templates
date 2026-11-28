@@ -21,6 +21,7 @@ from typing import Any, Dict, List, Mapping, Optional
 __all__ = [
     "RegistryError",
     "DEFAULT_REGISTRY",
+    "REGISTRY_STATUSES",
     "migrate_model_id",
     "debranded_id",
     "load_registry",
@@ -28,6 +29,8 @@ __all__ = [
     "model_ids",
     "assert_servable",
 ]
+
+REGISTRY_STATUSES = frozenset({"unverified", "retired", "ready"})
 
 #: Optional alias prefix -> canonical prefix. Empty: ids are already canonical.
 ALIASES: Dict[str, str] = {}
@@ -119,6 +122,10 @@ def assert_servable(entry: Mapping[str, Any], *, allow_unverified: bool = False)
         return
     if status == "unverified" and allow_unverified:
         return
+    if status == "retired":
+        raise RegistryError(
+            f"model {entry['modelId']!r} has status 'retired' and may not be served"
+        )
     raise RegistryError(
         f"model {entry['modelId']!r} has status {status!r} and may not be served"
         + (
