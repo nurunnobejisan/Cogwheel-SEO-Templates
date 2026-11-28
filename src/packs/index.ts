@@ -8,9 +8,9 @@
  * Packs register themselves from `src/packs/<id>/index.ts`; the hotel pack
  * lands in Task 2.2.
  */
-import type { Pack, PackPageType } from "./types.ts";
+import type { Pack, PackPageType } from "./types";
 
-export * from "./types.ts";
+export * from "./types";
 
 /** Page types the classifier may emit — kept in sync with rules/types vocabulary. */
 export const KNOWN_PAGE_TYPES: ReadonlySet<PackPageType> = new Set([
