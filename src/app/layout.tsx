@@ -15,20 +15,20 @@ const jakarta = Plus_Jakarta_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL("https://seo-studio.vercel.app"),
   title: {
-    default: "Razib Marketing — Hotel SEO & GEO Workspace for Hospitality",
+    default: "SEO & GEO Studio — Hotel Search Engine Suite",
     template: "%s",
   },
   description:
-    "Razib Marketing's hospitality SEO and GEO workspace brings precise SERP pixel budgeting, brand guardrails, and client-ready reporting to hotel teams.",
+    "SEO Studio's hospitality SEO and GEO workspace brings precise SERP pixel budgeting, brand guardrails, and client-ready reporting to hotel teams.",
   icons: {
-    icon: "/razib-marketing-logo.png",
+    icon: "/seo-studio-logo.png",
   },
   openGraph: {
-    title: "Razib Marketing — Hotel SEO & GEO Workspace for Hospitality",
+    title: "SEO & GEO Studio — Hotel Search Engine Suite",
     description:
-      "Razib Marketing's hospitality SEO and GEO workspace brings precise SERP pixel budgeting, brand guardrails, and client-ready reporting to hotel teams.",
+      "SEO Studio's hospitality SEO and GEO workspace brings precise SERP pixel budgeting, brand guardrails, and client-ready reporting to hotel teams.",
     type: "website",
-    siteName: "Razib Marketing — SEO & GEO Studio",
+    siteName: "SEO & GEO Studio",
   },
 };
 

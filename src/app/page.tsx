@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import PropertyDashboard from "@/components/PropertyDashboard";
 
 export const metadata: Metadata = {
-  title: "Razib Marketing — Hotel SEO & GEO Workspace for Hospitality",
+  title: "SEO & GEO Studio — Hotel Search Engine Suite",
   description:
-    "Razib Marketing's hospitality SEO and GEO workspace brings precise SERP pixel budgeting, brand guardrails, and client-ready reporting to hotel teams.",
+    "SEO Studio's hospitality SEO and GEO workspace brings precise SERP pixel budgeting, brand guardrails, and client-ready reporting to hotel teams.",
 };
 
 export default function Home() {

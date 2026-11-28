@@ -3,9 +3,9 @@ import Link from "next/link";
 import Image from "next/image";
 
 export const metadata: Metadata = {
-  title: "System Architecture & Technical Specs — Razib Marketing",
+  title: "System Architecture & Technical Specs — SEO Studio",
   description:
-    "Razib Marketing's technical architecture for the Manifest V3 extension, AI training vault, hybrid model routing, and Python fine-tuning pipelines.",
+    "SEO Studio's technical architecture for the Manifest V3 extension, AI training vault, hybrid model routing, and Python fine-tuning pipelines.",
 };
 
 export default function ArchitecturePage() {

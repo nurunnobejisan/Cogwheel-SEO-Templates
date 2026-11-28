@@ -26,7 +26,7 @@ export function generateMetadata({ params }: PageProps): Metadata {
   const template = getTemplateBySlug(params.category, params.slug);
   if (!template) {
     return {
-      title: "Template Not Found — Razib Marketing",
+      title: "Template Not Found — SEO Studio",
       description: "The requested SEO and GEO template could not be located in the SEO templates repository catalog.",
     };
   }
@@ -107,7 +107,7 @@ export default function TemplateDetailPage({ params }: PageProps) {
     },
     publisher: {
       "@type": "Organization",
-      name: "Razib Marketing",
+      name: "SEO Studio",
       url: "https://example.com",
     },
     mainEntityOfPage: {

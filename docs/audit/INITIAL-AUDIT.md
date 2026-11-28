@@ -1,7 +1,7 @@
 # Initial Product Audit — SEO & GEO Studio
 **Date:** 2026-11-23  
 **Auditor:** Principal Enterprise Systems & SEO Architect  
-**Workspace:** `jisan-razibmarketing/Cogwheel-SEO-Templates`
+**Workspace:** `nurunnobejisan/SEO-Studio`
 **Version Baseline:** 2.8.0  
 
 ---

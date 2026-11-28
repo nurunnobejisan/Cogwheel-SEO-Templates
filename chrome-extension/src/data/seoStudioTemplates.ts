@@ -307,7 +307,7 @@ export const SEO_STUDIO_TEMPLATES: SeoStudioTemplate[] = [
     format: "markdown",
     description: "Claude & ChatGPT prompt for allocating Semrush hospitality keyword pools across hotel landing pages using the 3-step SEO Studio rationale.",
     tags: ["Claude", "ChatGPT", "Semrush", "Keyword Research"],
-    content: `You are the Lead Hospitality SEO Strategist at Razib Marketing following SEO Studio standards.
+    content: `You are the Lead Hospitality SEO Strategist following SEO Studio standards.
 
 Analyze the following property and allocate target keywords across landing pages:
 PROPERTY: {{hotelName}}
@@ -1283,9 +1283,9 @@ export const SEO_STUDIO_OPTIMAL_AUDIT_DATA: PageAuditData = {
   pathname: "/",
   protocol: "https:",
   hostname: "{{SITE_HOSTNAME}}",
-  title: "Razib Marketing — Hospitality SEO & GEO Studio",
+  title: "Hospitality SEO & GEO Studio",
   titlePixelWidth: 390,
-  metaDesc: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.",
+  metaDesc: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by SEO Studio.",
   metaDescPixelWidth: 880,
   canonical: "{{SITE_URL}}",
   metaRobots: "index, follow",
@@ -1415,7 +1415,7 @@ export const SEO_STUDIO_OPTIMAL_AUDIT_DATA: PageAuditData = {
   hasOgTitle: true,
   hasOgImage: true,
   ogTitle: "SEO Studio | Official Site",
-  ogDescription: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.",
+  ogDescription: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by SEO Studio.",
   ogImage: "{{SITE_URL}}/assets/banner.png",
   twitterTags: {
     card: "summary_large_image",
@@ -1426,10 +1426,10 @@ export const SEO_STUDIO_OPTIMAL_AUDIT_DATA: PageAuditData = {
   detectedNap: {
     phone: "+1-800-555-0199",
     address: "Panama City Beachfront, FL 32413",
-    email: "contact@razibmarketing.com",
+    email: "nurunnobejisan@users.noreply.github.com",
   },
   socialLinks: [
-    { platform: "GitHub", url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates" },
+    { platform: "GitHub", url: "https://github.com/nurunnobejisan/SEO-Studio" },
   ],
   loadTimeMs: 240,
 };

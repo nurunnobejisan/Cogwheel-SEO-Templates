@@ -114,7 +114,7 @@ Prepared with SEO Intelligence Suite.`;
         <div className="flex items-start justify-between border-b-2 border-slate-900 pb-5 dark:border-slate-700">
           <div>
             <div className="font-display text-caption font-bold uppercase tracking-widest text-[#381a5e] dark:text-brand-light">
-              RAZIB MARKETING &bull; EXECUTIVE PERFORMANCE BRIEF
+              SEO STUDIO &bull; EXECUTIVE PERFORMANCE BRIEF
             </div>
             <h1 className="mt-1 font-display text-2xl md:text-3xl font-extrabold text-slate-900 dark:text-white">
               {propertyName}

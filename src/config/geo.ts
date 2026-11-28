@@ -55,7 +55,7 @@ export const MAJOR_CITIES: Array<[string, string]> = [
 ];
 
 /**
- * Competitor hotel chains & common misspellings (trained on Razib Marketing / SEO Studio rules).
+ * Competitor hotel chains & common misspellings (trained on internal SEO rules).
  * Used to filter out non-Hilton competitor brand queries during ingest.
  */
 export const COMPETITOR_CHAIN_BRANDS = [

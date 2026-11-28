@@ -1,9 +1,9 @@
 # TypeScript CI Failure Investigation & Repair Report
 
-**Repository:** `jisan-razibmarketing/Cogwheel-SEO-Templates`
+**Repository:** `nurunnobejisan/SEO-Studio`
 **Workflow:** `SEO Integrity, TypeScript & Python CI` (`.github/workflows/seo-integrity.yml`)
 **Status:** **RESOLVED & VERIFIED IN GITHUB ACTIONS (Pass: 100%)**  
-**Verified GitHub Actions Run:** [Run 43627089130](https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/actions/runs/43627089130) (Status: `completed`, Conclusion: `success`)
+**Verified GitHub Actions Run:** [Run 43627089130](https://github.com/nurunnobejisan/SEO-Studio/actions/runs/43627089130) (Status: `completed`, Conclusion: `success`)
 
 ---
 
