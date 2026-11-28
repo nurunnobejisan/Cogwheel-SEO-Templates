@@ -63,6 +63,7 @@ from api.models import (
     SiteManifestItemModel,
 )
 from api.seo_visibility_report import build as build_report
+from api.wordpress_audit import measure as measure_wordpress_page
 
 logger = logging.getLogger("seo-studio.python")
 
@@ -122,6 +123,11 @@ class LinkGraphRequest(BaseModel):
 
 # Content-model validation (api/models.py served over HTTP).
 MAX_VALIDATION_FIELDS = 64
+
+
+class WordPressAuditRequest(BaseModel):
+    url: str = Field(min_length=1, max_length=2048)
+    post_id: int = Field(default=0, ge=0, le=2_147_483_647)
 
 
 class ContentModelValidationRequest(BaseModel):
@@ -205,6 +211,16 @@ def content_link_graph(
         items,
         max_links_per_page=payload.max_links_per_page,
     )
+
+
+@app.post("/v1/audit")
+def audit_wordpress_page(
+    payload: WordPressAuditRequest,
+    _auth: None = Depends(require_bearer),
+) -> dict:
+    """Label an on-page audit of a WordPress post URL; never invent a score."""
+    result = measure_wordpress_page(payload.url)
+    return {"post_id": payload.post_id, "url": payload.url, **result}
 
 
 @app.post("/v1/content/validate")
