@@ -15,6 +15,8 @@ const ENV_KEYS = [
   "CUSTOM_MODEL_ENDPOINT",
   "CUSTOM_MODEL_ID",
   "CUSTOM_MODEL_API_KEY",
+  "AI_ADAPTER_MODE",
+  "AI_ADAPTER_CANARY_PCT",
   "ANTHROPIC_API_KEY",
   "GEMINI_API_KEY",
   "GOOGLE_AI_API_KEY",
@@ -141,6 +143,7 @@ describe("WP3 — shared schema types and output gates", () => {
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
       CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      AI_ADAPTER_MODE: "on",
       GROQ_API_KEY: "groq-test-key",
     });
 
@@ -191,6 +194,7 @@ describe("WP3 — shared schema types and output gates", () => {
     setEnv({
       CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT,
       CUSTOM_MODEL_ID: "seo-studio-tuned-v1",
+      AI_ADAPTER_MODE: "on",
       GROQ_API_KEY: "groq-test-key",
     });
 
