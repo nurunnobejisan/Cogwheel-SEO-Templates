@@ -11,6 +11,13 @@ Status values: `not started` · `in progress` · `done`.
 | 3 | LoRA fine-tunes | done | [#7](https://github.com/nurunnobejisan/SEO-Studio/pull/7) |
 | 4 | Ship to app & extension | done | [#10](https://github.com/nurunnobejisan/SEO-Studio/pull/10) |
 | 5 | First adapter run (playbook, promotion, endpoint eval) | done | [#20](https://github.com/nurunnobejisan/SEO-Studio/pull/20) |
+| 6 | Security & routing hardening (`WP1`–`WP4`) | in progress | stacked `ml/wp1`..`ml/wp4` |
+| 7 | Rollout flags & tenant RAG isolation (`WP5`–`WP6`) | in progress | stacked `ml/wp5`..`ml/wp6` |
+| 8 | Schema-constrained decoding (`WP7`) | in progress | stacked `ml/wp7-constrained-decoding` |
+| 9 | Host-split dataset v2 builder (`WP8`) | in progress | stacked `ml/wp8-dataset-v2` |
+| 10 | Golden v2 set, GPU runbook & docs (`WP9`–`WP11`) | in progress | stacked `ml/wp9`..`ml/wp11` |
+| 11 | GPU baselines & QLoRA training (`0.6B` -> `1.7B` -> `4B`) | not started | — |
+| 12 | Golden eval promotion & progressive rollout (`shadow` -> `canary` -> `on`) | not started | — |
 
 ---
 
@@ -339,6 +346,90 @@ files clean; `run_eval`'s three pre-existing SIM/C416 hits unchanged).
 
 ---
 
+## Phase 6 — Security & routing hardening (`WP1`–`WP4`, `in progress`)
+
+**Goal.** Lock down operator/LLM endpoints (`WP1`), restrict the v1 adapter to Tier 1 `schema_generation` and `metadata_generation` (`WP2`), gate outputs deterministically with free-chain fallback (`WP3`), and retire deprecated/unverified Gemini 1.5 Flash entries (`WP4`).
+
+### Deliverables
+
+- [x] `src/lib/security/operator.ts` + `src/middleware.ts` + `/api/ai-training` + client & Chrome extension bearer headers (`WP1`)
+- [x] `ai/router.ts` (`V1_ADAPTER_TASKS`) + `src/core/claude.ts` task-gated dispatch (`WP2`)
+- [x] `schemas/known-schema-types.json` + `src/core/ai/output-gates.ts` single-retry fallback & structured counters (`WP3`)
+- [x] `data/models/model_registry.json` (`activeModelId: null`, Gemini 1.5 Flash `retired`) + `ml/serve/registry.py` + `src/core/ai/custom-model.ts` (`WP4`)
+- [ ] PRs `#wp1`–`#wp4` merged to `main`
+
+---
+
+## Phase 7 — Rollout flags & tenant RAG isolation (`WP5`–`WP6`, `in progress`)
+
+**Goal.** Keep production traffic on standard providers by default (`AI_ADAPTER_MODE=off`), enable zero-risk shadow comparison and deterministic canary rollouts (`WP5`), and guarantee zero cross-tenant RAG leakage (`WP6`).
+
+### Deliverables
+
+- [x] `src/core/ai/adapter-mode.ts` + `src/core/claude.ts` (`off | shadow | canary | on`, `AI_ADAPTER_CANARY_PCT`, FNV-1a property/request bucketing) (`WP5`)
+- [x] `ai/types.ts` + `ai/rag/knowledge-base.ts` + `src/core/brain/index.ts` + `ml/retrieve/` (`propertyId` filtering + `pgvector` `property_id` column/filter) (`WP6`)
+- [ ] PRs `#wp5`–`#wp6` merged to `main`
+
+---
+
+## Phase 8 — Schema-constrained decoding (`WP7`, `in progress`)
+
+**Goal.** Export canonical Draft-07 JSON Schemas directly from TypeScript Zod contracts (`schemas/ml-v1-outputs.ts`) and enforce grammar-constrained output decoding via lazy `outlines` in `ml/generate/` and `ml/serve/server.py`.
+
+### Deliverables
+
+- [x] `schemas/ml-schema-generation.schema.json` + `schemas/ml-metadata-generation.schema.json` exported via `npm run export:json-schemas`
+- [x] `ml/generate/constrained.py` + `ml/serve/server.py` `task` integration
+- [ ] PR `#wp7` merged to `main`
+
+---
+
+## Phase 9 — Host-split dataset v2 builder (`WP8`, `in progress`)
+
+**Goal.** Produce clean, domain-isolated training/eval splits scoped strictly to v1 tasks and clean sources.
+
+### Deliverables
+
+- [x] `ml/train/build_sft.py` (`data/build/sft-v2.jsonl`, `data/build/sft-v2.report.json`, 90/10 host hash split, D-026 human-review filter, `jsonld_valid` + `ml-label-cli.ts` gates, golden host exclusion)
+- [x] `ml/train/sft.py` `DEFAULT_DATA` updated to `data/build/sft-v2.jsonl` + `scripts/validate-training-data.mjs` v2 support
+- [ ] PR `#wp8` merged to `main`
+
+---
+
+## Phase 10 — Golden v2 set, GPU runbook & docs (`WP9`–`WP11`, `in progress`)
+
+**Goal.** Preserve the frozen 52-case set while scaffolding an expanded held-out v2 benchmark (`75` schema + `75` metadata), candidate proposal tooling, and exact operator runbook instructions.
+
+### Deliverables
+
+- [x] `ml/eval/golden_v2/` + `scripts/check-golden-v2.ts` (`--allow-partial` / `--strict`) + `ml/eval/propose_golden_v2.py` (`WP9`)
+- [x] `docs/ml/GPU_RUNBOOK.md` Steps 1–7 commands + temperature-0 ship gates (`WP10`)
+- [x] `docs/ml/PROGRESS.md` & `docs/ml/AGENT_LOG.md` updated (`WP11`)
+- [ ] Operator review of `>= 75` schema and `>= 75` metadata cases (`humanReviewed: true`)
+- [ ] PRs `#wp9`–`#wp11` merged to `main`
+
+---
+
+## Phase 11 — GPU baselines & QLoRA training (`not started`)
+
+**Goal.** Execute `docs/ml/GPU_RUNBOOK.md` Steps 1–4 on Kaggle/Colab (`0.6B` smoke -> `1.7B` baseline -> `4B` candidate, `< 9h`), measure untuned & free-provider baselines at temperature `0`, and upload trained adapter weights to `ML_PRIVATE_DATASET_REPO`.
+
+- [ ] Build real `data/build/sft-v2.jsonl` (`hostOverlapCount: 0`)
+- [ ] Measure untuned `Qwen/Qwen3-1.7B` and free-provider baselines via `ml/eval/run_eval.py`
+- [ ] Train QLoRA adapter and push to `ML_PRIVATE_DATASET_REPO`
+
+---
+
+## Phase 12 — Golden eval promotion & progressive rollout (`not started`)
+
+**Goal.** Verify ship gates at temperature `0` (`schema`: `jsonld_valid >= 95%`, `invented_metrics = 0`; `metadata`: `title_budget >= 90%`; beats both untuned base and free provider), promote via `ml.serve.register --active`, and roll out `shadow` -> `canary` -> `on`.
+
+- [ ] Pass `ml/eval/run_eval.py` ship gates on both frozen v1 and reviewed v2 golden sets
+- [ ] Promote via `python3 -m ml.serve.register --active` (`status: ready`)
+- [ ] Complete `AI_ADAPTER_MODE=shadow` -> `canary` -> `on` (`schema_generation` first, `D-029`)
+
+---
+
 ## Score log
 
 Filled in from Phase 2 onward. Golden-set numbers only — never a number that
@@ -351,3 +442,4 @@ was not produced by `ml/eval/run_eval.py`.
 | 2026-11-27 | 3 | (training layer shipped, no GPU run yet) | — | — | — | — | — | dry-run manifests only — no adapter trained, so no score exists to report |
 | 2026-11-27 | 4 | (serving shipped, no model run yet) | — | — | — | — | — | gateway serves only `ready` registry entries; with no adapter there is nothing to number |
 | 2026-11-27 | 5 | (runbook + promotion + endpoint eval shipped, no model run yet) | — | — | — | — | — | score log stays untouched until a real `run_eval` report exists |
+| 2026-11-28 | 6–10 | (v1 readiness code & docs on `ml/wp1`..`ml/wp11`, no GPU run yet) | — | — | — | — | — | v1 golden frozen (`52` cases); golden v2 awaiting `75/75` human review; no scores until `run_eval.py` executes |
