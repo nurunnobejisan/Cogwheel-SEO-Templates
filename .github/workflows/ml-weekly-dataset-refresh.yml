@@ -1,0 +1,152 @@
+# ─── ML Weekly Dataset Refresh (v2 WP9) ──────────────────────────────────────
+#
+# Hard limits honoured here:
+#   - Scheduled jobs only BUILD DATASETS and OPEN PRs. They never merge, never
+#     push to main, never promote a model and never call a live/paid LLM.
+#   - The PR contains REPORTS ONLY (counts, sha256s, refusal reasons) — never
+#     dataset rows. Datasets themselves stay in gitignored data/build/ and are
+#     uploaded to the private dataset repo for the human-run GPU job.
+#   - Least privilege: contents: read + pull-requests: write. Nothing else.
+# ─────────────────────────────────────────────────────────────────────────────
+name: ML Weekly Dataset Refresh
+
+on:
+  schedule:
+    # Mondays 06:00 UTC
+    - cron: "0 6 * * 1"
+  workflow_dispatch: {}
+
+concurrency:
+  group: ml-weekly-dataset-refresh
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  refresh:
+    name: Build datasets & open a reports-only PR
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install JS deps (for train:validate)
+        run: npm ci
+
+      - name: Pull raw sources from the private dataset repo (optional)
+        env:
+          ML_PRIVATE_DATASET_REPO: ${{ secrets.ML_PRIVATE_DATASET_REPO }}
+          ML_PRIVATE_DATASET_TOKEN: ${{ secrets.ML_PRIVATE_DATASET_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p data/raw
+          if [ -z "${ML_PRIVATE_DATASET_REPO:-}" ] || [ -z "${ML_PRIVATE_DATASET_TOKEN:-}" ]; then
+            echo "::notice::ML_PRIVATE_DATASET_REPO/TOKEN not set — building from committed sources only."
+            exit 0
+          fi
+          for name in wdc-2024 wdc-tables-2023 vault patches triples; do
+            url="https://${ML_PRIVATE_DATASET_TOKEN}@huggingface.co/datasets/${ML_PRIVATE_DATASET_REPO}/resolve/main/raw/${name}.jsonl"
+            if curl -sfL --retry 2 -o "data/raw/${name}.jsonl" "$url"; then
+              echo "pulled ${name}.jsonl ($(wc -c < data/raw/${name}.jsonl) bytes)"
+            else
+              echo "::warning::could not pull ${name}.jsonl — building without it"
+              rm -f "data/raw/${name}.jsonl"
+            fi
+          done
+
+      - name: Build SFT dataset (host-split, gated)
+        run: |
+          set -euo pipefail
+          ARGS=()
+          for name in wdc-2024 wdc-tables-2023 vault patches triples; do
+            if [ -f "data/raw/${name}.jsonl" ]; then
+              ARGS+=(--in "data/raw/${name}.jsonl=${name}")
+            fi
+          done
+          python3 -m ml.train.build_sft \
+            "${ARGS[@]}" \
+            --out data/build/sft-v2.jsonl \
+            --report data/build/sft-v2.report.json
+
+      - name: Build DPO pair dataset (gated)
+        run: |
+          set -euo pipefail
+          python3 -m ml.train.build_dpo \
+            --out data/build/dpo-v2.jsonl \
+            --report data/build/dpo-v2.report.json
+
+      - name: Governance checks
+        run: npm run train:validate
+
+      - name: Stage reports (never dataset rows)
+        run: |
+          set -euo pipefail
+          mkdir -p ml/reports/weekly
+          cp data/build/sft-v2.report.json ml/reports/weekly/sft-v2.report.json
+          cp data/build/dpo-v2.report.json ml/reports/weekly/dpo-v2.report.json
+          python3 - <<'PY'
+          import json
+          for name in ("sft-v2", "dpo-v2"):
+              report = json.load(open(f"ml/reports/weekly/{name}.report.json"))
+              # Belt and braces: a committed report must never carry rows.
+              for key in ("rows", "samples", "cases", "data", "results"):
+                  report.pop(key, None)
+              json.dump(report, open(f"ml/reports/weekly/{name}.report.json", "w"), indent=2, sort_keys=True)
+              open(f"ml/reports/weekly/{name}.report.json", "a").write("\n")
+              kept = report.get("kept", report.get("exported", 0))
+              print(name, "->", kept, "rows kept/exported")
+          PY
+
+      - name: Open a reports-only PR when the reports changed
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          DATE=$(date -u +%Y-%m-%d)
+          BRANCH="ml/weekly-refresh/${DATE}"
+          git config user.name "seo-studio-ml-bot"
+          git config user.email "ml-bot@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git add ml/reports/weekly/
+          if git diff --cached --quiet; then
+            echo "::notice::reports unchanged — no PR."
+            exit 0
+          fi
+          git commit -m "chore(ml): weekly dataset refresh reports (${DATE}) [reports only]"
+          git push origin "$BRANCH"
+          {
+            echo "## Weekly dataset refresh — ${DATE}"
+            echo ""
+            echo "Reports-only PR: build **counts and hashes** from the weekly"
+            echo "\`ml.train.build_sft\` / \`ml.train.build_dpo\` runs. Dataset rows"
+            echo "stay in gitignored \`data/build/\` and on the private dataset"
+            echo "repo — nothing row-level is committed here."
+            echo ""
+            echo '```'
+            cat ml/reports/weekly/sft-v2.report.json ml/reports/weekly/dpo-v2.report.json
+            echo '```'
+            echo ""
+            echo "Next steps (human actions):"
+            echo "- review the counts and refusal reasons;"
+            echo "- run the GPU job per \`docs/ml/GPU_RUNBOOK.md\` when a ship gate"
+            echo "  campaign is planned;"
+            echo "- promotion stays a manual \`ml.serve.register\` decision."
+          } > pr-body.md
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore(ml): weekly dataset refresh reports (${DATE})" \
+            --body-file pr-body.md

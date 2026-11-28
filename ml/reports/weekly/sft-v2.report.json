@@ -1,0 +1,20 @@
+{
+  "byJob": {
+    "metadata_generation": {},
+    "schema_generation": {}
+  },
+  "bySource": {},
+  "bySplit": {},
+  "evalHostCount": 0,
+  "generatedAt": "2026-11-28T19:26:40Z",
+  "goldenHostOverlapCount": 0,
+  "goldenSha256": "3d9514129d6a694fed90fa9a52039806bfa687e6b51c757998b4e05bcd6a3a84",
+  "hostOverlapCount": 0,
+  "kept": 0,
+  "output": "data/build/sft-v2.jsonl",
+  "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "refusedByReason": {},
+  "refusedTotal": 0,
+  "totalRead": 0,
+  "trainHostCount": 0
+}

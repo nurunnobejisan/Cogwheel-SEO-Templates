@@ -1,0 +1,16 @@
+{
+  "byOrigin": {},
+  "bySplit": {},
+  "exported": 0,
+  "generatedAt": "2026-11-28T19:26:57Z",
+  "golden": "/Users/jisanjomadder/Documents/seo-studio-v2-work/ml/eval/golden/cases.jsonl",
+  "goldenSha256": "3d9514129d6a694fed90fa9a52039806bfa687e6b51c757998b4e05bcd6a3a84",
+  "kind": "dpo-v2",
+  "loadSkipped": {},
+  "output": "data/build/dpo-v2.jsonl",
+  "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "pairSkipped": {},
+  "piiStripped": 0,
+  "read": 0,
+  "refusedByReason": {}
+}
