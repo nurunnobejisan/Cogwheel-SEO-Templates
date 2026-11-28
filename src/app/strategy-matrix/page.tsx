@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { brand, pageTitle } from "@/config/brand";
+import { JsonLd } from "@/components/JsonLd";
 import matrixData from "../../../data/78-keyword-strategy-matrix.json";
 
 const title = "78-Keyword Hospitality Strategy Matrix";
@@ -17,15 +18,42 @@ export const metadata: Metadata = {
     url: "/strategy-matrix",
     type: "website",
     siteName: brand.name,
+    images: ["/opengraph-image"],
   },
-  twitter: { card: "summary_large_image", title: pageTitle(title), description },
+  twitter: {
+    card: "summary_large_image",
+    title: pageTitle(title),
+    description,
+    images: ["/opengraph-image"],
+  },
 };
+
+const structuredData = [
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: title,
+    description,
+    author: { "@type": "Organization", name: brand.owner },
+    publisher: { "@type": "Organization", name: brand.name, url: brand.siteUrl },
+    mainEntityOfPage: { "@type": "WebPage", "@id": `${brand.siteUrl}/strategy-matrix` },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: brand.siteUrl },
+      { "@type": "ListItem", position: 2, name: "Strategy Matrix", item: `${brand.siteUrl}/strategy-matrix` },
+    ],
+  },
+];
 
 export default function StrategyMatrixPage() {
   const { metadata: meta, categories, keywords } = matrixData;
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+      <JsonLd data={structuredData} />
       {/* Top Header */}
       <header className="border-b border-slate-200/80 bg-white/90 backdrop-blur-md dark:border-slate-800 dark:bg-slate-900/90">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-6 py-4">
