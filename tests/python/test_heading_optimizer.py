@@ -182,6 +182,32 @@ class TestHeadingAuditAndOptimization:
         assert badge[0].new_level == "TEXT"
 
 
+    def test_non_semantic_h1_is_replaced_and_hierarchy_preserved(self):
+        optimizer = HeadingOptimizer("https://thenines.com")
+        raw_headings = [
+            ("H2", "Our Story"),
+            ("H2", "Amenities"),
+            ("H1", '"Best stay ever!"'),  # testimonial wrongly tagged as H1
+        ]
+        audit = optimizer.audit_and_optimize_page(
+            page_url="https://thenines.com/reviews",
+            keyword="Portland Hotel Reviews",
+            category="REVIEWS",
+            raw_headings=raw_headings,
+            brand_name="The Nines",
+            location="Portland, OR",
+            page_title="Reviews | The Nines",
+        )
+        assert "missing_h1" in audit.issues_found
+        assert "inverted_hierarchy" not in audit.issues_found
+        h1s = [h for h in audit.headings if h.new_level == "H1"]
+        assert len(h1s) == 1
+        assert h1s[0].old_headline == "[MISSING H1]"
+        assert [h.new_level for h in audit.headings if h.old_level == "H2"] == ["H2", "H2"]
+        assert audit.h1_count_before == 1
+        assert audit.h1_count_after == 1
+
+
 class TestHeadingWorkbookAndJsonDeliverables:
     """Verify OpenPyXL styled workbook generation and JSON export."""
 
