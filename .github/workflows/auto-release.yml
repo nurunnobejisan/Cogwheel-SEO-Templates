@@ -62,12 +62,19 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
-          cache-dependency-path: 'chrome-extension/package-lock.json'
+          cache-dependency-path: |
+            package-lock.json
+            chrome-extension/package-lock.json
 
       - name: Build & package extension
         if: steps.check.outputs.exists == 'false'
         run: |
           set -euo pipefail
+          # The extension build graph imports repo-root src/ modules (packs,
+          # schemas) whose own dependencies — e.g. zod — resolve from the
+          # repo-root node_modules. Install those too; npm ci inside
+          # chrome-extension/ alone leaves them unresolvable (TS2307).
+          npm ci
           cd chrome-extension
           npm ci
           npm run build
