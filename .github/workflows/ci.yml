@@ -27,6 +27,8 @@ jobs:
         run: npm ci
       - name: Typecheck (tsc --noEmit)
         run: npm run typecheck
+      - name: Orphan module gate (find-orphans.py)
+        run: python3 scripts/find-orphans.py
       - name: Lint (next lint)
         run: npm run lint
       - name: Validate training data (governance gate)

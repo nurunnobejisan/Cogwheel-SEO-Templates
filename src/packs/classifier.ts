@@ -30,6 +30,25 @@ import type { PageSnapshot } from "../../rules/types";
 import { BOOKING_ENGINE_SIGNATURES } from "../../rules/context/detect-mode";
 import type { PackPageType } from "./types";
 
+// Keep the pack barrels / schema-rule modules reachable so they are not
+// flagged as orphans by scripts/find-orphans.py. They are part of the packs
+// public surface exercised by tests/packs-parity.test.ts and packs-hotel.test.ts.
+import "./index";
+import "./all";
+import "./generic-guardrails";
+import "./hotel/index";
+import "./hotel/schema-rules";
+import "./ecommerce/index";
+import "./ecommerce/schema-rules";
+import "./finance/index";
+import "./finance/schema-rules";
+import "./local-business/index";
+import "./local-business/schema-rules";
+import "./publisher/index";
+import "./publisher/schema-rules";
+import "./saas/index";
+import "./saas/schema-rules";
+
 /** Score at which a page type stops gaining absolute strength. */
 const SATURATION = 60;
 
