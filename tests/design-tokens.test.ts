@@ -15,6 +15,16 @@ const TOKEN_STRICT_DIRS = [
   "src/app/(public)",
 ];
 
+const TOKEN_STRICT_FILES = [
+  "src/components/BrandMark.tsx",
+  "src/components/SiteFooter.tsx",
+  "src/components/TemplatesHubClient.tsx",
+  "src/components/StrategyMatrixContent.tsx",
+  "src/components/ArchitectureContent.tsx",
+  "src/components/TemplateCustomizerView.tsx",
+  "src/app/layout.tsx",
+];
+
 const BANNED_PALETTE = /\b(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-[0-9]{2,3}\b/;
 const RAW_HEX = /#[0-9a-fA-F]{3,8}\b/;
 const DARK_PREFIX = /\bdark:/;
@@ -42,15 +52,17 @@ function collectFiles(relDir: string): string[] {
 describe("Design token discipline across migrated UI directories", () => {
   it("contains zero raw hex, non-token Tailwind palettes, dark: prefixes, or rounded-2xl/3xl", () => {
     const violations: string[] = [];
-    for (const dir of TOKEN_STRICT_DIRS) {
-      for (const file of collectFiles(dir)) {
-        const rel = path.relative(ROOT, file);
-        const content = readFileSync(file, "utf8");
-        if (RAW_HEX.test(content)) violations.push(`${rel}: raw hex color`);
-        if (BANNED_PALETTE.test(content)) violations.push(`${rel}: non-token palette class`);
-        if (DARK_PREFIX.test(content)) violations.push(`${rel}: manual dark: class`);
-        if (BANNED_RADII.test(content)) violations.push(`${rel}: banned rounded-2xl/3xl`);
-      }
+    const targets = [
+      ...TOKEN_STRICT_DIRS.flatMap((dir) => collectFiles(dir)),
+      ...TOKEN_STRICT_FILES.map((file) => path.join(ROOT, file)),
+    ];
+    for (const file of targets) {
+      const rel = path.relative(ROOT, file);
+      const content = readFileSync(file, "utf8");
+      if (RAW_HEX.test(content)) violations.push(`${rel}: raw hex color`);
+      if (BANNED_PALETTE.test(content)) violations.push(`${rel}: non-token palette class`);
+      if (DARK_PREFIX.test(content)) violations.push(`${rel}: manual dark: class`);
+      if (BANNED_RADII.test(content)) violations.push(`${rel}: banned rounded-2xl/3xl`);
     }
     expect(violations).toEqual([]);
   });

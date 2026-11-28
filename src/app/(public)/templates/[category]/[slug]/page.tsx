@@ -2,11 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
-  TEMPLATES_DATA,
-  getTemplateBySlug,
   getRelatedTemplates,
+  getTemplateBySlug,
+  TEMPLATES_DATA,
 } from "@/packs/hotel/templates";
 import { TemplateCustomizerView } from "@/components/TemplateCustomizerView";
+import { InlineAlert } from "@/components/data/index";
+import { Badge } from "@/components/ui/index";
 
 interface PageProps {
   params: {
@@ -98,6 +100,13 @@ export default function TemplateDetailPage({ params }: PageProps) {
     },
   };
 
+  const difficultyVariant =
+    template.difficulty === "Beginner"
+      ? "success"
+      : template.difficulty === "Intermediate"
+      ? "warning"
+      : "notice";
+
   return (
     <div className="space-y-6">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }} />
@@ -113,46 +122,49 @@ export default function TemplateDetailPage({ params }: PageProps) {
         <span className="font-medium text-text">{template.title}</span>
       </nav>
 
-      <article className="space-y-6">
-        <header className="space-y-3 border-b border-border pb-6">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-sm bg-notice-soft px-2.5 py-0.5 text-caption font-medium text-notice-fg">
-              {template.category}
-            </span>
-            <span
-              className={`rounded-sm px-2.5 py-0.5 text-caption font-medium ${
-                template.difficulty === "Beginner"
-                  ? "bg-success-soft text-success-fg"
-                  : template.difficulty === "Intermediate"
-                  ? "bg-warning-soft text-warning-fg"
-                  : "bg-notice-soft text-notice-fg"
-              }`}
-            >
-              {template.difficulty}
-            </span>
-            <span className="rounded-sm bg-surface-2 px-2.5 py-0.5 text-caption text-text-muted">
-              Est. {template.estimatedTime}
-            </span>
-            <span className="rounded-sm bg-surface-2 px-2.5 py-0.5 font-mono text-caption text-text-muted">
-              Schema: {template.schemaType}
-            </span>
+      <div className="grid gap-8 xl:grid-cols-[minmax(0,1fr)_200px] xl:items-start">
+        <article className="min-w-0 space-y-6">
+          <header className="space-y-3 border-b border-border pb-6">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="notice">{template.category}</Badge>
+              <Badge variant={difficultyVariant}>{template.difficulty}</Badge>
+              <Badge variant="neutral">Est. {template.estimatedTime}</Badge>
+              <Badge variant="neutral" className="font-mono">
+                Schema: {template.schemaType}
+              </Badge>
+            </div>
+
+            <h1 className="max-w-[72ch] text-display text-text">{template.title}</h1>
+            <p className="max-w-[72ch] text-body text-text-muted">{template.metaDescription}</p>
+          </header>
+
+          <div id="direct-answer" aria-label="Direct Answer & Key Takeaways for Generative Search">
+            <InlineAlert
+              variant="notice"
+              title="Direct answer & key takeaway"
+              description={template.directAnswer}
+            />
           </div>
 
-          <h1 className="text-display text-text">{template.title}</h1>
-        </header>
+          <TemplateCustomizerView template={template} relatedTemplates={relatedTemplates} />
+        </article>
 
         <aside
-          aria-label="Direct Answer & Key Takeaways for Generative Search"
-          className="rounded border border-brand/30 bg-brand-soft p-4 sm:p-5"
+          aria-label="On this page"
+          className="print:hidden hidden xl:sticky xl:top-20 xl:block"
         >
-          <div className="mb-1.5 text-overline uppercase text-text">
-            Direct Answer &amp; Key Takeaway
+          <div className="space-y-2 border-l border-border pl-4 text-caption">
+            <div className="text-overline uppercase text-text-muted">On this page</div>
+            <nav className="flex flex-col gap-1.5 text-text-muted">
+              <a href="#direct-answer" className="hover:text-text">Direct answer</a>
+              <a href="#export-bar" className="hover:text-text">Export &amp; checklist</a>
+              <a href="#variable-customizer" className="hover:text-text">Variable inputs</a>
+              <a href="#template-workbench" className="hover:text-text">Blueprint workbench</a>
+              <a href="#related-templates" className="hover:text-text">Related templates</a>
+            </nav>
           </div>
-          <p className="max-w-[72ch] text-body font-medium text-text">{template.directAnswer}</p>
         </aside>
-
-        <TemplateCustomizerView template={template} relatedTemplates={relatedTemplates} />
-      </article>
+      </div>
     </div>
   );
 }
