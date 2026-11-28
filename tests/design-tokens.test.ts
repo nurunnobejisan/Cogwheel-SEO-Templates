@@ -10,6 +10,8 @@ const TOKEN_STRICT_DIRS = [
   "src/components/shell",
   "src/components/motion",
   "src/app/dev",
+  "src/app/(app)",
+  "src/app/(public)",
 ];
 
 const BANNED_PALETTE = /\b(?:slate|gray|zinc|neutral|stone|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-[0-9]{2,3}\b/;

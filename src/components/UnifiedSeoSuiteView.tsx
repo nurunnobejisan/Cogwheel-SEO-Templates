@@ -12,6 +12,7 @@ interface UnifiedSeoSuiteViewProps {
     url?: string;
     websiteUrl?: string;
   };
+  initialSubTab?: SuiteSubTab;
   onBackToDashboard?: () => void;
   onOpenImageAudit?: () => void;
   onOpenHeadingAudit?: () => void;
@@ -152,11 +153,12 @@ function answerFromAudit(
 
 export function UnifiedSeoSuiteView({
   property,
+  initialSubTab = "full-audit",
   onBackToDashboard,
   onOpenImageAudit,
   onOpenHeadingAudit,
 }: UnifiedSeoSuiteViewProps) {
-  const [subTab, setSubTab] = useState<SuiteSubTab>("full-audit");
+  const [subTab, setSubTab] = useState<SuiteSubTab>(initialSubTab);
   const [targetUrl, setTargetUrl] = useState<string>(property?.websiteUrl || property?.url || "");
   const [maxPages, setMaxPages] = useState<number>(25);
   const [includeGsc, setIncludeGsc] = useState<boolean>(true);

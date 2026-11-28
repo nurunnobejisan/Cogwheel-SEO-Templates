@@ -11,9 +11,9 @@
 import { describe, it, expect } from "vitest";
 import { readFileSync } from "node:fs";
 import path from "node:path";
-import { metadata as homeMeta } from "../src/app/page";
-import { metadata as templatesMeta } from "../src/app/templates/page";
-import { metadata as archMeta } from "../src/app/architecture/page";
+import { metadata as homeMeta } from "../src/app/(app)/page";
+import { metadata as templatesMeta } from "../src/app/(public)/templates/page";
+import { metadata as archMeta } from "../src/app/(public)/architecture/page";
 import manifest from "../chrome-extension/public/manifest.json";
 
 /** Words that frame the *suite* as hotel-only rather than naming Pack #1. */

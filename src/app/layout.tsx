@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { DownloadFeedbackModal } from "@/components/DownloadFeedbackModal";
-import { SiteFooter } from "@/components/SiteFooter";
 import { MotionProvider } from "@/components/motion";
 import { Toaster } from "@/components/ui/toast";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -41,7 +40,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <MotionProvider>
           <TooltipProvider delayDuration={180}>
             <div className="flex-1">{children}</div>
-            <SiteFooter />
             <Toaster />
             <DownloadFeedbackModal />
           </TooltipProvider>

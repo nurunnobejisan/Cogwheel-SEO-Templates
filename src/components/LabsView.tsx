@@ -12,7 +12,7 @@ import { InternalLinkLab } from "./InternalLinkLab";
 import dynamic from "next/dynamic";
 
 const TemplatesHubClient = dynamic(() =>
-  import("../app/templates/TemplatesHubClient").then((m) => m.TemplatesHubClient)
+  import("./TemplatesHubClient").then((m) => m.TemplatesHubClient)
 );
 const StrategyMatrixContent = dynamic(() =>
   import("./StrategyMatrixContent").then((m) => m.StrategyMatrixContent)

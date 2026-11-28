@@ -145,11 +145,23 @@ const STATUS_STYLES: Record<TaskStatus, string> = {
   Flagged: "bg-amber-50 text-amber-800 border-amber-200",
 };
 
-export default function PropertyDashboard() {
-  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo">("home");
+export default function PropertyDashboard({
+  embeddedInShell = false,
+  initialTab = "home",
+  initialSection = "On Page",
+}: {
+  embeddedInShell?: boolean;
+  initialTab?: "home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo";
+  initialSection?: TaskSection;
+} = {}) {
+  const [mainTab, setMainTab] = useState<"home" | "tasks" | "crawl" | "studio" | "geo" | "compset" | "labs" | "keywords" | "unified-seo">(initialTab);
   const [labsSubTab, setLabsSubTab] = useState<"geo" | "compset" | "sandbox" | "templates" | "matrix" | "architecture">("geo");
   const [studioStep, setStudioStep] = useState<1 | 2 | 3 | 4>(1);
-  const [activeTab, setActiveTab] = useState<TaskSection>("On Page");
+  const [activeTab, setActiveTab] = useState<TaskSection>(initialSection);
+
+  useEffect(() => {
+    setActiveTab(initialSection);
+  }, [initialSection]);
   const [latestRuns, setLatestRuns] = useState<Record<string, TaskRunSummary>>({});
   const [showAiTraining, setShowAiTraining] = useState(false);
   const [deliverablesTab, setDeliverablesTab] = useState<"pptx" | "slides" | "preview" | "memo" | "email" | "deck" | null>(null);
@@ -431,7 +443,8 @@ export default function PropertyDashboard() {
   const flaggedCount = runList.filter((r) => r.flags.length > 0 || r.status === "Flagged").length;
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 dark:bg-[#0b0f19] dark:text-slate-100 transition-colors">
+    <div className={embeddedInShell ? "text-text" : "min-h-screen bg-canvas text-text transition-colors"}>
+      {!embeddedInShell && (
       <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl dark:border-slate-800/70 dark:bg-slate-950/80">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3.5">
@@ -551,6 +564,7 @@ export default function PropertyDashboard() {
           </nav>
         </div>
       </header>
+      )}
 
       {mainTab === "studio" ? (
         <div className="mx-auto max-w-6xl space-y-4 px-6 py-6">
@@ -1443,6 +1457,7 @@ export default function PropertyDashboard() {
             </>
           )}
 
+          {!embeddedInShell && (
           <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-200/80 pt-6 text-caption text-slate-500 dark:border-slate-800 dark:text-slate-400">
             <div className="flex items-center gap-2">
               <span className="inline-block h-2 w-2 rounded-full bg-brand" />
@@ -1459,6 +1474,7 @@ export default function PropertyDashboard() {
               github.com/nurunnobejisan
             </a>
           </footer>
+          )}
         </main>
       )}
 

@@ -71,14 +71,17 @@ def _app_route_exists(relative: str) -> bool:
     route = relative.strip("/")
     if not route:
         return True
-    app_root = ROOT / "src" / "app" / route
-    candidates = [
-        app_root / "page.tsx",
-        app_root / "route.ts",
-        app_root / "page.mdx",
-        ROOT / "src" / "app" / f"{route}.tsx",
-        ROOT / "public" / route,
-    ]
+    candidates: list[Path] = [ROOT / "public" / route]
+    for group in ("", "(app)", "(public)"):
+        base = ROOT / "src" / "app" / group / route if group else ROOT / "src" / "app" / route
+        candidates.extend(
+            [
+                base / "page.tsx",
+                base / "route.ts",
+                base / "page.mdx",
+                base.with_suffix(".tsx"),
+            ]
+        )
     return any(candidate.exists() for candidate in candidates)
 
 
