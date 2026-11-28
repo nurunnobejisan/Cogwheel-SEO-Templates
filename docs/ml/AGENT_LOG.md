@@ -306,3 +306,33 @@ Built this run (decision D-036):
 
 Data reality: `readyTasks` is empty everywhere; nothing was promoted. A real
 GPU run + baseline evals are prerequisites for the first measured scope.
+## WP8 — Extension inference guard (branch `ml/v2-wp8-extension-guard`)
+
+Built this run (decision D-037):
+
+- **Proxy client** `chrome-extension/src/engine/model-proxy.ts` — origin
+  guard (https-only outside loopback dev, no userinfo, no private/link-local
+  raw IPs), `resolveProxyOrigin` (derives the origin from the configured
+  training API URL), `inferViaAppBackend` (operator bearer, 20s timeout,
+  fail-soft `{ ok: false }` on every error path — never throws).
+- **Client rewiring** `chrome-extension/src/engine/custom-model-client.ts` —
+  `generateSeoAutoFix` (task `metadata_generation`), `generateGeoSummary`
+  (task `rag_synthesis`) and `testCustomModelConnection` now go through the
+  app backend. The direct-endpoint branches (Gemini `generativelanguage`
+  URLs, custom REST URLs, `x-goog-api-key` / model bearer headers) are
+  **removed**; `endpointId`/`apiKey` are legacy fields no longer used as a
+  network target. Rules-engine fallback unchanged and always available.
+- **Backend route** `src/app/api/extension/infer/route.ts` — operator-only
+  (401 otherwise), task allowlist from the router tiers, prompt-size cap,
+  `maxTokens` clamped; routes through `generateClaudeText` so the extension
+  inherits `AI_ADAPTER_MODE`, output gates, canary bucketing and monitoring;
+  503 `{ ok: false, reason: "inference unavailable" }` with no provider error
+  text; never echoes the prompt.
+- **Tests** — `tests/extension-model-proxy.test.ts` (11): guard accept/refuse
+  matrix, origin resolution, payload shape + bearer, fail-soft paths,
+  **no dial at all** when only a legacy direct endpoint is configured.
+  `tests/extension-infer-route.test.ts` (6): 401s, task allowlist 400s,
+  oversized/invalid input 400s, gated output, 503 without leaking provider
+  secrets. `tests/custom-model-client.test.ts` rewritten to the proxy
+  contract (15 passing) — assertions now pin that the ONLY network target is
+  `/api/extension/infer` and the model key never appears in headers.

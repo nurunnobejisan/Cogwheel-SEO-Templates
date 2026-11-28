@@ -46,60 +46,31 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
   });
 
   describe("Connection Testing", () => {
-    it("rejects when endpoint ID is missing", async () => {
-      const config: CustomModelConfig = {
-        ...DEFAULT_CUSTOM_MODEL_CONFIG,
-        endpointId: "",
-      };
-
-      const result = await testCustomModelConnection(config);
+    it("reports a missing app backend URL (v2 WP8: no direct endpoints)", async () => {
+      const config: CustomModelConfig = { ...DEFAULT_CUSTOM_MODEL_CONFIG };
+      const result = await testCustomModelConnection(config, fetch, { apiUrl: "", apiToken: "" });
       expect(result.success).toBe(false);
-      expect(result.message).toContain("Endpoint ID or URL is required");
+      expect(result.message).toContain("No app backend URL configured");
     });
 
-    it("verifies connection to simulated Tuned Gemini endpoint", async () => {
-      const config: CustomModelConfig = {
-        enabled: true,
-        provider: "tuned_gemini",
-        endpointId: "tunedModels/hospitality-seo-v1",
-        apiKey: "AIzaSy_fake_key",
-        temperature: 0.1,
-        maxTokens: 64,
-        fallbackToDefault: true,
-      };
-
-      const mockFetch = vi.fn().mockResolvedValue({
-        ok: true,
-        status: 200,
-        json: async () => ({
-          candidates: [
-            {
-              content: {
-                parts: [{ text: "Hospitality SEO model ready." }],
-              },
-            },
-          ],
-        }),
+    it("reports a missing API token without dialing anything", async () => {
+      const config: CustomModelConfig = { ...DEFAULT_CUSTOM_MODEL_CONFIG };
+      const mockFetch = vi.fn();
+      const result = await testCustomModelConnection(config, mockFetch as unknown as typeof fetch, {
+        apiUrl: "https://app.example.com",
+        apiToken: "",
       });
-
-      const res = await testCustomModelConnection(config, mockFetch as unknown as typeof fetch);
-
-      expect(res.success).toBe(true);
-      expect(res.latencyMs).toBeGreaterThanOrEqual(0);
-      expect(res.sampleOutput).toBe("Hospitality SEO model ready.");
-      expect(mockFetch).toHaveBeenCalledTimes(1);
-
-      const [calledUrl] = mockFetch.mock.calls[0];
-      expect(calledUrl).toContain("generativelanguage.googleapis.com");
-      expect(calledUrl).toContain("tunedModels/hospitality-seo-v1:generateContent");
+      expect(result.success).toBe(false);
+      expect(result.message).toContain("No API token configured");
+      expect(mockFetch).not.toHaveBeenCalled();
     });
 
-    it("verifies connection to simulated custom REST endpoint", async () => {
+    it("pings inference through the app backend — never a model endpoint", async () => {
       const config: CustomModelConfig = {
         enabled: true,
         provider: "custom_rest",
-        endpointId: "https://api.myhotelapp.com/v1/generate",
-        apiKey: "bearer_secret_123",
+        endpointId: "tunedModels/hospitality-seo-v1", // legacy field: ignored for network targets
+        apiKey: "AIzaSy_super_secret_model_key",
         temperature: 0.1,
         maxTokens: 64,
         fallbackToDefault: true,
@@ -108,18 +79,26 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
       const mockFetch = vi.fn().mockResolvedValue({
         ok: true,
         status: 200,
-        json: async () => ({
-          text: "Custom REST model operational.",
-        }),
+        json: async () => ({ ok: true, output: '{"title":"ping ok"}', source: "adapter" }),
       });
 
-      const res = await testCustomModelConnection(config, mockFetch as unknown as typeof fetch);
+      const res = await testCustomModelConnection(config, mockFetch as unknown as typeof fetch, {
+        apiUrl: "https://app.example.com/api/ai-training",
+        apiToken: "operator-token-1",
+      });
 
       expect(res.success).toBe(true);
-      expect(res.sampleOutput).toBe("Custom REST model operational.");
+      expect(res.latencyMs).toBeGreaterThanOrEqual(0);
+      expect(res.sampleOutput).toBe('{"title":"ping ok"}');
+      expect(mockFetch).toHaveBeenCalledTimes(1);
 
-      const [, calledInit] = mockFetch.mock.calls[0];
-      expect(calledInit.headers["Authorization"]).toBe("Bearer bearer_secret_123");
+      const [calledUrl, calledInit] = mockFetch.mock.calls[0];
+      // The ONLY network target is the app backend proxy.
+      expect(calledUrl).toBe("https://app.example.com/api/extension/infer");
+      expect(calledInit.headers["Authorization"]).toBe("Bearer operator-token-1");
+      // The model API key never leaves the extension config for a direct call.
+      expect(JSON.stringify(calledInit.headers)).not.toContain("AIzaSy_super_secret_model_key");
+      expect(calledInit.body).toContain("metadata_generation");
     });
 
     it("handles remote endpoint HTTP failure gracefully", async () => {
@@ -135,13 +114,16 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
 
       const mockFetch = vi.fn().mockResolvedValue({
         ok: false,
-        status: 404,
-        text: async () => "Model not found",
+        status: 503,
+        text: async () => "inference unavailable",
       });
 
-      const res = await testCustomModelConnection(config, mockFetch as unknown as typeof fetch);
+      const res = await testCustomModelConnection(config, mockFetch as unknown as typeof fetch, {
+        apiUrl: "https://app.example.com",
+        apiToken: "tok",
+      });
       expect(res.success).toBe(false);
-      expect(res.message).toContain("HTTP 404");
+      expect(res.message).toContain("HTTP 503");
     });
 
     it("handles network failure cleanly", async () => {
@@ -157,7 +139,10 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
 
       const mockFetch = vi.fn().mockRejectedValue(new Error("DNS Resolution Failed"));
 
-      const res = await testCustomModelConnection(config, mockFetch as unknown as typeof fetch);
+      const res = await testCustomModelConnection(config, mockFetch as unknown as typeof fetch, {
+        apiUrl: "https://app.example.com",
+        apiToken: "tok",
+      });
       expect(res.success).toBe(false);
       expect(res.message).toContain("DNS Resolution Failed");
     });
@@ -203,13 +188,9 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
         ok: true,
         status: 200,
         json: async () => ({
-          candidates: [
-            {
-              content: {
-                parts: [{ text: JSON.stringify(mockModelPayload) }],
-              },
-            },
-          ],
+          ok: true,
+          output: JSON.stringify(mockModelPayload),
+          source: "adapter",
         }),
       });
 
@@ -219,13 +200,17 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
           hotelName: "SpringHill Suites",
           brand: "Marriott",
         },
-        mockFetch as unknown as typeof fetch
+        mockFetch as unknown as typeof fetch,
+        { apiUrl: "https://app.example.com", apiToken: "tok" }
       );
 
       expect(result.source).toBe("custom_tuned_model");
       expect(result.optimalTitle).toBe(mockModelPayload.optimizedTitle);
       expect(result.codeSnippet).toContain(mockModelPayload.optimizedTitle);
-      expect(result.modelIdentifier).toBe("tunedModels/hospitality-v1");
+      expect(result.modelIdentifier).toBe("app-backend:adapter");
+      // Only the app backend proxy is dialed — never a model endpoint.
+      expect(mockFetch).toHaveBeenCalledTimes(1);
+      expect(String(mockFetch.mock.calls[0][0])).toBe("https://app.example.com/api/extension/infer");
     });
 
     it("automatically falls back to default rules engine if custom endpoint fails", async () => {
@@ -248,7 +233,8 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
           hotelName: "SpringHill Suites Panama City Beachfront",
           brand: "Marriott",
         },
-        mockFetch as unknown as typeof fetch
+        mockFetch as unknown as typeof fetch,
+        { apiUrl: "https://app.example.com", apiToken: "tok" }
       );
 
       // Must fall back cleanly to default rules without crashing
@@ -348,13 +334,9 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
         ok: true,
         status: 200,
         json: async () => ({
-          candidates: [
-            {
-              content: {
-                parts: [{ text: JSON.stringify(mockTunedGeo) }],
-              },
-            },
-          ],
+          ok: true,
+          output: JSON.stringify(mockTunedGeo),
+          source: "standard",
         }),
       });
 
@@ -363,12 +345,15 @@ describe("Custom Fine-Tuned Model Client & Inference Router", () => {
           hotelName: "SpringHill Suites Panama City Beachfront",
           brand: "Marriott",
         },
-        mockFetch as unknown as typeof fetch
+        mockFetch as unknown as typeof fetch,
+        { apiUrl: "https://app.example.com", apiToken: "tok" }
       );
 
       expect(res.source).toBe("custom_tuned_model");
       expect(res.geoSummary).toBe(mockTunedGeo.geoEntityBlock);
-      expect(res.modelIdentifier).toBe("tunedModels/hospitality-geo-v2");
+      expect(res.modelIdentifier).toBe("app-backend:standard");
+      expect(String(mockFetch.mock.calls[0][0])).toBe("https://app.example.com/api/extension/infer");
+      expect(mockFetch.mock.calls[0][1].body).toContain("rag_synthesis");
     });
   });
 });
