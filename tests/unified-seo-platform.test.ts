@@ -21,8 +21,11 @@ import {
   checkAlgorithmImpact,
   getSpecializedAgentsList,
 } from "../src/core/claude-seo/index.ts";
-import { executeUnifiedTool, UNIFIED_SEO_TOOLS } from "../src/engine/unified-ai-orchestrator.ts";
 import { runFullWebsiteAudit } from "../src/core/full-audit/audit-runner.ts";
+// Note: the former "Unified AI Orchestrator & Tool Calling Dispatcher" suite
+// exercised src/engine/unified-ai-orchestrator.ts, which was an orphan module
+// (no product caller) removed in Phase H. Its tool-catalog behaviour is not
+// wired anywhere in the product, so the assertions are retired with it.
 
 describe("SEO Studio Unified SEO Platform - Multi-Source Integration Suite", () => {
   describe("1. FastMCP Google Search Console Integration (mcp-gsc)", () => {
@@ -143,26 +146,6 @@ describe("SEO Studio Unified SEO Platform - Multi-Source Integration Suite", () 
       assert.ok(agents.includes("seo-geo"));
       assert.ok(agents.includes("seo-content"));
       assert.ok(agents.includes("seo-backlinks"));
-    });
-  });
-
-  describe("4. Unified AI Orchestrator & Tool Calling Dispatcher", () => {
-    it("registers 9 unified tools in orchestrator schema", () => {
-      assert.equal(UNIFIED_SEO_TOOLS.length, 9);
-      const names = UNIFIED_SEO_TOOLS.map((t) => t.name);
-      assert.ok(names.includes("query_google_search_console"));
-      assert.ok(names.includes("detect_keyword_cannibalization"));
-      assert.ok(names.includes("analyze_ai_visibility_geo"));
-      assert.ok(names.includes("lookup_google_core_updates"));
-      assert.ok(names.includes("research_keywords_and_gaps"));
-    });
-
-    it("dispatches tool call dynamically and returns valid payload", async () => {
-      const result = await executeUnifiedTool("detect_keyword_cannibalization", {
-        siteUrl: "sc-domain:thenines.com",
-      });
-
-      assert.ok(Array.isArray(result));
     });
   });
 

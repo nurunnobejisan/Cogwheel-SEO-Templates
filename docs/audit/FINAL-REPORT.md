@@ -41,7 +41,7 @@ All 32 requirements set forth in the master engineering prompt have been systema
 
 ### 2.5 Security, RBAC & Integration Governance
 - **Role-Based Access Control (`src/core/security/rbac.ts`)**: Implemented 6 enterprise user roles (`Administrator`, `Manager`, `SEO Specialist`, `Content Editor`, `Analyst`, `Read-only Client`) with strict server-side permission assertions.
-- **SSRF & XSS Protection**: Maintained private subnet blocking (`src/core/crawler/ssrf.ts`) and context-aware HTML entity escaping (`validators/xssProtection.ts`).
+- **SSRF & XSS Protection**: Maintained private subnet blocking (`src/core/crawler/url.ts`) and context-aware HTML entity escaping (`validators/xssProtection.ts`).
 - **Integration Status Manager (`src/core/integrations/integration-manager.ts`)**: Complete connectivity inspect tool across all 9 third-party systems with graceful offline fallbacks.
 
 ---
