@@ -96,6 +96,39 @@ const searchConsole = z.object({
   averageCtr: z.number(),
   averagePosition: z.number(),
   cannibalizationDetectedCount: z.number(),
+  source: z.enum(["google-api", "csv-upload"]).optional(),
+  window: z
+    .object({
+      startDate: z.string(),
+      endDate: z.string(),
+      previousStartDate: z.string(),
+      previousEndDate: z.string(),
+    })
+    .optional(),
+  cannibalizationDetails: z
+    .array(
+      z.object({
+        query: z.string(),
+        competingPages: z.array(
+          z.object({
+            pageUrl: z.string(),
+            clicks: z.number(),
+            impressions: z.number(),
+            ctr: z.number(),
+            position: z.number(),
+          })
+        ),
+        severity: z.enum(["high", "medium", "low"]),
+        recommendation: z.string(),
+        severityScore: z.number().optional(),
+        preferredUrl: z.string().optional(),
+        normalizedUrls: z.array(z.string()).optional(),
+        topUrlClickShare: z.number().optional(),
+        positionSpreadFactor: z.number().optional(),
+      })
+    )
+    .optional(),
+  notes: z.array(z.string()).optional(),
   topQueries: z.array(
     z.object({
       query: z.string(),

@@ -58,6 +58,15 @@ export async function runVisibilityTracker(options: RunVisibilityOptions): Promi
         citations: answer.citations,
         model: answer.model,
         answeredAt: answer.answeredAt,
+        citationType: answer.citationType,
+        answer: answer.answer,
+        citedSources: [
+          ...new Set(
+            answer.citations
+              .filter((citation) => citation.source !== "own" && citation.source !== "competitor")
+              .map((citation) => citation.domain)
+          ),
+        ],
       };
       return result;
     });

@@ -9,10 +9,10 @@
  * official API for it, so the only honest result is `unavailable`.
  */
 
-import type { BuyerPrompt, PromptSet, ProviderAnswer, ProviderId } from "./types.ts";
+import type { BuyerPrompt, CitationType, PromptSet, ProviderAnswer, ProviderId } from "./types.ts";
 import { modelFor } from "../ai/models.ts";
 import { analyzeAnswer, unavailableAnswer } from "./analyze.ts";
-import { canUseVisibilityProvider, recordVisibilityUsage } from "./budget.ts";
+import { canUseVisibilityProvider, recordVisibilityUsage, refundVisibilityToken } from "./budget.ts";
 
 export interface QueryContext {
   promptSet: PromptSet;
@@ -52,19 +52,22 @@ async function guardedQuery(
   unavailableReason: string,
   context: QueryContext,
   model: string,
-  call: () => Promise<{ answer: string; citations: Array<{ url: string; title?: string }> }>
+  call: () => Promise<{ answer: string; citations: Array<{ url: string; title?: string }> }>,
+  citationType?: CitationType
 ): Promise<ProviderAnswer> {
   if (!isConfigured) {
     return unavailableAnswer(id, context.prompt.id, unavailableReason, model);
   }
   const cost = estimatedCostUsd;
-  const budget = await canUseVisibilityProvider(cost);
+  let reserved = false;
+  const budget = await canUseVisibilityProvider(cost, id);
   if (!budget.allowed) {
     return unavailableAnswer(id, context.prompt.id, budget.reason ?? "daily cap reached", model);
   }
+  reserved = true;
   try {
     const result = await call();
-    await recordVisibilityUsage(cost);
+    await recordVisibilityUsage(cost, id);
     return analyzeAnswer({
       provider: id,
       promptId: context.prompt.id,
@@ -75,8 +78,10 @@ async function guardedQuery(
       answer: result.answer,
       providerCitations: result.citations,
       estimatedCostUsd: cost,
+      citationType,
     });
   } catch (error) {
+    if (reserved) await refundVisibilityToken(id);
     return unavailableAnswer(
       id,
       context.prompt.id,

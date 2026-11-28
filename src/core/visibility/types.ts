@@ -8,7 +8,22 @@
 
 export type VisibilityMode = "hotel" | "universal";
 
-export type ProviderId = "chatgpt" | "claude" | "perplexity" | "gemini" | "ai_overviews";
+export type ProviderId =
+  | "chatgpt"
+  | "claude"
+  | "perplexity"
+  | "gemini"
+  | "ai_overviews"
+  | "gemini_grounded"
+  | "groq_llama"
+  | "openrouter_free"
+  | "pollinations";
+
+/**
+ * Distinguishes a link-backed web citation from a brand recalled from model
+ * memory. The two are never combined into one "citation" number.
+ */
+export type CitationType = "web_grounded" | "model_memory" | "unavailable";
 
 export type PromptIntent = "comparison" | "local" | "transactional" | "informational" | "branded";
 
@@ -55,6 +70,8 @@ export interface ProviderAnswer {
   citations: CitationRef[];
   ownCitationCount: number | null;
   estimatedCostUsd: number | null;
+  /** Optional provenance for newer adapters; older stored runs omit it. */
+  citationType?: CitationType;
 }
 
 export interface PromptResult {
@@ -71,6 +88,11 @@ export interface PromptResult {
   citations: CitationRef[];
   model: string | null;
   answeredAt: string;
+  citationType?: CitationType;
+  /** Raw answer text for per-prompt drill-down; null when unavailable. */
+  answer?: string | null;
+  /** Third-party domains the engine actually cited. */
+  citedSources?: string[];
 }
 
 export interface VisibilityRun {

@@ -10,6 +10,8 @@ export interface GscSearchAnalyticsQuery {
   dimensions?: Array<"query" | "page" | "device" | "country" | "date">;
   rowLimit?: number;
   startRow?: number;
+  /** GSC data state; `final` is the default for measured reporting. */
+  dataState?: "final" | "all";
   dimensionFilterGroups?: Array<{
     groupType?: string;
     filters?: Array<{
@@ -68,6 +70,12 @@ export interface GscCannibalizationIssue {
   }>;
   severity: "high" | "medium" | "low";
   recommendation: string;
+  /** Structured score from the documented panel algorithm (optional for legacy callers). */
+  severityScore?: number;
+  preferredUrl?: string;
+  normalizedUrls?: string[];
+  topUrlClickShare?: number;
+  positionSpreadFactor?: number;
 }
 
 export interface GscUrlInspectionResult {

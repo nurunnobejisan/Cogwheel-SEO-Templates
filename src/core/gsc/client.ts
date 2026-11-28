@@ -17,6 +17,22 @@ export function isGoogleConfigured(): boolean {
   );
 }
 
+/** Non-secret identifier used in 403 guidance; null when credentials are absent or malformed. */
+export function getServiceAccountEmail(): string | null {
+  try {
+    const jsonStr =
+      process.env.GOOGLE_SERVICE_ACCOUNT_JSON ||
+      (process.env.GOOGLE_SERVICE_ACCOUNT_B64
+        ? Buffer.from(process.env.GOOGLE_SERVICE_ACCOUNT_B64, "base64").toString("utf-8")
+        : null);
+    if (!jsonStr) return null;
+    const email = (JSON.parse(jsonStr) as { client_email?: unknown }).client_email;
+    return typeof email === "string" && email.trim() ? email.trim() : null;
+  } catch {
+    return null;
+  }
+}
+
 export function getWorkspaceAuth() {
   const jsonStr =
     process.env.GOOGLE_SERVICE_ACCOUNT_JSON ||
@@ -35,6 +51,14 @@ export function getWorkspaceAuth() {
       "https://www.googleapis.com/auth/webmasters",
     ],
   });
+}
+
+/** Detects a 403/permission failure without exposing credentials in the message. */
+export function isServiceAccountFailure(error: unknown): boolean {
+  if (!error || typeof error !== "object") return false;
+  const candidate = error as { code?: unknown; status?: unknown; message?: unknown };
+  if (candidate.code === 403 || candidate.status === 403) return true;
+  return typeof candidate.message === "string" && /\b403\b|permission|forbidden|access denied/i.test(candidate.message);
 }
 
 export function getSearchConsoleClient() {
@@ -83,6 +107,7 @@ export async function getGscSearchAnalytics(
       dimensions: query.dimensions || ["query"],
       rowLimit: query.rowLimit || 100,
       startRow: query.startRow || 0,
+      dataState: query.dataState ?? "final",
       dimensionFilterGroups: query.dimensionFilterGroups,
     },
   });

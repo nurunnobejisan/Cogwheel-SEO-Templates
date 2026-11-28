@@ -24,6 +24,7 @@ import { calculatePixelWidth } from "../../../validators/serpOptimizer.ts";
 import { assertEgressAllowed, readTextCapped, safeFetch as egressFetch } from "../../lib/security/egress.ts";
 import { validateTargetUrl } from "../crawler/url.ts";
 import { isGoogleConfigured, UnifiedGscClient } from "../gsc/client.ts";
+import type { GscPanelPayload } from "../gsc/panel.ts";
 import { checkAlgorithmImpact } from "../claude-seo/index.ts";
 import { isSimulatedDataAllowed } from "../data-policy.ts";
 import { collectGeoAudit } from "../../rules/geo/index.ts";
@@ -60,6 +61,8 @@ export interface AuditRunnerOptions {
   enableSubdomains?: boolean;
   includeGsc?: boolean;
   includeGeo?: boolean;
+  /** Real GSC rows supplied by the panel (API or operator upload). */
+  gscPanel?: Pick<GscPanelPayload, "siteUrl" | "periodDays" | "source" | "overview" | "cannibalization" | "window" | "notes">;
 }
 
 function collectSchemaTypes(jsonLd: Array<{ "@type"?: string | string[] }>): string[] {
@@ -197,6 +200,29 @@ function buildGeoActionPlan(geoAudit: NonNullable<FullWebsiteAuditReport["geoAud
       affectedUrlsCount: 1,
       remediationGuide: issue.remediation,
     }));
+}
+
+/** Action items derived only from measured GSC query×page rows. */
+function buildGscActionPlan(issues: GscPanelPayload["cannibalization"]): ActionItem[] {
+  return issues.slice(0, 20).map((issue) => {
+    const slug = issue.query.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 40) || "query";
+    return {
+      id: `gsc:${slug}`,
+      priority: issue.severity === "high" ? "P1" : issue.severity === "medium" ? "P2" : "P3",
+      category: "gsc" as const,
+      title: `Resolve cannibalization for "${issue.query}"`,
+      description: `${issue.competingPages.length} URLs compete for this query (${issue.competingPages.reduce((total, page) => total + page.impressions, 0)} impressions). ${issue.recommendation}`,
+      impact:
+        issue.severity === "high"
+          ? "High — measured impressions are split across competing URLs"
+          : issue.severity === "medium"
+            ? "Medium — measurable split in Search Console"
+            : "Low — small impression overlap",
+      effort: "medium" as const,
+      affectedUrlsCount: issue.competingPages.length,
+      remediationGuide: issue.recommendation,
+    };
+  });
 }
 
 /** Transparent on-page GEO readiness heuristic (not an AI-citation measurement). */
@@ -370,10 +396,11 @@ export async function runFullWebsiteAudit(
     }
   }
 
-  // 4. Search Console — real only when credentials exist.
+  // 4. Search Console — real only from connected credentials or an operator upload.
   const gscClient = new UnifiedGscClient();
-  const gscConnected = isGoogleConfigured();
   const includeGsc = options.includeGsc !== false;
+  const suppliedGsc = options.gscPanel;
+  let gscConnected = Boolean(suppliedGsc) || isGoogleConfigured();
   let gscData = {
     totalClicks: 0,
     totalImpressions: 0,
@@ -381,8 +408,29 @@ export async function runFullWebsiteAudit(
     averagePosition: 0,
     rows: [] as Array<{ query: string; page?: string; clicks: number; impressions: number; ctr: number; position: number }>,
   };
-  let cannibalization = { totalCannibalizedQueries: 0, details: [] as Array<unknown> };
-  if (includeGsc && gscConnected) {
+  let cannibalization: { totalCannibalizedQueries: number; details: GscPanelPayload["cannibalization"] } = {
+    totalCannibalizedQueries: 0,
+    details: [],
+  };
+  if (suppliedGsc && includeGsc) {
+    gscData = {
+      totalClicks: suppliedGsc.overview.totalClicks,
+      totalImpressions: suppliedGsc.overview.totalImpressions,
+      averageCtr: suppliedGsc.overview.averageCtr,
+      averagePosition: suppliedGsc.overview.averagePosition,
+      rows: suppliedGsc.overview.topQueries.map((query) => ({
+        query: query.query,
+        clicks: query.clicks,
+        impressions: query.impressions,
+        ctr: query.ctr,
+        position: query.position,
+      })),
+    };
+    cannibalization = {
+      totalCannibalizedQueries: suppliedGsc.cannibalization.length,
+      details: suppliedGsc.cannibalization,
+    };
+  } else if (includeGsc && gscConnected) {
     const end = new Date();
     const start = new Date();
     start.setDate(start.getDate() - 28);
@@ -395,6 +443,7 @@ export async function runFullWebsiteAudit(
     });
     cannibalization = await gscClient.detectCannibalization({ siteUrl: `sc-domain:${domain}` });
   }
+  if (!includeGsc) gscConnected = false;
 
   // 5. Keyword + GEO dimensions.
   const includeGeo = options.includeGeo !== false;
@@ -594,6 +643,7 @@ export async function runFullWebsiteAudit(
       "headings",
       "images (counts, alt text, formats, lazy-loading)",
       "schemaValidation (JSON-LD types parsed from the page)",
+      ...(gscConnected && includeGsc ? [`searchConsole (${suppliedGsc?.source ?? "google-api"} rows)`] : []),
     ],
     estimated: includeGeo
       ? [
@@ -610,7 +660,8 @@ export async function runFullWebsiteAudit(
     simulated,
     notes: [
       "Single-URL audit: the target page only; a multi-page crawl is not performed.",
-      ...(gscConnected ? [] : ["Set GOOGLE_SERVICE_ACCOUNT_B64/JSON to enable Search Console sections."]),
+      ...(gscConnected ? [] : ["Set GOOGLE_SERVICE_ACCOUNT_B64/JSON or upload a GSC export to enable Search Console sections."]),
+      ...(suppliedGsc ? [`Search Console rows came from ${suppliedGsc.source} for ${suppliedGsc.siteUrl}.`] : []),
       ...(simulated ? ["ALLOW_SIMULATED_DATA is enabled — synthetic values are present and labelled."] : []),
     ],
   };
@@ -696,13 +747,21 @@ export async function runFullWebsiteAudit(
     },
     searchConsole: {
       isConnected: gscConnected && includeGsc,
-      siteUrl: `sc-domain:${domain}`,
-      periodDays: 0,
+      siteUrl: suppliedGsc?.siteUrl ?? `sc-domain:${domain}`,
+      periodDays: suppliedGsc?.periodDays ?? 28,
       totalClicks: gscData.totalClicks,
       totalImpressions: gscData.totalImpressions,
       averageCtr: gscData.averageCtr,
       averagePosition: gscData.averagePosition,
       cannibalizationDetectedCount: cannibalization.totalCannibalizedQueries,
+      ...(suppliedGsc
+        ? {
+            source: suppliedGsc.source,
+            window: suppliedGsc.window,
+            cannibalizationDetails: suppliedGsc.cannibalization,
+            notes: suppliedGsc.notes,
+          }
+        : {}),
       topQueries: gscData.rows.slice(0, 5).map((r) => ({
         query: r.query,
         clicks: r.clicks,
@@ -736,7 +795,11 @@ export async function runFullWebsiteAudit(
       ),
       riskRating: algoImpact.riskRating,
     },
-    actionPlan: [...buildActionPlan(issues, 1), ...(geoAudit ? buildGeoActionPlan(geoAudit) : [])],
+    actionPlan: [
+      ...buildActionPlan(issues, 1),
+      ...(gscConnected && includeGsc ? buildGscActionPlan(cannibalization.details) : []),
+      ...(geoAudit ? buildGeoActionPlan(geoAudit) : []),
+    ],
     geoAudit,
     dataProvenance: provenance,
   };

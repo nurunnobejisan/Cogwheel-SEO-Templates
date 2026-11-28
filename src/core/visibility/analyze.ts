@@ -7,7 +7,7 @@
  * domains; we never guess who a competitor is.
  */
 
-import type { CitationRef, CitationSource, ProviderAnswer, ProviderId } from "./types.ts";
+import type { CitationRef, CitationSource, CitationType, ProviderAnswer, ProviderId } from "./types.ts";
 
 const SOCIAL_DOMAINS = [
   "x.com",
@@ -120,6 +120,7 @@ export interface AnalyzeAnswerInput {
   providerCitations?: Array<{ url: string; title?: string }>;
   estimatedCostUsd?: number | null;
   answeredAt?: string;
+  citationType?: CitationType;
 }
 
 export function analyzeAnswer(input: AnalyzeAnswerInput): ProviderAnswer {
@@ -145,6 +146,7 @@ export function analyzeAnswer(input: AnalyzeAnswerInput): ProviderAnswer {
     citations,
     ownCitationCount,
     estimatedCostUsd: input.estimatedCostUsd ?? null,
+    citationType: input.citationType,
   };
 }
 
@@ -167,5 +169,6 @@ export function unavailableAnswer(
     citations: [],
     ownCitationCount: null,
     estimatedCostUsd: null,
+    citationType: "unavailable",
   };
 }

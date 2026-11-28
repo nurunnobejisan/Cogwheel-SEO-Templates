@@ -2,6 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { FullWebsiteAuditReport, ActionItem } from "@/core/full-audit/types";
+import GscPerformancePanel from "./GscPerformancePanel.tsx";
+import type { GscPanelPayload } from "@/core/gsc/panel.ts";
 
 interface UnifiedSeoSuiteViewProps {
   property?: {
@@ -135,6 +137,7 @@ export function UnifiedSeoSuiteView({
   const [maxPages, setMaxPages] = useState<number>(25);
   const [includeGsc, setIncludeGsc] = useState<boolean>(true);
   const [includeGeo, setIncludeGeo] = useState<boolean>(true);
+  const [gscForAudit, setGscForAudit] = useState<GscPanelPayload | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [auditReport, setAuditReport] = useState<FullWebsiteAuditReport | null>(null);
   const [auditError, setAuditError] = useState<string | null>(null);
@@ -219,6 +222,7 @@ export function UnifiedSeoSuiteView({
           maxPages,
           includeGsc,
           includeGeo,
+          gscPanel: gscForAudit,
         }),
       });
 
@@ -323,7 +327,7 @@ export function UnifiedSeoSuiteView({
       <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3 dark:border-slate-800">
         {[
           { id: "full-audit", label: "Full Website Audit", tag: "11-D" },
-          { id: "gsc-intel", label: "GSC Performance & Cannibalization", tag: "FastMCP" },
+          { id: "gsc-intel", label: "GSC Performance & Cannibalization", tag: "Live API" },
           { id: "geo-visibility", label: "AI & GEO Visibility", tag: "AI Citations" },
           { id: "ai-orchestrator", label: "Audit Assistant", tag: "Rules-based" },
           { id: "model-training", label: "Training Rules", tag: "Stored" },
@@ -686,27 +690,22 @@ export function UnifiedSeoSuiteView({
         </div>
       )}
 
-      {/* SUBTAB 2: GSC INTEL */}
+      {/* SUBTAB 2: GSC PERFORMANCE & CANNIBALIZATION */}
       {subTab === "gsc-intel" && (
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-          <h2 className="font-display text-base font-bold text-slate-900 dark:text-white">
-            Google Search Console FastMCP Intelligence
-          </h2>
-          <p className="mt-1 text-caption text-slate-500">
-            Powered by the integrated `mcp-gsc` protocol engine: Search Analytics, Period Comparison, URL Inspection, and Cannibalization Detection.
-          </p>
-
-          <div className="mt-6 rounded-xl border border-dashed border-slate-300 bg-slate-50/60 p-6 text-body text-slate-600 dark:border-slate-700 dark:bg-slate-800/30 dark:text-slate-400">
-            <p className="font-semibold text-slate-800 dark:text-slate-200">
-              No Search Console data available
+          <GscPerformancePanel
+            property={property}
+            onUseInAudit={(data) => {
+              setGscForAudit(data);
+              setSubTab("full-audit");
+              setIncludeGsc(true);
+            }}
+          />
+          {gscForAudit && (
+            <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-caption text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300">
+              Real GSC rows from {gscForAudit.siteUrl} are attached to the next 11-D audit run.
             </p>
-            <p className="mt-1 text-caption">
-              Set <code className="rounded bg-slate-200 px-1 py-0.5 dark:bg-slate-700">GOOGLE_SERVICE_ACCOUNT_B64</code>{" "}
-              (or <code className="rounded bg-slate-200 px-1 py-0.5 dark:bg-slate-700">GOOGLE_SERVICE_ACCOUNT_JSON</code>)
-              and grant the service account access to the property. Until then, clicks, impressions, CTR and
-              position cannot be shown — they are never simulated.
-            </p>
-          </div>
+          )}
         </div>
       )}
 

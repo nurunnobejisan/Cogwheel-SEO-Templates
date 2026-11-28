@@ -1,28 +1,87 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { runFullWebsiteAudit } from "@/core/full-audit";
 import { UrlValidationError } from "@/core/crawler";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
+const gscIssueSchema = z
+  .object({
+    query: z.string(),
+    competingPages: z.array(
+      z.object({
+        pageUrl: z.string(),
+        clicks: z.number(),
+        impressions: z.number(),
+        ctr: z.number(),
+        position: z.number(),
+      })
+    ),
+    severity: z.enum(["high", "medium", "low"]),
+    recommendation: z.string(),
+    severityScore: z.number().optional(),
+    preferredUrl: z.string().optional(),
+    normalizedUrls: z.array(z.string()).optional(),
+    topUrlClickShare: z.number().optional(),
+    positionSpreadFactor: z.number().optional(),
+  })
+  .passthrough();
+
+const gscPanelSchema = z
+  .object({
+    siteUrl: z.string().min(1),
+    periodDays: z.number().int().positive(),
+    source: z.enum(["google-api", "csv-upload"]),
+    window: z.object({
+      startDate: z.string(),
+      endDate: z.string(),
+      previousStartDate: z.string(),
+      previousEndDate: z.string(),
+    }),
+    overview: z
+      .object({
+        siteUrl: z.string(),
+        periodDays: z.number(),
+        totalClicks: z.number(),
+        totalImpressions: z.number(),
+        averageCtr: z.number(),
+        averagePosition: z.number(),
+        topQueries: z.array(
+          z.object({ query: z.string(), clicks: z.number(), impressions: z.number(), ctr: z.number(), position: z.number() })
+        ),
+        topPages: z.array(
+          z.object({ page: z.string(), clicks: z.number(), impressions: z.number(), ctr: z.number(), position: z.number() })
+        ),
+        deviceBreakdown: z.record(z.object({ clicks: z.number(), impressions: z.number() })),
+        countryBreakdown: z.record(z.object({ clicks: z.number(), impressions: z.number() })),
+      })
+      .passthrough(),
+    cannibalization: z.array(gscIssueSchema),
+    notes: z.array(z.string()),
+  })
+  .passthrough();
+
+const auditRequestSchema = z.object({
+  targetUrl: z.string().trim().min(3, "Target URL is required (e.g. https://example.com)"),
+  maxPages: z.number().int().min(1).max(200).default(25),
+  enableSubdomains: z.boolean().default(false),
+  includeGsc: z.boolean().default(true),
+  includeGeo: z.boolean().default(true),
+  gscPanel: gscPanelSchema.optional(),
+});
 
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json().catch(() => ({}));
-    const targetUrl = (body.targetUrl || "").trim();
-
-    if (!targetUrl) {
+    const parsed = auditRequestSchema.safeParse(await req.json().catch(() => null));
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: "Target URL is required (e.g., https://example.com)" },
+        { error: "Invalid audit request", details: parsed.error.issues.slice(0, 8) },
         { status: 400 }
       );
     }
 
-    const report = await runFullWebsiteAudit({
-      targetUrl,
-      maxPages: typeof body.maxPages === "number" ? body.maxPages : 25,
-      enableSubdomains: Boolean(body.enableSubdomains),
-      includeGsc: body.includeGsc !== false,
-      includeGeo: body.includeGeo !== false,
-    });
+    const report = await runFullWebsiteAudit(parsed.data);
 
     return NextResponse.json({
       success: true,
@@ -41,12 +100,20 @@ export async function POST(req: NextRequest) {
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const targetUrl = searchParams.get("targetUrl") || "https://example.com";
+    const parsed = z
+      .object({
+        targetUrl: z.string().trim().min(3).default("https://example.com"),
+        maxPages: z.coerce.number().int().min(1).max(200).default(10),
+      })
+      .safeParse({
+        targetUrl: searchParams.get("targetUrl") || undefined,
+        maxPages: searchParams.get("maxPages") || undefined,
+      });
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid audit query", details: parsed.error.issues.slice(0, 6) }, { status: 400 });
+    }
 
-    const report = await runFullWebsiteAudit({
-      targetUrl,
-      maxPages: 10,
-    });
+    const report = await runFullWebsiteAudit(parsed.data);
 
     return NextResponse.json({
       success: true,

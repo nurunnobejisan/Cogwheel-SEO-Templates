@@ -104,6 +104,11 @@ export interface GscPerformanceSummary {
   averageCtr: number;
   averagePosition: number;
   cannibalizationDetectedCount: number;
+  /** Source of the measured rows; absent on legacy reports. */
+  source?: "google-api" | "csv-upload";
+  window?: { startDate: string; endDate: string; previousStartDate: string; previousEndDate: string };
+  cannibalizationDetails?: import("../gsc/types.ts").GscCannibalizationIssue[];
+  notes?: string[];
   topQueries: Array<{
     query: string;
     clicks: number;
