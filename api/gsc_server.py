@@ -1,34 +1,22 @@
-from typing import Any, Dict, List, Optional
 import asyncio
+import json
 import logging
 import os
-import json
-import sys
 import shutil
 from datetime import datetime, timedelta
+from typing import Any, Optional
 
 # Fail loudly on unsupported Python. The mcp/FastMCP dependency requires 3.11+.
 # On Python 3.10 or older the server dies during import, and when it is launched
 # by a GUI client (e.g. Claude Desktop) that failure is silent — no tools appear
 # and no log file is written, which is impossible to diagnose. See issue #19.
-if sys.version_info < (3, 11):
-    sys.exit(
-        "mcp-gsc requires Python 3.11 or newer, but you are running "
-        f"{sys.version_info.major}.{sys.version_info.minor}. "
-        "Install Python 3.11+ (https://www.python.org/downloads/) and recreate "
-        "your virtual environment, or use the uvx install method which manages "
-        "the Python version for you."
-    )
-
-from platformdirs import user_config_dir
-
-import google.auth
 from google.auth.transport.requests import Request
 from google.oauth2 import service_account
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from platformdirs import user_config_dir
 
 # Suppress the noisy file_cache warning from google-api-python-client.
 # Some MCP hosts (e.g. GitHub Copilot CLI) treat any stderr output as a
@@ -36,6 +24,8 @@ from googleapiclient.errors import HttpError
 logging.getLogger("googleapiclient.discovery_cache").setLevel(logging.ERROR)
 
 # MCP
+import contextlib
+
 from mcp.server.fastmcp import FastMCP
 
 mcp = FastMCP("gsc-server")
@@ -150,7 +140,7 @@ def get_gsc_service():
             # If OAuth fails, try service account
             logging.warning("OAuth authentication failed: %s", e)
             pass
-    
+
     # Try service account authentication
     for cred_path in POSSIBLE_CREDENTIAL_PATHS:
         if cred_path and os.path.exists(cred_path):
@@ -159,9 +149,9 @@ def get_gsc_service():
                     cred_path, scopes=SCOPES
                 )
                 return build("searchconsole", "v1", credentials=creds, cache_discovery=False)
-            except Exception as e:
+            except Exception:
                 continue  # Try the next path if this one fails
-    
+
     # If we get here, none of the authentication methods worked.
     # Note: uvx users can't place files "in the script directory" because uvx runs
     # the code from ~/.cache/uv/archive-v0/<hash>/lib/python*/site-packages/ — an
@@ -186,7 +176,7 @@ def get_gsc_service_oauth():
     Returns an authorized Search Console service object using OAuth.
     """
     creds = None
-    
+
     # Check if token file exists
     if os.path.exists(TOKEN_FILE):
         try:
@@ -201,7 +191,7 @@ def get_gsc_service_oauth():
             # Silently deleting destroys data a human may want to inspect or recover.
             logging.warning("Could not read token file %s: %s", TOKEN_FILE, e)
             creds = None
-    
+
     # If credentials don't exist or are invalid, get new ones
     if not creds or not creds.valid:
         if creds and creds.expired and creds.refresh_token:
@@ -219,24 +209,24 @@ def get_gsc_service_oauth():
                 # intact for debugging.
                 logging.warning("Token refresh failed: %s", e)
                 creds = None
-        
+
         # Start new OAuth flow if we don't have valid credentials
         if not creds or not creds.valid:
             # Check if client secrets file exists
             if not os.path.exists(OAUTH_CLIENT_SECRETS_FILE):
                 raise FileNotFoundError(
-                    f"OAuth client secrets file not found. Please place a client_secrets.json file in the script directory "
-                    f"or set the GSC_OAUTH_CLIENT_SECRETS_FILE environment variable."
+                    "OAuth client secrets file not found. Please place a client_secrets.json file in the script directory "
+                    "or set the GSC_OAUTH_CLIENT_SECRETS_FILE environment variable."
                 )
 
             # Start OAuth flow — opens a browser window on macOS even from MCP subprocess.
             flow = InstalledAppFlow.from_client_secrets_file(OAUTH_CLIENT_SECRETS_FILE, SCOPES)
             creds = flow.run_local_server(port=0)
-            
+
             # Save the credentials for future use
             with open(TOKEN_FILE, 'w') as token:
                 token.write(creds.to_json())
-    
+
     # Build and return the service
     return build("searchconsole", "v1", credentials=creds, cache_discovery=False)
 
@@ -380,7 +370,7 @@ async def list_properties() -> str:
 async def add_site(site_url: str) -> str:
     """
     Add a site to your Search Console properties.
-    
+
     Args:
         site_url: The URL of the site to add (must be exact match e.g. https://example.com, or https://www.example.com, or https://subdomain.example.com/path/, for domain properties use format: sc-domain:example.com)
     """
@@ -391,17 +381,17 @@ async def add_site(site_url: str) -> str:
         )
     try:
         service = get_gsc_service()
-        
+
         # Add the site
         response = await _execute(service.sites().add(siteUrl=site_url))
-        
+
         # Format the response
         result_lines = [f"Site {site_url} has been added to Search Console."]
-        
+
         # Add permission level if available
         if "permissionLevel" in response:
             result_lines.append(f"Permission level: {response['permissionLevel']}")
-        
+
         return "\n".join(result_lines)
     except HttpError as e:
         error_content = json.loads(e.content.decode('utf-8'))
@@ -409,29 +399,29 @@ async def add_site(site_url: str) -> str:
         error_code = e.resp.status
         error_message = error_details.get('message', str(e))
         error_reason = error_details.get('errors', [{}])[0].get('reason', '')
-        
+
         if error_code == 409:
             return f"Site {site_url} is already added to Search Console."
         elif error_code == 403:
             if error_reason == 'forbidden':
-                return f"Error: You don't have permission to add this site. Please verify ownership first."
+                return "Error: You don't have permission to add this site. Please verify ownership first."
             elif error_reason == 'quotaExceeded':
-                return f"Error: API quota exceeded. Please try again later."
+                return "Error: API quota exceeded. Please try again later."
             else:
                 return f"Error: Permission denied. {error_message}"
         elif error_code == 400:
             if error_reason == 'invalidParameter':
-                return f"Error: Invalid site URL format. Please check the URL format and try again."
+                return "Error: Invalid site URL format. Please check the URL format and try again."
             else:
                 return f"Error: Bad request. {error_message}"
         elif error_code == 401:
-            return f"Error: Unauthorized. Please check your credentials."
+            return "Error: Unauthorized. Please check your credentials."
         elif error_code == 429:
-            return f"Error: Too many requests. Please try again later."
+            return "Error: Too many requests. Please try again later."
         elif error_code == 500:
-            return f"Error: Internal server error from Google Search Console API. Please try again later."
+            return "Error: Internal server error from Google Search Console API. Please try again later."
         elif error_code == 503:
-            return f"Error: Service unavailable. Google Search Console API is currently down. Please try again later."
+            return "Error: Service unavailable. Google Search Console API is currently down. Please try again later."
         else:
             return f"Error adding site (HTTP {error_code}): {error_message}"
     except Exception as e:
@@ -441,7 +431,7 @@ async def add_site(site_url: str) -> str:
 async def delete_site(site_url: str) -> str:
     """
     Remove a site from your Search Console properties.
-    
+
     Args:
         site_url: The URL of the site to remove (must be exact match e.g. https://example.com, or https://www.example.com, or https://subdomain.example.com/path/, for domain properties use format: sc-domain:example.com)
     """
@@ -452,10 +442,10 @@ async def delete_site(site_url: str) -> str:
         )
     try:
         service = get_gsc_service()
-        
+
         # Delete the site
         await _execute(service.sites().delete(siteUrl=site_url))
-        
+
         return f"Site {site_url} has been removed from Search Console."
     except HttpError as e:
         error_content = json.loads(e.content.decode('utf-8'))
@@ -463,29 +453,29 @@ async def delete_site(site_url: str) -> str:
         error_code = e.resp.status
         error_message = error_details.get('message', str(e))
         error_reason = error_details.get('errors', [{}])[0].get('reason', '')
-        
+
         if error_code == 404:
             return f"Site {site_url} was not found in Search Console."
         elif error_code == 403:
             if error_reason == 'forbidden':
-                return f"Error: You don't have permission to remove this site."
+                return "Error: You don't have permission to remove this site."
             elif error_reason == 'quotaExceeded':
-                return f"Error: API quota exceeded. Please try again later."
+                return "Error: API quota exceeded. Please try again later."
             else:
                 return f"Error: Permission denied. {error_message}"
         elif error_code == 400:
             if error_reason == 'invalidParameter':
-                return f"Error: Invalid site URL format. Please check the URL format and try again."
+                return "Error: Invalid site URL format. Please check the URL format and try again."
             else:
                 return f"Error: Bad request. {error_message}"
         elif error_code == 401:
-            return f"Error: Unauthorized. Please check your credentials."
+            return "Error: Unauthorized. Please check your credentials."
         elif error_code == 429:
-            return f"Error: Too many requests. Please try again later."
+            return "Error: Too many requests. Please try again later."
         elif error_code == 500:
-            return f"Error: Internal server error from Google Search Console API. Please try again later."
+            return "Error: Internal server error from Google Search Console API. Please try again later."
         elif error_code == 503:
-            return f"Error: Service unavailable. Google Search Console API is currently down. Please try again later."
+            return "Error: Service unavailable. Google Search Console API is currently down. Please try again later."
         else:
             return f"Error removing site (HTTP {error_code}): {error_message}"
     except Exception as e:
@@ -495,7 +485,7 @@ async def delete_site(site_url: str) -> str:
 async def get_search_analytics(site_url: str, days: int = 28, dimensions: str = "query", row_limit: int = 20) -> str:
     """
     Get search analytics data for a specific property.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -509,14 +499,14 @@ async def get_search_analytics(site_url: str, days: int = 28, dimensions: str = 
     """
     try:
         service = get_gsc_service()
-        
+
         # Calculate date range
         end_date = datetime.now().date()
         start_date = end_date - timedelta(days=days)
-        
+
         # Parse dimensions
         dimension_list = [d.strip() for d in dimensions.split(",")]
-        
+
         # Build request
         request = {
             "startDate": start_date.strftime("%Y-%m-%d"),
@@ -525,10 +515,10 @@ async def get_search_analytics(site_url: str, days: int = 28, dimensions: str = 
             "rowLimit": min(max(1, row_limit), 500),
             "dataState": DATA_STATE
         }
-        
+
         # Execute request
         response = await _execute(service.searchanalytics().query(siteUrl=site_url, body=request))
-        
+
         if not response.get("rows"):
             return f"No search analytics data found for {site_url} in the last {days} days."
 
@@ -563,7 +553,7 @@ async def get_search_analytics(site_url: str, days: int = 28, dimensions: str = 
 async def get_site_details(site_url: str) -> str:
     """
     Get detailed information about a specific Search Console property.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -571,10 +561,10 @@ async def get_site_details(site_url: str) -> str:
     """
     try:
         service = get_gsc_service()
-        
+
         # Get site details
         site_info = await _execute(service.sites().get(siteUrl=site_url))
-        
+
         result = {
             "site_url": site_url,
             "permission_level": site_info.get("permissionLevel", "Unknown"),
@@ -603,7 +593,7 @@ async def get_site_details(site_url: str) -> str:
 async def get_sitemaps(site_url: str) -> str:
     """
     List all sitemaps for a specific Search Console property.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -611,10 +601,10 @@ async def get_sitemaps(site_url: str) -> str:
     """
     try:
         service = get_gsc_service()
-        
+
         # Get sitemaps list
         sitemaps = await _execute(service.sitemaps().list(siteUrl=site_url))
-        
+
         if not sitemaps.get("sitemap"):
             return f"No sitemaps found for {site_url}."
 
@@ -663,7 +653,7 @@ async def get_sitemaps(site_url: str) -> str:
             return _site_not_found_error(site_url)
         return f"Error retrieving sitemaps: {str(e)}"
 
-def _rich_results_summary(inspection: Dict[str, Any]) -> Optional[Dict[str, Any]]:
+def _rich_results_summary(inspection: dict[str, Any]) -> Optional[dict[str, Any]]:
     """Shape the richResultsResult of a URL inspection into a reportable summary.
 
     Shared by inspect_url_enhanced and batch_url_inspection so both tools report the
@@ -700,7 +690,7 @@ def _rich_results_summary(inspection: Dict[str, Any]) -> Optional[Dict[str, Any]
 async def inspect_url_enhanced(site_url: str, page_url: str) -> str:
     """
     Enhanced URL inspection to check indexing status and rich results in Google.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -709,16 +699,16 @@ async def inspect_url_enhanced(site_url: str, page_url: str) -> str:
     """
     try:
         service = get_gsc_service()
-        
+
         # Build request
         request = {
             "inspectionUrl": page_url,
             "siteUrl": site_url
         }
-        
+
         # Execute request
         response = await _execute(service.urlInspection().index().inspect(body=request))
-        
+
         if not response or "inspectionResult" not in response:
             return f"No inspection data found for {page_url}."
 
@@ -761,7 +751,7 @@ async def inspect_url_enhanced(site_url: str, page_url: str) -> str:
 _BATCH_INSPECTION_CONCURRENCY = 10
 
 
-def _inspect_single_url(site_url: str, page_url: str) -> Dict[str, Any]:
+def _inspect_single_url(site_url: str, page_url: str) -> dict[str, Any]:
     """Inspect one URL and shape the result into a row.
 
     Builds its own Search Console service so it is safe to run in a worker thread —
@@ -837,7 +827,7 @@ async def batch_url_inspection(site_url: str, urls: str) -> str:
         # so each call runs in a worker thread with its own service instance.
         semaphore = asyncio.Semaphore(_BATCH_INSPECTION_CONCURRENCY)
 
-        async def _run(page_url: str) -> Dict[str, Any]:
+        async def _run(page_url: str) -> dict[str, Any]:
             async with semaphore:
                 return await asyncio.to_thread(_inspect_single_url, site_url, page_url)
 
@@ -853,14 +843,14 @@ async def batch_url_inspection(site_url: str, urls: str) -> str:
     except Exception as e:
         return f"Error performing batch inspection: {str(e)}"
 
-def _check_indexing_single_url(site_url: str, page_url: str) -> Dict[str, Optional[str]]:
+def _check_indexing_single_url(site_url: str, page_url: str) -> dict[str, Optional[str]]:
     """Inspect one URL and classify it into indexing-issue buckets.
 
     Builds its own service so it is safe to run in a worker thread. Never raises:
     failures are recorded under ``not_indexed``. Returns one string (or None) per
     category so the caller can aggregate results in input order.
     """
-    result: Dict[str, Optional[str]] = {
+    result: dict[str, Optional[str]] = {
         "not_indexed": None,
         "canonical_issues": None,
         "robots_blocked": None,
@@ -910,7 +900,7 @@ def _check_indexing_single_url(site_url: str, page_url: str) -> Dict[str, Option
 async def check_indexing_issues(site_url: str, urls: str) -> str:
     """
     Check for specific indexing issues across multiple URLs.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -935,7 +925,7 @@ async def check_indexing_issues(site_url: str, urls: str) -> str:
         # sequential loop timed out on sc-domain:* properties near the 10-URL cap.
         semaphore = asyncio.Semaphore(_BATCH_INSPECTION_CONCURRENCY)
 
-        async def _run(page_url: str) -> Dict[str, Optional[str]]:
+        async def _run(page_url: str) -> dict[str, Optional[str]]:
             async with semaphore:
                 return await asyncio.to_thread(_check_indexing_single_url, site_url, page_url)
 
@@ -981,7 +971,7 @@ async def check_indexing_issues(site_url: str, urls: str) -> str:
 async def get_performance_overview(site_url: str, days: int = 28) -> str:
     """
     Get a performance overview for a specific property.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -990,11 +980,11 @@ async def get_performance_overview(site_url: str, days: int = 28) -> str:
     """
     try:
         service = get_gsc_service()
-        
+
         # Calculate date range
         end_date = datetime.now().date()
         start_date = end_date - timedelta(days=days)
-        
+
         # Get total metrics
         total_request = {
             "startDate": start_date.strftime("%Y-%m-%d"),
@@ -1003,9 +993,9 @@ async def get_performance_overview(site_url: str, days: int = 28) -> str:
             "rowLimit": 1,
             "dataState": DATA_STATE
         }
-        
+
         total_response = await _execute(service.searchanalytics().query(siteUrl=site_url, body=total_request))
-        
+
         # Get by date for trend
         date_request = {
             "startDate": start_date.strftime("%Y-%m-%d"),
@@ -1014,9 +1004,9 @@ async def get_performance_overview(site_url: str, days: int = 28) -> str:
             "rowLimit": days,
             "dataState": DATA_STATE
         }
-        
+
         date_response = await _execute(service.searchanalytics().query(siteUrl=site_url, body=date_request))
-        
+
         if not total_response.get("rows"):
             return f"No performance data available for {site_url} in the last {days} days."
 
@@ -1057,24 +1047,24 @@ async def get_performance_overview(site_url: str, days: int = 28) -> str:
 
 @mcp.tool()
 async def get_advanced_search_analytics(
-    site_url: str, 
-    start_date: str | None = None, 
-    end_date: str | None = None, 
-    dimensions: str = "query", 
+    site_url: str,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    dimensions: str = "query",
     search_type: str = "WEB",
     row_limit: int = 1000,
     start_row: int = 0,
     sort_by: str = "clicks",
     sort_direction: str = "descending",
     filter_dimension: str | None = None,
-    filter_operator: str = "contains", 
+    filter_operator: str = "contains",
     filter_expression: str | None = None,
     filters: str | None = None,
     data_state: str | None = None
 ) -> str:
     """
     Get advanced search analytics data with sorting, filtering, and pagination.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -1102,13 +1092,13 @@ async def get_advanced_search_analytics(
     """
     try:
         service = get_gsc_service()
-        
+
         # Calculate date range if not provided
         if not end_date:
             end_date = datetime.now().date().strftime("%Y-%m-%d")
         if not start_date:
             start_date = (datetime.now().date() - timedelta(days=28)).strftime("%Y-%m-%d")
-        
+
         # Resolve and validate data_state (per-call override or fall back to global setting)
         resolved_data_state = (data_state or DATA_STATE).lower().strip()
         if resolved_data_state not in ("all", "final"):
@@ -1116,10 +1106,10 @@ async def get_advanced_search_analytics(
                 f"Invalid data_state value '{data_state}'. "
                 "Accepted values are 'all' (matches GSC dashboard) or 'final' (2-3 day lag)."
             )
-        
+
         # Parse dimensions
         dimension_list = [d.strip() for d in dimensions.split(",")]
-        
+
         # Build request
         effective_row_limit = min(row_limit, 25000)
         request = {
@@ -1131,11 +1121,11 @@ async def get_advanced_search_analytics(
             "searchType": search_type.upper(),
             "dataState": resolved_data_state
         }
-        
+
         # Sorting is applied client-side below. The Search Analytics query API has no
         # orderBy field (it always returns rows sorted by clicks descending), so an
         # orderBy in the request body was silently ignored (#54).
-        
+
         # Build filter groups — multi-filter JSON takes priority over single-filter params
         active_filters = []
         if filters:
@@ -1161,10 +1151,10 @@ async def get_advanced_search_analytics(
             }
             request["dimensionFilterGroups"] = [{"filters": [single_filter]}]
             active_filters = [single_filter]
-        
+
         # Execute request
         response = await _execute(service.searchanalytics().query(siteUrl=site_url, body=request))
-        
+
         if not response.get("rows"):
             no_data_msg = (
                 f"No search analytics data found for {site_url} with the specified parameters.\n\n"
@@ -1180,7 +1170,7 @@ async def get_advanced_search_analytics(
             else:
                 no_data_msg += "- No filter applied\n"
             return no_data_msg
-        
+
         rows = []
         for row in response.get("rows", []):
             entry = {}
@@ -1254,10 +1244,10 @@ async def compare_search_periods(
     """
     try:
         service = get_gsc_service()
-        
+
         # Parse dimensions
         dimension_list = [d.strip() for d in dimensions.split(",")]
-        
+
         # Build requests for both periods
         period1_request = {
             "startDate": period1_start,
@@ -1266,7 +1256,7 @@ async def compare_search_periods(
             "rowLimit": 1000,  # Get more to ensure we can match items between periods
             "dataState": DATA_STATE
         }
-        
+
         period2_request = {
             "startDate": period2_start,
             "endDate": period2_end,
@@ -1274,41 +1264,41 @@ async def compare_search_periods(
             "rowLimit": 1000,
             "dataState": DATA_STATE
         }
-        
+
         # Execute requests
         period1_response = await _execute(service.searchanalytics().query(siteUrl=site_url, body=period1_request))
         period2_response = await _execute(service.searchanalytics().query(siteUrl=site_url, body=period2_request))
-        
+
         period1_rows = period1_response.get("rows", [])
         period2_rows = period2_response.get("rows", [])
-        
+
         if not period1_rows and not period2_rows:
             return f"No data found for either period for {site_url}."
-        
+
         # Create dictionaries for easy lookup
         period1_data = {tuple(row.get("keys", [])): row for row in period1_rows}
         period2_data = {tuple(row.get("keys", [])): row for row in period2_rows}
-        
+
         # Find common keys and calculate differences
         all_keys = set(period1_data.keys()) | set(period2_data.keys())
         comparison_data = []
-        
+
         for key in all_keys:
             p1_row = period1_data.get(key, {"clicks": 0, "impressions": 0, "ctr": 0, "position": 0})
             p2_row = period2_data.get(key, {"clicks": 0, "impressions": 0, "ctr": 0, "position": 0})
-            
+
             # Differences are Period 1 relative to Period 2, with Period 2 as the
             # baseline. A positive value always means Period 1 outperformed Period 2
             # (more clicks/impressions, higher CTR, or a better — i.e. lower — position).
             click_diff = p1_row.get("clicks", 0) - p2_row.get("clicks", 0)
             click_pct = (click_diff / p2_row.get("clicks", 1)) * 100 if p2_row.get("clicks", 0) > 0 else float('inf')
-            
+
             imp_diff = p1_row.get("impressions", 0) - p2_row.get("impressions", 0)
             imp_pct = (imp_diff / p2_row.get("impressions", 1)) * 100 if p2_row.get("impressions", 0) > 0 else float('inf')
-            
+
             ctr_diff = p1_row.get("ctr", 0) - p2_row.get("ctr", 0)
             pos_diff = p2_row.get("position", 0) - p1_row.get("position", 0)  # lower position is better, so positive = Period 1 improved
-            
+
             comparison_data.append({
                 "key": key,
                 "p1_clicks": p1_row.get("clicks", 0),
@@ -1326,7 +1316,7 @@ async def compare_search_periods(
                 "p2_position": p2_row.get("position", 0),
                 "pos_diff": pos_diff
             })
-        
+
         # Sort by absolute click difference
         comparison_data.sort(key=lambda x: abs(x["click_diff"]), reverse=True)
 
@@ -1375,7 +1365,7 @@ async def get_search_by_page_query(
 ) -> str:
     """
     Get search analytics data for a specific page, broken down by query.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -1388,11 +1378,11 @@ async def get_search_by_page_query(
     """
     try:
         service = get_gsc_service()
-        
+
         # Calculate date range
         end_date = datetime.now().date()
         start_date = end_date - timedelta(days=days)
-        
+
         # Build request with page filter
         request = {
             "startDate": start_date.strftime("%Y-%m-%d"),
@@ -1410,13 +1400,13 @@ async def get_search_by_page_query(
             # returns rows sorted by clicks descending (which is what we want here).
             "dataState": DATA_STATE
         }
-        
+
         # Execute request
         response = await _execute(service.searchanalytics().query(siteUrl=site_url, body=request))
-        
+
         if not response.get("rows"):
             return f"No search data found for page {page_url} in the last {days} days."
-        
+
         rows = []
         for row in response.get("rows", []):
             rows.append({
@@ -1453,7 +1443,7 @@ async def get_search_by_page_query(
 async def list_sitemaps_enhanced(site_url: str, sitemap_index: str | None = None) -> str:
     """
     List all sitemaps for a specific Search Console property with detailed information.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -1462,15 +1452,13 @@ async def list_sitemaps_enhanced(site_url: str, sitemap_index: str | None = None
     """
     try:
         service = get_gsc_service()
-        
+
         # Get sitemaps list
         if sitemap_index:
             sitemaps = await _execute(service.sitemaps().list(siteUrl=site_url, sitemapIndex=sitemap_index))
-            source = f"child sitemaps from index: {sitemap_index}"
         else:
             sitemaps = await _execute(service.sitemaps().list(siteUrl=site_url))
-            source = "all submitted sitemaps"
-        
+
         if not sitemaps.get("sitemap"):
             return f"No sitemaps found for {site_url}" + (f" in index {sitemap_index}" if sitemap_index else ".")
 
@@ -1521,7 +1509,7 @@ async def list_sitemaps_enhanced(site_url: str, sitemap_index: str | None = None
 async def get_sitemap_details(site_url: str, sitemap_url: str) -> str:
     """
     Get detailed information about a specific sitemap.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -1530,10 +1518,10 @@ async def get_sitemap_details(site_url: str, sitemap_url: str) -> str:
     """
     try:
         service = get_gsc_service()
-        
+
         # Get sitemap details
         details = await _execute(service.sitemaps().get(siteUrl=site_url, feedpath=sitemap_url))
-        
+
         if not details:
             return f"No details found for sitemap {sitemap_url}."
 
@@ -1574,7 +1562,7 @@ async def get_sitemap_details(site_url: str, sitemap_url: str) -> str:
 async def submit_sitemap(site_url: str, sitemap_url: str) -> str:
     """
     Submit a new sitemap or resubmit an existing one to Google.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -1583,17 +1571,17 @@ async def submit_sitemap(site_url: str, sitemap_url: str) -> str:
     """
     try:
         service = get_gsc_service()
-        
+
         # Submit the sitemap
         await _execute(service.sitemaps().submit(siteUrl=site_url, feedpath=sitemap_url))
-        
+
         # Verify submission by getting details
         try:
             details = await _execute(service.sitemaps().get(siteUrl=site_url, feedpath=sitemap_url))
-            
+
             # Format response
             result_lines = [f"Successfully submitted sitemap: {sitemap_url}"]
-            
+
             # Add submission time if available
             if "lastSubmitted" in details:
                 try:
@@ -1601,19 +1589,19 @@ async def submit_sitemap(site_url: str, sitemap_url: str) -> str:
                     result_lines.append(f"Submission time: {dt.strftime('%Y-%m-%d %H:%M')}")
                 except Exception:
                     result_lines.append(f"Submission time: {details['lastSubmitted']}")
-            
+
             # Add processing status
             is_pending = details.get("isPending", True)
             result_lines.append(f"Status: {'Pending processing' if is_pending else 'Processing started'}")
-            
+
             # Add note about processing time
             result_lines.append("\nNote: Google may take some time to process the sitemap. Check back later for full details.")
-            
+
             return "\n".join(result_lines)
         except Exception:
             # If we can't get details, just return basic success message
             return f"Successfully submitted sitemap: {sitemap_url}\n\nGoogle will queue it for processing."
-    
+
     except Exception as e:
         return f"Error submitting sitemap: {str(e)}"
 
@@ -1621,7 +1609,7 @@ async def submit_sitemap(site_url: str, sitemap_url: str) -> str:
 async def delete_sitemap(site_url: str, sitemap_url: str) -> str:
     """
     Delete (unsubmit) a sitemap from Google Search Console.
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -1635,7 +1623,7 @@ async def delete_sitemap(site_url: str, sitemap_url: str) -> str:
         )
     try:
         service = get_gsc_service()
-        
+
         # First check if the sitemap exists
         try:
             await _execute(service.sitemaps().get(siteUrl=site_url, feedpath=sitemap_url))
@@ -1644,12 +1632,12 @@ async def delete_sitemap(site_url: str, sitemap_url: str) -> str:
                 return f"Sitemap not found: {sitemap_url}. It may have already been deleted or was never submitted."
             else:
                 raise e
-        
+
         # Delete the sitemap
         await _execute(service.sitemaps().delete(siteUrl=site_url, feedpath=sitemap_url))
-        
+
         return f"Successfully deleted sitemap: {sitemap_url}\n\nNote: This only removes the sitemap from Search Console. Any URLs already indexed will remain in Google's index."
-    
+
     except Exception as e:
         return f"Error deleting sitemap: {str(e)}"
 
@@ -1657,7 +1645,7 @@ async def delete_sitemap(site_url: str, sitemap_url: str) -> str:
 async def manage_sitemaps(site_url: str, action: str, sitemap_url: str | None = None, sitemap_index: str | None = None) -> str:
     """
     All-in-one tool to manage sitemaps (list, get details, submit, delete).
-    
+
     Args:
         site_url: Exact GSC property URL from list_properties (e.g. "https://example.com/" or
                   "sc-domain:example.com"). Domain properties cover all subdomains — use the
@@ -1670,13 +1658,13 @@ async def manage_sitemaps(site_url: str, action: str, sitemap_url: str | None = 
         # Validate inputs
         action = action.lower().strip()
         valid_actions = ["list", "details", "submit", "delete"]
-        
+
         if action not in valid_actions:
             return f"Invalid action: {action}. Please use one of: {', '.join(valid_actions)}"
-        
+
         if action in ["details", "submit", "delete"] and not sitemap_url:
             return f"The {action} action requires a sitemap_url parameter."
-        
+
         # Perform the requested action
         if action == "list":
             return await list_sitemaps_enhanced(site_url, sitemap_index)
@@ -1686,7 +1674,7 @@ async def manage_sitemaps(site_url: str, action: str, sitemap_url: str | None = 
             return await submit_sitemap(site_url, sitemap_url)
         elif action == "delete":
             return await delete_sitemap(site_url, sitemap_url)
-    
+
     except Exception as e:
         return f"Error managing sitemaps: {str(e)}"
 
@@ -1773,7 +1761,7 @@ def main():
     try:
         port = int(os.environ.get("MCP_PORT", "3001"))
     except ValueError:
-        raise ValueError("MCP_PORT must be an integer")
+        raise ValueError("MCP_PORT must be an integer") from None
 
     if transport == "stdio":
         mcp.run(transport="stdio")
@@ -1785,10 +1773,8 @@ def main():
         # check for the documented remote path. See issues #30 and #33.
         mcp.settings.host = host
         mcp.settings.port = port
-        try:
+        with contextlib.suppress(Exception):
             mcp.settings.transport_security.enable_dns_rebinding_protection = False
-        except Exception:
-            pass
         mcp.run(transport="sse")
     else:
         raise ValueError(

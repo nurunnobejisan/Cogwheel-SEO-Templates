@@ -6,10 +6,11 @@ Provides:
 """
 
 from __future__ import annotations
+
 import math
 import re
 from collections import Counter
-from typing import Dict, List, Set, Tuple, Any
+from typing import Any
 
 
 def clean_text(text: str) -> str:
@@ -26,7 +27,7 @@ def count_words(text: str) -> int:
     return len(clean_text(text).split())
 
 
-def get_ngrams(words: List[str], n: int = 3) -> Set[str]:
+def get_ngrams(words: list[str], n: int = 3) -> set[str]:
     """Generates an n-gram set from word tokens."""
     if len(words) < n:
         return {" ".join(words)} if words else set()
@@ -50,24 +51,24 @@ def calculate_jaccard_similarity(text1: str, text2: str, n: int = 3) -> float:
     return float(intersection) / float(union) if union > 0 else 0.0
 
 
-def calculate_tfidf_similarity(documents: List[str]) -> List[List[float]]:
+def calculate_tfidf_similarity(documents: list[str]) -> list[list[float]]:
     """Calculates pairwise cosine similarity matrix using TF-IDF term weights."""
     tokenized_docs = [clean_text(doc).split() for doc in documents]
     num_docs = len(tokenized_docs)
 
     # Document Frequency (DF)
-    df: Dict[str, int] = Counter()
+    df: dict[str, int] = Counter()
     for doc in tokenized_docs:
         unique_terms = set(doc)
         for term in unique_terms:
             df[term] += 1
 
     # TF-IDF vectors
-    tfidf_vectors: List[Dict[str, float]] = []
+    tfidf_vectors: list[dict[str, float]] = []
     for doc in tokenized_docs:
         tf = Counter(doc)
         doc_len = len(doc)
-        vector: Dict[str, float] = {}
+        vector: dict[str, float] = {}
         for term, count in tf.items():
             term_tf = count / doc_len if doc_len > 0 else 0
             term_idf = math.log((num_docs + 1) / (df[term] + 1)) + 1
@@ -92,12 +93,12 @@ def calculate_tfidf_similarity(documents: List[str]) -> List[List[float]]:
 
 
 def batch_similarity_audit(
-    pages: List[Dict[str, Any]],
+    pages: list[dict[str, Any]],
     max_similarity: float = 0.70,
     min_words: int = 250
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Audits a batch of pages against thin-content and duplicate similarity ceilings.
-    
+
     Pages exceeding max_similarity (default 0.70 / 70%) are flagged as duplicate blocks.
     """
     results = []
@@ -149,13 +150,13 @@ def batch_similarity_audit(
 
 
 def generate_internal_link_graph(
-    manifest_items: List[Dict[str, Any]],
+    manifest_items: list[dict[str, Any]],
     max_links_per_page: int = 5
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """Scores topical relationships between pages and outputs a clean JSON graph
     for consumption by the TypeScript template compiler.
     """
-    link_graph: Dict[str, List[Dict[str, str]]] = {}
+    link_graph: dict[str, list[dict[str, str]]] = {}
 
     for source in manifest_items:
         source_url = source.get("url")

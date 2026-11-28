@@ -3,9 +3,11 @@ Matches TypeScript input schemas in /validators/schemas/index.ts and /shared/sch
 """
 
 from __future__ import annotations
-from typing import List, Optional
+
+from typing import Optional
+
 try:
-    from pydantic import BaseModel, Field, HttpUrl
+    from pydantic import BaseModel, Field
 except ImportError:
     # Minimal fallback dataclass wrapper if pydantic is not yet installed in local python env
     class BaseModel:
@@ -14,7 +16,7 @@ except ImportError:
                 setattr(self, k, v)
         def model_dump(self):
             return self.__dict__
-    def Field(default=..., **kwargs):
+    def Field(default=..., **_kwargs):
         return default
 
 
@@ -58,7 +60,7 @@ class PageMetadataModel(BaseModel):
 class SiteManifestItemModel(BaseModel):
     url: str
     primaryKeyword: str
-    secondaryTags: List[str] = []
+    secondaryTags: list[str] = []
     parentPage: Optional[str] = None
-    categoryHierarchy: List[str] = []
-    approvedAnchorVariations: List[str] = []
+    categoryHierarchy: list[str] = []
+    approvedAnchorVariations: list[str] = []

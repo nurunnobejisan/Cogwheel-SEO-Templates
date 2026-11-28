@@ -15,7 +15,6 @@ Trained on historical SEO Studio marketing / analytics reports:
 from __future__ import annotations
 
 import argparse
-from concurrent.futures import ThreadPoolExecutor, as_completed
 import copy
 import gzip
 import html as html_lib
@@ -29,6 +28,7 @@ import urllib.request
 import xml.etree.ElementTree as ET
 import zipfile
 import zlib
+from concurrent.futures import ThreadPoolExecutor
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -95,7 +95,7 @@ KNOWN_LOCATIONS = {
     "memphis", "miami", "milwaukee", "minneapolis", "nashville", "newark", "oakland",
     "oklahoma city", "philadelphia", "phoenix", "pittsburgh", "raleigh", "richmond",
     "sacramento", "salt lake", "san diego", "san francisco", "san jose", "savannah", "seattle",
-    "st louis", "tampa", "tucson", "virginia beach", "washington", "scottsdale", "sedona",
+    "st louis", "tampa", "tucson", "virginia beach", "scottsdale", "sedona",
     "napa", "sonoma", "monterey", "carmel", "santa barbara", "palm springs", "anaheim",
     "irvine", "newport beach", "santa monica", "beverly hills", "pasadena", "long beach",
     "honolulu", "waikiki", "maui", "kauai", "key west", "fort lauderdale", "west palm beach",
@@ -419,6 +419,7 @@ def crawl_target_website(
     workbook_keywords: list[str] | None = None,
 ) -> dict:
     """Universal website crawler: works on any website (hotels, agencies, SaaS, ecommerce, WAF/JS sites)."""
+    _ = workbook_keywords
     url = (target_url or "").strip()
     if url and not re.match(r"^https?://", url, re.I):
         url = "https://" + url
@@ -486,7 +487,7 @@ def crawl_target_website(
 
         priority_candidates: list[str] = []
         general_candidates: list[str] = []
-        base_netloc = urllib.parse.urlparse(final_url or url).netloc.lower().lstrip("www.")
+        base_netloc = urllib.parse.urlparse(final_url or url).netloc.lower().removeprefix("www.")
 
         blocked_or_empty = (
             not html
@@ -508,7 +509,7 @@ def crawl_target_website(
                 for h in hrefs + sitemap_urls:
                     full_u = urllib.parse.urljoin(final_url, h).split("?")[0].rstrip("/")
                     u_parsed = urllib.parse.urlparse(full_u)
-                    u_netloc = u_parsed.netloc.lower().lstrip("www.")
+                    u_netloc = u_parsed.netloc.lower().removeprefix("www.")
                     if (
                         u_parsed.scheme in ("http", "https")
                         and u_netloc == base_netloc
@@ -541,7 +542,7 @@ def crawl_target_website(
                                 page_topics.append(hm)
                         for link_u in re.findall(r"https?://[^\s\)\"'>]+", rtxt):
                             lu_parsed = urllib.parse.urlparse(link_u.split("?")[0].rstrip("/"))
-                            if lu_parsed.netloc.lower().lstrip("www.") == base_netloc:
+                            if lu_parsed.netloc.lower().removeprefix("www.") == base_netloc:
                                 if priority_slug_re.search(lu_parsed.path):
                                     if link_u not in priority_candidates:
                                         priority_candidates.append(link_u)
@@ -721,7 +722,7 @@ def property_name_from_xlsx(xlsx_path: Path) -> str:
             if url_cols:
                 urls = [str(u) for u in frame[url_cols[0]].dropna() if str(u).startswith("http")]
                 if urls:
-                    netloc = urllib.parse.urlparse(urls[0]).netloc.lower().lstrip("www.")
+                    netloc = urllib.parse.urlparse(urls[0]).netloc.lower().removeprefix("www.")
                     slug = netloc.split(".")[0]
                     if slug and slug not in ("marriott", "hilton", "hyatt", "ihg", "wyndham", "accor"):
                         return slug.replace("-", " ").title()
@@ -745,7 +746,7 @@ def extract_property_brand_and_locations(
     if target_url:
         try:
             u_parsed = urllib.parse.urlparse(target_url if "://" in target_url else f"https://{target_url}")
-            host_slug = u_parsed.netloc.lower().lstrip("www.").split(".")[0]
+            host_slug = u_parsed.netloc.lower().removeprefix("www.").split(".")[0]
             if host_slug and len(host_slug) >= 4:
                 prop_tokens.append(host_slug)
                 if host_slug.startswith("the") and len(host_slug) >= 7:
@@ -771,14 +772,18 @@ def extract_property_brand_and_locations(
     if sample_kws:
         joined_samples = "\n".join(re.sub(r"[^a-z0-9\s]", " ", k.lower()) for k in sample_kws)
         for w in prop_tokens:
-            if len(w) >= 3 and w not in HOSPITALITY_WORDS and w not in CONNECTORS:
-                if re.search(
+            if (
+                len(w) >= 3
+                and w not in HOSPITALITY_WORDS
+                and w not in CONNECTORS
+                and re.search(
                     r"\b(?:hotels?\s+in|stays?\s+in|places\s+to\s+stay\s+in|things\s+to\s+do\s+in)\s+"
                     + re.escape(w)
                     + r"\b",
                     joined_samples,
-                ):
-                    title_locs.add(w)
+                )
+            ):
+                title_locs.add(w)
 
     ignore_prop = HOSPITALITY_WORDS | CONNECTORS | GEO_DESCRIPTORS | title_locs
     prop_brand_words: set[str] = set()
@@ -900,9 +905,12 @@ def is_brand_excluded(
         return True
 
     # Only allow restaurant keywords if paired with hotel(s) or general discovery ('restaurants in/near', 'rooftop restaurants')
-    if ("restaurant" in tokens or "restaurants" in tokens) and not ("hotel" in tokens or "hotels" in tokens):
-        if not re.search(r"\b(?:restaurants\s+(?:in|near)|rooftop\s+restaurants?)\b", kw_clean):
-            return True
+    if (
+        ("restaurant" in tokens or "restaurants" in tokens)
+        and not ("hotel" in tokens or "hotels" in tokens)
+        and not re.search(r"\b(?:restaurants\s+(?:in|near)|rooftop\s+restaurants?)\b", kw_clean)
+    ):
+        return True
 
     # 6. Must be LOCATION-BASED (contain a target location word for this property, or a 'near <landmark>' phrase)
     has_target_loc = any(t in target_locations for t in tokens)
@@ -976,7 +984,7 @@ def _parse_tracked_from_pages(pages: list[str]) -> list[dict]:
         raise ValueError("The PDF has no 'Keyword Rankings' section. Check that this is the expected Semrush report.")
     text = "\n".join(pages[start:])
     section = text.split("Keyword Rankings", 1)[1]
-    
+
     section = re.split(r"\b(Site Audit|Backlinks:?|Organic Research|Traffic Analytics)\b", section, maxsplit=1, flags=re.I)[0]
     total_match = (
         re.search(r"\d+\s*-\s*\d+\s*\((\d+)\)", section)
@@ -1021,11 +1029,7 @@ def _parse_tracked_from_pages(pages: list[str]) -> list[dict]:
             current["finished_name"] = True
             in_page_break = True
             continue
-        elif header_noise_re.match(line):
-            current["finished_name"] = True
-            in_page_break = False
-            continue
-        elif re.match(r"^\d+(?:st|nd|rd|th)\s+time$", line, re.I):
+        elif header_noise_re.match(line) or re.match(r"^\d+(?:st|nd|rd|th)\s+time$", line, re.I):
             current["finished_name"] = True
             in_page_break = False
             continue
@@ -1056,7 +1060,7 @@ def _parse_tracked_from_pages(pages: list[str]) -> list[dict]:
         name = clean_text(" ".join(entry["name_parts"]))
         if len(name) > 80:
             name = name[:77] + "..."
-            
+
         values = entry["values"]
         pos = diff = start_pos = None
         if len(values) >= 3:
@@ -1145,19 +1149,19 @@ def keyword_rows(
     kw_col = find_column(("keyword", "query", "search term"), "keyword")
     pos_col = find_column(("position", "rank"), "position/rank")
     vol_col = find_column(("volume", "searches"), "search volume")
-    
+
     frame["_keyword"] = frame[kw_col].fillna("").astype(str).str.strip()
     frame["_normalized"] = frame["_keyword"].str.casefold()
     frame["_position"] = pd.to_numeric(frame[pos_col], errors="coerce")
     frame["_volume"] = pd.to_numeric(frame[vol_col], errors="coerce").fillna(0)
-    
+
     frame = frame[(frame["_keyword"] != "") & frame["_position"].notna()]
     frame = frame.sort_values(["_position", "_volume"], ascending=[True, False]).drop_duplicates("_normalized")
 
     # Drop keywords already in the tracked summary
     tracked_names = {item["name"].casefold() for item in tracked}
     frame = frame[~frame["_normalized"].isin(tracked_names)]
-    
+
     # Apply minimum search volume and SEO-actionable ranking range (1 to 40)
     filtered_vol = frame[
         (frame["_volume"] >= MIN_SEARCH_VOLUME)
@@ -1435,16 +1439,13 @@ def nice_keyword(value: str) -> str:
 
 
 def ordinal(n: int) -> str:
-    if 11 <= (n % 100) <= 13:
-        suffix = "th"
-    else:
-        suffix = {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
+    suffix = "th" if 11 <= n % 100 <= 13 else {1: "st", 2: "nd", 3: "rd"}.get(n % 10, "th")
     return f"{n}{suffix}"
 
 
 def insights(tracked: list[dict]) -> str:
     total = len(tracked)
-    
+
     # Exactly match the requested output text style.
     improved = [x for x in tracked if x["diff"] is not None and x["diff"] > 0]
     declined = [x for x in tracked if x["diff"] is not None and x["diff"] < 0]
@@ -1453,19 +1454,19 @@ def insights(tracked: list[dict]) -> str:
 
     top_kw = tracked[0] if total > 0 else None
     unchanged_count = len(flat) + len(unranked)
-    
+
     if total == 0:
         return "No tracked keyword ranking data is available for this period."
-        
+
     imp_verb = "keywords have improved" if len(improved) != 1 else "keyword has improved"
-    
+
     # Exact wording requested: "Insights: Overall, we are tracking 8 non-branded keywords. Of these, 0 keywords have improved in rankings, 1 has experienced a drop in positions, and the remaining 7 have shown no significant changes."
     base = (
         f"Insights: Overall, we are tracking {total} non-branded keywords. Of these, {len(improved)} "
         f"{imp_verb} in rankings, {len(declined)} {'have' if len(declined) != 1 else 'has'} experienced a drop in positions, "
         f"and the remaining {unchanged_count} have shown no significant changes."
     )
-    
+
     if top_kw and top_kw["pos"] is not None:
         base += f" Our highest-priority keyword is currently ranking in {ordinal(top_kw['pos'])} position."
     elif top_kw and top_kw["start"] is not None:
@@ -1476,7 +1477,7 @@ def insights(tracked: list[dict]) -> str:
         )
     else:
         base += " Our highest-priority keyword does not yet have a recorded ranking position."
-        
+
     return base
 
 
@@ -1817,10 +1818,6 @@ def populate_seo_errors_slide(
     pdf_path: Path | None = None,
 ) -> None:
     """Populate Slide 5 (SEO Errors Report) with the follow-up note, Top Issues screenshot, and SEO expert issue/impact analysis."""
-    note_text = (
-        "NOTE FOR SEO TEAM:  This slide only applies to stand-alone sites for soft brands or independents.  "
-        "Remove this slide for brand hotels."
-    )
 
     if audit:
         err_cnt = audit["errors"]
@@ -1945,7 +1942,7 @@ BRAND_HOSTED_DOMAINS = {
 def _is_brand_domain_url(raw_url: str) -> bool:
     try:
         u_norm = raw_url if "://" in raw_url else f"https://{raw_url}"
-        netloc = urllib.parse.urlparse(u_norm).netloc.lower().lstrip("www.")
+        netloc = urllib.parse.urlparse(u_norm).netloc.lower().removeprefix("www.")
         return any(netloc == dom or netloc.endswith("." + dom) for dom in BRAND_HOSTED_DOMAINS)
     except Exception:
         return False
@@ -1973,17 +1970,12 @@ def is_brand_hosted_hotel(
     # 1. Explicit target_url or audited_url is the strongest signal of a vanity site vs brand-hosted URL
     primary_urls = [u for u in (target_url, audit_data.get("audited_url", "") if audit_data else "") if u]
     if primary_urls:
-        for u in primary_urls:
-            if not _is_brand_domain_url(u):
-                return False  # Vanity site detected (soft brand with vanity site or independent)
-        return True
+        return all(_is_brand_domain_url(u) for u in primary_urls)
 
     # 2. Otherwise inspect workbook URLs
     wb_urls = [u for u in (workbook_urls or [])[:20] if u]
     if wb_urls:
-        if any(not _is_brand_domain_url(u) for u in wb_urls):
-            return False
-        return True
+        return not any(not _is_brand_domain_url(u) for u in wb_urls)
 
     # 3. Fallback when no URL is available: check if property name is a major chain/soft brand without a vanity site
     prop_low = re.sub(r"[^a-z0-9\s]", " ", (prop_name or "").lower())
@@ -2007,10 +1999,7 @@ def _remove_slide(prs: Presentation, slide_index: int) -> None:
 
 def strip_pptx_comments(pptx_source: Path | bytes) -> bytes:
     """Completely and permanently remove all comments (legacy & modern) from a PPTX file."""
-    if isinstance(pptx_source, Path):
-        data = pptx_source.read_bytes()
-    else:
-        data = pptx_source
+    data = pptx_source.read_bytes() if isinstance(pptx_source, Path) else pptx_source
 
     in_buf = io.BytesIO(data)
     out_buf = io.BytesIO()
@@ -2214,25 +2203,25 @@ def build(
     for shape in prs.slides[1].shapes:
         if shape.has_text_frame:
             full_text = shape.text
-            
+
             if "Insights:" in full_text or "This is a summary" in full_text:
                 final_text = (
                     "This is a summary of the top 10 rankings for this property since the start of the project.  Ranks of 1-10 appear on page 1 of search results, 11-20 on page 2.\n\n"
                     "For a full list of all keyword rankings, refer to the detailed report on the next slide.\n\n"
                     f"{updated_insight}"
                 )
-                
+
                 for i in range(len(shape.text_frame.paragraphs)-1, 0, -1):
                     p = shape.text_frame.paragraphs[i]
                     p._p.getparent().remove(p._p)
-                    
+
                 set_paragraph_text(shape.text_frame.paragraphs[0], final_text)
-                
+
                 shape.text_frame.paragraphs[0].runs[0].font.name = "Source Sans Pro"
                 shape.text_frame.paragraphs[0].runs[0].font.size = Pt(9)
-                
+
                 insight_found = True
-                
+
     if not insight_found:
         print("Warning: no Insights text box found on slide 2; rankings were added to the table.", file=sys.stderr)
 
