@@ -51,6 +51,40 @@ Confirm `"hostOverlapCount": 0` and `"goldenHostOverlapCount": 0` in `data/build
 
 ---
 
+## Step 1b — Build the DPO pair dataset (`dpo-v2.jsonl`, v2 WP2)
+
+Builds gitignored `data/build/dpo-v2.jsonl` + `data/build/dpo-v2.report.json`
+from three first-party feedback sources (see `ml/train/build_dpo.py`):
+
+- healing approved-vs-rejected patches (`data/ml-review/healing-decisions.jsonl`, source `patches`);
+- vault approve/reject pairs (`data/ml-review/vault-decisions.jsonl`, source `vault`);
+- human-approved shadow-mode disagreements from the WP1 review queue
+  (`data/ml-review-queue.jsonl`, source `triples`; chosen = the approved output).
+
+```bash
+python3 -m ml.train.build_dpo \
+  --out data/build/dpo-v2.jsonl \
+  --report data/build/dpo-v2.report.json
+npm run train:validate          # governance + golden gates still green
+```
+
+Then train DPO on it (dry-run by default; `--train` needs the GPU stack):
+
+```bash
+python3 -m ml.train.dpo \
+  --pairs data/build/dpo-v2.jsonl \
+  --source triples \
+  --require-ready
+```
+
+**DPO ship gate (same chain as Step 5):** the DPO adapter must **beat the SFT
+adapter on the golden set** (at temperature 0, same endpoint protocol) and
+**no golden gate may regress** (`jsonld_valid >= 95%`, `invented_metrics = 0`,
+`title_budget >= 90%`). Record both runs in the score log; promotion stays a
+human `ml.serve.register` decision.
+
+---
+
 ## Step 2 — Baseline Evals BEFORE Training (`temperature=0`)
 
 Measure both the untuned base model (`Qwen/Qwen3-1.7B`) and the current free provider on the **exact same evaluation cases** at temperature `0` (`D-024`):

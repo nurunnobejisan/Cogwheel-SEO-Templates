@@ -228,3 +228,40 @@ WP3; until then that queue is empty by design. No review row was approved in
 this run — approvals are human actions only.
 
 ---
+## WP2 — DPO data + feedback loop (branch `ml/v2-wp2-dpo-builder`)
+
+Built this run:
+
+- **`ml/train/build_dpo.py`** — builds gitignored `data/build/dpo-v2.jsonl` +
+  `data/build/dpo-v2.report.json` from three first-party sources:
+  1. healing approved-vs-rejected patches (`data/ml-review/healing-decisions.jsonl` → source `patches`);
+  2. vault approve/reject pairs (`data/ml-review/vault-decisions.jsonl` → source `vault`);
+  3. WP1 review-queue decisions on shadow-mode disagreements
+     (`data/ml-review-queue.jsonl` → source `triples`; chosen = the approved
+     output, rejected = the original candidate). A **rejected review row never
+     becomes a pair** (structurally excluded at load).
+  Producer decision records are grouped by input fingerprint; an input with
+  only one decision kind is counted, never paired (a single outcome is not a
+  preference signal).
+- **Gates** (same family as `build_sft.py`/`dpo.py`): licence registry per
+  source, first-party consent + tenantId, synthetic ban, `chosen == rejected`
+  refused before *and after* PII stripping, golden-content refusal, golden
+  host exclusion, deterministic 90/10 host split via
+  `build_sft.assign_host_split`, PII stripping, counts report
+  (`refusedByReason`, `byOrigin`, `bySplit`, `piiStripped`, output sha).
+- **`ml/train/dpo.py`** — `--pairs` now defaults to the builder output; rows
+  are gated by their **own** declared `metadata.source` (patches/vault/triples
+  mixed files work); the 2000-pair client gate applies when client-derived
+  rows are in scope.
+- **Runbook** — new Step 1b with build + train commands and the DPO ship gate
+  ("DPO beats SFT on golden, no gate regresses"). `npm run ml:dpo:build` added.
+- **Tests** — `tests/python/test_ml_build_dpo.py` (9 passing): three-source
+  load, reject-never-pairs, consent gate, golden-host refusal, chosen==rejected
+  before/after PII, host split + report counts, `dpo.py` default path +
+  per-row gating, missing producers report zero, missing pair file raises.
+  Existing `test_ml_train.py` (58) unchanged and green.
+
+Data reality: with no healing/vault producer exports and no approved review
+rows yet, a builder run today writes 0 pairs and a truthful zero report. The
+feedback loop fills as operators use the WP1 queue and the healing/vault
+exports land.
