@@ -50,7 +50,7 @@ describe("seo-only-visibility-report task module", () => {
       callClaude: async () =>
         JSON.stringify({
           executiveSummary:
-            "The Nines Portland shows 8 top-10 rankings across 6 tracked and 14 ancillary keywords this month.",
+            "Example Hotel Portland shows 8 top-10 rankings across 6 tracked and 14 ancillary keywords this month.",
           highlights: [
             "3 ancillary keywords rank in the top 3.",
             "5 ancillary keywords rank in positions 4-10.",
@@ -62,7 +62,7 @@ describe("seo-only-visibility-report task module", () => {
     expect(result.status).toBe("Done");
     expect(result.flags.some((f) => f.code === "MISSING_AUDIT_PDF")).toBe(true);
     expect(result.outputUrl).toBe("download://seo_visibility_report_The_Nines.pptx");
-    expect(result.output.propertyName).toBe("The Nines Portland");
+    expect(result.output.propertyName).toBe("Example Hotel Portland");
     expect(result.output.flagSummary.hasWarnings).toBe(true);
     expect(result.output.highlights).toHaveLength(2);
   });

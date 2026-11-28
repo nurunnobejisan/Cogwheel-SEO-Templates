@@ -28,9 +28,7 @@ export function TemplateSelector({
   masterTemplateUrl?: string;
   onMasterTemplateUrlChange?: (url: string) => void;
 }) {
-  const [masterUrl, setMasterUrl] = useState(
-    masterTemplateUrl ?? "https://docs.google.com/document/d/1TIGp2n1UAfz_UKGyJl4ZK-jdcITxsjO6EgqRvy1CVSw/edit?usp=sharing",
-  );
+  const [masterUrl, setMasterUrl] = useState(masterTemplateUrl ?? "");
   const [example1Url, setExample1Url] = useState("");
   const [example2Url, setExample2Url] = useState("");
   const [inspecting, setInspecting] = useState(false);

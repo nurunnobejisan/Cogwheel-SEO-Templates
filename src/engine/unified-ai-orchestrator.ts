@@ -31,7 +31,7 @@ export const UNIFIED_SEO_TOOLS: UnifiedToolDefinition[] = [
     parameters: {
       type: "object",
       properties: {
-        siteUrl: { type: "string", description: "The GSC property URL (e.g. 'https://thenines.com/' or 'sc-domain:thenines.com')" },
+        siteUrl: { type: "string", description: "The GSC property URL (e.g. 'https://example-hotel.com/' or 'sc-domain:example-hotel.com')" },
         days: { type: "number", description: "Number of historical days to inspect (default: 28)" },
       },
       required: ["siteUrl"],

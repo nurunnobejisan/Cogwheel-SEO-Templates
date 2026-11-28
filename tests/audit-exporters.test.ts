@@ -113,9 +113,9 @@ describe("Audit Exporters Engine", () => {
     it("falls back to Independent for independent hotels", () => {
       const independentData = {
         ...mockPageData,
-        hostname: "www.thecoachmanhotel.com",
-        url: "https://www.thecoachmanhotel.com/",
-        title: "The Coachman Hotel Lake Tahoe",
+        hostname: "www.theexample-hotel.com",
+        url: "https://www.theexample-hotel.com/",
+        title: "Example Hotel Lake Tahoe",
       };
       expect(detectHotelBrand(independentData)).toBe("Independent Luxury");
     });

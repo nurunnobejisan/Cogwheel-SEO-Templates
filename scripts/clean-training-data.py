@@ -39,7 +39,7 @@ CATEGORY_KEYWORDS = "78-Keyword Strategy & Intent"
 # Coastal profiles so every placeholder token (incl. cruise port) stays plausible.
 PROFILES = [
     {
-        "hotelName": "The Charter Seattle",
+        "hotelName": "Harborview Seattle",
         "brand": "Hilton Hotels & Resorts",
         "loyaltyProgram": "Hilton Honors",
         "cityName": "Seattle",

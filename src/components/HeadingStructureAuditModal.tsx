@@ -146,7 +146,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
             <h2 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
               Heading Structure Optimization Studio
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-semibold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                The Nines Reference Parity
+                Example Hotel Reference Parity
               </span>
             </h2>
             <p className="text-caption text-slate-500 dark:text-slate-400">
@@ -482,10 +482,10 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
               />
             </div>
 
-            {/* 6-Column The Nines Sheet Preview */}
+            {/* 6-Column Sheet Preview */}
             <div className="space-y-4">
               <div className="flex items-center justify-between text-caption text-slate-500">
-                <span>Displaying 6-column hierarchy structure matching The Nines reference template</span>
+                <span>Displaying 6-column hierarchy structure matching the reference template</span>
                 <span>{filteredPages.length} pages listed</span>
               </div>
 
@@ -528,7 +528,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
                                   <div className="italic text-slate-400 px-2">[No Headings Found]</div>
                                   <div className="text-center font-mono text-slate-400 px-2">NONE</div>
                                   <div className="bg-[#B6D7A8]/30 font-medium text-emerald-950 px-2">
-                                    {page.targetKeyword} | Dressed To The Nines
+                                    {page.targetKeyword} | Dressed To Impress
                                   </div>
                                   <div className="bg-[#B6D7A8]/30 text-center font-bold text-emerald-900 px-2">H1</div>
                                 </div>
@@ -621,7 +621,7 @@ export function HeadingStructureAuditModal({ defaultUrl = "", onClose }: Props) 
       {/* Footer */}
       <div className="flex items-center justify-between border-t border-slate-100 bg-slate-50/50 px-6 py-3 dark:border-slate-800 dark:bg-slate-900/50">
         <span className="text-caption text-slate-500">
-          Hotel SEO Hierarchy Optimizer • The Nines Portland Parity
+          Hotel SEO Hierarchy Optimizer • Example Hotel Portland Parity
         </span>
         <Button variant="secondary" onClick={onClose} className="text-caption">
           Close

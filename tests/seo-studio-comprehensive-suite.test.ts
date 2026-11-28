@@ -254,9 +254,9 @@ describe("SEO & GEO Studio — Comprehensive Unit Test Suite", () => {
     describe("Independent Luxury Hotel Standards", () => {
       it("passes valid independent hotel content", () => {
         const result = validateBrandCompliance("Independent", {
-          title: "The Coachman Hotel Lake Tahoe | Official Site",
+          title: "Example Hotel Lake Tahoe | Official Site",
           metaDesc: "Boutique South Lake Tahoe hotel near Heavenly Village with fire pits, craft beer, and direct booking perks.",
-          h1: "The Coachman Hotel",
+          h1: "The Example Hotel Hotel",
           requireSuffix: true,
         });
         expect(result.valid).toBe(true);
@@ -310,7 +310,7 @@ describe("SEO & GEO Studio — Comprehensive Unit Test Suite", () => {
       id: "curtis-denver",
       name: "The Curtis Denver - a DoubleTree by Hilton",
       brand: "Hilton",
-      domain: "thecurtis.com",
+      domain: "example-boutique.com",
       city: "Denver",
       state: "CO",
       primaryKeywords: ["Denver Downtown Hotel"],

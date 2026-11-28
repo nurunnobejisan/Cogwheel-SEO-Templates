@@ -500,10 +500,10 @@ class ImageOptimizer:
         elif archetype in ["dining_or_outlet", "service_or_amenity"]:
             return [
                 {
-                    "src": f"https://{domain}/dining/departure-rooftop-patio.webp",
+                    "src": f"https://{domain}/dining/rooftop-patio.webp",
                     "alt": "restaurant",  # Duplicate / generic
                     "title": "Rooftop Dining Patio",
-                    "section_heading": "Departure Restaurant & Lounge",
+                    "section_heading": "Rooftop Restaurant & Lounge",
                     "dimensions": "1200x800",
                 },
                 {
@@ -517,7 +517,7 @@ class ImageOptimizer:
         else:
             return [
                 {
-                    "src": f"https://{domain}/about/historic-meier-frank-building.jpg",
+                    "src": f"https://{domain}/about/historic-historic-building.jpg",
                     "alt": "Historic Building",
                     "title": "Historic Building Exterior",
                     "section_heading": "Historic Heritage",
@@ -584,7 +584,7 @@ class ImageOptimizer:
 
         steps = [
             ("1. The ALT Text Golden Standard", "Every meaningful image must have an alt attribute describing the visual subject in 50–85 characters (hard cap <= 125 chars). Never use 'image of' or 'photo of' filler."),
-            ("2. Entity & Geo Context", "Naturally weave brand and location cues into the description (e.g., 'at The Nines in downtown Portland') where relevant to reinforce entity search graphs."),
+            ("2. Entity & Geo Context", "Naturally weave brand and location cues into the description (e.g., 'at Example Hotel in downtown Portland') where relevant to reinforce entity search graphs."),
             ("3. Dynamic Formula Lengths", "Columns D and F are computed using dynamic Excel =LEN(C2) and =LEN(E2) formulas. Proposed ALTs are highlighted in soft green (#D9EAD3)."),
             ("4. Hard Cap Violation Alert", "Any ALT text exceeding 125 characters is automatically highlighted in red via conditional formatting per WCAG screen reader best practices."),
             ("5. Clean File Naming", "Opaque camera filenames (DSC*, IMG_*, image+244) hurt image rankings. In Tab 2, descriptive SEO Titles are provided for media library renaming."),

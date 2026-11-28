@@ -84,7 +84,7 @@ export async function exportHeadingAuditToGoogleSheets(
         page.targetKeyword,
         "[No Headings Found]",
         "NONE",
-        `${page.targetKeyword} | Dressed To The Nines`,
+        `${page.targetKeyword} | Dressed To Impress`,
         "H1",
       ]);
     } else {

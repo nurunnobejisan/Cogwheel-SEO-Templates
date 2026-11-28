@@ -76,7 +76,7 @@ describe("Vitest/TS: Zod Schema Variable Resolution & Fallbacks", () => {
     const validMeta = {
       title: "Boutique Hotel in Downtown Denver | The Curtis",
       metaDescription: "Experience boutique luxury accommodations in downtown Denver near the arts district with on-site dining and games.",
-      canonicalUrl: "https://thecurtis.com/overview/"
+      canonicalUrl: "https://example-boutique.com/overview/"
     };
 
     const res = resolveWithZod(PageMetadataZodSchema, validMeta);

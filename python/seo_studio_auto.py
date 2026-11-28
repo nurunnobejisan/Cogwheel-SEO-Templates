@@ -313,7 +313,7 @@ class SeoStudioAutoRunner:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Unified SEO Automation for Any Website URL.")
-    parser.add_argument("--url", required=True, help="Target website URL or domain (e.g., https://thenines.com)")
+    parser.add_argument("--url", required=True, help="Target website URL or domain (e.g., https://example-hotel.com)")
     parser.add_argument("--keywords-csv", default=None, help="Optional CSV path containing keyword data")
     parser.add_argument("--max-pages", type=int, default=35, help="Maximum number of pages to discover & crawl (default: 35)")
     parser.add_argument("--output-dir", default="output", help="Base output directory (default: output)")

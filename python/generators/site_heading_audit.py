@@ -3,7 +3,7 @@
 SEO Studio
 Heading Structure Optimization Audit Tool (CLI & Automation Engine)
 
-Crawls all public pages of a website (default: https://thenines.com/), audits heading
+Crawls all public pages of a website (default: https://example-hotel.com/), audits heading
 hierarchies in document order (H1 through H6, styled text), identifies missing H1s,
 multiple H1s, skipped levels, and unrendered template placeholders, and outputs an
 Excel workbook matching the reference layout:
@@ -108,7 +108,7 @@ def classify_page_url(url_str: str) -> tuple[str, str]:
         if "accommodation" in path or "room" in path or "suite" in path:
             slug = path.split("/")[-1]
             return "Accommodations", to_title_case(slug.replace("-", " "))
-        if "dining" in path or "restaurant" in path or "departure" in path or "urban-farmer" in path:
+        if "dining" in path or "restaurant" in path or "departure" in path or "steakhouse" in path:
             slug = path.split("/")[-1]
             return "DINING", to_title_case(slug.replace("-", " "))
         if "gather" in path or "meeting" in path or "event" in path or "wedding" in path or "rfp" in path:
@@ -133,37 +133,37 @@ def derive_target_keyword(url_str: str, page_title: str) -> str:
     path = urllib.parse.urlparse(url_str).path.lower().strip("/")
     if not path:
         return "Downtown Portland Hotels"
-    # The Nines Reference Mapping
+    # Example Hotel Reference Mapping
     if "one-bedroom-suite" in path:
         return "One Bedroom Suite Downtown Portland"
     if "deluxe-room" in path:
         return "Deluxe Rooms Downtown Portland"
     if "studio-suite" in path:
         return "Studio Hotel Suite Portland"
-    if "the-nines-suite" in path:
+    if "signature-suite" in path:
         return "Luxury Suite Downtown Portland"
     if "superior-room" in path:
         return "Superior Hotel Rooms Portland"
-    if "meier-frank-suite" in path:
-        return "Meier & Frank Historic Suite"
+    if "historic-suite" in path:
+        return "Historic Suite"
     if "experience-portland" in path:
         return "Things To Do In Downtown Portland"
     if "amenities" in path:
         return "Downtown Portland Hotel Amenities"
     if "art" in path:
         return "Curated Hotel Art Collection Portland"
-    if "the-history-of-the-nines" in path:
-        return "Historic Meier & Frank Building Portland"
+    if "hotel-history" in path:
+        return "Historic Historic Building Portland"
     if "offers-packages" in path:
         return "Portland Hotel Deals & Vacation Packages"
-    if "urban-farmer" in path:
-        return "Steakhouse In Portland: Urban Farmer"
+    if "steakhouse" in path:
+        return "Steakhouse In Portland: The Steakhouse"
     if "departure" in path:
-        return "Rooftop Restaurant In Portland: Departure"
+        return "Rooftop Restaurant In Portland"
     if "in-room-dining" in path:
         return "Portland Luxury In-Room Dining"
     if "dining" in path:
-        return "Downtown Portland Restaurants At The Nines"
+        return "Downtown Portland Restaurants At Example Hotel"
     if "gather" in path:
         return "Downtown Portland Meeting & Event Spaces"
     if "meetings" in path:
@@ -177,9 +177,9 @@ def derive_target_keyword(url_str: str, page_title: str) -> str:
     if "events-calendar" in path:
         return "Downtown Portland Events Calendar"
     if "frequently-asked-questions" in path:
-        return "The Nines Portland Hotel FAQs"
+        return "Example Hotel Portland Hotel FAQs"
     if "gallery" in path:
-        return "The Nines Hotel Photo Gallery"
+        return "Example Hotel Hotel Photo Gallery"
 
     clean_t = re.sub(r"\s*[-|–|—]\s*.*$", "", page_title).strip()
     if clean_t:
@@ -284,7 +284,7 @@ def analyze_and_optimize_page(raw_headings: list[dict], page_url: str, page_titl
         if idx == 0 or (tag == "H1" and not any(h["opt_level"] == "H1" for h in headings)):
             opt_level = "H1"
             if is_home:
-                opt_text = f"{target_keyword} | Dressed To The Nines"
+                opt_text = f"{target_keyword} | Dressed To Impress"
             elif target_keyword.lower() not in opt_text.lower():
                 opt_text = f"{clean_txt} | {target_keyword}"
         elif tag == "H1":
@@ -307,7 +307,7 @@ def analyze_and_optimize_page(raw_headings: list[dict], page_url: str, page_titl
         page_issues.append("Missing <h1> element on page.")
         if headings:
             headings[0]["opt_level"] = "H1"
-            headings[0]["opt_text"] = f"{target_keyword} | Dressed To The Nines" if is_home else f"{target_keyword} — {to_title_case(headings[0]['text'] or 'Overview')}"
+            headings[0]["opt_text"] = f"{target_keyword} | Dressed To Impress" if is_home else f"{target_keyword} — {to_title_case(headings[0]['text'] or 'Overview')}"
 
     if h1_count > 1:
         page_issues.append(f"Found {h1_count} separate <h1> tags (consolidated to 1).")
@@ -425,7 +425,7 @@ def create_heading_sheet_xml(pages: list[dict]) -> str:
             xml_parts.append(f'<c r="B{current_row}" t="inlineStr"><is><t>{escape_xml(page["analysis"]["target_keyword"])}</t></is></c>')
             xml_parts.append(f'<c r="C{current_row}" t="inlineStr"><is><t>[No Headings Found]</t></is></c>')
             xml_parts.append(f'<c r="D{current_row}" t="inlineStr"><is><t>NONE</t></is></c>')
-            xml_parts.append(f'<c r="E{current_row}" s="2" t="inlineStr"><is><t>{escape_xml(page["analysis"]["target_keyword"])} | Dressed To The Nines</t></is></c>')
+            xml_parts.append(f'<c r="E{current_row}" s="2" t="inlineStr"><is><t>{escape_xml(page["analysis"]["target_keyword"])} | Dressed To Impress</t></is></c>')
             xml_parts.append(f'<c r="F{current_row}" s="2" t="inlineStr"><is><t>H1</t></is></c>')
             xml_parts.append('</row>')
             current_row += 1
@@ -632,12 +632,12 @@ def build_heading_audit_xlsx(summary: dict, pages: list[dict]) -> bytes:
 # -----------------------------------------------------------------------------
 
 def run_heading_audit(
-    start_url: str = "https://thenines.com/",
+    start_url: str = "https://example-hotel.com/",
     max_pages: int = 60,
     delay: float = 0.15,
     timeout: int = 10,
     allow_subdomains: bool = False,
-    output_path: str = "outputs/heading_structure_audit_thenines.xlsx",
+    output_path: str = "outputs/heading_structure_audit_example_hotel.xlsx",
     resume: bool = False,
     enable_sitemaps: bool = True
 ) -> dict:
@@ -885,7 +885,7 @@ def run_heading_audit(
     print("=======================================================")
     print(f" AUDIT COMPLETE: {len(pages_data)} pages, {total_headings} headings audited.")
     print(f" Spreadsheet saved: {os.path.abspath(output_path)}")
-    print(" Format strictly mirrors reference Google Sheet: 'Heading Structure Optimization- thenines'")
+    print(" Format strictly mirrors reference Google Sheet: 'Heading Structure Optimization- example-hotel'")
     print(" Tabs: [1] Heading Optimization | [2] Audit Summary | [3] Hierarchy Analysis")
     print("=======================================================\n")
 
@@ -903,11 +903,11 @@ def main():
         epilog="""
 Examples:
   python3 outputs/site_heading_audit.py
-  python3 outputs/site_heading_audit.py https://thenines.com/ --max-pages 60
+  python3 outputs/site_heading_audit.py https://example-hotel.com/ --max-pages 60
   python3 outputs/site_heading_audit.py https://example.com --output outputs/heading_audit.xlsx --resume
         """
     )
-    parser.add_argument("url", nargs="?", default="https://thenines.com/", help="Website URL to audit (default: https://thenines.com/)")
+    parser.add_argument("url", nargs="?", default="https://example-hotel.com/", help="Website URL to audit (default: https://example-hotel.com/)")
     parser.add_argument("--max-pages", type=int, default=60, help="Maximum pages to crawl (default: 60)")
     parser.add_argument("--delay", type=float, default=0.15, help="Delay between requests in seconds (default: 0.15)")
     parser.add_argument("--timeout", type=int, default=10, help="HTTP request timeout in seconds (default: 10)")

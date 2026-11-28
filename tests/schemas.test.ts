@@ -60,7 +60,7 @@ describe("Day 4: Composable JSON-LD @graph Schema Builder", () => {
   it("builds LocalBusiness / Hotel schema with geo and address", () => {
     const hotel = buildLocalBusinessSchema({
       name: "The Curtis Denver",
-      url: "https://thecurtis.com/",
+      url: "https://example-boutique.com/",
       type: "Hotel",
       telephone: "+1-303-571-0300",
       address: {

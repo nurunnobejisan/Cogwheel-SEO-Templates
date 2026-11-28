@@ -46,7 +46,7 @@ describe("AI Training Rules Store", () => {
       taskId: "title-meta",
       title: "Brand Suffix Style",
       ruleText: "Always keep property name before city in title tags.",
-      exampleGood: "The Nines Portland | Luxury Hotel Downtown",
+      exampleGood: "Example Hotel Portland | Luxury Hotel Downtown",
     });
 
     let titleContext = await formatTrainingContext("title-meta");

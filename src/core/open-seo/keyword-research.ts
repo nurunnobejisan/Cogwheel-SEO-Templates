@@ -58,7 +58,7 @@ export function performKeywordResearch(
   }
 
   const city = propertyContext?.city || "Portland";
-  const brand = propertyContext?.brand || "The Nines";
+  const brand = propertyContext?.brand || "Example Hotel";
 
   const keywords: KeywordMetrics[] = [
     {
@@ -98,7 +98,7 @@ export function performKeywordResearch(
       targetLandingPageSuggestion: "/our-story/",
     },
     {
-      keyword: `rooftop restaurant ${city.toLowerCase()} departure`,
+      keyword: `rooftop restaurant ${city.toLowerCase()}`,
       searchVolume: 3600,
       cpcUsd: 1.2,
       competition: "medium",
@@ -107,10 +107,10 @@ export function performKeywordResearch(
       trendingRatePct: 22,
       serpFeatures: ["local_pack", "images", "ai_overview"],
       contentGapOpportunity: false,
-      targetLandingPageSuggestion: "/dining/departure/",
+      targetLandingPageSuggestion: "/dining/rooftop/",
     },
     {
-      keyword: `historic meier frank building ${city.toLowerCase()}`,
+      keyword: `historic historic building ${city.toLowerCase()}`,
       searchVolume: 880,
       cpcUsd: 0.65,
       competition: "low",
@@ -169,7 +169,7 @@ export function performKeywordResearch(
       },
       {
         theme: "Historic Architecture & Art Tourism",
-        missingKeywordKeywords: [`historic meier frank building ${city.toLowerCase()}`, "curated hotel art collection"],
+        missingKeywordKeywords: [`historic historic building ${city.toLowerCase()}`, "curated hotel art collection"],
         potentialTrafficLiftMonthly: 420,
         recommendedAction:
           "Publish an architectural guide highlighting the historic department store restoration and contemporary art gallery floor.",

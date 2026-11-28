@@ -1,4 +1,19 @@
 import { z } from "zod";
+import type { RationaleStyle } from "./types";
+
+const RATIONALE_STYLES = ["concise", "supporting", "qualitative"] as const;
+
+/** Legacy values persisted by older builds are accepted and normalised. */
+const LEGACY_RATIONALE_STYLES: Record<string, RationaleStyle> = {
+  arrive: "concise",
+  catbird: "supporting",
+  reitz: "qualitative",
+};
+
+const rationaleStyleSchema = z.preprocess(
+  (value) => (typeof value === "string" ? LEGACY_RATIONALE_STYLES[value] ?? value : value),
+  z.enum(RATIONALE_STYLES).optional().default("supporting"),
+);
 
 export const propertySchema = z.object({
   name: z.string().trim().min(1, "Property name is required"),
@@ -13,7 +28,7 @@ export const propertySchema = z.object({
   notes: z.string().trim().optional().default(""),
   petFriendly: z.boolean().optional().default(true),
   attractions: z.array(z.string()).optional().default([]),
-  rationaleStyle: z.enum(["arrive", "catbird", "reitz"]).optional().default("catbird"),
+  rationaleStyle: rationaleStyleSchema,
   templateDocUrl: z.string().trim().optional().default(""),
   allowedLocations: z.array(z.string()).default([]),
   excludedLocations: z.array(z.string()).default([]),

@@ -167,7 +167,7 @@ export function SeoBaselineModal({ defaultProperty, onClose, onCompleted }: Prop
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="The Nines Portland"
+              placeholder="Example Hotel Portland"
               className="input"
             />
           </label>

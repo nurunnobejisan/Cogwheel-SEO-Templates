@@ -100,12 +100,12 @@ class TestHeadingAuditAndOptimization:
 
     @pytest.fixture
     def optimizer(self):
-        return HeadingOptimizer("https://thenines.com")
+        return HeadingOptimizer("https://example-hotel.com")
 
     def test_single_h1_rule_and_duplicate_demotion(self, optimizer):
         """Page with multiple H1s must keep canonical H1 and demote sibling H1 to H2."""
         raw_headings = [
-            ("H1", "WELCOME TO THE NINES"),
+            ("H1", "WELCOME TO EXAMPLE HOTEL"),
             ("H1", "LUXURY HOTEL IN PORTLAND"),
             ("H2", "EXPERIENCE LUXURY"),
             ("H2", "331 Guest Rooms"),
@@ -113,13 +113,13 @@ class TestHeadingAuditAndOptimization:
         ]
 
         audit = optimizer.audit_and_optimize_page(
-            page_url="https://thenines.com/",
-            keyword="The Nines Portland",
+            page_url="https://example-hotel.com/",
+            keyword="Example Hotel Portland",
             category="HOME",
             raw_headings=raw_headings,
-            brand_name="The Nines",
+            brand_name="Example Hotel",
             location="Portland, OR",
-            page_title="Luxury Hotel in Downtown Portland | The Nines",
+            page_title="Luxury Hotel in Downtown Portland | Example Hotel",
         )
 
         assert audit.h1_count_before == 2
@@ -130,7 +130,7 @@ class TestHeadingAuditAndOptimization:
 
         h1_items = [h for h in audit.headings if h.new_level == "H1"]
         assert len(h1_items) == 1
-        assert "The Nines Portland" in h1_items[0].new_headline
+        assert "Example Hotel Portland" in h1_items[0].new_headline
 
         # Check sibling H1 demotion
         demoted_h1 = [h for h in audit.headings if h.old_level == "H1" and h.new_level == "H2"]
@@ -152,13 +152,13 @@ class TestHeadingAuditAndOptimization:
         ]
 
         audit = optimizer.audit_and_optimize_page(
-            page_url="https://thenines.com/rooms",
+            page_url="https://example-hotel.com/rooms",
             keyword="Portland Hotel Rooms",
             category="PRODUCTS / ROOMS",
             raw_headings=raw_headings,
-            brand_name="The Nines",
+            brand_name="Example Hotel",
             location="Portland, OR",
-            page_title="Guest Rooms & Suites | The Nines",
+            page_title="Guest Rooms & Suites | Example Hotel",
         )
 
         assert "inverted_hierarchy" in audit.issues_found
@@ -187,19 +187,19 @@ class TestHeadingWorkbookAndJsonDeliverables:
 
     def test_full_pipeline_workbook_and_json(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
-            optimizer = HeadingOptimizer("https://thenines.com", output_base_dir=tmp_dir)
-            optimizer.brand_name = "The Nines"
+            optimizer = HeadingOptimizer("https://example-hotel.com", output_base_dir=tmp_dir)
+            optimizer.brand_name = "Example Hotel"
             optimizer.location = "Portland, OR"
 
             custom_pages = [
                 {
-                    "url": "https://thenines.com/",
+                    "url": "https://example-hotel.com/",
                     "path": "/",
                     "title": "Luxury Hotel in Downtown Portland",
                     "archetype": "home",
-                    "primary_keyword": "The Nines Portland",
+                    "primary_keyword": "Example Hotel Portland",
                     "raw_headings": [
-                        ("H1", "WELCOME TO THE NINES"),
+                        ("H1", "WELCOME TO EXAMPLE HOTEL"),
                         ("H1", "PORTLAND BOUTIQUE HOTEL"),
                         ("H2", "OUR LUXURY AMENITIES"),
                         ("H2", "331 Guest Rooms"),
@@ -207,7 +207,7 @@ class TestHeadingWorkbookAndJsonDeliverables:
                     ],
                 },
                 {
-                    "url": "https://thenines.com/amenities",
+                    "url": "https://example-hotel.com/amenities",
                     "path": "/amenities",
                     "title": "Hotel Amenities",
                     "archetype": "service_or_amenity",
@@ -260,7 +260,7 @@ class TestHeadingWorkbookAndJsonDeliverables:
             # Verify JSON deliverable
             with open(json_path, encoding="utf-8") as jf:
                 data = json.load(jf)
-                assert data["domain"] == "thenines.com"
+                assert data["domain"] == "example-hotel.com"
                 assert data["total_pages_audited"] == 2
                 assert len(data["pages"]) == 2
                 assert data["pages"][0]["h1_count_after"] == 1

@@ -700,8 +700,8 @@ class HeadingOptimizer:
                 ("H2", "EXPERIENCE UNMATCHED LUXURY"),      # ALL-CAPS issue
                 ("H2", "331 Guest Rooms"),                  # Non-semantic stat
                 ("H2", "OUR LUXURY AMENITIES"),             # ALL-CAPS
-                ("H3", "Urban Farmer Steakhouse"),
-                ("H3", "Departure Restaurant & Lounge"),
+                ("H3", "The Steakhouse"),
+                ("H3", "Rooftop Restaurant & Lounge"),
                 ("H2", "14,000 Sq Ft Event Space"),         # Non-semantic stat
                 ("H3", '"The best hotel stay in the city."'),# Non-semantic quote
                 ("H2", "Explore"),                          # Footer header

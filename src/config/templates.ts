@@ -17,7 +17,7 @@ export const TEMPLATES: Record<TemplateId, ReportTemplate> = {
   A: {
     id: "A",
     name: "Format A — Standard",
-    clients: "Catbird / Arrive",
+    clients: "Standard-format properties",
     description: "2-column Page | Keyword table followed by “Why did we do this?” bullets.",
     sections: ["Keyword Table", "Why did we do this?"],
     tableColumns: ["Page", "Keyword"],
@@ -28,8 +28,8 @@ export const TEMPLATES: Record<TemplateId, ReportTemplate> = {
   },
   B: {
     id: "B",
-    name: "Format B — SEO Studio",
-    clients: "Reitz Union / SEO Studio",
+    name: "Format B — Studio",
+    clients: "Extended-format properties",
     description: "Current Sitemap section, 3-column Page | Keyword | Secondary table, then Comments paragraphs.",
     sections: ["Current Sitemap", "Keyword Table", "Comments"],
     tableColumns: ["Page", "Keyword", "Secondary"],

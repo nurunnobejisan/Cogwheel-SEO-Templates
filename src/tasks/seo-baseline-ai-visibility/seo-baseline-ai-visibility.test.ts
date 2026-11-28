@@ -68,7 +68,7 @@ describe("seo-baseline-ai-visibility task module", () => {
 
     expect(result.taskId).toBe("seo-baseline-ai-visibility");
     expect(result.status).toBe("Done");
-    expect(result.output.propertyName).toBe("The Nines, a Luxury Collection Hotel, Portland");
+    expect(result.output.propertyName).toBe("Example Hotel Portland");
     expect(result.output.slides.length).toBeGreaterThanOrEqual(7);
     expect(result.output.flagSummary.hasWarnings).toBe(true);
   });

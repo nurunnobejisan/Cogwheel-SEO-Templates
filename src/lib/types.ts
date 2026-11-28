@@ -1,6 +1,6 @@
 export type TemplateId = "A" | "B";
 
-export type RationaleStyle = "arrive" | "catbird" | "reitz";
+export type RationaleStyle = "concise" | "supporting" | "qualitative";
 
 export interface Client {
   id: string;

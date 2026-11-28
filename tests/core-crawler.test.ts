@@ -13,7 +13,7 @@ describe("core/crawler", () => {
   });
 
   it("validates public http/https URLs and normalizes missing scheme", () => {
-    expect(validateTargetUrl("thenines.com")).toBe("https://thenines.com/");
+    expect(validateTargetUrl("example-hotel.com")).toBe("https://example-hotel.com/");
     expect(validateTargetUrl("https://www.hilton.com/en/hotels/")).toBe("https://www.hilton.com/en/hotels/");
     expect(validateTargetUrl("")).toBe("");
   });

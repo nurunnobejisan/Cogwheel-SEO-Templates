@@ -31,7 +31,7 @@ export function classifyPageUrl(urlStr: string): { category: string; subCategory
       const slug = pathname.split("/").filter(Boolean).pop() || "overview";
       return { category: "Accommodations", subCategory: toTitleCase(slug.replace(/[-_]+/g, " ")) };
     }
-    if (pathname.includes("/dining") || pathname.includes("/restaurant") || pathname.includes("/departure") || pathname.includes("/urban-farmer")) {
+    if (pathname.includes("/dining") || pathname.includes("/restaurant") || pathname.includes("/departure") || pathname.includes("/steakhouse")) {
       const slug = pathname.split("/").filter(Boolean).pop() || "overview";
       return { category: "DINING", subCategory: toTitleCase(slug.replace(/[-_]+/g, " ")) };
     }
@@ -63,21 +63,21 @@ export function deriveTargetKeyword(urlStr: string, pageTitle: string): string {
     const pathname = new URL(urlStr).pathname.toLowerCase().replace(/\/+$/, "");
     if (!pathname || pathname === "") return "Downtown Portland Hotels";
 
-    // Known The Nines mapping matching reference template
+    // Known Example Hotel mapping matching reference template
     if (pathname.includes("one-bedroom-suite")) return "One Bedroom Suite Downtown Portland";
     if (pathname.includes("deluxe-room")) return "Deluxe Rooms Downtown Portland";
     if (pathname.includes("studio-suite")) return "Studio Hotel Suite Portland";
-    if (pathname.includes("the-nines-suite")) return "Luxury Suite Downtown Portland";
+    if (pathname.includes("signature-suite")) return "Luxury Suite Downtown Portland";
     if (pathname.includes("superior-room")) return "Superior Hotel Rooms Portland";
-    if (pathname.includes("meier-frank-suite")) return "Meier & Frank Historic Suite";
-    if (pathname.includes("departure")) return "Rooftop Restaurant In Portland: Departure";
-    if (pathname.includes("urban-farmer")) return "Steakhouse In Portland: Urban Farmer";
+    if (pathname.includes("historic-suite")) return "Historic Suite";
+    if (pathname.includes("departure")) return "Rooftop Restaurant In Portland";
+    if (pathname.includes("steakhouse")) return "Steakhouse In Portland: The Steakhouse";
     if (pathname.includes("in-room-dining")) return "Portland Luxury In-Room Dining";
-    if (pathname.includes("dining")) return "Downtown Portland Restaurants At The Nines";
+    if (pathname.includes("dining")) return "Downtown Portland Restaurants At Example Hotel";
     if (pathname.includes("experience-portland")) return "Things To Do In Downtown Portland";
     if (pathname.includes("amenities")) return "Downtown Portland Hotel Amenities";
     if (/(^|\/|-|_)art(\/|-|_|$)/.test(pathname)) return "Curated Hotel Art Collection Portland";
-    if (pathname.includes("the-history-of-the-nines")) return "Historic Meier & Frank Building Portland";
+    if (pathname.includes("hotel-history")) return "Historic Historic Building Portland";
     if (pathname.includes("offers-packages")) return "Portland Hotel Deals & Vacation Packages";
     if (pathname.includes("gather")) return "Downtown Portland Meeting & Event Spaces";
     if (pathname.includes("meetings")) return "Portland Conference & Meeting Venues";
@@ -85,8 +85,8 @@ export function deriveTargetKeyword(urlStr: string, pageTitle: string): string {
     if (pathname.includes("event-rfp-submission")) return "Portland Event Venue RFP Submission";
     if (pathname.includes("blogs")) return "Portland Travel Blog & Stories";
     if (pathname.includes("events-calendar")) return "Downtown Portland Events Calendar";
-    if (pathname.includes("frequently-asked-questions")) return "The Nines Portland Hotel FAQs";
-    if (pathname.includes("gallery")) return "The Nines Hotel Photo Gallery";
+    if (pathname.includes("frequently-asked-questions")) return "Example Hotel Portland Hotel FAQs";
+    if (pathname.includes("gallery")) return "Example Hotel Hotel Photo Gallery";
 
     // Fallback based on clean page title
     const cleanTitle = pageTitle
@@ -251,7 +251,7 @@ export function analyzeAndOptimizeHeadings(
     if (idx === 0 || (tag === "H1" && !headings.some((h) => h.optimizedLevel === "H1"))) {
       optimizedLevel = "H1";
       if (isHomePage) {
-        optimizedText = `${targetKeyword} | Dressed To The Nines`;
+        optimizedText = `${targetKeyword} | Dressed To Impress`;
       } else if (!optimizedText.toLowerCase().includes(targetKeyword.toLowerCase())) {
         optimizedText = `${toTitleCase(optimizedText)} | ${targetKeyword}`;
       }
@@ -292,7 +292,7 @@ export function analyzeAndOptimizeHeadings(
     if (headings.length > 0) {
       headings[0].optimizedLevel = "H1";
       headings[0].optimizedText = isHomePage
-        ? `${targetKeyword} | Dressed To The Nines`
+        ? `${targetKeyword} | Dressed To Impress`
         : `${targetKeyword} — ${toTitleCase(headings[0].originalText || "Overview")}`;
     }
   }

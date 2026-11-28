@@ -467,7 +467,7 @@ def crawl_target_website(
             sitemap_urls = sm_future.result()
             html, final_url = home_future.result()
 
-        # If target_url points to a specific property path on a multi-property domain (e.g. arrivehotels.com/hotels/memphis or marriott.com/.../mslbr-.../),
+        # If target_url points to a specific property path on a multi-property domain (e.g. example-hotel.com/hotels/memphis or marriott.com/.../mslbr-.../),
         # scope sitemap URLs to that property so other properties on the chain domain don't pollute services
         path_parts = [p for p in parsed.path.strip("/").split("/") if p and p not in ("en", "en-us", "hotels", "hotel", "overview")]
         if path_parts and len(sitemap_urls) > 30:
@@ -866,7 +866,7 @@ def is_brand_excluded(
                 if len(t) >= 4 and SequenceMatcher(None, t, brand_clean).ratio() >= 0.80:
                     return True
 
-    # 3. Exclude property-specific brand words, spaceless variants (e.g. 'thenines'), and typos (e.g. 'tiatro', 'treato')
+    # 3. Exclude property-specific brand words, spaceless variants (e.g. 'examplehotel'), and typos (e.g. 'tiatro', 'treato')
     for bw in prop_brand_words:
         if re.search(r"\b" + re.escape(bw) + r"\b", kw_clean):
             return True
@@ -910,8 +910,8 @@ def is_brand_excluded(
     if not (has_target_loc or has_near):
         return True
 
-    # 7. Reject unknown proper nouns (on-site restaurant client names like 'departure', 'urban farmer', 'nickel',
-    # building/venue names like 'meier & frank', 'fantinos', competitor names, or unrelated cities)
+    # 7. Reject unknown proper nouns (on-site restaurant client names like 'rooftop', 'steakhouse', 'grill',
+    # building/venue names like 'historic', 'grill', competitor names, or unrelated cities)
     if strict_vocab:
         allowed_vocab = HOSPITALITY_WORDS | GEO_DESCRIPTORS | CONNECTORS | target_locations
         check_tokens = tokens[:tokens.index("near")] if has_near else tokens

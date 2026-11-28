@@ -1272,7 +1272,7 @@ Examples:
   python3 outputs/site_image_audit.py https://site.com --size-threshold 150 --subdomains --resume
         """
     )
-    parser.add_argument("url", nargs="?", default="https://arrivehotels.com", help="Full website URL to audit")
+    parser.add_argument("url", nargs="?", default="https://example-hotel.com", help="Full website URL to audit")
     parser.add_argument("--max-pages", type=int, default=50, help="Maximum pages to crawl (default: 50)")
     parser.add_argument("--delay", type=float, default=0.15, help="Delay between page requests in seconds (default: 0.15)")
     parser.add_argument("--timeout", type=int, default=10, help="HTTP request timeout in seconds (default: 10)")

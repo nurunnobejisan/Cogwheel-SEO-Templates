@@ -783,8 +783,8 @@ def run_meta_optimizer(
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Automated SEO Studio Title & Meta Description Generator")
-    parser.add_argument("--url", default=None, help="Target website URL or domain (e.g. thenines.com)")
-    parser.add_argument("--domain", default=None, help="Target domain (e.g. thenines.com)")
+    parser.add_argument("--url", default=None, help="Target website URL or domain (e.g. example-hotel.com)")
+    parser.add_argument("--domain", default=None, help="Target domain (e.g. example-hotel.com)")
     parser.add_argument("--map-json", default=None, help="Path to site-keyword-map.json")
     parser.add_argument("--output-dir", default="output", help="Base output directory")
     args = parser.parse_args()

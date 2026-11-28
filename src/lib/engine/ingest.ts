@@ -122,7 +122,7 @@ export function ingestParsedFiles(
       continue;
     }
 
-    // OTA / booking sites & non-hotel noise terms (Catbird / Reitz audit)
+    // OTA / booking sites & non-hotel noise terms (legacy audit)
     const noise = OTA_AND_NOISE_TERMS.find((t) => containsPhrase(norm, t));
     if (noise) {
       dropped.push({

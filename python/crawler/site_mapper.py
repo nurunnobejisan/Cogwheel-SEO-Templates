@@ -349,7 +349,7 @@ class SiteMapper:
         if og_site_name and og_site_name.get("content"):
             self.brand_name = str(og_site_name.get("content") or "").strip()
         elif home_title:
-            # Common patterns: "The Nines | Luxury Hotel" or "Marriott - City Center"
+            # Common patterns: "Example Hotel | Luxury Hotel" or "Marriott - City Center"
             splitters = ["|", " - ", " – ", " — ", " • "]
             for sp in splitters:
                 if sp in home_title:

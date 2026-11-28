@@ -10,9 +10,9 @@ import {
 
 describe("MetaOptimizer TypeScript Bridge", () => {
   it("extracts clean domain hostname correctly", () => {
-    expect(extractDomain("https://thenines.com")).toBe("thenines.com");
-    expect(extractDomain("http://www.theoxfordhotel.com/rooms")).toBe("theoxfordhotel.com");
-    expect(extractDomain("thenines.com")).toBe("thenines.com");
+    expect(extractDomain("https://example-hotel.com")).toBe("example-hotel.com");
+    expect(extractDomain("http://www.example-hotel.com/rooms")).toBe("example-hotel.com");
+    expect(extractDomain("example-hotel.com")).toBe("example-hotel.com");
   });
 
   it("computes default deliverable paths", () => {

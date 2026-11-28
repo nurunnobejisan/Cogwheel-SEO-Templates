@@ -89,7 +89,7 @@ export function validateTargetUrl(rawUrl: string): string {
 
   const host = parsed.hostname.toLowerCase().replace(/^\[|\]$/g, "");
   if (!host || (!host.includes(".") && net.isIP(host) === 0)) {
-    throw new UrlValidationError("Please enter a valid Target Website domain (e.g. https://thenines.com/).");
+    throw new UrlValidationError("Please enter a valid Target Website domain (e.g. https://example-hotel.com/).");
   }
   if (
     host === "localhost" ||

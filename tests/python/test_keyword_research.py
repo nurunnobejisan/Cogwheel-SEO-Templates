@@ -17,9 +17,9 @@ class TestSiteMapperArchetypes:
     """Verify archetype classification logic."""
 
     def test_classify_archetypes(self):
-        mapper = SiteMapper("https://grandpalacehotel.com", max_pages=10)
+        mapper = SiteMapper("https://example-hotel.com", max_pages=10)
 
-        assert mapper._classify_page_archetype("/", "Grand Palace Hotel", "Welcome", "") == "home"
+        assert mapper._classify_page_archetype("/", "Example Hotel Hotel", "Welcome", "") == "home"
         assert mapper._classify_page_archetype("/rooms", "Guest Rooms", "Our Rooms", "") == "category_overview"
         assert mapper._classify_page_archetype("/rooms/deluxe-king", "Deluxe King Room", "Deluxe King", "") == "product_or_room"
         assert mapper._classify_page_archetype("/amenities/spa", "Luxury Spa", "Spa & Wellness", "") == "service_or_amenity"
@@ -55,17 +55,17 @@ class TestKeywordResearchEngine:
             os.remove(temp_path)
 
     def test_seed_expansion_fallback(self):
-        engine = KeywordResearchEngine("https://grandpalacehotel.com")
+        engine = KeywordResearchEngine("https://example-hotel.com")
         engine.inventory = SiteInventory(
-            domain="grandpalacehotel.com",
-            target_url="https://grandpalacehotel.com",
-            brand_name="Grand Palace Hotel",
+            domain="example-hotel.com",
+            target_url="https://example-hotel.com",
+            brand_name="Example Hotel Hotel",
             primary_location="Charleston, SC",
             core_offerings=["Oceanfront Suites", "Rooftop Dining"],
             pages=[
-                DiscoveredPage(url="https://grandpalacehotel.com/", path="/", title="Home", archetype="home"),
-                DiscoveredPage(url="https://grandpalacehotel.com/rooms", path="/rooms", title="Rooms", archetype="category_overview"),
-                DiscoveredPage(url="https://grandpalacehotel.com/dining", path="/dining", title="Dining", archetype="dining_or_outlet"),
+                DiscoveredPage(url="https://example-hotel.com/", path="/", title="Home", archetype="home"),
+                DiscoveredPage(url="https://example-hotel.com/rooms", path="/rooms", title="Rooms", archetype="category_overview"),
+                DiscoveredPage(url="https://example-hotel.com/dining", path="/dining", title="Dining", archetype="dining_or_outlet"),
             ],
             total_pages_found=3,
         )
@@ -81,20 +81,20 @@ class TestKeywordResearchEngine:
     def test_de_cannibalization_and_output(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             engine = KeywordResearchEngine(
-                "https://grandpalacehotel.com",
+                "https://example-hotel.com",
                 output_base_dir=tmp_dir,
             )
             engine.inventory = SiteInventory(
-                domain="grandpalacehotel.com",
-                target_url="https://grandpalacehotel.com",
-                brand_name="Grand Palace Hotel",
+                domain="example-hotel.com",
+                target_url="https://example-hotel.com",
+                brand_name="Example Hotel Hotel",
                 primary_location="Charleston, SC",
                 core_offerings=["Luxury Suites", "Fine Dining"],
                 pages=[
-                    DiscoveredPage(url="https://grandpalacehotel.com/", path="/", title="Grand Palace Hotel Home", archetype="home"),
-                    DiscoveredPage(url="https://grandpalacehotel.com/accommodations", path="/accommodations", title="Suites & Rooms", archetype="category_overview"),
-                    DiscoveredPage(url="https://grandpalacehotel.com/dining", path="/dining", title="Rooftop Restaurant & Bar", archetype="dining_or_outlet"),
-                    DiscoveredPage(url="https://grandpalacehotel.com/weddings", path="/weddings", title="Weddings & Receptions", archetype="events_or_offers"),
+                    DiscoveredPage(url="https://example-hotel.com/", path="/", title="Example Hotel Hotel Home", archetype="home"),
+                    DiscoveredPage(url="https://example-hotel.com/accommodations", path="/accommodations", title="Suites & Rooms", archetype="category_overview"),
+                    DiscoveredPage(url="https://example-hotel.com/dining", path="/dining", title="Rooftop Restaurant & Bar", archetype="dining_or_outlet"),
+                    DiscoveredPage(url="https://example-hotel.com/weddings", path="/weddings", title="Weddings & Receptions", archetype="events_or_offers"),
                 ],
                 total_pages_found=4,
             )
@@ -128,7 +128,7 @@ class TestKeywordResearchEngine:
             import json
             with open(json_path, encoding="utf-8") as jf:
                 data = json.load(jf)
-                assert data["domain"] == "grandpalacehotel.com"
+                assert data["domain"] == "example-hotel.com"
                 assert len(data["pages"]) == 4
                 assert "summary" in data
                 assert data["summary"]["high_opportunity_threshold_kd"] == 45

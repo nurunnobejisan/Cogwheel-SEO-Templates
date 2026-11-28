@@ -179,7 +179,7 @@ export function PropertySetup({
                 template === "A" ? "border-brand bg-brand-50 font-semibold text-slate-900 shadow-sm" : "border-slate-200 hover:border-brand/60"
               }`}
             >
-              <div className="font-display">Standard Catbird / Arrive (Format A)</div>
+              <div className="font-display">Standard Format A</div>
               <div className="text-caption font-normal text-slate-500">2-col table (Page | Keyword) + Why did we do this? bullets</div>
             </button>
             <button
@@ -189,31 +189,31 @@ export function PropertySetup({
                 template === "B" ? "border-brand bg-brand-50 font-semibold text-slate-900 shadow-sm" : "border-slate-200 hover:border-brand/60"
               }`}
             >
-              <div className="font-display">SEO Studio Reitz Union (Format B)</div>
+              <div className="font-display">Extended Format B</div>
               <div className="text-caption font-normal text-slate-500">Current Sitemap + 3-col table (Primary &amp; Secondary) + Comments</div>
             </button>
           </div>
         </div>
         <div className="md:col-span-6">
-          <label className="label">Google Doc Template URL or ID (optional — defaults to Catbird/Hilton Master)</label>
+          <label className="label">Google Doc Template URL or ID (optional — defaults to the configured master template)</label>
           <div className="grid grid-cols-1 gap-4 md:grid-cols-6">
             <div className="md:col-span-3">
               <input
                 className="input"
                 value={property.templateDocUrl ?? ""}
                 onChange={(e) => set("templateDocUrl", e.target.value)}
-                placeholder="https://docs.google.com/document/d/1TIGp2n1UAfz_UKGyJl4ZK-jdcITxsjO6EgqRvy1CVSw/edit"
+                placeholder="https://docs.google.com/document/d/YOUR_TEMPLATE_ID/edit"
               />
             </div>
             <div className="md:col-span-2">
               <select
                 className="input"
-                value={property.rationaleStyle ?? (template === "B" ? "reitz" : "catbird")}
+                value={property.rationaleStyle ?? (template === "B" ? "qualitative" : "supporting")}
                 onChange={(e) => set("rationaleStyle", e.target.value as Property["rationaleStyle"])}
               >
-                <option value="catbird">Rationale: Catbird (with supporting KWs)</option>
-                <option value="arrive">Rationale: Arrive (short &amp; direct)</option>
-                <option value="reitz">Rationale: Reitz / SEO Studio (qualitative)</option>
+                <option value="supporting">Rationale: Supporting keywords</option>
+                <option value="concise">Rationale: Concise &amp; direct</option>
+                <option value="qualitative">Rationale: Qualitative</option>
               </select>
             </div>
             <label className="flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-body font-medium text-slate-700 md:col-span-1">

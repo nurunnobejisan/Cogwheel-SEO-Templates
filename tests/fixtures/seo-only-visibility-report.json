@@ -1,16 +1,16 @@
 {
   "property": {
-    "name": "The Nines, a Luxury Collection Hotel, Portland",
+    "name": "Example Hotel Portland",
     "brand": "Luxury Collection",
     "city": "Portland",
     "state": "OR"
   },
-  "targetUrl": "https://thenines.com/",
+  "targetUrl": "https://example-hotel.com/",
   "templateFileName": "Monthly SEO Visibility Analysis - TEMPLATE.pptx",
   "xlsxFileName": "organic-positions.xlsx",
   "downloadName": "seo_visibility_report_The_Nines.pptx",
   "summary": {
-    "property_name": "The Nines Portland",
+    "property_name": "Example Hotel Portland",
     "slide_count": 5,
     "is_brand_hosted": false,
     "pdf_included": false,

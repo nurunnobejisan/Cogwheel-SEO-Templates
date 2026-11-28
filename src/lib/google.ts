@@ -348,7 +348,7 @@ export async function createKeywordReportDoc(input: KeywordDocInput): Promise<Ke
   const templateId =
     extractGoogleDocId(input.property.templateDocUrl) ??
     (input.template === "A"
-      ? process.env.GOOGLE_TEMPLATE_DOC_ID_A || "1TIGp2n1UAfz_UKGyJl4ZK-jdcITxsjO6EgqRvy1CVSw"
+      ? process.env.GOOGLE_TEMPLATE_DOC_ID_A
       : process.env.GOOGLE_TEMPLATE_DOC_ID_B);
 
   const docTitle = `${input.property.name} — Keyword Report (Format ${input.template})`;

@@ -110,7 +110,7 @@ export async function GET(req: Request) {
 
     if (!rawUrl) {
       return NextResponse.json(
-        { error: "Query parameter 'url' is required (e.g. ?url=https://thenines.com)" },
+        { error: "Query parameter 'url' is required (e.g. ?url=https://example-hotel.com)" },
         { status: 400 }
       );
     }

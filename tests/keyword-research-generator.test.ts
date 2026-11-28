@@ -8,7 +8,7 @@ import {
 
 describe("Keyword Research & Page-Mapping Engine (TypeScript Bridge)", () => {
   it("extracts clean domain from arbitrary URL formats", () => {
-    expect(extractDomainFromUrl("https://www.thenines.com/rooms/")).toBe("thenines.com");
+    expect(extractDomainFromUrl("https://www.example-hotel.com/rooms/")).toBe("example-hotel.com");
     expect(extractDomainFromUrl("http://examplehotel.com/amenities")).toBe("examplehotel.com");
     expect(extractDomainFromUrl("marriott.com/hotel/123")).toBe("marriott.com");
     expect(extractDomainFromUrl("https://curio.hilton.com")).toBe("curio.hilton.com");

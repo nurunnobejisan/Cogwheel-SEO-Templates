@@ -1,6 +1,6 @@
 import { TEMPLATES } from "@/config/templates";
 import type { RationaleEntry } from "@/core/google";
-import type { MatrixRow } from "@/lib/types";
+import type { MatrixRow, RationaleStyle } from "@/lib/types";
 import type { ResolvedKeywordRun } from "./schema";
 
 export function buildRationalePrompt(
@@ -8,17 +8,17 @@ export function buildRationalePrompt(
   feedback?: string[],
 ): { system: string; prompt: string } {
   const tmpl = TEMPLATES[run.template];
-  const rStyle = run.property.rationaleStyle ?? (run.template === "B" ? "reitz" : "catbird");
-  const styleGuide: Record<"arrive" | "catbird" | "reitz", string> = {
-    arrive: `Arrive style: Write 1-2 crisp, direct sentences per page for "${tmpl.rationaleHeading}", citing the primary keyword, SV, KD, and page alignment.`,
-    catbird: `Catbird style: Write 2-3 sentences per page for "${tmpl.rationaleHeading}" citing primary keyword, SV, KD, and traffic potential, PLUS a final sentence starting with "Supporting it with related ..." when relevant.`,
-    reitz: `SEO Studio / Reitz style: Write a structured 3-sentence qualitative rationale for "${tmpl.rationaleHeading}": (1) Cite the primary keyword with its exact monthly search volume and KD; (2) Explain strategic alignment with the property's on-site offering (e.g. beachfront access, pet policy, wedding capacity, metro feeder demand); (3) Provide specific on-page placement guidance (meta title, H1/H2 header, and body copy integration).`,
+  const rStyle = run.property.rationaleStyle ?? (run.template === "B" ? "qualitative" : "supporting");
+  const styleGuide: Record<RationaleStyle, string> = {
+    concise: `Concise style: Write 1-2 crisp, direct sentences per page for "${tmpl.rationaleHeading}", citing the primary keyword, SV, KD, and page alignment.`,
+    supporting: `Supporting style: Write 2-3 sentences per page for "${tmpl.rationaleHeading}" citing primary keyword, SV, KD, and traffic potential, PLUS a final sentence starting with "Supporting it with related ..." when relevant.`,
+    qualitative: `Qualitative style: Write a structured 3-sentence qualitative rationale for "${tmpl.rationaleHeading}": (1) Cite the primary keyword with its exact monthly search volume and KD; (2) Explain strategic alignment with the property's on-site offering (e.g. beachfront access, pet policy, wedding capacity, metro feeder demand); (3) Provide specific on-page placement guidance (meta title, H1/H2 header, and body copy integration).`,
   };
 
   const system = [
     "You are an expert hospitality SEO strategist writing keyword recommendation rationales for hotel and venue properties.",
     styleGuide[rStyle],
-    "SEO STUDIO METHODOLOGY RULES:",
+    "SEO & GEO STUDIO METHODOLOGY RULES:",
     "- City Geo-Anchoring: Prioritize city and neighborhood-level intent over state-wide generic terms.",
     "- Low-KD Velocity: For secondary and amenity pages, emphasize low Keyword Difficulty (< 45) to ensure rapid organic ranking velocity.",
     "- Coastal & Beachfront: For coastal properties, highlight dedicated beachfront, oceanfront, and ocean view demand alignment.",

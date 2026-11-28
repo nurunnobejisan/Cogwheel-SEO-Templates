@@ -5,9 +5,9 @@ import { analyzeGeoSeo, classifyIntent, isBrandedKeyword } from "@/lib/engine/ge
 import type { KeywordRecord, MatrixRow, PoolEntry, Property, SitemapPage } from "@/lib/types";
 
 const property: Property = {
-  name: "Catbird Hotel Denver",
-  url: "https://www.catbirdhotel.com",
-  brand: "Catbird",
+  name: "Example Hotel Denver",
+  url: "https://www.example-hotel.com",
+  brand: "Example Hotel",
   city: "Denver",
   state: "CO",
   allowedLocations: [],
@@ -21,13 +21,13 @@ describe("GEO/SEO analyzer & Document Quality Check", () => {
     expect(classifyIntent("book denver hotel room")).toBe("transactional");
     expect(classifyIntent("hotel near ball arena denver")).toBe("local");
     expect(classifyIntent("what is the best boutique hotel in denver")).toBe("informational");
-    expect(isBrandedKeyword("catbird hotel denver", property)).toBe(true);
+    expect(isBrandedKeyword("example hotel denver", property)).toBe(true);
     expect(isBrandedKeyword("boutique hotel denver", property)).toBe(false);
   });
 
   it("computes GEO/SEO insights and detects cannibalization warnings", () => {
     const keywords: KeywordRecord[] = [
-      { id: "kw:catbird denver", keyword: "catbird denver", volume: 1200, kd: 20, cpc: null, intent: null, sourceGroup: "Brand", sourceFiles: ["a.csv"], flags: [] },
+      { id: "kw:example hotel denver", keyword: "example hotel denver", volume: 1200, kd: 20, cpc: null, intent: null, sourceGroup: "Brand", sourceFiles: ["a.csv"], flags: [] },
       { id: "kw:how to get to ball arena from downtown", keyword: "how to get to ball arena from downtown", volume: 320, kd: 15, cpc: null, intent: null, sourceGroup: "Local", sourceFiles: ["a.csv"], flags: [] },
       { id: "kw:denver boutique hotel", keyword: "denver boutique hotel", volume: 2400, kd: 34, cpc: null, intent: null, sourceGroup: "Home", sourceFiles: ["a.csv"], flags: [] },
     ];

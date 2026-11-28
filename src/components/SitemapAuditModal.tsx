@@ -34,7 +34,7 @@ interface Props {
 
 export function SitemapAuditModal({ defaultUrl = "", onClose }: Props) {
   const [sitemapInput, setSitemapInput] = useState(
-    defaultUrl ? `${defaultUrl.replace(/\/+$/, "")}/sitemap.xml` : "https://www.arrivehotels.com/sitemap.xml"
+    defaultUrl ? `${defaultUrl.replace(/\/+$/, "")}/sitemap.xml` : "https://www.example-hotel.com/sitemap.xml"
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -126,18 +126,18 @@ export function SitemapAuditModal({ defaultUrl = "", onClose }: Props) {
         <button
           type="button"
           onClick={() => {
-            setSitemapInput("https://www.arrivehotels.com/sitemap.xml");
-            handleAudit("https://www.arrivehotels.com/sitemap.xml");
+            setSitemapInput("https://www.example-hotel.com/sitemap.xml");
+            handleAudit("https://www.example-hotel.com/sitemap.xml");
           }}
           className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-purple-700 hover:bg-purple-50 dark:border-slate-700 dark:bg-slate-800 dark:text-purple-300"
         >
-          Arrive Hotels
+          Example Hotels
         </button>
         <button
           type="button"
           onClick={() => {
-            setSitemapInput("https://www.thecurtis.com/sitemap.xml");
-            handleAudit("https://www.thecurtis.com/sitemap.xml");
+            setSitemapInput("https://www.example-boutique.com/sitemap.xml");
+            handleAudit("https://www.example-boutique.com/sitemap.xml");
           }}
           className="rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-purple-700 hover:bg-purple-50 dark:border-slate-700 dark:bg-slate-800 dark:text-purple-300"
         >

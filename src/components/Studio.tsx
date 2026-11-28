@@ -43,8 +43,8 @@ const EMPTY_PROPERTY: Property = {
   state: "",
   notes: "",
   petFriendly: true,
-  rationaleStyle: "catbird",
-  templateDocUrl: "https://docs.google.com/document/d/1TIGp2n1UAfz_UKGyJl4ZK-jdcITxsjO6EgqRvy1CVSw/edit?usp=sharing",
+  rationaleStyle: "supporting",
+  templateDocUrl: "",
   allowedLocations: [],
   excludedLocations: [],
 };

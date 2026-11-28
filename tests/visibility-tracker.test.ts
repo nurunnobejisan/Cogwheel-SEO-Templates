@@ -62,9 +62,9 @@ describe("buyer prompt generator", () => {
   });
 
   it("derives a brand label from the domain when none is supplied", () => {
-    const set = generatePromptSet({ targetUrl: "https://www.catbirdhotel.com", mode: "hotel" });
-    expect(set.brand.toLowerCase()).toBe("catbirdhotel");
-    expect(set.domain).toBe("catbirdhotel.com");
+    const set = generatePromptSet({ targetUrl: "https://www.example-hotel.com", mode: "hotel" });
+    expect(set.brand.toLowerCase()).toBe("example-hotel");
+    expect(set.domain).toBe("example-hotel.com");
   });
 });
 

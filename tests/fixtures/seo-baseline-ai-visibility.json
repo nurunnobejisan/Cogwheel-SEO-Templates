@@ -1,7 +1,7 @@
 {
   "property": {
-    "name": "The Nines, a Luxury Collection Hotel, Portland",
-    "url": "https://thenines.com/",
+    "name": "Example Hotel Portland",
+    "url": "https://example-hotel.com/",
     "brand": "Luxury Collection",
     "city": "Portland",
     "state": "OR"
@@ -31,7 +31,7 @@
     "brandMentions": 19,
     "pagesCited": 11,
     "shareOfVoice": 28,
-    "topCitedDomains": ["thenines.com", "tripadvisor.com", "marriott.com", "reddit.com"]
+    "topCitedDomains": ["example-hotel.com", "tripadvisor.com", "marriott.com", "reddit.com"]
   }
 }
 

@@ -73,8 +73,8 @@ export async function listGscProperties(): Promise<GscSite[]> {
     // No credentials → no properties. Simulated data is opt-in only.
     return isSimulatedDataAllowed()
       ? [
-          { siteUrl: "sc-domain:thenines.com", permissionLevel: "siteOwner" },
-          { siteUrl: "https://thenines.com/", permissionLevel: "siteOwner" },
+          { siteUrl: "sc-domain:example-hotel.com", permissionLevel: "siteOwner" },
+          { siteUrl: "https://example-hotel.com/", permissionLevel: "siteOwner" },
         ]
       : [];
   }
@@ -450,34 +450,34 @@ function generateSimulatedGscRows(query: GscSearchAnalyticsQuery): GscSearchRow[
 
   if (isQueryDim && isPageDim) {
     return [
-      { keys: ["downtown portland hotels", "https://thenines.com/"], clicks: 245, impressions: 4200, ctr: 0.0583, position: 3.2 },
-      { keys: ["downtown portland hotels", "https://thenines.com/rooms/"], clicks: 88, impressions: 2100, ctr: 0.0419, position: 6.8 },
-      { keys: ["the nines portland", "https://thenines.com/"], clicks: 680, impressions: 3200, ctr: 0.2125, position: 1.1 },
-      { keys: ["departure restaurant portland", "https://thenines.com/dining/departure/"], clicks: 312, impressions: 2850, ctr: 0.1095, position: 1.4 },
-      { keys: ["departure restaurant portland", "https://thenines.com/dining/"], clicks: 42, impressions: 980, ctr: 0.0428, position: 7.2 },
-      { keys: ["luxury hotels in portland oregon", "https://thenines.com/"], clicks: 145, impressions: 3800, ctr: 0.0381, position: 4.6 },
-      { keys: ["urban farmer portland", "https://thenines.com/dining/urban-farmer/"], clicks: 220, impressions: 2150, ctr: 0.1023, position: 2.1 },
+      { keys: ["downtown portland hotels", "https://example-hotel.com/"], clicks: 245, impressions: 4200, ctr: 0.0583, position: 3.2 },
+      { keys: ["downtown portland hotels", "https://example-hotel.com/rooms/"], clicks: 88, impressions: 2100, ctr: 0.0419, position: 6.8 },
+      { keys: ["example hotel portland", "https://example-hotel.com/"], clicks: 680, impressions: 3200, ctr: 0.2125, position: 1.1 },
+      { keys: ["rooftop restaurant portland", "https://example-hotel.com/dining/rooftop/"], clicks: 312, impressions: 2850, ctr: 0.1095, position: 1.4 },
+      { keys: ["rooftop restaurant portland", "https://example-hotel.com/dining/"], clicks: 42, impressions: 980, ctr: 0.0428, position: 7.2 },
+      { keys: ["luxury hotels in portland oregon", "https://example-hotel.com/"], clicks: 145, impressions: 3800, ctr: 0.0381, position: 4.6 },
+      { keys: ["steakhouse portland", "https://example-hotel.com/dining/steakhouse/"], clicks: 220, impressions: 2150, ctr: 0.1023, position: 2.1 },
     ];
   }
 
   if (isPageDim) {
     return [
-      { keys: ["https://thenines.com/"], clicks: 1250, impressions: 18500, ctr: 0.0675, position: 2.8 },
-      { keys: ["https://thenines.com/rooms/"], clicks: 420, impressions: 6800, ctr: 0.0617, position: 4.2 },
-      { keys: ["https://thenines.com/dining/departure/"], clicks: 385, impressions: 3900, ctr: 0.0987, position: 1.6 },
-      { keys: ["https://thenines.com/dining/urban-farmer/"], clicks: 260, impressions: 3100, ctr: 0.0838, position: 2.3 },
-      { keys: ["https://thenines.com/meetings-events/"], clicks: 140, impressions: 2400, ctr: 0.0583, position: 5.1 },
-      { keys: ["https://thenines.com/offers-packages/"], clicks: 95, impressions: 1800, ctr: 0.0527, position: 6.4 },
+      { keys: ["https://example-hotel.com/"], clicks: 1250, impressions: 18500, ctr: 0.0675, position: 2.8 },
+      { keys: ["https://example-hotel.com/rooms/"], clicks: 420, impressions: 6800, ctr: 0.0617, position: 4.2 },
+      { keys: ["https://example-hotel.com/dining/rooftop/"], clicks: 385, impressions: 3900, ctr: 0.0987, position: 1.6 },
+      { keys: ["https://example-hotel.com/dining/steakhouse/"], clicks: 260, impressions: 3100, ctr: 0.0838, position: 2.3 },
+      { keys: ["https://example-hotel.com/meetings-events/"], clicks: 140, impressions: 2400, ctr: 0.0583, position: 5.1 },
+      { keys: ["https://example-hotel.com/offers-packages/"], clicks: 95, impressions: 1800, ctr: 0.0527, position: 6.4 },
     ];
   }
 
   return [
-    { keys: ["the nines portland"], clicks: 680, impressions: 3200, ctr: 0.2125, position: 1.1 },
+    { keys: ["example hotel portland"], clicks: 680, impressions: 3200, ctr: 0.2125, position: 1.1 },
     { keys: ["downtown portland hotels"], clicks: 333, impressions: 6300, ctr: 0.0528, position: 3.8 },
-    { keys: ["departure restaurant portland"], clicks: 354, impressions: 3830, ctr: 0.0924, position: 1.8 },
-    { keys: ["urban farmer steakhouse portland"], clicks: 220, impressions: 2150, ctr: 0.1023, position: 2.1 },
+    { keys: ["rooftop restaurant portland"], clicks: 354, impressions: 3830, ctr: 0.0924, position: 1.8 },
+    { keys: ["steakhouse portland"], clicks: 220, impressions: 2150, ctr: 0.1023, position: 2.1 },
     { keys: ["luxury hotel suites downtown portland"], clicks: 165, impressions: 2850, ctr: 0.0578, position: 3.4 },
-    { keys: ["meier & frank building hotel"], clicks: 84, impressions: 1200, ctr: 0.0700, position: 1.5 },
+    { keys: ["historic building hotel"], clicks: 84, impressions: 1200, ctr: 0.0700, position: 1.5 },
   ];
 }
 

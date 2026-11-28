@@ -14,35 +14,35 @@ import type {
   HeadingAuditSummary,
 } from "../src/core/heading-audit/types.ts";
 
-describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
+describe("Heading Structure Optimization Audit Engine (Example Hotel)", () => {
   it("classifies hotel page categories and primary target keywords accurately", () => {
-    assert.strictEqual(classifyPageUrl("https://thenines.com/").category, "HOME PAGE");
-    assert.strictEqual(classifyPageUrl("https://thenines.com/rooms/superior/").category, "Accommodations");
-    assert.strictEqual(classifyPageUrl("https://thenines.com/dining/departure/").category, "DINING");
-    assert.strictEqual(classifyPageUrl("https://thenines.com/meetings-events/").category, "MEETING & EVENTS");
-    assert.strictEqual(classifyPageUrl("https://thenines.com/explore-portland/").category, "General Pages");
+    assert.strictEqual(classifyPageUrl("https://example-hotel.com/").category, "HOME PAGE");
+    assert.strictEqual(classifyPageUrl("https://example-hotel.com/rooms/superior/").category, "Accommodations");
+    assert.strictEqual(classifyPageUrl("https://example-hotel.com/dining/rooftop/").category, "DINING");
+    assert.strictEqual(classifyPageUrl("https://example-hotel.com/meetings-events/").category, "MEETING & EVENTS");
+    assert.strictEqual(classifyPageUrl("https://example-hotel.com/explore-portland/").category, "General Pages");
 
-    const homeKw = deriveTargetKeyword("https://thenines.com/", "The Nines Hotel Downtown Portland");
+    const homeKw = deriveTargetKeyword("https://example-hotel.com/", "Example Hotel Hotel Downtown Portland");
     assert.strictEqual(homeKw, "Downtown Portland Hotels");
 
     const roomKw = deriveTargetKeyword(
-      "https://thenines.com/rooms/one-bedroom-suite/",
-      "One Bedroom Suite | The Nines"
+      "https://example-hotel.com/rooms/one-bedroom-suite/",
+      "One Bedroom Suite | Example Hotel"
     );
     assert.strictEqual(roomKw, "One Bedroom Suite Downtown Portland");
 
     const diningKw = deriveTargetKeyword(
-      "https://thenines.com/dining/departure-restaurant/",
-      "Departure Restaurant & Lounge"
+      "https://example-hotel.com/dining/rooftop-restaurant/",
+      "Rooftop Restaurant & Lounge"
     );
-    assert.strictEqual(diningKw, "Rooftop Restaurant In Portland: Departure");
+    assert.strictEqual(diningKw, "Rooftop Restaurant In Portland");
   });
 
   it("extracts headings in document order and identifies unrendered JS templates", () => {
     const mockHtml = `
       <!DOCTYPE html>
       <html>
-        <head><title>The Nines Luxury Hotel Portland</title></head>
+        <head><title>Example Hotel Luxury Hotel Portland</title></head>
         <body>
           <header>
             <div class="booking-widget">
@@ -50,13 +50,13 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
             </div>
           </header>
           <main>
-            <h1>The Nines, a Luxury Collection Hotel, Portland</h1>
+            <h1>Example Hotel Portland</h1>
             <p>Welcome to our historic downtown destination.</p>
             <h2>'+page.title+'</h2>
-            <h2>ACCOMMODATIONS AT THE NINES</h2>
+            <h2>ACCOMMODATIONS AT EXAMPLE HOTEL</h2>
             <h4>DELUXE ROOMS</h4>
             <h2>DINING EXPERIENCES</h2>
-            <h3>Urban Farmer Steakhouse</h3>
+            <h3>The Steakhouse</h3>
             <h2></h2>
           </main>
         </body>
@@ -72,7 +72,7 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
 
     // 2. Main H1
     assert.strictEqual(rawHeadings[1].tag, "H1");
-    assert.ok(rawHeadings[1].text.includes("The Nines"));
+    assert.ok(rawHeadings[1].text.includes("Example Hotel"));
 
     // 3. Template placeholder
     assert.strictEqual(rawHeadings[2].text, "'+page.title+'");
@@ -84,7 +84,7 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
   it("analyzes heading hierarchy and flags deterministic issues", () => {
     const rawHeadings = [
       { tag: "H3" as const, text: "Check Availability", position: 1 },
-      { tag: "H1" as const, text: "The Nines Luxury Hotel", position: 2 },
+      { tag: "H1" as const, text: "Example Hotel Luxury Hotel", position: 2 },
       { tag: "H2" as const, text: "'+page.title+'", position: 3 },
       { tag: "H2" as const, text: "LUXURY ROOMS AND SUITES", position: 4 },
       { tag: "H4" as const, text: "Presidential Suite", position: 5 }, // Skipped level (H2 -> H4)
@@ -93,8 +93,8 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
 
     const analysis = analyzeAndOptimizeHeadings(
       rawHeadings,
-      "https://thenines.com/rooms/",
-      "Accommodations - The Nines Hotel"
+      "https://example-hotel.com/rooms/",
+      "Accommodations - Example Hotel Hotel"
     );
 
     assert.strictEqual(analysis.h1Count, 2);
@@ -116,10 +116,10 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
     assert.strictEqual(secondH1.optimizedLevel, "H2");
   });
 
-  it("generates 3-tab OpenXML workbook matching The Nines 6-column reference layout", () => {
+  it("generates 3-tab OpenXML workbook matching the 6-column reference layout", () => {
     const mockSummary: HeadingAuditSummary = {
-      websiteUrl: "https://thenines.com/",
-      origin: "https://thenines.com",
+      websiteUrl: "https://example-hotel.com/",
+      origin: "https://example-hotel.com",
       auditedAt: new Date().toISOString(),
       durationMs: 1250,
       maxPagesLimit: 50,
@@ -153,8 +153,8 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
 
     const mockPages: PageHeadingAudit[] = [
       {
-        pageUrl: "https://thenines.com/",
-        pageTitle: "The Nines Luxury Hotel Portland",
+        pageUrl: "https://example-hotel.com/",
+        pageTitle: "Example Hotel Luxury Hotel Portland",
         pageStatus: 200,
         category: "HOME PAGE",
         subCategory: "Home",
@@ -179,10 +179,10 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
           },
           {
             id: "hdg-2",
-            originalText: "The Nines Hotel Downtown Portland",
+            originalText: "Example Hotel Hotel Downtown Portland",
             tag: "H1",
             position: 2,
-            optimizedText: "Downtown Portland Hotels | Dressed To The Nines",
+            optimizedText: "Downtown Portland Hotels | Dressed To Impress",
             optimizedLevel: "H1",
             isDecorativeOrWidget: false,
             issues: [],
@@ -200,12 +200,12 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
         ],
       },
       {
-        pageUrl: "https://thenines.com/dining/departure/",
-        pageTitle: "Departure Restaurant & Lounge",
+        pageUrl: "https://example-hotel.com/dining/rooftop/",
+        pageTitle: "Rooftop Restaurant & Lounge",
         pageStatus: 200,
         category: "DINING",
-        subCategory: "Departure",
-        targetKeyword: "Rooftop Restaurant In Portland: Departure",
+        subCategory: "Rooftop",
+        targetKeyword: "Rooftop Restaurant In Portland",
         h1Count: 1,
         h2Count: 1,
         h3Count: 0,
@@ -216,10 +216,10 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
         headings: [
           {
             id: "hdg-1",
-            originalText: "DEPARTURE RESTAURANT",
+            originalText: "ROOFTOP RESTAURANT",
             tag: "H1",
             position: 1,
-            optimizedText: "Rooftop Restaurant In Portland: Departure",
+            optimizedText: "Rooftop Restaurant In Portland",
             optimizedLevel: "H1",
             isDecorativeOrWidget: false,
             issues: [{ type: "all-caps-shouting", label: "All-Caps Shouting", description: "Convert to Title Case", severity: "low" }],
@@ -241,7 +241,7 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
     const { buffer, filename } = generateHeadingAuditWorkbook(mockSummary, mockPages);
 
     assert.ok(buffer.length > 0);
-    assert.ok(filename.includes("heading-structure-audit-thenines_com"));
+    assert.ok(filename.includes("heading-structure-audit-example_hotel_com"));
 
     // Parse workbook with xlsx to inspect sheets and columns
     const wb = XLSX.read(buffer, { type: "buffer" });
@@ -277,7 +277,7 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
     const summarySheet = wb.Sheets["Audit Summary"];
     const summaryRows = XLSX.utils.sheet_to_json<string[]>(summarySheet, { header: 1 });
     assert.ok(
-      summaryRows.some((r) => r[0] === "Audited Website URL:" && r[1] === "https://thenines.com/"),
+      summaryRows.some((r) => r[0] === "Audited Website URL:" && r[1] === "https://example-hotel.com/"),
       "Summary sheet should contain audited URL"
     );
     assert.ok(
@@ -294,7 +294,7 @@ describe("Heading Structure Optimization Audit Engine (The Nines)", () => {
   });
 
   it("formats title case accurately without mangling Roman numerals or contractions", () => {
-    assert.strictEqual(toTitleCase("the nines hotel"), "The Nines Hotel");
+    assert.strictEqual(toTitleCase("example hotel hotel"), "Example Hotel Hotel");
     assert.strictEqual(toTitleCase("ROOFTOP RESTAURANT AND LOUNGE"), "Rooftop Restaurant and Lounge");
     assert.strictEqual(toTitleCase("DELUXE ROOM WITH KING BED"), "Deluxe Room with King Bed");
     assert.strictEqual(toTitleCase("SUITE LEVEL II"), "Suite Level II");

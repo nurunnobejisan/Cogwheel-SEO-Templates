@@ -41,38 +41,38 @@ class TestImageOptimizationRules:
             assert not ImageOptimizer.is_raw_or_hash_name(f), f"Expected {f} to NOT be detected as raw filename"
 
     def test_alt_text_length_and_filler_removal(self):
-        optimizer = ImageOptimizer("https://thenines.com")
-        optimizer.brand_name = "The Nines"
+        optimizer = ImageOptimizer("https://example-hotel.com")
+        optimizer.brand_name = "Example Hotel"
         optimizer.location = "Portland, OR"
 
         # Case 1: Existing alt with filler words like 'Photo of'
         alt1, subject1 = optimizer.generate_optimized_alt(
-            raw_url="https://thenines.com/images/lobby.jpg",
+            raw_url="https://example-hotel.com/images/lobby.jpg",
             existing_alt="Photo of our beautiful modern lobby artwork",
             section_heading="Curated Contemporary Art",
             page_topic="Art Collection",
-            brand_name="The Nines",
+            brand_name="Example Hotel",
             city="Portland",
         )
         assert not alt1.lower().startswith("photo of")
         assert not alt1.lower().startswith("image of")
         assert len(alt1) <= 125
         assert len(alt1) >= 40
-        assert "The Nines" in alt1
+        assert "Example Hotel" in alt1
         assert "Portland" in alt1
 
         # Case 2: Opaque filename with only section heading cues
         alt2, subject2 = optimizer.generate_optimized_alt(
-            raw_url="https://thenines.com/assets/DSC00177.jpg",
+            raw_url="https://example-hotel.com/assets/DSC00177.jpg",
             existing_alt="",
-            section_heading="Urban Farmer Steakhouse",
+            section_heading="The Steakhouse",
             page_topic="Signature Dining",
-            brand_name="The Nines",
+            brand_name="Example Hotel",
             city="Portland",
         )
         assert len(alt2) <= 125
-        assert "Urban Farmer Steakhouse" in alt2
-        assert "The Nines" in alt2
+        assert "The Steakhouse" in alt2
+        assert "Example Hotel" in alt2
 
 
 class TestImageWorkbookAndDeliverables:
@@ -80,25 +80,25 @@ class TestImageWorkbookAndDeliverables:
 
     def test_image_workbook_and_json(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
-            optimizer = ImageOptimizer("https://thenines.com", output_base_dir=tmp_dir)
-            optimizer.brand_name = "The Nines"
+            optimizer = ImageOptimizer("https://example-hotel.com", output_base_dir=tmp_dir)
+            optimizer.brand_name = "Example Hotel"
             optimizer.location = "Portland, OR"
 
             custom_pages = [
                 {
-                    "url": "https://thenines.com/",
+                    "url": "https://example-hotel.com/",
                     "path": "/",
                     "title": "Luxury Hotel in Downtown Portland",
                     "archetype": "home",
                     "images": [
                         {
-                            "src": "https://thenines.com/images/entrance.jpg",
+                            "src": "https://example-hotel.com/images/entrance.jpg",
                             "alt": "",
                             "title": "Hotel Exterior & Entrance",
                             "section_heading": "Distinctive Luxury in Downtown",
                         },
                         {
-                            "src": "https://thenines.com/assets/DSC00177.jpg",
+                            "src": "https://example-hotel.com/assets/DSC00177.jpg",
                             "alt": "hotel",
                             "title": "DSC00177",
                             "section_heading": "Elevated Dining Experiences",
@@ -131,7 +131,7 @@ class TestImageWorkbookAndDeliverables:
             assert ws2.cell(row=2, column=6).value == "=LEN(E2)"
 
             # Hyperlink in Col A
-            assert '=HYPERLINK("https://thenines.com/images/entrance.jpg"' in ws2.cell(row=2, column=1).value
+            assert '=HYPERLINK("https://example-hotel.com/images/entrance.jpg"' in ws2.cell(row=2, column=1).value
 
             # Soft green fill (#D9EAD3) on Col E
             fill_e = ws2.cell(row=2, column=5).fill.start_color.rgb
@@ -140,7 +140,7 @@ class TestImageWorkbookAndDeliverables:
             # Verify JSON Export
             with open(json_path, encoding="utf-8") as jf:
                 data = json.load(jf)
-                assert data["domain"] == "thenines.com"
+                assert data["domain"] == "example-hotel.com"
                 assert data["total_images_audited"] == 2
                 assert data["missing_alts_count"] == 1
                 assert data["raw_filenames_count"] == 1
@@ -148,22 +148,22 @@ class TestImageWorkbookAndDeliverables:
     def test_unified_bundle_builder(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
             base = Path(tmp_dir)
-            domain_dir = base / "thenines.com"
+            domain_dir = base / "example-hotel.com"
             domain_dir.mkdir(parents=True, exist_ok=True)
 
             # Create mock sub-deliverable JSONs
             kw_map = {
-                "domain": "thenines.com",
-                "brand_name": "The Nines",
+                "domain": "example-hotel.com",
+                "brand_name": "Example Hotel",
                 "primary_location": "Portland, OR",
                 "summary": {"total_opportunity_keywords": 4},
                 "pages": [
                     {
                         "page_id": "p1",
-                        "url": "https://thenines.com/",
+                        "url": "https://example-hotel.com/",
                         "path": "/",
                         "archetype": "home",
-                        "primary_keyword": "The Nines Portland",
+                        "primary_keyword": "Example Hotel Portland",
                         "title": "Old Home Title",
                     }
                 ],
@@ -174,12 +174,12 @@ class TestImageWorkbookAndDeliverables:
             meta_map = {
                 "pages": [
                     {
-                        "url": "https://thenines.com/",
+                        "url": "https://example-hotel.com/",
                         "old_title": "Old Home Title",
-                        "new_title": "The Nines Portland | The Nines",
+                        "new_title": "Example Hotel Portland | Example Hotel",
                         "new_title_len": 30,
                         "old_meta": "",
-                        "new_meta": "Experience the nines portland at The Nines in downtown Portland. Book direct.",
+                        "new_meta": "Experience example hotel portland at Example Hotel in downtown Portland. Book direct.",
                         "new_meta_len": 77,
                     }
                 ]
@@ -191,13 +191,13 @@ class TestImageWorkbookAndDeliverables:
                 "total_headings_processed": 5,
                 "pages": [
                     {
-                        "url": "https://thenines.com/",
+                        "url": "https://example-hotel.com/",
                         "health_score": 85,
                         "headings": [
                             {
                                 "old_headline": "Old H1",
                                 "old_level": "H1",
-                                "new_headline": "The Nines Portland | Luxury Hotel",
+                                "new_headline": "Example Hotel Portland | Luxury Hotel",
                                 "new_level": "H1",
                                 "change_type": "rewrite_h1",
                             }
@@ -212,19 +212,19 @@ class TestImageWorkbookAndDeliverables:
                 "total_images_audited": 1,
                 "images": [
                     {
-                        "image_url": "https://thenines.com/entrance.jpg",
+                        "image_url": "https://example-hotel.com/entrance.jpg",
                         "title": "Entrance",
                         "old_alt": "",
-                        "optimized_alt": "Hotel Entrance at The Nines in Portland",
+                        "optimized_alt": "Hotel Entrance at Example Hotel in Portland",
                         "optimized_alt_length": 39,
-                        "page_urls": ["https://thenines.com/"],
+                        "page_urls": ["https://example-hotel.com/"],
                     }
                 ],
             }
             with open(domain_dir / "site-images-optimized.json", "w") as f:
                 json.dump(image_map, f)
 
-            runner = SeoStudioAutoRunner("https://thenines.com", output_dir=tmp_dir)
+            runner = SeoStudioAutoRunner("https://example-hotel.com", output_dir=tmp_dir)
             bundle_path = runner.build_extension_bundle(
                 kw_map_path=domain_dir / "site-keyword-map.json",
                 meta_json_path=domain_dir / "site-meta-optimized.json",
@@ -235,12 +235,12 @@ class TestImageWorkbookAndDeliverables:
             assert bundle_path.exists()
             with open(bundle_path, encoding="utf-8") as bf:
                 bundle = json.load(bf)
-                assert bundle["domain"] == "thenines.com"
+                assert bundle["domain"] == "example-hotel.com"
                 assert bundle["bundle_version"] == "3.0.0"
                 assert len(bundle["pages"]) == 1
                 page = bundle["pages"][0]
-                assert page["new_title"] == "The Nines Portland | The Nines"
+                assert page["new_title"] == "Example Hotel Portland | Example Hotel"
                 assert page["new_meta_description"].startswith("Experience")
                 assert len(page["headings"]) == 1
                 assert len(page["images"]) == 1
-                assert page["images"][0]["optimized_alt"] == "Hotel Entrance at The Nines in Portland"
+                assert page["images"][0]["optimized_alt"] == "Hotel Entrance at Example Hotel in Portland"

@@ -1186,7 +1186,7 @@ export function LabsView({
           </button>
         </div>
 
-        {/* Heading Structure Optimization Tool (The Nines Reference Parity) */}
+        {/* Heading Structure Optimization Tool (6-Column Reference Parity) */}
         <div className="flex flex-col justify-between rounded-2xl border border-emerald-200/80 bg-white p-5 shadow-card transition-all hover:border-emerald-400 dark:border-emerald-900/50 dark:bg-slate-900">
           <div>
             <div className="flex items-center justify-between mb-3">
@@ -1199,7 +1199,7 @@ export function LabsView({
                 <span className="text-body font-bold text-slate-800 dark:text-slate-100">Heading Structure Optimization</span>
               </div>
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-micro font-bold text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
-                The Nines Format
+                Reference Format
               </span>
             </div>
 
@@ -1213,7 +1213,7 @@ export function LabsView({
                 <span className="font-mono text-slate-600 dark:text-slate-400">{property?.url || "No property URL set"}</span>
               </div>
               <div className="text-tiny text-slate-500 dark:text-slate-400">
-                • Matches &ldquo;Heading Structure Optimization- thenines&rdquo; template<br/>
+                • Matches &ldquo;Heading Structure Optimization- example-hotel&rdquo; template<br/>
                 • Category banners, yellow table headers, green recommendations
               </div>
             </div>

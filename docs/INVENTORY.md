@@ -98,8 +98,8 @@ The standardized production architecture organizes modular components under:
 | `src/core/heading-audit/types.ts` | Core | Created | Type definitions for heading items, issues, summary, and crawler options |
 | `src/core/heading-audit/analyzer.ts` | Core | Created | Heading hierarchy analyzer, category classifier, and recommendation engine |
 | `src/core/heading-audit/crawler.ts` | Core | Created | Sitemaps and internal link crawler extracting rendered H1–H6 elements in document order |
-| `src/core/heading-audit/excel.ts` | Core | Created | 3-tab XLSX generator matching The Nines 6-column reference layout, colors, and widths |
-| `src/core/heading-audit/google-sheets.ts` | Core | Created | Direct export to native Google Sheets matching The Nines yellow/green/blue styling |
+| `src/core/heading-audit/excel.ts` | Core | Created | 3-tab XLSX generator matching the 6-column reference layout, colors, and widths |
+| `src/core/heading-audit/google-sheets.ts` | Core | Created | Direct export to native Google Sheets matching the reference yellow/green/blue styling |
 | `src/core/heading-audit/index.ts` | Core | Created | Barrel export for heading structure audit engine |
 | `src/app/api/heading-audit/route.ts` | API | Created | Next.js API route handling POST audit runs and GET direct XLSX downloads |
 | `src/components/HeadingStructureAuditModal.tsx` | UI | Created | Interactive audit interface with live progress, KPI cards, table filters & export |

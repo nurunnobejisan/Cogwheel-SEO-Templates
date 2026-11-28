@@ -34,7 +34,7 @@ describe("tasks/usp-headline-optimization", () => {
         notes: "",
         petFriendly: true,
         attractions: [],
-        rationaleStyle: "catbird",
+        rationaleStyle: "supporting",
         templateDocUrl: "",
         allowedLocations: [],
         excludedLocations: [],

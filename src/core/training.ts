@@ -21,7 +21,7 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
       'When referring to "standalone sites for soft brands or independents", it means a vanity site. Not all soft brands have vanity sites. If a soft brand has a vanity site, Slide 5 (SEO Errors Report) applies; if it is brand-hosted only with no vanity site, omit Slide 5.',
     exampleBad: "Remove Slide 5 for all Curio/Tapestry/Autograph soft-brand properties.",
     exampleGood:
-      "Check whether the soft brand has a vanity domain (e.g. thenines.com); keep Slide 5 when a vanity site exists.",
+      "Check whether the soft brand has a vanity domain (e.g. example-hotel.com); keep Slide 5 when a vanity site exists.",
     active: true,
     createdAt: "2026-11-13T00:00:00.000Z",
   },
@@ -39,8 +39,8 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
     taskId: null,
     title: "Property Taxonomy (2026 Portfolio)",
     ruleText:
-      "Classify properties accurately using the agency portfolio taxonomy: Full Flag Brand (e.g. Embassy Suites, Courtyard, Hilton Garden Inn, Fairfield, Residence Inn, Hyatt Place), Soft Brand.com (brand-hosted soft-brand URL), Soft Vanity / Vanity Site (standalone domain such as thenines.com, thecurtis.com, morrisonhouse.com, thealexandrian.com, grand1847.com, hotellajolla.com), Large/SMB Independent (e.g. Arrive Hotels, Senza, La Fonda, Coachman), and Restaurant.",
-    exampleGood: "Treat The Nines Portland (Soft Vanity: thenines.com) separately from The Nines Portland (Branded: Soft Brand.com).",
+      "Classify properties accurately using the agency portfolio taxonomy: Full Flag Brand (e.g. Embassy Suites, Courtyard, Hilton Garden Inn, Fairfield, Residence Inn, Hyatt Place), Soft Brand.com (brand-hosted soft-brand URL), Soft Vanity / Vanity Site (standalone domain such as example-hotel.com, example-boutique.com, example-heritage.com, example-cityhotel.com, example-grandhotel.com, example-coastalhotel.com), Large/SMB Independent (e.g. Example Hotels, Example Boutique, Example Inn, Example Hotel), and Restaurant.",
+    exampleGood: "Treat Example Hotel Portland (Soft Vanity: example-hotel.com) separately from Example Hotel Portland (Branded: Soft Brand.com).",
     exampleBad: "Merging Soft Brand.com and Soft Vanity deliverables into one generic template.",
     active: true,
     createdAt: "2026-11-13T00:00:00.000Z",
@@ -51,7 +51,7 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
     title: "Agency Deliverable Naming & Audit Tiers",
     ruleText:
       "Follow standard agency deliverable naming: '<Property Name> - SEO Baseline Overview' for baselines, '<Property Name> - Backlinking Strategy & Execution' for outreach, and align technical audits with 20/30/40 Points Audit and Technical Optimization checklists.",
-    exampleGood: "The Nines Hotel Portland - SEO Baseline Overview",
+    exampleGood: "Example Hotel Portland - SEO Baseline Overview",
     exampleBad: "Untitled SEO Report v1",
     active: true,
     createdAt: "2026-11-13T00:00:00.000Z",

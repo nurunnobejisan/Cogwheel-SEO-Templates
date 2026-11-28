@@ -22,7 +22,7 @@ class TestMetaRulesAndRepair:
 
     @pytest.fixture
     def sample_optimizer(self):
-        opt = MetaOptimizer("https://theoxfordhotel.com")
+        opt = MetaOptimizer("https://example-hotel.com")
         opt.brand_name = "The Oxford Hotel"
         opt.location = "Bend, Oregon"
         return opt
@@ -55,7 +55,7 @@ class TestMetaRulesAndRepair:
     def test_meta_description_length_and_cta(self, sample_optimizer):
         """Meta description must target 145-160 chars (<= 160 hard cap), include keyword, and end with CTA."""
         page = DiscoveredPage(
-            url="https://theoxfordhotel.com/amenities",
+            url="https://example-hotel.com/amenities",
             path="/amenities",
             title="Oxford Hotel Amenities",
             archetype="service_or_amenity",
@@ -108,14 +108,14 @@ class TestMetaWorkbookAndJsonDeliverables:
 
     def test_full_pipeline_workbook_and_json(self):
         with tempfile.TemporaryDirectory() as tmp_dir:
-            optimizer = MetaOptimizer("https://theoxfordhotel.com", output_base_dir=tmp_dir)
+            optimizer = MetaOptimizer("https://example-hotel.com", output_base_dir=tmp_dir)
             optimizer.brand_name = "The Oxford Hotel"
             optimizer.location = "Bend, OR"
 
             # Mock pages and assignments
             pages = [
                 DiscoveredPage(
-                    url="https://theoxfordhotel.com/",
+                    url="https://example-hotel.com/",
                     path="/",
                     title="Old Home Title",
                     archetype="home",
@@ -123,7 +123,7 @@ class TestMetaWorkbookAndJsonDeliverables:
                     topics=["boutique suites", "eco-friendly luxury"],
                 ),
                 DiscoveredPage(
-                    url="https://theoxfordhotel.com/dining",
+                    url="https://example-hotel.com/dining",
                     path="/dining",
                     title="Old Dining Title",
                     archetype="dining_or_outlet",
@@ -133,8 +133,8 @@ class TestMetaWorkbookAndJsonDeliverables:
             ]
             assignments = [
                 PageAssignment(
-                    page_id="theoxfordhotel.com-1",
-                    url="https://theoxfordhotel.com/",
+                    page_id="example-hotel.com-1",
+                    url="https://example-hotel.com/",
                     path="/",
                     title="Old Home Title",
                     archetype="home",
@@ -145,8 +145,8 @@ class TestMetaWorkbookAndJsonDeliverables:
                     rationale="High volume primary intent.",
                 ),
                 PageAssignment(
-                    page_id="theoxfordhotel.com-2",
-                    url="https://theoxfordhotel.com/dining",
+                    page_id="example-hotel.com-2",
+                    url="https://example-hotel.com/dining",
                     path="/dining",
                     title="Old Dining Title",
                     archetype="dining_or_outlet",
@@ -216,7 +216,7 @@ class TestMetaWorkbookAndJsonDeliverables:
             # Verify JSON Export content
             with open(json_path, encoding="utf-8") as f:
                 data = json.load(f)
-                assert data["domain"] == "theoxfordhotel.com"
+                assert data["domain"] == "example-hotel.com"
                 assert len(data["pages"]) == 2
                 assert data["pages"][0]["keyword_focus"] == "Boutique Hotel Bend OR"
                 assert data["pages"][0]["title_length"] <= 60

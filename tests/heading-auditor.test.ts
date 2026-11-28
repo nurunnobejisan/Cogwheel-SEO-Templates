@@ -11,9 +11,9 @@ import {
 
 describe("HeadingAuditor TypeScript Engine", () => {
   it("converts strings to proper title case", () => {
-    expect(toTitleCase("WELCOME TO THE NINES")).toBe("Welcome to the Nines");
+    expect(toTitleCase("WELCOME TO EXAMPLE HOTEL")).toBe("Welcome to the Nines");
     expect(toTitleCase("OUR LUXURY AMENITIES IN PORTLAND")).toBe("Our Luxury Amenities in Portland");
-    expect(toTitleCase("urban farmer steakhouse")).toBe("Urban Farmer Steakhouse");
+    expect(toTitleCase("steakhouse")).toBe("The Steakhouse");
   });
 
   it("detects non-semantic stat counters and metrics", () => {
@@ -43,7 +43,7 @@ describe("HeadingAuditor TypeScript Engine", () => {
   it("audits page heading hierarchy and repairs multiple H1 and skipped levels", () => {
     const rawHeadings = [
       { level: "H2", text: "OVERVIEW" }, // Inverted H2
-      { level: "H1", text: "WELCOME TO THE NINES" },
+      { level: "H1", text: "WELCOME TO EXAMPLE HOTEL" },
       { level: "H3", text: "Deluxe King Room" }, // Skipped level H1 -> H3
       { level: "H1", text: "PORTLAND LUXURY HOTEL" }, // Duplicate H1
       { level: "H3", text: "1 King Bed" }, // Badge
@@ -52,10 +52,10 @@ describe("HeadingAuditor TypeScript Engine", () => {
     ];
 
     const audit = auditHeadingOutline(rawHeadings, {
-      pageUrl: "https://thenines.com/",
-      primaryKeyword: "The Nines Portland",
-      pageTitle: "Luxury Hotel in Downtown Portland | The Nines",
-      brandName: "The Nines",
+      pageUrl: "https://example-hotel.com/",
+      primaryKeyword: "Example Hotel Portland",
+      pageTitle: "Luxury Hotel in Downtown Portland | Example Hotel",
+      brandName: "Example Hotel",
       category: "HOME",
     });
 
@@ -71,7 +71,7 @@ describe("HeadingAuditor TypeScript Engine", () => {
     // Single H1 established
     const h1Items = audit.headings.filter((h) => h.newHeadingLevel === "H1");
     expect(h1Items.length).toBe(1);
-    expect(h1Items[0].newHeadline).toContain("The Nines Portland");
+    expect(h1Items[0].newHeadline).toContain("Example Hotel Portland");
 
     // Duplicate H1 demoted to H2
     const demotedH1 = audit.headings.filter(

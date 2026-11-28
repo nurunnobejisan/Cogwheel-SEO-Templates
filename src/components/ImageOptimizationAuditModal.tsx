@@ -23,7 +23,7 @@ interface AuditApiResponse {
 }
 
 export function ImageOptimizationAuditModal({ defaultUrl = "", onClose }: Props) {
-  const [urlInput, setUrlInput] = useState(defaultUrl || "https://arrivehotels.com");
+  const [urlInput, setUrlInput] = useState(defaultUrl || "https://example-hotel.com");
   const [maxPages, setMaxPages] = useState(50);
   const [sizeThresholdKb, setSizeThresholdKb] = useState(100);
   const [delayMs, setDelayMs] = useState(100);
