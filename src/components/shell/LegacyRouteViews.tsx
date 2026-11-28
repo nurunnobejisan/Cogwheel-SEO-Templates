@@ -14,26 +14,6 @@ const RouteLoading = () => (
   </div>
 );
 
-const UnifiedSeoSuiteView = dynamic(
-  () => import("@/components/UnifiedSeoSuiteView").then((m) => m.UnifiedSeoSuiteView),
-  { loading: RouteLoading }
-);
-const SiteCrawlCard = dynamic(
-  () => import("@/components/SiteCrawlCard").then((m) => m.SiteCrawlCard),
-  { loading: RouteLoading }
-);
-const HeadingStructureAuditModal = dynamic(
-  () => import("@/components/HeadingStructureAuditModal").then((m) => m.HeadingStructureAuditModal),
-  { loading: RouteLoading }
-);
-const ImageOptimizationAuditModal = dynamic(
-  () => import("@/components/ImageOptimizationAuditModal").then((m) => m.ImageOptimizationAuditModal),
-  { loading: RouteLoading }
-);
-const SitemapAuditModal = dynamic(
-  () => import("@/components/SitemapAuditModal").then((m) => m.SitemapAuditModal),
-  { loading: RouteLoading }
-);
 const KeywordResearchView = dynamic(
   () => import("@/components/KeywordResearchView").then((m) => m.KeywordResearchView),
   { loading: RouteLoading }
@@ -67,47 +47,6 @@ const LabsView = dynamic(
   () => import("@/components/LabsView").then((m) => m.LabsView),
   { loading: RouteLoading }
 );
-
-export function LegacySuiteRoute({
-  initialSubTab = "full-audit",
-}: {
-  initialSubTab?: "full-audit" | "gsc-intel" | "geo-visibility" | "ai-orchestrator" | "model-training";
-}) {
-  const router = useRouter();
-  const { activeProperty } = useWorkspace();
-  return (
-    <UnifiedSeoSuiteView
-      property={activeProperty}
-      initialSubTab={initialSubTab}
-      onBackToDashboard={() => router.push("/")}
-      onOpenImageAudit={() => router.push("/audit/images")}
-      onOpenHeadingAudit={() => router.push("/audit/headings")}
-    />
-  );
-}
-
-export function LegacyCrawlRoute() {
-  const { activeProperty, refreshRuns } = useWorkspace();
-  return <SiteCrawlCard defaultUrl={activeProperty.url} onCompleted={() => void refreshRuns()} />;
-}
-
-export function LegacyHeadingsRoute() {
-  const router = useRouter();
-  const { activeProperty } = useWorkspace();
-  return <HeadingStructureAuditModal defaultUrl={activeProperty.url} onClose={() => router.push("/audit")} />;
-}
-
-export function LegacyImagesRoute() {
-  const router = useRouter();
-  const { activeProperty } = useWorkspace();
-  return <ImageOptimizationAuditModal defaultUrl={activeProperty.url} onClose={() => router.push("/audit")} />;
-}
-
-export function LegacySitemapRoute() {
-  const router = useRouter();
-  const { activeProperty } = useWorkspace();
-  return <SitemapAuditModal defaultUrl={activeProperty.url} onClose={() => router.push("/audit")} />;
-}
 
 export function LegacyKeywordsRoute() {
   const router = useRouter();

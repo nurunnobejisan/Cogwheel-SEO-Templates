@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import PropertyDashboard from "@/components/PropertyDashboard";
+import { DashboardPageClient } from "@/components/pages/DashboardPageClient";
 
 export const metadata: Metadata = {
   title: "SEO & GEO Audit Studio — Universal SEO & GEO Workspace",
@@ -8,5 +8,5 @@ export const metadata: Metadata = {
 };
 
 export default function Home() {
-  return <PropertyDashboard embeddedInShell initialTab="home" />;
+  return <DashboardPageClient />;
 }
