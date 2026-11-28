@@ -47,15 +47,16 @@ function isPrivateOrReservedIpv4(ip: string): boolean {
  * protection whenever a user supplies a URL.
  */
 export function isPrivateOrReservedIp(ip: string): boolean {
-  const version = net.isIP(ip);
+  // Callers (URL.hostname, security tests) may pass bracketed IPv6 literals.
+  const lower = ip.toLowerCase().replace(/^\[|\]$/g, "");
+  const version = net.isIP(lower);
   if (version === 4) {
-    return isPrivateOrReservedIpv4(ip);
+    return isPrivateOrReservedIpv4(lower);
   }
   if (version === 6) {
-    const lower = ip.toLowerCase();
-    // IPv4-mapped IPv6 (::ffff:127.0.0.1) — validate the embedded address.
-    const mapped = lower.match(/^::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-    if (mapped) return isPrivateOrReservedIpv4(mapped[1]);
+    // WHATWG URL normalises ::ffff:127.0.0.1 to [::ffff:7f00:1]. Fail closed
+    // for every IPv4-mapped literal rather than decoding hex groups here.
+    if (lower.startsWith("::ffff:") || lower.includes(":ffff:")) return true;
     if (lower === "::1" || lower === "::") return true;
     if (lower.startsWith("fe80:")) return true; // link-local
     if (lower.startsWith("fc") || lower.startsWith("fd")) return true; // unique local
