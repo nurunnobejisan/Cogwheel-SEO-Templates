@@ -1,0 +1,112 @@
+# ─── Auto-Sync: push generated artefacts back on every push ──────────────────
+#
+# What it does
+#   1. Runs `npm run export:json-schemas` after every push.
+#   2. If the generated schema files changed (schemas/generated/**), commits
+#      them and pushes back to the same branch automatically.
+#   3. Stamps a build-info file (public/build-info.json) with the commit SHA,
+#      branch, and UTC timestamp so the UI can display "last updated" data.
+#   4. Posts a Deployment Summary to the GitHub Actions summary page.
+#
+# Trigger: every push to main, ml/**, ui/**, feat/**, fix/**
+# Skips:   commits already made by this bot (to avoid infinite loops).
+# ─────────────────────────────────────────────────────────────────────────────
+name: Auto-Sync Generated Files
+
+on:
+  push:
+    branches:
+      - main
+      - 'ml/**'
+      - 'ui/**'
+      - 'feat/**'
+      - 'fix/**'
+
+concurrency:
+  group: auto-sync-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write   # needed to push back generated files
+
+jobs:
+  sync:
+    name: Export schemas & push build-info
+    runs-on: ubuntu-latest
+    # Never run on our own bot commits (prevents infinite loop)
+    if: "!contains(github.event.head_commit.message, '[auto-sync]')"
+
+    steps:
+      - name: Checkout ${{ github.ref_name }}
+        uses: actions/checkout@v4
+        with:
+          # Use a PAT or the default GITHUB_TOKEN; push back to same branch
+          token: ${{ secrets.GITHUB_TOKEN }}
+          ref: ${{ github.ref }}
+
+      - name: Setup Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies (ci — no package-lock mutation)
+        run: npm ci
+
+      # ── 1. Export JSON Schemas ───────────────────────────────────────────────
+      - name: Export JSON schemas
+        run: npm run export:json-schemas
+        continue-on-error: false
+
+      # ── 2. Stamp build-info.json ─────────────────────────────────────────────
+      - name: Write public/build-info.json
+        run: |
+          mkdir -p public
+          cat > public/build-info.json <<EOF
+          {
+            "sha":       "${{ github.sha }}",
+            "shortSha":  "$(echo '${{ github.sha }}' | cut -c1-7)",
+            "branch":    "${{ github.ref_name }}",
+            "actor":     "${{ github.actor }}",
+            "workflow":  "${{ github.workflow }}",
+            "runNumber": ${{ github.run_number }},
+            "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          echo "build-info.json written:"
+          cat public/build-info.json
+
+      # ── 3. Commit & push if anything changed ─────────────────────────────────
+      - name: Commit and push generated files
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Stage only generated/non-sensitive outputs
+          git add schemas/generated/ public/build-info.json || true
+
+          if git diff --cached --quiet; then
+            echo "Nothing changed — skipping push."
+          else
+            CHANGED=$(git diff --cached --name-only | tr '\n' ' ')
+            git commit -m "chore: [auto-sync] regenerate schemas & build-info on ${{ github.ref_name }} (run #${{ github.run_number }})
+
+Updated files: ${CHANGED}
+Triggered by: ${{ github.actor }} @ ${{ github.sha }}"
+            git push origin HEAD:${{ github.ref }}
+            echo "✅ Pushed auto-sync commit."
+          fi
+
+      # ── 4. Summary ───────────────────────────────────────────────────────────
+      - name: Write Actions summary
+        if: always()
+        run: |
+          echo "## 🔄 Auto-Sync Summary" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Field | Value |" >> "$GITHUB_STEP_SUMMARY"
+          echo "|-------|-------|" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Branch | \`${{ github.ref_name }}\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Commit | \`$(echo '${{ github.sha }}' | cut -c1-7)\` |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Actor  | ${{ github.actor }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Run    | #${{ github.run_number }} |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| Time   | $(date -u +%Y-%m-%dT%H:%M:%SZ) |" >> "$GITHUB_STEP_SUMMARY"
