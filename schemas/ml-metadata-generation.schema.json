@@ -1,0 +1,34 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MlMetadataGenerationOutput",
+  "description": "Constrained decoding schema for v1 metadata_generation SERP metadata outputs.",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60
+    },
+    "metaDescription": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 160
+    },
+    "h1": {
+      "type": "string",
+      "minLength": 1
+    },
+    "h2": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    }
+  },
+  "required": [
+    "title",
+    "metaDescription"
+  ],
+  "additionalProperties": true
+}

@@ -16,10 +16,14 @@
               "Hilton",
               "IHG",
               "Hyatt",
-              "Independent"
+              "Independent",
+              "Generic"
             ]
           },
           "loyaltyProgram": {
+            "type": "string"
+          },
+          "mandatorySuffix": {
             "type": "string"
           },
           "maxTitleChars": {
@@ -84,7 +88,8 @@
           "Hilton",
           "IHG",
           "Hyatt",
-          "Independent"
+          "Independent",
+          "Generic"
         ]
       }
     }
