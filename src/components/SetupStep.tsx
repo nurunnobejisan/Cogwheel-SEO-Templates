@@ -78,7 +78,7 @@ export function PropertySetup({
   }
 
   return (
-    <Card title="1. Property Setup" subtitle="Quick-pick from your 132 trained client properties or enter details manually.">
+    <Card title="1. Property Setup" subtitle="Quick-pick from your trained properties or enter details manually.">
       <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50/80 p-4">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <label className="text-caption font-bold uppercase tracking-wider text-slate-600">

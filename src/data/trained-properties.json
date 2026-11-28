@@ -1,15 +1,15 @@
 [
   {
-    "name": "(Milford Hospitality Group) Hotel Fauchere",
+    "name": "Demo Trained Property 001",
     "brand": "Independent",
-    "city": "Milford",
-    "state": "PA",
-    "url": "https://hotelfauchere.com/",
+    "city": "Demo City 25",
+    "state": "ZU",
+    "url": "https://demo-trained-001.example.com/",
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Milford Hospitality Group",
+    "managementGroup": "Demo Management Group 19",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -18,16 +18,16 @@
     ]
   },
   {
-    "name": "(Milford Hospitality Group) Tom Quick Inn",
+    "name": "Demo Trained Property 002",
     "brand": "Independent",
-    "city": "Milford",
-    "state": "PA",
-    "url": "https://tomquickinnmilford.com/",
+    "city": "Demo City 25",
+    "state": "ZU",
+    "url": "https://demo-trained-002.example.com/",
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Milford Hospitality Group",
+    "managementGroup": "Demo Management Group 19",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -36,16 +36,16 @@
     ]
   },
   {
-    "name": "Arrive Albuquerque (Palisociety)",
+    "name": "Demo Trained Property 003",
     "brand": "Independent",
-    "city": "Albuquerque",
-    "state": "NM",
-    "url": "https://www.arrivehotels.com/hotels/albuquerque",
+    "city": "Demo City 01",
+    "state": "ZQ",
+    "url": "https://demo-trained-003.example.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "palisociety",
+    "managementGroup": "Demo Management Group 32",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -54,16 +54,16 @@
     ]
   },
   {
-    "name": "Arrive Austin (Palisociety)",
+    "name": "Demo Trained Property 004",
     "brand": "Independent",
-    "city": "Austin",
-    "state": "TX",
-    "url": "https://www.arrivehotels.com/hotels/austin",
+    "city": "Demo City 03",
+    "state": "ZW",
+    "url": "https://demo-trained-004.example.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "palisociety",
+    "managementGroup": "Demo Management Group 32",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -72,16 +72,16 @@
     ]
   },
   {
-    "name": "Arrive Memphis (Palisociety)",
+    "name": "Demo Trained Property 005",
     "brand": "Independent",
-    "city": "Memphis",
-    "state": "TN",
-    "url": "https://www.arrivehotels.com/hotels/memphis",
+    "city": "Demo City 23",
+    "state": "ZV",
+    "url": "https://demo-trained-005.example.com/",
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "palisociety",
+    "managementGroup": "Demo Management Group 32",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -90,16 +90,16 @@
     ]
   },
   {
-    "name": "Arrive Palm Springs (Palisociety)",
+    "name": "Demo Trained Property 006",
     "brand": "Independent",
-    "city": "Palm Springs",
-    "state": "CA",
-    "url": "https://www.arrivehotels.com/hotels/palm-springs",
+    "city": "Demo City 34",
+    "state": "ZC",
+    "url": "https://demo-trained-006.example.com/",
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "palisociety",
+    "managementGroup": "Demo Management Group 32",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -108,16 +108,16 @@
     ]
   },
   {
-    "name": "Arrive Wilmington (Palisociety)",
+    "name": "Demo Trained Property 007",
     "brand": "Independent",
-    "city": "Wilmington",
-    "state": "NC",
-    "url": "https://www.arrivehotels.com/hotels/wilmington",
+    "city": "Demo City 46",
+    "state": "ZO",
+    "url": "https://demo-trained-007.example.com/",
     "propertyType": "Independent",
     "category": "SMB Independent 2026",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "palisociety",
+    "managementGroup": "Demo Management Group 32",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -126,16 +126,16 @@
     ]
   },
   {
-    "name": "Curtis Denver (Sage)",
+    "name": "Demo Trained Property 008",
     "brand": "Soft Brand",
-    "city": "Denver",
-    "state": "CO",
-    "url": "https://www.thecurtis.com/",
+    "city": "Demo City 12",
+    "state": "ZD",
+    "url": "https://demo-trained-008.example.com/",
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "One-Time",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -144,16 +144,16 @@
     ]
   },
   {
-    "name": "Embassy Suites Asheville (Parks) Montford Restaurant 2026",
+    "name": "Demo Trained Property 009",
     "brand": "Embassy Suites",
-    "city": "Asheville",
-    "state": "NC",
-    "url": "https://www.themontford.com/",
+    "city": "Demo City 02",
+    "state": "ZO",
+    "url": "https://demo-trained-009.example.com/",
     "propertyType": "Restaurant",
     "category": "Restaurant",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -162,16 +162,16 @@
     ]
   },
   {
-    "name": "Embassy Suites Asheville (Parks) Soprana Restaurant 2026",
+    "name": "Demo Trained Property 010",
     "brand": "Embassy Suites",
-    "city": "Asheville",
-    "state": "NC",
-    "url": "https://sopranarooftop.com/",
+    "city": "Demo City 02",
+    "state": "ZO",
+    "url": "https://demo-trained-010.example.com/",
     "propertyType": "Restaurant",
     "category": "Restaurant",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -180,16 +180,16 @@
     ]
   },
   {
-    "name": "Governors' Inn",
+    "name": "Demo Trained Property 011",
     "brand": "Independent",
-    "city": "Casselton",
-    "state": "ND",
-    "url": "https://governorsinnnd.com/",
+    "city": "Demo City 09",
+    "state": "ZP",
+    "url": "https://demo-trained-011.example.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Milford Hospitality Group",
+    "managementGroup": "Demo Management Group 19",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -197,19 +197,19 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Independent hospitality resort with indoor waterpark, RV park, conference facilities, and arcade. Key demand feeder: Fargo metro."
+    "notes": "Synthetic demo note for trained property 011."
   },
   {
-    "name": "Hotel De La Poste French Quarter (Sage)",
+    "name": "Demo Trained Property 012",
     "brand": "Soft Brand",
-    "city": "New Orleans",
-    "state": "LA",
-    "url": "https://hoteldelapostenola.com/",
+    "city": "Demo City 30",
+    "state": "ZJ",
+    "url": "https://demo-trained-012.example.com/",
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "Brand+Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -218,27 +218,27 @@
     ]
   },
   {
-    "name": "Hotel Ely",
+    "name": "Demo Trained Property 013",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://hotelely.example.com/",
+    "url": "https://demo-trained-013.example.com/",
     "propertyType": "Independent",
     "category": "",
     "projectType": "",
     "status": "To Do"
   },
   {
-    "name": "Hotel La Jolla, Curio Collection by Hilton (Sage)",
+    "name": "Demo Trained Property 014",
     "brand": "Curio Collection",
-    "city": "La Jolla",
-    "state": "CA",
-    "url": "https://www.hotellajolla.com/",
+    "city": "Demo City 19",
+    "state": "ZC",
+    "url": "https://demo-trained-014.example.com/",
     "propertyType": "Soft Vanity",
     "category": "Soft vanity",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -247,16 +247,16 @@
     ]
   },
   {
-    "name": "Hotel Per La (Vanity)",
+    "name": "Demo Trained Property 015",
     "brand": "Soft Vanity",
-    "city": "Los Angeles",
-    "state": "CA",
-    "url": "https://hotelperla.com",
+    "city": "Demo City 21",
+    "state": "ZC",
+    "url": "https://demo-trained-015.example.com/",
     "propertyType": "Independent",
     "category": "Soft vanity",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -265,16 +265,16 @@
     ]
   },
   {
-    "name": "La Fonda (Bentley)",
+    "name": "Demo Trained Property 016",
     "brand": "Independent",
-    "city": "Santa Fe",
-    "state": "NM",
-    "url": "https://lafondasantafe.com/",
+    "city": "Demo City 41",
+    "state": "ZQ",
+    "url": "https://demo-trained-016.example.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -283,16 +283,16 @@
     ]
   },
   {
-    "name": "Morrison House (Sage)",
+    "name": "Demo Trained Property 017",
     "brand": "Soft Brand",
     "city": "",
     "state": "",
-    "url": "https://morrisonhouse.com/",
+    "url": "https://demo-trained-017.example.com/",
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "Brand+Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -301,16 +301,16 @@
     ]
   },
   {
-    "name": "Pinon Court (Bentley)",
+    "name": "Demo Trained Property 018",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://pinoncourt.com/",
+    "url": "https://demo-trained-018.example.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -319,27 +319,27 @@
     ]
   },
   {
-    "name": "Rancho Bernardo Inn (JC Resorts)",
+    "name": "Demo Trained Property 019",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://www.ranchobernardoinn.com/",
+    "url": "https://demo-trained-019.example.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Deactivated"
   },
   {
-    "name": "SENZA Hotel (Bentley)",
+    "name": "Demo Trained Property 020",
     "brand": "Independent",
-    "city": "Napa",
-    "state": "CA",
-    "url": "https://senzahotel.com/",
+    "city": "Demo City 28",
+    "state": "ZC",
+    "url": "https://demo-trained-020.example.com/",
     "propertyType": "Independent",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -348,16 +348,16 @@
     ]
   },
   {
-    "name": "The Alexandrian (Sage)",
+    "name": "Demo Trained Property 021",
     "brand": "Soft Brand",
     "city": "",
     "state": "",
-    "url": "https://www.thealexandrian.com/",
+    "url": "https://demo-trained-021.example.com/",
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "Brand+Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -366,16 +366,16 @@
     ]
   },
   {
-    "name": "The Barnett (HRI)",
+    "name": "Demo Trained Property 022",
     "brand": "Soft Vanity",
     "city": "",
     "state": "",
-    "url": "https://thebarnett.com/",
+    "url": "https://demo-trained-022.example.com/",
     "propertyType": "Vanity",
     "category": "Vanity Site",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -384,16 +384,16 @@
     ]
   },
   {
-    "name": "The Coachman Hotel (Sage)",
+    "name": "Demo Trained Property 023",
     "brand": "Independent",
-    "city": "South Lake Tahoe",
-    "state": "CA",
-    "url": "https://www.coachmantahoe.com/",
+    "city": "Demo City 42",
+    "state": "ZC",
+    "url": "https://demo-trained-023.example.com/",
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -401,19 +401,19 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Boutique independent alpine retreat in South Lake Tahoe near Heavenly Village with fire pits, heated pool, pet-friendly rooms, and stand-alone cabins."
+    "notes": "Synthetic demo note for trained property 023."
   },
   {
-    "name": "The Grand Hotel Golf Resort & Spa (PCH)",
+    "name": "Demo Trained Property 024",
     "brand": "Soft Brand",
-    "city": "Point Clear",
-    "state": "AL",
-    "url": "https://www.grand1847.com/",
+    "city": "Demo City 37",
+    "state": "ZA",
+    "url": "https://demo-trained-024.example.com/",
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "Brand+Ongoing",
     "status": "Active",
-    "managementGroup": "PCH Hospitality",
+    "managementGroup": "Demo Management Group 23",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -422,16 +422,16 @@
     ]
   },
   {
-    "name": "The Inn at Wise",
+    "name": "Demo Trained Property 025",
     "brand": "Independent",
-    "city": "Wise",
-    "state": "VA",
-    "url": "https://innatwise.com/",
+    "city": "Demo City 48",
+    "state": "ZX",
+    "url": "https://demo-trained-025.example.com/",
     "propertyType": "Independent",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "n/a",
+    "managementGroup": "Demo Management Group 31",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -440,16 +440,16 @@
     ]
   },
   {
-    "name": "The Nines Portland (Sage)",
+    "name": "Demo Trained Property 026",
     "brand": "Soft Vanity",
-    "city": "Portland",
-    "state": "OR",
-    "url": "https://www.thenines.com/",
+    "city": "Demo City 38",
+    "state": "ZT",
+    "url": "https://demo-trained-026.example.com/",
     "propertyType": "Soft Vanity",
     "category": "Soft Vanity",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -458,16 +458,16 @@
     ]
   },
   {
-    "name": "The Raphael Hotel (Bentley)",
+    "name": "Demo Trained Property 027",
     "brand": "Soft Vanity",
     "city": "",
     "state": "",
-    "url": "https://www.raphaelkc.com/",
+    "url": "https://demo-trained-027.example.com/",
     "propertyType": "Vanity",
     "category": "Vanity Site",
     "projectType": "Brand+Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -476,16 +476,16 @@
     ]
   },
   {
-    "name": "The Winslow Arizona",
+    "name": "Demo Trained Property 028",
     "brand": "Full Flag Brand",
-    "city": "Winslow",
-    "state": "AZ",
-    "url": "https://winslowhotels.com/winslow-arizona/",
+    "city": "Demo City 47",
+    "state": "ZB",
+    "url": "https://demo-trained-028.example.com/",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Lodging IQ",
+    "managementGroup": "Demo Management Group 18",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -494,16 +494,16 @@
     ]
   },
   {
-    "name": "The Winslow Oklahoma",
+    "name": "Demo Trained Property 029",
     "brand": "Full Flag Brand",
-    "city": "Oklahoma City",
-    "state": "OK",
-    "url": "https://winslowhotels.com/oklahoma-city/",
+    "city": "Demo City 32",
+    "state": "ZS",
+    "url": "https://demo-trained-029.example.com/",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Lodging IQ",
+    "managementGroup": "Demo Management Group 18",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -512,7 +512,7 @@
     ]
   },
   {
-    "name": "AC Hotel Bethesda - WASBA (OTO)",
+    "name": "Demo Trained Property 030",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -523,7 +523,7 @@
     "status": "Active"
   },
   {
-    "name": "AC Hotel Bozeman (Bentley)",
+    "name": "Demo Trained Property 031",
     "brand": "Branded",
     "city": "",
     "state": "",
@@ -534,7 +534,7 @@
     "status": "Active"
   },
   {
-    "name": "AC Hotel Chapel Hill Downtown - RDUAH (OTO)",
+    "name": "Demo Trained Property 032",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -545,7 +545,7 @@
     "status": "Active"
   },
   {
-    "name": "AC Hotel Los Angeles South Bay (Welcome)",
+    "name": "Demo Trained Property 033",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -556,7 +556,7 @@
     "status": "Active"
   },
   {
-    "name": "AC Hotel Pasadena (Welcome)",
+    "name": "Demo Trained Property 034",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -567,7 +567,7 @@
     "status": "Active"
   },
   {
-    "name": "AC Hotel SFO Oyster Point Waterfront - SFOYA (OTO)",
+    "name": "Demo Trained Property 035",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -578,16 +578,16 @@
     "status": "Active"
   },
   {
-    "name": "AC Hotel St. Petersburg Downtown - TPAPA (OTO)",
+    "name": "Demo Trained Property 036",
     "brand": "AC Hotels by Marriott",
-    "city": "St. Petersburg",
-    "state": "FL",
-    "url": "https://www.marriott.com/en-us/hotels/tpapa-ac-hotel-st-petersburg-downtown/overview/",
+    "city": "Demo City 43",
+    "state": "ZF",
+    "url": "https://demo-trained-036.example.com/",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "One-Time",
     "status": "Active",
-    "managementGroup": "OTO Development",
+    "managementGroup": "Demo Management Group 20",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -595,10 +595,10 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Downtown boutique AC Hotel in St. Petersburg, FL near Tropicana Field, Vinoy Park, Sunken Gardens, and Chihuly Collection."
+    "notes": "Synthetic demo note for trained property 036."
   },
   {
-    "name": "Aloft New Orleans",
+    "name": "Demo Trained Property 037",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -609,7 +609,7 @@
     "status": "To Do"
   },
   {
-    "name": "Anik Brothers Projects (2025 to now)",
+    "name": "Demo Trained Property 038",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -620,7 +620,7 @@
     "status": ""
   },
   {
-    "name": "Arctic Club Hotel (Oxford)",
+    "name": "Demo Trained Property 039",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -631,7 +631,7 @@
     "status": "Account Manager Review"
   },
   {
-    "name": "Atlantic View Hotel",
+    "name": "Demo Trained Property 040",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -642,16 +642,16 @@
     "status": "Active"
   },
   {
-    "name": "Auburn Marriott Opelika Resort & Spa (PCH)",
+    "name": "Demo Trained Property 041",
     "brand": "Marriott Hotels",
-    "city": "Opelika",
-    "state": "AL",
-    "url": "https://www.marriott.com/en-us/hotels/csbgs-auburn-marriott-opelika-resort-and-spa-at-grand-national/overview/",
+    "city": "Demo City 33",
+    "state": "ZA",
+    "url": "https://demo-trained-041.example.com/",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "One-Time",
     "status": "Active",
-    "managementGroup": "PCH Hotels & Resorts",
+    "managementGroup": "Demo Management Group 24",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -659,10 +659,10 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Luxury golf resort & spa on Robert Trent Jones Golf Trail with 54 holes of championship golf, 3-story spa, and 13.8K monthly organic visits."
+    "notes": "Synthetic demo note for trained property 041."
   },
   {
-    "name": "Canopy Boston Downtown (Olshan)",
+    "name": "Demo Trained Property 042",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -673,7 +673,7 @@
     "status": "Active"
   },
   {
-    "name": "Canopy Uptown Dallas (Bentley)",
+    "name": "Demo Trained Property 043",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -684,7 +684,7 @@
     "status": "Active"
   },
   {
-    "name": "Caption by Hyatt Nashville (HRI)",
+    "name": "Demo Trained Property 044",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -695,10 +695,10 @@
     "status": "Completed"
   },
   {
-    "name": "Courtyard Denver Downtown (Sage)",
+    "name": "Demo Trained Property 045",
     "brand": "Courtyard by Marriott",
-    "city": "Denver",
-    "state": "CO",
+    "city": "Demo City 12",
+    "state": "ZD",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -706,18 +706,7 @@
     "status": "Active"
   },
   {
-    "name": "Courtyard Edgewater NYC Area (Welcome)",
-    "brand": "Courtyard by Marriott",
-    "city": "",
-    "state": "",
-    "url": "",
-    "propertyType": "Branded",
-    "category": "Full Flag Brand",
-    "projectType": "One-Time",
-    "status": "Active"
-  },
-  {
-    "name": "Courtyard Sacramento Cal Expo (Welcome)",
+    "name": "Demo Trained Property 046",
     "brand": "Courtyard by Marriott",
     "city": "",
     "state": "",
@@ -728,10 +717,21 @@
     "status": "Active"
   },
   {
-    "name": "Doubletree Asheville (Parks)",
+    "name": "Demo Trained Property 047",
+    "brand": "Courtyard by Marriott",
+    "city": "",
+    "state": "",
+    "url": "",
+    "propertyType": "Branded",
+    "category": "Full Flag Brand",
+    "projectType": "One-Time",
+    "status": "Active"
+  },
+  {
+    "name": "Demo Trained Property 048",
     "brand": "Full Flag Brand",
-    "city": "Asheville",
-    "state": "NC",
+    "city": "Demo City 02",
+    "state": "ZO",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -739,10 +739,10 @@
     "status": "Active"
   },
   {
-    "name": "Doubletree Raleigh-Cary (Parks)",
+    "name": "Demo Trained Property 049",
     "brand": "Branded",
-    "city": "Raleigh",
-    "state": "NC",
+    "city": "Demo City 39",
+    "state": "ZO",
     "url": "",
     "propertyType": "Branded",
     "category": "Hilton Brand",
@@ -750,7 +750,7 @@
     "status": "Completed"
   },
   {
-    "name": "DoubleTree Redington Beach - NORNH (OTO)",
+    "name": "Demo Trained Property 050",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -761,7 +761,7 @@
     "status": "Active"
   },
   {
-    "name": "Doubletree Salt Lake City (HRI)",
+    "name": "Demo Trained Property 051",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -772,7 +772,7 @@
     "status": "Active"
   },
   {
-    "name": "Dune Climb Inn",
+    "name": "Demo Trained Property 052",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -783,7 +783,7 @@
     "status": "Active"
   },
   {
-    "name": "Element New Orleans (Bentley)",
+    "name": "Demo Trained Property 053",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -794,10 +794,10 @@
     "status": "Active"
   },
   {
-    "name": "Embassy Suites Asheville (Parks)",
+    "name": "Demo Trained Property 054",
     "brand": "Embassy Suites",
-    "city": "Asheville",
-    "state": "NC",
+    "city": "Demo City 02",
+    "state": "ZO",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -805,10 +805,10 @@
     "status": "Active"
   },
   {
-    "name": "Embassy Suites Boulder (Sage)",
+    "name": "Demo Trained Property 055",
     "brand": "Embassy Suites",
-    "city": "Boulder",
-    "state": "CO",
+    "city": "Demo City 06",
+    "state": "ZD",
     "url": "",
     "propertyType": "Branded",
     "category": "SEO/GEO - Full Flag Brand",
@@ -816,7 +816,7 @@
     "status": "Active"
   },
   {
-    "name": "Embassy Suites by Hilton Orlando International Drive ICON Park (Crestline)",
+    "name": "Demo Trained Property 056",
     "brand": "Embassy Suites",
     "city": "",
     "state": "",
@@ -827,7 +827,7 @@
     "status": "Active"
   },
   {
-    "name": "Embassy Suites Minneapolis (HRI)",
+    "name": "Demo Trained Property 057",
     "brand": "Embassy Suites",
     "city": "",
     "state": "",
@@ -838,7 +838,7 @@
     "status": "Active"
   },
   {
-    "name": "Fairfield Inn & Suites Sikeston (First Call Hospitality)",
+    "name": "Demo Trained Property 058",
     "brand": "Fairfield by Marriott",
     "city": "",
     "state": "",
@@ -849,7 +849,7 @@
     "status": "To Do"
   },
   {
-    "name": "Four Points by Sheraton Orlando (Aimbridge)",
+    "name": "Demo Trained Property 059",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -860,7 +860,7 @@
     "status": "Active"
   },
   {
-    "name": "Hampton Inn & Suites Boerne (Bentley)",
+    "name": "Demo Trained Property 060",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -871,10 +871,10 @@
     "status": "Active"
   },
   {
-    "name": "Hampton Inn by Hilton Raleigh Cary Alston Town Center (Parks)",
+    "name": "Demo Trained Property 061",
     "brand": "Full Flag Brand",
-    "city": "Raleigh",
-    "state": "NC",
+    "city": "Demo City 39",
+    "state": "ZO",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -882,7 +882,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Fort Wayne at the Grand Wayne Convention Center (Welcome)",
+    "name": "Demo Trained Property 062",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -893,7 +893,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Garden Inn Cocoa Beach Oceanfront - MLBCO (OTO)",
+    "name": "Demo Trained Property 063",
     "brand": "Hilton Garden Inn",
     "city": "",
     "state": "",
@@ -904,7 +904,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Garden Inn Dana Point - Doheny Beach (HRI)",
+    "name": "Demo Trained Property 064",
     "brand": "Hilton Garden Inn",
     "city": "",
     "state": "",
@@ -915,7 +915,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Garden Inn Davis Downtown (HRI)",
+    "name": "Demo Trained Property 065",
     "brand": "Hilton Garden Inn",
     "city": "",
     "state": "",
@@ -926,7 +926,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Garden Inn Downtown Dallas (HRI)",
+    "name": "Demo Trained Property 066",
     "brand": "Hilton Garden Inn",
     "city": "",
     "state": "",
@@ -937,7 +937,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Garden Inn Ocean City - SBYFT (OTO)",
+    "name": "Demo Trained Property 067",
     "brand": "Hilton Garden Inn",
     "city": "",
     "state": "",
@@ -948,7 +948,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Garden Inn St. Pete Beach - PIESP (OTO)",
+    "name": "Demo Trained Property 068",
     "brand": "Hilton Garden Inn",
     "city": "",
     "state": "",
@@ -959,7 +959,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Indianapolis (HM Alpha)",
+    "name": "Demo Trained Property 069",
     "brand": "Branded",
     "city": "",
     "state": "",
@@ -970,7 +970,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Knoxville Downtown (Aimbridge)",
+    "name": "Demo Trained Property 070",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -981,7 +981,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton San Antonio Hill Country (HRI)",
+    "name": "Demo Trained Property 071",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -992,7 +992,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton San Diego Bayfront (Sunstone)",
+    "name": "Demo Trained Property 072",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1003,7 +1003,7 @@
     "status": "Completed"
   },
   {
-    "name": "Hilton Scottsdale Resort (HM Alpha)",
+    "name": "Demo Trained Property 073",
     "brand": "Branded",
     "city": "",
     "state": "",
@@ -1014,7 +1014,7 @@
     "status": "Active"
   },
   {
-    "name": "Hilton Scranton & Conference Center (Welcome)",
+    "name": "Demo Trained Property 074",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1025,7 +1025,7 @@
     "status": "Active"
   },
   {
-    "name": "Holiday Inn & Suites Detroit Lakes (First Call Hospitality)",
+    "name": "Demo Trained Property 075",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1036,10 +1036,10 @@
     "status": "To Do"
   },
   {
-    "name": "Homewood Suites French Quarter (HRI)",
+    "name": "Demo Trained Property 076",
     "brand": "Homewood Suites",
-    "city": "New Orleans",
-    "state": "LA",
+    "city": "Demo City 30",
+    "state": "ZJ",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -1047,7 +1047,7 @@
     "status": "Active"
   },
   {
-    "name": "Homewood Suites Greenville (Parks)",
+    "name": "Demo Trained Property 077",
     "brand": "Homewood Suites",
     "city": "",
     "state": "",
@@ -1058,10 +1058,10 @@
     "status": "Active"
   },
   {
-    "name": "Homewood Suites Raleigh/Cary (Parks)",
+    "name": "Demo Trained Property 078",
     "brand": "Homewood Suites",
-    "city": "Raleigh",
-    "state": "NC",
+    "city": "Demo City 39",
+    "state": "ZO",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -1069,7 +1069,7 @@
     "status": "Active"
   },
   {
-    "name": "Hotel Elysium",
+    "name": "Demo Trained Property 079",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1080,7 +1080,7 @@
     "status": "Active"
   },
   {
-    "name": "Hotel Per La (Brand)",
+    "name": "Demo Trained Property 080",
     "brand": "Soft Brand",
     "city": "",
     "state": "",
@@ -1091,7 +1091,7 @@
     "status": "Completed"
   },
   {
-    "name": "Hotel Teatro (Sage)",
+    "name": "Demo Trained Property 081",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1102,7 +1102,7 @@
     "status": "Active"
   },
   {
-    "name": "Hyatt House Nashville Downtown/Convention Center (Schulte)",
+    "name": "Demo Trained Property 082",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1113,7 +1113,7 @@
     "status": "Active"
   },
   {
-    "name": "Hyatt Place Los Angeles / LAX / El Segundo (Welcome)",
+    "name": "Demo Trained Property 083",
     "brand": "Hyatt Place",
     "city": "",
     "state": "",
@@ -1124,16 +1124,16 @@
     "status": "Active"
   },
   {
-    "name": "Hyatt Place Panama City Beach - ECPZP (OTO)",
+    "name": "Demo Trained Property 084",
     "brand": "Hyatt Place",
-    "city": "Panama City Beach",
-    "state": "FL",
-    "url": "https://www.hyatt.com/hyatt-place/en-US/ecpzp-hyatt-place-panama-city-beach-beachfront",
+    "city": "Demo City 35",
+    "state": "ZF",
+    "url": "https://demo-trained-084.example.com/",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "One-Time",
     "status": "Active",
-    "managementGroup": "OTO Development",
+    "managementGroup": "Demo Management Group 20",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1141,10 +1141,10 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Full flag beachfront resort with 224 rooms & suites, Coconut Charlie's Beach Bar & Grill, beachfront pool, and pet-friendly policy."
+    "notes": "Synthetic demo note for trained property 084."
   },
   {
-    "name": "Hyatt Place, OSU (Columbus)",
+    "name": "Demo Trained Property 085",
     "brand": "Hyatt Place",
     "city": "",
     "state": "",
@@ -1155,10 +1155,10 @@
     "status": "Completed"
   },
   {
-    "name": "Hyatt Place/Hyatt House Downtown Tampa (HRI)",
+    "name": "Demo Trained Property 086",
     "brand": "Hyatt Place",
-    "city": "Tampa",
-    "state": "FL",
+    "city": "Demo City 44",
+    "state": "ZF",
     "url": "",
     "propertyType": "",
     "category": "",
@@ -1166,7 +1166,7 @@
     "status": "To Do"
   },
   {
-    "name": "Hyatt Place/Hyatt House Indianapolis (HRI)",
+    "name": "Demo Trained Property 087",
     "brand": "Hyatt Place",
     "city": "",
     "state": "",
@@ -1177,7 +1177,7 @@
     "status": "Completed"
   },
   {
-    "name": "Hyatt Regency San Antonio Riverwalk (Sunstone)",
+    "name": "Demo Trained Property 088",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1188,7 +1188,7 @@
     "status": "On Hold"
   },
   {
-    "name": "Hyatt Union Square & Project Farmhouse (HHM)",
+    "name": "Demo Trained Property 089",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1199,16 +1199,16 @@
     "status": "Active"
   },
   {
-    "name": "Project Farmhouse (GrowNYC / Hyatt Union Square)",
+    "name": "Demo Trained Property 090",
     "brand": "Branded",
-    "city": "New York",
-    "state": "NY",
-    "url": "https://www.projectfarmhouse.org/",
+    "city": "Demo City 31",
+    "state": "ZR",
+    "url": "https://demo-trained-090.example.com/",
     "propertyType": "Independent",
     "category": "Venue",
     "projectType": "One-Time",
     "status": "Completed",
-    "managementGroup": "HHM",
+    "managementGroup": "Demo Management Group 07",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1216,10 +1216,10 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Sustainable event space, conference venue, and filming production studio in Union Square NYC operated with GrowNYC."
+    "notes": "Synthetic demo note for trained property 090."
   },
   {
-    "name": "JW Marriott Houston (HM Alpha)",
+    "name": "Demo Trained Property 091",
     "brand": "Branded",
     "city": "",
     "state": "",
@@ -1230,7 +1230,7 @@
     "status": "Active"
   },
   {
-    "name": "Klondike Cabins",
+    "name": "Demo Trained Property 092",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1241,7 +1241,7 @@
     "status": "Active"
   },
   {
-    "name": "LivSmart Studios by Hilton, Columbia Greystone (Parks)",
+    "name": "Demo Trained Property 093",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1252,7 +1252,7 @@
     "status": "Active"
   },
   {
-    "name": "Maison Metier (HRI)",
+    "name": "Demo Trained Property 094",
     "brand": "Soft Brand",
     "city": "",
     "state": "",
@@ -1263,7 +1263,7 @@
     "status": "On Hold"
   },
   {
-    "name": "Marlo Marketing",
+    "name": "Demo Trained Property 095",
     "brand": "Marketing Agency",
     "city": "",
     "state": "",
@@ -1274,7 +1274,7 @@
     "status": "Active"
   },
   {
-    "name": "Marriott Del Mar (HM Alpha)",
+    "name": "Demo Trained Property 096",
     "brand": "Branded",
     "city": "",
     "state": "",
@@ -1285,7 +1285,7 @@
     "status": "Active"
   },
   {
-    "name": "Marriott Visalia at the Convention Center (Welcome)",
+    "name": "Demo Trained Property 097",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1296,7 +1296,7 @@
     "status": "Active"
   },
   {
-    "name": "Marriott Warner Center (HM Alpha)",
+    "name": "Demo Trained Property 098",
     "brand": "Branded",
     "city": "",
     "state": "",
@@ -1307,7 +1307,7 @@
     "status": "Active"
   },
   {
-    "name": "Motto by Hilton Nashville Downtown (Chartwell)",
+    "name": "Demo Trained Property 099",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1318,7 +1318,7 @@
     "status": "Active"
   },
   {
-    "name": "Mountainman Outdoor Supply (PPC)",
+    "name": "Demo Trained Property 100",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1329,10 +1329,10 @@
     "status": "Active"
   },
   {
-    "name": "Moxy Denver Cherry Creek (Sage)",
+    "name": "Demo Trained Property 101",
     "brand": "Full Flag Brand",
-    "city": "Denver",
-    "state": "CO",
+    "city": "Demo City 12",
+    "state": "ZD",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -1340,18 +1340,7 @@
     "status": "Active"
   },
   {
-    "name": "Renaissance Birmingham Ross Bridge Golf Resort & Spa (PCH)",
-    "brand": "Full Flag Brand",
-    "city": "",
-    "state": "",
-    "url": "",
-    "propertyType": "Branded",
-    "category": "Full Flag Brand",
-    "projectType": "One-Time",
-    "status": "Active"
-  },
-  {
-    "name": "Renaissance Mobile Riverview Plaza Hotel (PCH)",
+    "name": "Demo Trained Property 102",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1362,7 +1351,7 @@
     "status": "Active"
   },
   {
-    "name": "Renaissance Montgomery Hotel & Spa (PCH)",
+    "name": "Demo Trained Property 103",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1373,27 +1362,38 @@
     "status": "Active"
   },
   {
-    "name": "Renaissance Shoals Resort & Spa",
+    "name": "Demo Trained Property 104",
+    "brand": "Full Flag Brand",
+    "city": "",
+    "state": "",
+    "url": "",
+    "propertyType": "Branded",
+    "category": "Full Flag Brand",
+    "projectType": "One-Time",
+    "status": "Active"
+  },
+  {
+    "name": "Demo Trained Property 105",
     "brand": "Renaissance / Marriott",
-    "city": "Florence",
-    "state": "AL",
-    "url": "https://www.marriott.com/en-us/hotels/mslbr-renaissance-shoals-resort-and-spa/overview/",
+    "city": "Demo City 13",
+    "state": "ZA",
+    "url": "https://demo-trained-105.example.com/",
     "propertyType": "Branded Resort",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active"
   },
   {
-    "name": "The Curtis Denver",
+    "name": "Demo Trained Property 106",
     "brand": "DoubleTree / Hilton",
-    "city": "Denver",
-    "state": "CO",
-    "url": "https://www.hilton.com/en/hotels/denchdt-the-curtis-denver/",
+    "city": "Demo City 12",
+    "state": "ZD",
+    "url": "https://demo-trained-106.example.com/",
     "propertyType": "Boutique Hotel",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1402,38 +1402,38 @@
     ]
   },
   {
-    "name": "AC Hotel Bozeman Downtown",
+    "name": "Demo Trained Property 107",
     "brand": "AC Hotels / Marriott",
-    "city": "Bozeman",
-    "state": "MT",
-    "url": "https://www.marriott.com/en-us/hotels/bznar-ac-hotel-bozeman-downtown/overview/",
+    "city": "Demo City 07",
+    "state": "ZN",
+    "url": "https://demo-trained-107.example.com/",
     "propertyType": "Branded Lifestyle",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active"
   },
   {
-    "name": "Embassy Suites by Hilton Minneapolis Downtown",
+    "name": "Demo Trained Property 108",
     "brand": "Embassy Suites / Hilton",
-    "city": "Minneapolis",
-    "state": "MN",
-    "url": "https://www.hilton.com/en/hotels/mspsees-embassy-suites-minneapolis-downtown/",
+    "city": "Demo City 26",
+    "state": "ZL",
+    "url": "https://demo-trained-108.example.com/",
     "propertyType": "Full Service Suites",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active"
   },
   {
-    "name": "Hilton Garden Inn Davis Downtown",
+    "name": "Demo Trained Property 109",
     "brand": "Hilton Garden Inn",
-    "city": "Davis",
-    "state": "CA",
-    "url": "https://www.hilton.com/en/hotels/smfdagi-hilton-garden-inn-davis-downtown/",
+    "city": "Demo City 11",
+    "state": "ZC",
+    "url": "https://demo-trained-109.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1442,7 +1442,7 @@
     ]
   },
   {
-    "name": "RevAMP",
+    "name": "Demo Trained Property 110",
     "brand": "Other",
     "city": "",
     "state": "",
@@ -1453,7 +1453,7 @@
     "status": ""
   },
   {
-    "name": "Salt Ranch (Remington)",
+    "name": "Demo Trained Property 111",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1464,7 +1464,7 @@
     "status": "Active"
   },
   {
-    "name": "Sheraton Fort Worth (Aimbridge)",
+    "name": "Demo Trained Property 112",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1475,10 +1475,10 @@
     "status": "Active"
   },
   {
-    "name": "SpringHill Suites Denver Downtown (Sage)",
+    "name": "Demo Trained Property 113",
     "brand": "Full Flag Brand",
-    "city": "Denver",
-    "state": "CO",
+    "city": "Demo City 12",
+    "state": "ZD",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -1486,16 +1486,16 @@
     "status": "Active"
   },
   {
-    "name": "Springhill Suites Panama City Beach - PFNSH (OTO)",
+    "name": "Demo Trained Property 114",
     "brand": "SpringHill Suites by Marriott",
-    "city": "Panama City Beach",
-    "state": "FL",
-    "url": "https://www.marriott.com/en-us/hotels/pfnsh-springhill-suites-panama-city-beach-beachfront/overview",
+    "city": "Demo City 35",
+    "state": "ZF",
+    "url": "https://demo-trained-114.example.com/",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
     "projectType": "One-Time",
     "status": "Active",
-    "managementGroup": "OTO Development",
+    "managementGroup": "Demo Management Group 20",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1503,10 +1503,10 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Beachfront all-suite hotel on Gulf of Mexico with outdoor pool, lazy river, proximity to Pier Park, and event space."
+    "notes": "Synthetic demo note for trained property 114."
   },
   {
-    "name": "Staybridge Suites IAH Airport (Om Woodbridge)",
+    "name": "Demo Trained Property 115",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1517,7 +1517,7 @@
     "status": "Active"
   },
   {
-    "name": "Synergy Private Health (PPC)",
+    "name": "Demo Trained Property 116",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1528,7 +1528,7 @@
     "status": "Active"
   },
   {
-    "name": "TAN Resort",
+    "name": "Demo Trained Property 117",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1539,16 +1539,16 @@
     "status": "Deactivated"
   },
   {
-    "name": "Tapestry by Hilton, Beal House Fort Walton Beach - FWBBH (OTO)",
+    "name": "Demo Trained Property 118",
     "brand": "Tapestry Collection by Hilton",
-    "city": "Fort Walton Beach",
-    "state": "FL",
-    "url": "https://www.hilton.com/en/hotels/fwbbhup-beal-house-fort-walton-beach/",
+    "city": "Demo City 14",
+    "state": "ZF",
+    "url": "https://demo-trained-118.example.com/",
     "propertyType": "Branded",
     "category": "Soft Brand.com",
     "projectType": "One-Time",
     "status": "Active",
-    "managementGroup": "OTO Development",
+    "managementGroup": "Demo Management Group 20",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1556,10 +1556,10 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Boutique beachfront property on Okaloosa Island featuring The Remedy restaurant, oceanfront balconies, and Hilton Honors integration."
+    "notes": "Synthetic demo note for trained property 118."
   },
   {
-    "name": "Template",
+    "name": "Demo Trained Property 119",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1570,10 +1570,10 @@
     "status": ""
   },
   {
-    "name": "Tempo Washington DC Downtown - DCALL (OTO)",
+    "name": "Demo Trained Property 120",
     "brand": "Full Flag Brand",
-    "city": "Washington",
-    "state": "DC",
+    "city": "Demo City 45",
+    "state": "ZE",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -1581,7 +1581,7 @@
     "status": "Active"
   },
   {
-    "name": "The Battle House Renaissance Mobile Hotel & Spa (PCH)",
+    "name": "Demo Trained Property 121",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1592,7 +1592,7 @@
     "status": "Completed"
   },
   {
-    "name": "The Ben, Autograph Collection (Sage)",
+    "name": "Demo Trained Property 122",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1603,7 +1603,7 @@
     "status": "Account Manager Review"
   },
   {
-    "name": "The Benson (Sage)",
+    "name": "Demo Trained Property 123",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1614,10 +1614,10 @@
     "status": "Active"
   },
   {
-    "name": "The Bidwell Marriott Portland (Sage)",
+    "name": "Demo Trained Property 124",
     "brand": "Full Flag Brand",
-    "city": "Portland",
-    "state": "OR",
+    "city": "Demo City 38",
+    "state": "ZT",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -1625,7 +1625,7 @@
     "status": "Active"
   },
   {
-    "name": "The Blackstone Autograph Collection (Sage)",
+    "name": "Demo Trained Property 125",
     "brand": "Full Flag Brand",
     "city": "",
     "state": "",
@@ -1636,7 +1636,7 @@
     "status": "On Hold"
   },
   {
-    "name": "The Coachman (Rebel)",
+    "name": "Demo Trained Property 126",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1647,7 +1647,7 @@
     "status": "To Do"
   },
   {
-    "name": "The Grove Resort & Water Park Orlando",
+    "name": "Demo Trained Property 127",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1658,7 +1658,7 @@
     "status": "Completed"
   },
   {
-    "name": "The Industrialist Pittsburgh (HRI)",
+    "name": "Demo Trained Property 128",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1669,7 +1669,7 @@
     "status": "To Do"
   },
   {
-    "name": "The Louis Hotel (Wilson)",
+    "name": "Demo Trained Property 129",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1680,7 +1680,7 @@
     "status": "Completed"
   },
   {
-    "name": "The Pennywell Hotel (HVMG)",
+    "name": "Demo Trained Property 130",
     "brand": "Soft Vanity",
     "city": "",
     "state": "",
@@ -1691,7 +1691,7 @@
     "status": "Completed"
   },
   {
-    "name": "TownePlace Suites Sikeston (First Call Hospitality)",
+    "name": "Demo Trained Property 131",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1702,10 +1702,10 @@
     "status": "To Do"
   },
   {
-    "name": "Tru by Hilton Raleigh-Durham Airport (Parks)",
+    "name": "Demo Trained Property 132",
     "brand": "Full Flag Brand",
-    "city": "Raleigh",
-    "state": "NC",
+    "city": "Demo City 39",
+    "state": "ZO",
     "url": "",
     "propertyType": "Branded",
     "category": "Full Flag Brand",
@@ -1713,7 +1713,7 @@
     "status": "Active"
   },
   {
-    "name": "WC BBQ Co. (SEO/GEO)",
+    "name": "Demo Trained Property 133",
     "brand": "Independent",
     "city": "",
     "state": "",
@@ -1724,10 +1724,10 @@
     "status": "Active"
   },
   {
-    "name": "Winslow Arizona (Lodging IQ)",
+    "name": "Demo Trained Property 134",
     "brand": "Independent",
-    "city": "Winslow",
-    "state": "AZ",
+    "city": "Demo City 47",
+    "state": "ZB",
     "url": "",
     "propertyType": "",
     "category": "",
@@ -1735,10 +1735,10 @@
     "status": "Completed"
   },
   {
-    "name": "Winslow Oklahoma (Lodging IQ)",
+    "name": "Demo Trained Property 135",
     "brand": "Independent",
-    "city": "Oklahoma City",
-    "state": "OK",
+    "city": "Demo City 32",
+    "state": "ZS",
     "url": "",
     "propertyType": "",
     "category": "",
@@ -1746,16 +1746,16 @@
     "status": "Completed"
   },
   {
-    "name": "Hyatt Place Washington DC/US Capitol",
+    "name": "Demo Trained Property 136",
     "brand": "Hyatt",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.hyatt.com/hyatt-place/en-US/waszd-hyatt-place-washington-dc-us-capitol",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-136.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM",
+    "managementGroup": "Demo Management Group 07",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1764,16 +1764,16 @@
     ]
   },
   {
-    "name": "Residence Inn by Marriott Tampa Westshore/Airport",
+    "name": "Demo Trained Property 137",
     "brand": "Marriott",
-    "city": "Tampa",
-    "state": "FL",
-    "url": "https://www.marriott.com/en-us/hotels/tpaws-residence-inn-tampa-westshore-airport/",
+    "city": "Demo City 44",
+    "state": "ZF",
+    "url": "https://demo-trained-137.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM; 30 Points Audit",
+    "managementGroup": "Demo Management Group 12",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1782,11 +1782,11 @@
     ]
   },
   {
-    "name": "The Grand Hotel Golf Resort & Spa (PCH)",
+    "name": "Demo Trained Property 138",
     "brand": "Marriott",
-    "city": "Point Clear",
-    "state": "AL",
-    "url": "https://www.marriott.com/en-us/hotels/ptlak-grand-hotel-golf-resort-and-spa-autograph-collection/overview/",
+    "city": "Demo City 37",
+    "state": "ZA",
+    "url": "https://demo-trained-138.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
@@ -1799,11 +1799,11 @@
     ]
   },
   {
-    "name": "Hyatt Thompson Houson",
+    "name": "Demo Trained Property 139",
     "brand": "Hyatt",
-    "city": "Houston",
-    "state": "TX",
-    "url": "https://www.hyatt.com/thompson-hotels/en-US/iahth-thompson-houston",
+    "city": "Demo City 16",
+    "state": "ZW",
+    "url": "https://demo-trained-139.example.com/",
     "propertyType": "Boutique / Luxury",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
@@ -1816,11 +1816,11 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Fort Wayne Downtown at Grand Wayne Convention Center",
+    "name": "Demo Trained Property 140",
     "brand": "Marriott",
-    "city": "Fort Wayne",
-    "state": "IN",
-    "url": "https://www.marriott.com/en-us/hotels/fwadt-courtyard-fort-wayne-downtown-at-grand-wayne-convention-center/",
+    "city": "Demo City 15",
+    "state": "ZH",
+    "url": "https://demo-trained-140.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
@@ -1833,11 +1833,11 @@
     ]
   },
   {
-    "name": "Trilogy Hotel Montgomery, Autograph Collection",
+    "name": "Demo Trained Property 141",
     "brand": "Marriott",
-    "city": "Montgomery",
-    "state": "AL",
-    "url": "https://www.marriott.com/en-us/hotels/mgmak-trilogy-hotel-montgomery-autograph-collection/",
+    "city": "Demo City 27",
+    "state": "ZA",
+    "url": "https://demo-trained-141.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
@@ -1850,16 +1850,16 @@
     ]
   },
   {
-    "name": "Hotel Per La, Autograph Collection",
+    "name": "Demo Trained Property 142",
     "brand": "Marriott",
-    "city": "Los Angeles",
-    "state": "CA",
-    "url": "https://www.marriott.com/en-us/hotels/laxdk-hotel-per-la-autograph-collection/",
+    "city": "Demo City 21",
+    "state": "ZC",
+    "url": "https://demo-trained-142.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality; delete",
+    "managementGroup": "Demo Management Group 28",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1868,16 +1868,16 @@
     ]
   },
   {
-    "name": "Embassy Suites by Hilton Tampa Brandon",
+    "name": "Demo Trained Property 143",
     "brand": "Hilton",
-    "city": "Tampa",
-    "state": "FL",
-    "url": "https://www.hilton.com/en/hotels/tpabdes-embassy-suites-tampa-brandon/",
+    "city": "Demo City 44",
+    "state": "ZF",
+    "url": "https://demo-trained-143.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1886,16 +1886,16 @@
     ]
   },
   {
-    "name": "Fairfield by Marriott Inn & Suites Louisville Downtown",
+    "name": "Demo Trained Property 144",
     "brand": "Marriott",
-    "city": "Louisville",
-    "state": "KY",
-    "url": "https://www.marriott.com/en-us/hotels/sdffd-fairfield-inn-and-suites-louisville-downtown/",
+    "city": "Demo City 22",
+    "state": "ZI",
+    "url": "https://demo-trained-144.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1904,16 +1904,16 @@
     ]
   },
   {
-    "name": "AC Hotel Arlington National Landing",
+    "name": "Demo Trained Property 145",
     "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasnl-ac-hotel-arlington-national-landing/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-145.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1922,16 +1922,16 @@
     ]
   },
   {
-    "name": "AC Hotel Boston Cambridge",
+    "name": "Demo Trained Property 146",
     "brand": "Marriott",
-    "city": "Cambridge",
-    "state": "MA",
-    "url": "https://www.marriott.com/en-us/hotels/bosar-ac-hotel-boston-cambridge/",
+    "city": "Demo City 08",
+    "state": "ZK",
+    "url": "https://demo-trained-146.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1940,16 +1940,16 @@
     ]
   },
   {
-    "name": "Homewood Suites by Hilton Long Beach Airport",
+    "name": "Demo Trained Property 147",
     "brand": "Hilton",
-    "city": "Long Beach",
-    "state": "CA",
-    "url": "https://www.hilton.com/en/hotels/lgbarhw-homewood-suites-long-beach-airport/",
+    "city": "Demo City 20",
+    "state": "ZC",
+    "url": "https://demo-trained-147.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1958,16 +1958,16 @@
     ]
   },
   {
-    "name": "AC Hotel Kansas City Plaza",
+    "name": "Demo Trained Property 148",
     "brand": "Marriott",
-    "city": "Kansas City",
-    "state": "MO",
-    "url": "https://www.marriott.com/en-us/hotels/mciac-ac-hotel-kansas-city-plaza/",
+    "city": "Demo City 18",
+    "state": "ZM",
+    "url": "https://demo-trained-148.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1976,16 +1976,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Bloomington",
+    "name": "Demo Trained Property 149",
     "brand": "Hilton",
-    "city": "Bloomington",
-    "state": "IN",
-    "url": "https://www.hilton.com/en/hotels/bmgingi-hilton-garden-inn-bloomington/",
+    "city": "Demo City 04",
+    "state": "ZH",
+    "url": "https://demo-trained-149.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -1994,16 +1994,16 @@
     ]
   },
   {
-    "name": "AC Hotel Miami Wynwood",
+    "name": "Demo Trained Property 150",
     "brand": "Marriott",
-    "city": "Miami",
-    "state": "FL",
-    "url": "https://www.marriott.com/en-us/hotels/miaaw-ac-hotel-miami-wynwood/",
+    "city": "Demo City 24",
+    "state": "ZF",
+    "url": "https://demo-trained-150.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2012,16 +2012,16 @@
     ]
   },
   {
-    "name": "SpringHill Suites by Marriott Louisville Downtown",
+    "name": "Demo Trained Property 151",
     "brand": "Marriott",
-    "city": "Louisville",
-    "state": "KY",
-    "url": "https://www.marriott.com/en-us/hotels/sdfsd-springhill-suites-louisville-downtown/",
+    "city": "Demo City 22",
+    "state": "ZI",
+    "url": "https://demo-trained-151.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2030,16 +2030,16 @@
     ]
   },
   {
-    "name": "AC Hotel Pleasanton",
+    "name": "Demo Trained Property 152",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/oakac-ac-hotel-pleasanton/",
+    "url": "https://demo-trained-152.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2048,16 +2048,16 @@
     ]
   },
   {
-    "name": "AC Hotel Washington DC Convention Center",
+    "name": "Demo Trained Property 153",
     "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasae-ac-hotel-washington-dc-convention-center/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-153.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2066,16 +2066,16 @@
     ]
   },
   {
-    "name": "Residence Inn - Big Sky/The Wilson Hotel",
+    "name": "Demo Trained Property 154",
     "brand": "Marriott",
-    "city": "Bozeman",
-    "state": "MT",
-    "url": "https://www.marriott.com/en-us/hotels/bznrk-residence-inn-big-sky-the-wilson-hotel/",
+    "city": "Demo City 07",
+    "state": "ZN",
+    "url": "https://demo-trained-154.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2084,16 +2084,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Hoffman Estates",
+    "name": "Demo Trained Property 155",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/chihegi-hilton-garden-inn-hoffman-estates/",
+    "url": "https://demo-trained-155.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2102,16 +2102,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Boston Brookline",
+    "name": "Demo Trained Property 156",
     "brand": "Marriott",
-    "city": "Cambridge",
-    "state": "MA",
-    "url": "https://www.marriott.com/en-us/hotels/bosbl-courtyard-boston-brookline/",
+    "city": "Demo City 08",
+    "state": "ZK",
+    "url": "https://demo-trained-156.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2120,16 +2120,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Lake Forest Mettawa",
+    "name": "Demo Trained Property 157",
     "brand": "Hilton",
-    "city": "Chicago",
-    "state": "IL",
-    "url": "https://www.hilton.com/en/hotels/ordlfgi-hilton-garden-inn-lake-forest-mettawa/",
+    "city": "Demo City 10",
+    "state": "ZG",
+    "url": "https://demo-trained-157.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2138,16 +2138,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Washington Capitol Hill/Navy Yard",
+    "name": "Demo Trained Property 158",
     "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasny-courtyard-washington-capitol-hill-navy-yard/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-158.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2156,16 +2156,16 @@
     ]
   },
   {
-    "name": "Hampton Inn & Suites Omaha-Downtown",
+    "name": "Demo Trained Property 159",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/omadnhx-hampton-suites-omaha-downtown/",
+    "url": "https://demo-trained-159.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2174,16 +2174,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Los Angeles Pasadena/Old Town",
+    "name": "Demo Trained Property 160",
     "brand": "Marriott",
-    "city": "Los Angeles",
-    "state": "CA",
-    "url": "https://www.marriott.com/en-us/hotels/laxot-courtyard-los-angeles-pasadena-old-town/",
+    "city": "Demo City 21",
+    "state": "ZC",
+    "url": "https://demo-trained-160.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2192,16 +2192,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Naperville/Warrenville",
+    "name": "Demo Trained Property 161",
     "brand": "Hilton",
-    "city": "Chicago",
-    "state": "IL",
-    "url": "https://www.hilton.com/en/hotels/ordnwgi-hilton-garden-inn-naperville-warrenville/",
+    "city": "Demo City 10",
+    "state": "ZG",
+    "url": "https://demo-trained-161.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2210,16 +2210,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn - Pittsburgh University Place",
+    "name": "Demo Trained Property 162",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/pitucgi-hilton-garden-inn-pittsburgh-university-place/",
+    "url": "https://demo-trained-162.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2228,16 +2228,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Philadelphia Downtown",
+    "name": "Demo Trained Property 163",
     "brand": "Marriott",
-    "city": "Philadelphia",
-    "state": "PA",
-    "url": "https://www.marriott.com/en-us/hotels/phlyd-courtyard-philadelphia-downtown/",
+    "city": "Demo City 36",
+    "state": "ZU",
+    "url": "https://demo-trained-163.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2246,16 +2246,16 @@
     ]
   },
   {
-    "name": "Homewood Suites by Hilton Tampa-Brandon",
+    "name": "Demo Trained Property 164",
     "brand": "Hilton",
-    "city": "Tampa",
-    "state": "FL",
-    "url": "https://www.hilton.com/en/hotels/tpahwhw-homewood-suites-tampa-brandon/",
+    "city": "Demo City 44",
+    "state": "ZF",
+    "url": "https://demo-trained-164.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2264,16 +2264,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Sunnyvale Silicon Valley",
+    "name": "Demo Trained Property 165",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/sjcsv-courtyard-sunnyvale-silicon-valley/",
+    "url": "https://demo-trained-165.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2282,16 +2282,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Hershey",
+    "name": "Demo Trained Property 166",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/mdthegi-hilton-garden-inn-hershey/",
+    "url": "https://demo-trained-166.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2300,16 +2300,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott San Diego Downtown",
+    "name": "Demo Trained Property 167",
     "brand": "Marriott",
-    "city": "San Diego",
-    "state": "CA",
-    "url": "https://www.marriott.com/en-us/hotels/sancd-courtyard-san-diego-downtown/",
+    "city": "Demo City 40",
+    "state": "ZC",
+    "url": "https://demo-trained-167.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2318,16 +2318,16 @@
     ]
   },
   {
-    "name": "Hampton Inn & Suites Annapolis",
+    "name": "Demo Trained Property 168",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/andmdhx-hampton-suites-annapolis/",
+    "url": "https://demo-trained-168.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2336,16 +2336,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Alexandria Old Town/Southwest",
+    "name": "Demo Trained Property 169",
     "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasal-courtyard-alexandria-old-town-southwest/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-169.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2354,16 +2354,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Omaha Downtown/Old Market Area",
+    "name": "Demo Trained Property 170",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/omacy-courtyard-omaha-downtown-old-market-area/",
+    "url": "https://demo-trained-170.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2372,16 +2372,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Bethesda Downtown",
+    "name": "Demo Trained Property 171",
     "brand": "Hilton",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.hilton.com/en/hotels/wasbtgi-hilton-garden-inn-bethesda-downtown/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-171.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2390,34 +2390,16 @@
     ]
   },
   {
-    "name": "Embassy Suites by Hilton South Jordan Salt Lake City",
-    "brand": "Hilton",
-    "city": "",
-    "state": "",
-    "url": "https://www.hilton.com/en/hotels/slcjoes-embassy-suites-south-jordan-salt-lake-city/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM Group 1",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Hilton Brooklyn New York",
+    "name": "Demo Trained Property 172",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/nycbshh-hilton-brooklyn-new-york/",
+    "url": "https://demo-trained-172.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2426,16 +2408,16 @@
     ]
   },
   {
-    "name": "Hilton St. Petersburg Carillon Park",
+    "name": "Demo Trained Property 173",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/piecahf-hilton-st-petersburg-carillon-park/",
+    "url": "https://demo-trained-173.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2444,16 +2426,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Queens/JFK Airport",
+    "name": "Demo Trained Property 174",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/jfkqagi-hilton-garden-inn-queens-jfk-airport/",
+    "url": "https://demo-trained-174.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2462,34 +2444,16 @@
     ]
   },
   {
-    "name": "Hilton Los Angeles Culver City",
-    "brand": "Hilton",
-    "city": "Los Angeles",
-    "state": "CA",
-    "url": "https://www.hilton.com/en/hotels/laxwehh-hilton-los-angeles-culver-city/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM Group 1",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Hampton Inn Garden City Long Island",
+    "name": "Demo Trained Property 175",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/jhcgchx-hampton-garden-city-long-island/",
+    "url": "https://demo-trained-175.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2498,16 +2462,52 @@
     ]
   },
   {
-    "name": "Homewood Suites by Hilton Omaha-Downtown",
+    "name": "Demo Trained Property 176",
+    "brand": "Hilton",
+    "city": "Demo City 21",
+    "state": "ZC",
+    "url": "https://demo-trained-176.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 11",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 177",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/omahwhw-homewood-suites-omaha-downtown/",
+    "url": "https://demo-trained-177.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 08",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 178",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-178.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2516,16 +2516,16 @@
     ]
   },
   {
-    "name": "Homewood Suites by Hilton University City Philadelphia, PA",
+    "name": "Demo Trained Property 179",
     "brand": "Hilton",
-    "city": "Philadelphia",
-    "state": "PA",
-    "url": "https://www.hilton.com/en/hotels/phluphw-homewood-suites-university-city-philadelphia-pa/",
+    "city": "Demo City 36",
+    "state": "ZU",
+    "url": "https://demo-trained-179.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2534,16 +2534,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Philadelphia Center City-Convention Center",
+    "name": "Demo Trained Property 180",
     "brand": "Hilton",
-    "city": "Philadelphia",
-    "state": "PA",
-    "url": "https://www.hilton.com/en/hotels/phlcvhx-hampton-philadelphia-center-city-convention-center/",
+    "city": "Demo City 36",
+    "state": "ZU",
+    "url": "https://demo-trained-180.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2552,16 +2552,16 @@
     ]
   },
   {
-    "name": "Le Méridien Tampa, The Courthouse",
+    "name": "Demo Trained Property 181",
     "brand": "Marriott",
-    "city": "Tampa",
-    "state": "FL",
-    "url": "https://www.marriott.com/en-us/hotels/tpamd-le-meridien-tampa-the-courthouse/",
+    "city": "Demo City 44",
+    "state": "ZF",
+    "url": "https://demo-trained-181.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2570,16 +2570,16 @@
     ]
   },
   {
-    "name": "Washington Marriott Capitol Hill",
+    "name": "Demo Trained Property 182",
     "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasnn-washington-marriott-capitol-hill/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-182.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2588,16 +2588,16 @@
     ]
   },
   {
-    "name": "Denver Marriott South at Park Meadows",
+    "name": "Demo Trained Property 183",
     "brand": "Marriott",
-    "city": "Denver",
-    "state": "CO",
-    "url": "https://www.marriott.com/en-us/hotels/denms-denver-marriott-south-at-park-meadows/",
+    "city": "Demo City 12",
+    "state": "ZD",
+    "url": "https://demo-trained-183.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2606,16 +2606,16 @@
     ]
   },
   {
-    "name": "Ithaca Marriott Downtown on the Commons",
+    "name": "Demo Trained Property 184",
     "brand": "Marriott",
-    "city": "Ithaca",
-    "state": "NY",
-    "url": "https://www.marriott.com/en-us/hotels/ithmc-ithaca-marriott-downtown-on-the-commons/",
+    "city": "Demo City 17",
+    "state": "ZR",
+    "url": "https://demo-trained-184.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2624,34 +2624,16 @@
     ]
   },
   {
-    "name": "Mystic Marriott Hotel & Spa",
-    "brand": "Marriott",
-    "city": "",
-    "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/gonmm-mystic-marriott-hotel-and-spa/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM Group 1",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Moxy NYC Downtown",
+    "name": "Demo Trained Property 185",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/nycof-moxy-nyc-downtown/",
+    "url": "https://demo-trained-185.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2660,16 +2642,34 @@
     ]
   },
   {
-    "name": "Renaissance Boulder Flatiron Hotel",
+    "name": "Demo Trained Property 186",
     "brand": "Marriott",
-    "city": "Denver",
-    "state": "CO",
-    "url": "https://www.marriott.com/en-us/hotels/denir-renaissance-boulder-flatiron-hotel/",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-186.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 11",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 187",
+    "brand": "Marriott",
+    "city": "Demo City 12",
+    "state": "ZD",
+    "url": "https://demo-trained-187.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2678,16 +2678,16 @@
     ]
   },
   {
-    "name": "Renaissance Fort Lauderdale West Hotel",
+    "name": "Demo Trained Property 188",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/fllrp-renaissance-fort-lauderdale-west-hotel/",
+    "url": "https://demo-trained-188.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2696,16 +2696,16 @@
     ]
   },
   {
-    "name": "The Westin Dallas Fort Worth Airport",
+    "name": "Demo Trained Property 189",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/dfwwa-the-westin-dallas-fort-worth-airport/",
+    "url": "https://demo-trained-189.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2714,16 +2714,16 @@
     ]
   },
   {
-    "name": "The Westin Philadelphia",
+    "name": "Demo Trained Property 190",
     "brand": "Marriott",
-    "city": "Philadelphia",
-    "state": "PA",
-    "url": "https://www.marriott.com/en-us/hotels/phlwi-the-westin-philadelphia/",
+    "city": "Demo City 36",
+    "state": "ZU",
+    "url": "https://demo-trained-190.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM Group 1",
+    "managementGroup": "Demo Management Group 11",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2732,16 +2732,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Manhattan-Chelsea",
+    "name": "Demo Trained Property 191",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/nyccshx-hampton-manhattan-chelsea/",
+    "url": "https://demo-trained-191.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2750,16 +2750,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Manhattan/Times Square South",
+    "name": "Demo Trained Property 192",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/nycmahx-hampton-manhattan-times-square-south/",
+    "url": "https://demo-trained-192.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2768,16 +2768,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn New York/Manhattan-Midtown East",
+    "name": "Demo Trained Property 193",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/nycmegi-hilton-garden-inn-new-york-manhattan-midtown-east/",
+    "url": "https://demo-trained-193.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2786,16 +2786,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Manhattan-Madison Square Garden Area",
+    "name": "Demo Trained Property 194",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/nychshx-hampton-manhattan-madison-square-garden-area/",
+    "url": "https://demo-trained-194.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2804,16 +2804,16 @@
     ]
   },
   {
-    "name": "Hampton Inn & Suites Yonkers",
+    "name": "Demo Trained Property 195",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/nycynhx-hampton-suites-yonkers/",
+    "url": "https://demo-trained-195.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2822,16 +2822,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Westchester Dobbs Ferry",
+    "name": "Demo Trained Property 196",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/hpnwdgi-hilton-garden-inn-westchester-dobbs-ferry/",
+    "url": "https://demo-trained-196.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2840,16 +2840,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Washington DC/Georgetown Area",
+    "name": "Demo Trained Property 197",
     "brand": "Hilton",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.hilton.com/en/hotels/waswegi-hilton-garden-inn-washington-dc-georgetown-area/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-197.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2858,16 +2858,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Austin University Capitol District",
+    "name": "Demo Trained Property 198",
     "brand": "Hilton",
-    "city": "Austin",
-    "state": "TX",
-    "url": "https://www.hilton.com/en/hotels/ausaugi-hilton-garden-inn-austin-university-capitol-district/",
+    "city": "Demo City 03",
+    "state": "ZW",
+    "url": "https://demo-trained-198.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2876,16 +2876,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Boston Logan Airport Chelsea",
+    "name": "Demo Trained Property 199",
     "brand": "Hilton",
-    "city": "Cambridge",
-    "state": "MA",
-    "url": "https://www.hilton.com/en/hotels/boshthx-hampton-boston-logan-airport-chelsea/",
+    "city": "Demo City 08",
+    "state": "ZK",
+    "url": "https://demo-trained-199.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2894,34 +2894,16 @@
     ]
   },
   {
-    "name": "Hampton Inn & Suites Providence/Smithfield",
-    "brand": "Hilton",
-    "city": "",
-    "state": "",
-    "url": "https://www.hilton.com/en/hotels/pvdsfhx-hampton-suites-providence-smithfield/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM - Group #2",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Hilton Garden Inn Detroit/Novi",
+    "name": "Demo Trained Property 200",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/detnogi-hilton-garden-inn-detroit-novi/",
+    "url": "https://demo-trained-200.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2930,16 +2912,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Long Beach Airport",
+    "name": "Demo Trained Property 201",
     "brand": "Hilton",
-    "city": "Long Beach",
-    "state": "CA",
-    "url": "https://www.hilton.com/en/hotels/lgbaphx-hampton-long-beach-airport/",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-201.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2948,16 +2930,16 @@
     ]
   },
   {
-    "name": "Hampton Inn & Suites Miami Wynwood Design District",
+    "name": "Demo Trained Property 202",
     "brand": "Hilton",
-    "city": "Miami",
-    "state": "FL",
-    "url": "https://www.hilton.com/en/hotels/miamihx-hampton-suites-miami-wynwood-design-district/",
+    "city": "Demo City 20",
+    "state": "ZC",
+    "url": "https://demo-trained-202.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2966,16 +2948,16 @@
     ]
   },
   {
-    "name": "Hampton Inn & Suites Miami-Doral/Dolphin Mall",
+    "name": "Demo Trained Property 203",
     "brand": "Hilton",
-    "city": "Miami",
-    "state": "FL",
-    "url": "https://www.hilton.com/en/hotels/miaflhx-hampton-suites-miami-doral-dolphin-mall/",
+    "city": "Demo City 24",
+    "state": "ZF",
+    "url": "https://demo-trained-203.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -2984,16 +2966,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Washington-Downtown-Convention Center",
+    "name": "Demo Trained Property 204",
     "brand": "Hilton",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.hilton.com/en/hotels/washhhx-hampton-washington-downtown-convention-center/",
+    "city": "Demo City 24",
+    "state": "ZF",
+    "url": "https://demo-trained-204.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3002,16 +2984,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Washington DC Downtown",
+    "name": "Demo Trained Property 205",
     "brand": "Hilton",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.hilton.com/en/hotels/dcachgi-hilton-garden-inn-washington-dc-downtown/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-205.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #2",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3020,52 +3002,34 @@
     ]
   },
   {
-    "name": "The Nines, a Luxury Collection Hotel, Portland",
+    "name": "Demo Trained Property 206",
+    "brand": "Hilton",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-206.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 08",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 207",
     "brand": "Marriott",
-    "city": "Portland",
-    "state": "OR",
-    "url": "https://www.marriott.com/en-us/hotels/pdxln-the-nines-a-luxury-collection-hotel-portland/",
-    "propertyType": "Full Service",
-    "category": "Soft Brand.com",
-    "projectType": "Ongoing",
-    "status": "Active",
-    "managementGroup": "Sage Hospitality",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Embassy Suites by Hilton Boulder",
-    "brand": "Hilton",
-    "city": "Denver",
-    "state": "CO",
-    "url": "https://www.hilton.com/en/hotels/denboes-embassy-suites-boulder/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Active",
-    "managementGroup": "Sage Hospitality",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Morrison House Old Town Alexandria, Autograph Collection",
-    "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasmh-morrison-house-old-town-alexandria-autograph-collection/",
+    "city": "Demo City 38",
+    "state": "ZT",
+    "url": "https://demo-trained-207.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3074,16 +3038,34 @@
     ]
   },
   {
-    "name": "The Alexandrian Old Town Alexandria, Autograph Collection",
+    "name": "Demo Trained Property 208",
+    "brand": "Hilton",
+    "city": "Demo City 12",
+    "state": "ZD",
+    "url": "https://demo-trained-208.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Demo Management Group 27",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 209",
     "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasmo-the-alexandrian-old-town-alexandria-autograph-collection/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-209.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3092,16 +3074,34 @@
     ]
   },
   {
-    "name": "Homewood Suites by Hilton Raleigh Cary I-40",
+    "name": "Demo Trained Property 210",
+    "brand": "Marriott",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-210.example.com/",
+    "propertyType": "Full Service",
+    "category": "Soft Brand.com",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Demo Management Group 27",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 211",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/rducxhw-homewood-suites-raleigh-cary-i-40/",
+    "url": "https://demo-trained-211.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3110,16 +3110,16 @@
     ]
   },
   {
-    "name": "Grand Hotel Golf Resort & Spa, Autograph Collection",
+    "name": "Demo Trained Property 212",
     "brand": "Marriott",
-    "city": "Point Clear",
-    "state": "AL",
-    "url": "https://www.marriott.com/en-us/hotels/ptlak-grand-hotel-golf-resort-and-spa-autograph-collection/",
+    "city": "Demo City 37",
+    "state": "ZA",
+    "url": "https://demo-trained-212.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "PCH Hospitality",
+    "managementGroup": "Demo Management Group 23",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3128,16 +3128,16 @@
     ]
   },
   {
-    "name": "Renaissance Mobile Riverview Plaza Hotel",
+    "name": "Demo Trained Property 213",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/mobrv-renaissance-mobile-riverview-plaza-hotel/",
+    "url": "https://demo-trained-213.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "PCH Hospitality",
+    "managementGroup": "Demo Management Group 23",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3146,16 +3146,16 @@
     ]
   },
   {
-    "name": "Homewood Suites by Hilton New Orleans French Quarter",
+    "name": "Demo Trained Property 214",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/msyfrhw-homewood-suites-new-orleans-french-quarter/",
+    "url": "https://demo-trained-214.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3164,16 +3164,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Dana Point Doheny Beach",
+    "name": "Demo Trained Property 215",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/snadbgi-hilton-garden-inn-dana-point-doheny-beach/",
+    "url": "https://demo-trained-215.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3182,16 +3182,16 @@
     ]
   },
   {
-    "name": "Canopy by Hilton Dallas Uptown",
+    "name": "Demo Trained Property 216",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/dfwrmpy-canopy-dallas-uptown/",
+    "url": "https://demo-trained-216.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3200,16 +3200,16 @@
     ]
   },
   {
-    "name": "Renaissance Montgomery Hotel & Spa at the Convention Center",
+    "name": "Demo Trained Property 217",
     "brand": "Marriott",
-    "city": "Montgomery",
-    "state": "AL",
-    "url": "https://www.marriott.com/en-us/hotels/mgmbr-renaissance-montgomery-hotel-and-spa-at-the-convention-center/",
+    "city": "Demo City 27",
+    "state": "ZA",
+    "url": "https://demo-trained-217.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "PCH Hospitality",
+    "managementGroup": "Demo Management Group 23",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3218,16 +3218,16 @@
     ]
   },
   {
-    "name": "Auburn Marriott Opelika Resort & Spa at Grand National",
+    "name": "Demo Trained Property 218",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/csgab-auburn-marriott-opelika-resort-and-spa-at-grand-national/",
+    "url": "https://demo-trained-218.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "PCH Hospitality",
+    "managementGroup": "Demo Management Group 23",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3236,16 +3236,16 @@
     ]
   },
   {
-    "name": "Hampton Inn & Suites Boerne",
+    "name": "Demo Trained Property 219",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/satbohx-hampton-suites-boerne/",
+    "url": "https://demo-trained-219.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3254,16 +3254,16 @@
     ]
   },
   {
-    "name": "Renaissance Birmingham Ross Bridge Golf Resort & Spa",
+    "name": "Demo Trained Property 220",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/bhmhv-renaissance-birmingham-ross-bridge-golf-resort-and-spa/",
+    "url": "https://demo-trained-220.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "PCH Hospitality",
+    "managementGroup": "Demo Management Group 23",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3272,16 +3272,16 @@
     ]
   },
   {
-    "name": "Motto by Hilton Nashville Downtown",
+    "name": "Demo Trained Property 221",
     "brand": "Hilton",
-    "city": "Nashville",
-    "state": "TN",
-    "url": "https://www.hilton.com/en/hotels/bnairua-motto-nashville-downtown/",
+    "city": "Demo City 29",
+    "state": "ZV",
+    "url": "https://demo-trained-221.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Chartwell Hospitality",
+    "managementGroup": "Demo Management Group 04",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3290,52 +3290,16 @@
     ]
   },
   {
-    "name": "DoubleTree Suites by Hilton Hotel Salt Lake City Downtown",
-    "brand": "Hilton",
-    "city": "",
-    "state": "",
-    "url": "https://www.hilton.com/en/hotels/slcwsdt-doubletree-suites-salt-lake-city-downtown/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Active",
-    "managementGroup": "HRI Hospitality",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Courtyard by Marriott Denver Downtown",
-    "brand": "Marriott",
-    "city": "Denver",
-    "state": "CO",
-    "url": "https://www.marriott.com/en-us/hotels/dencd-courtyard-denver-downtown/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Active",
-    "managementGroup": "Sage Hospitality",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Hilton Knoxville",
+    "name": "Demo Trained Property 222",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/knxkhhf-hilton-knoxville/",
+    "url": "https://demo-trained-222.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Aimbridge Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3344,16 +3308,16 @@
     ]
   },
   {
-    "name": "Moxy Denver Cherry Creek",
+    "name": "Demo Trained Property 223",
     "brand": "Marriott",
-    "city": "Denver",
-    "state": "CO",
-    "url": "https://www.marriott.com/en-us/hotels/denox-moxy-denver-cherry-creek/",
+    "city": "Demo City 12",
+    "state": "ZD",
+    "url": "https://demo-trained-223.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3362,16 +3326,52 @@
     ]
   },
   {
-    "name": "Staybridge Suites IAH Airport East",
+    "name": "Demo Trained Property 224",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-224.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Demo Management Group 02",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 225",
+    "brand": "Marriott",
+    "city": "Demo City 12",
+    "state": "ZD",
+    "url": "https://demo-trained-225.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Active",
+    "managementGroup": "Demo Management Group 27",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 226",
     "brand": "IHG",
     "city": "",
     "state": "",
-    "url": "https://www.ihg.com/staybridge/hotels/us/en/humble/houbl/hoteldetail",
+    "url": "https://demo-trained-226.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Om Woodbridge",
+    "managementGroup": "Demo Management Group 22",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3380,16 +3380,16 @@
     ]
   },
   {
-    "name": "Hotel de la Poste – French Quarter, A Renaissance Hotel",
+    "name": "Demo Trained Property 227",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/msyrf-hotel-de-la-poste-french-quarter-a-renaissance-hotel/",
+    "url": "https://demo-trained-227.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3398,16 +3398,16 @@
     ]
   },
   {
-    "name": "Four Points by Sheraton Orlando International Drive",
+    "name": "Demo Trained Property 228",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/mcofp-four-points-orlando-international-drive/",
+    "url": "https://demo-trained-228.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Aimbridge Hospitality",
+    "managementGroup": "Demo Management Group 02",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3416,16 +3416,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Downtown Dallas",
+    "name": "Demo Trained Property 229",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/dalpagi-hilton-garden-inn-downtown-dallas/",
+    "url": "https://demo-trained-229.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3434,16 +3434,16 @@
     ]
   },
   {
-    "name": "Hilton San Antonio Hill Country",
+    "name": "Demo Trained Property 230",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/sathchf-hilton-san-antonio-hill-country/",
+    "url": "https://demo-trained-230.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3452,16 +3452,16 @@
     ]
   },
   {
-    "name": "The Pennywell Hotel",
+    "name": "Demo Trained Property 231",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://thepennywellhotel.com/",
+    "url": "https://demo-trained-231.example.com/",
     "propertyType": "Boutique",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Hospitality Ventures Management",
+    "managementGroup": "Demo Management Group 16",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3470,16 +3470,16 @@
     ]
   },
   {
-    "name": "The Bidwell Marriott Portland",
+    "name": "Demo Trained Property 232",
     "brand": "Marriott",
-    "city": "Portland",
-    "state": "OR",
-    "url": "https://www.marriott.com/en-us/hotels/pdxct-the-bidwell-marriott-portland/",
+    "city": "Demo City 38",
+    "state": "ZT",
+    "url": "https://demo-trained-232.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3488,16 +3488,16 @@
     ]
   },
   {
-    "name": "DoubleTree by Hilton Asheville Downtown",
+    "name": "Demo Trained Property 233",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/avlildt-doubletree-asheville-downtown/",
+    "url": "https://demo-trained-233.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3506,16 +3506,16 @@
     ]
   },
   {
-    "name": "Tru by Hilton Raleigh Durham Airport",
+    "name": "Demo Trained Property 234",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/rduatru-tru-raleigh-durham-airport/",
+    "url": "https://demo-trained-234.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3524,16 +3524,16 @@
     ]
   },
   {
-    "name": "Homewood Suites by Hilton Greenville Downtown",
+    "name": "Demo Trained Property 235",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/gspsohw-homewood-suites-greenville-downtown/",
+    "url": "https://demo-trained-235.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3542,16 +3542,16 @@
     ]
   },
   {
-    "name": "Embassy Suites by Hilton Asheville Downtown",
+    "name": "Demo Trained Property 236",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/avleses-embassy-suites-asheville-downtown/",
+    "url": "https://demo-trained-236.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3560,16 +3560,16 @@
     ]
   },
   {
-    "name": "AC Hotel Bozeman Downtown",
+    "name": "Demo Trained Property 237",
     "brand": "Marriott",
-    "city": "Bozeman",
-    "state": "MT",
-    "url": "https://www.marriott.com/en-us/hotels/bznar-ac-hotel-bozeman-downtown/",
+    "city": "Demo City 07",
+    "state": "ZN",
+    "url": "https://demo-trained-237.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3578,16 +3578,16 @@
     ]
   },
   {
-    "name": "Embassy Suites by Hilton Minneapolis Downtown",
+    "name": "Demo Trained Property 238",
     "brand": "Hilton",
-    "city": "Minneapolis",
-    "state": "MN",
-    "url": "https://www.hilton.com/en/hotels/mspsses-embassy-suites-minneapolis-downtown/",
+    "city": "Demo City 26",
+    "state": "ZL",
+    "url": "https://demo-trained-238.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3596,16 +3596,16 @@
     ]
   },
   {
-    "name": "Hilton San Diego Bayfront",
+    "name": "Demo Trained Property 239",
     "brand": "Hilton",
-    "city": "San Diego",
-    "state": "CA",
-    "url": "https://www.hilton.com/en/hotels/sancchh-hilton-san-diego-bayfront/",
+    "city": "Demo City 40",
+    "state": "ZC",
+    "url": "https://demo-trained-239.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "30 Points Audit",
     "status": "Active",
-    "managementGroup": "30 Points Audit",
+    "managementGroup": "Demo Management Group 01",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3614,16 +3614,16 @@
     ]
   },
   {
-    "name": "Canopy by Hilton Boston Downtown",
+    "name": "Demo Trained Property 240",
     "brand": "Canopy by Hilton",
-    "city": "Boston",
-    "state": "MA",
-    "url": "https://www.hilton.com/en/hotels/bostnpy-canopy-boston-downtown/",
+    "city": "Demo City 05",
+    "state": "ZK",
+    "url": "https://demo-trained-240.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Olshan Properties",
+    "managementGroup": "Demo Management Group 21",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3631,19 +3631,19 @@
       "gemini",
       "perplexity"
     ],
-    "notes": "Boutique lifestyle hotel located between historic North End, Quincy Market, and TD Garden, featuring Rose Town restaurant."
+    "notes": "Synthetic demo note for trained property 240."
   },
   {
-    "name": "Renaissance Shoals Resort & Spa",
+    "name": "Demo Trained Property 241",
     "brand": "Marriott",
-    "city": "Florence",
-    "state": "AL",
-    "url": "https://www.marriott.com/en-us/hotels/mslbr-renaissance-shoals-resort-and-spa/",
+    "city": "Demo City 13",
+    "state": "ZA",
+    "url": "https://demo-trained-241.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "PCH Hospitality",
+    "managementGroup": "Demo Management Group 23",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3652,16 +3652,16 @@
     ]
   },
   {
-    "name": "AC Hotel Los Angeles South Bay",
+    "name": "Demo Trained Property 242",
     "brand": "Marriott",
-    "city": "Los Angeles",
-    "state": "CA",
-    "url": "https://www.marriott.com/en-us/hotels/laxae-ac-hotel-los-angeles-south-bay/overview/",
+    "city": "Demo City 21",
+    "state": "ZC",
+    "url": "https://demo-trained-242.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Welcome",
+    "managementGroup": "Demo Management Group 30",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3670,16 +3670,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Sacramento Cal Expo",
+    "name": "Demo Trained Property 243",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/sacce-courtyard-sacramento-cal-expo/",
+    "url": "https://demo-trained-243.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Welcome",
+    "managementGroup": "Demo Management Group 30",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3688,16 +3688,16 @@
     ]
   },
   {
-    "name": "Hyatt Union Square New York",
+    "name": "Demo Trained Property 244",
     "brand": "Hyatt",
     "city": "",
     "state": "",
-    "url": "https://www.hyatt.com/hyatt-hotels/en-US/nycus-hyatt-union-square-new-york",
+    "url": "https://demo-trained-244.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM",
+    "managementGroup": "Demo Management Group 07",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3706,16 +3706,16 @@
     ]
   },
   {
-    "name": "LivSmart Studios by Hilton Columbia Greystone",
+    "name": "Demo Trained Property 245",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/caertey-livsmart-studios-columbia-greystone/",
+    "url": "https://demo-trained-245.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3724,16 +3724,16 @@
     ]
   },
   {
-    "name": "Hotel Elysium",
+    "name": "Demo Trained Property 246",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://thehotelelysium.com/",
+    "url": "https://demo-trained-246.example.com/",
     "propertyType": "Boutique",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Hotel Elysium",
+    "managementGroup": "Demo Management Group 17",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3742,16 +3742,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Edgewater NYC Area",
+    "name": "Demo Trained Property 247",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/lgaew-courtyard-edgewater-nyc-area/overview/",
+    "url": "https://demo-trained-247.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Welcome",
+    "managementGroup": "Demo Management Group 30",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3760,16 +3760,16 @@
     ]
   },
   {
-    "name": "Element by Marriott New Orleans Downtown",
+    "name": "Demo Trained Property 248",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/msyed-element-new-orleans-downtown/",
+    "url": "https://demo-trained-248.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3778,16 +3778,16 @@
     ]
   },
   {
-    "name": "Visalia Marriott at the Convention Center",
+    "name": "Demo Trained Property 249",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/vismc-visalia-marriott-at-the-convention-center/",
+    "url": "https://demo-trained-249.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Welcome",
+    "managementGroup": "Demo Management Group 30",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3796,16 +3796,16 @@
     ]
   },
   {
-    "name": "Hilton Scranton & Conference Center",
+    "name": "Demo Trained Property 250",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/scrcchf-hilton-scranton-and-conference-center/",
+    "url": "https://demo-trained-250.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Welcome",
+    "managementGroup": "Demo Management Group 30",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3814,16 +3814,16 @@
     ]
   },
   {
-    "name": "Hilton Fort Wayne at the Grand Wayne Convention Center",
+    "name": "Demo Trained Property 251",
     "brand": "Hilton",
-    "city": "Fort Wayne",
-    "state": "IN",
-    "url": "https://www.hilton.com/en/hotels/fwafhhf-hilton-fort-wayne-at-the-grand-wayne-convention-center/",
+    "city": "Demo City 15",
+    "state": "ZH",
+    "url": "https://demo-trained-251.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Welcome",
+    "managementGroup": "Demo Management Group 30",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3832,16 +3832,16 @@
     ]
   },
   {
-    "name": "Maison Métier",
+    "name": "Demo Trained Property 252",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://maisonmetier.com/",
+    "url": "https://demo-trained-252.example.com/",
     "propertyType": "Boutique",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3850,16 +3850,16 @@
     ]
   },
   {
-    "name": "Hampton Inn by Hilton Raleigh Cary Alston Town Center",
+    "name": "Demo Trained Property 253",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/rdugghx-hampton-inn-raleigh-cary-alston-town-center/",
+    "url": "https://demo-trained-253.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Parks Hospitality",
+    "managementGroup": "Demo Management Group 25",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3868,16 +3868,16 @@
     ]
   },
   {
-    "name": "Hyatt Place Los Angeles/LAX/El Segundo",
+    "name": "Demo Trained Property 254",
     "brand": "Hyatt",
-    "city": "Los Angeles",
-    "state": "CA",
-    "url": "https://www.hyatt.com/hyatt-place/en-US/laxze-hyatt-place-los-angeles-lax-el-segundo",
+    "city": "Demo City 21",
+    "state": "ZC",
+    "url": "https://demo-trained-254.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Welcome",
+    "managementGroup": "Demo Management Group 30",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3886,16 +3886,16 @@
     ]
   },
   {
-    "name": "AC Hotel Pasadena",
+    "name": "Demo Trained Property 255",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/burpa-ac-hotel-pasadena/",
+    "url": "https://demo-trained-255.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Welcome",
+    "managementGroup": "Demo Management Group 30",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3904,16 +3904,16 @@
     ]
   },
   {
-    "name": "SpringHill Suites by Marriott Denver Downtown",
+    "name": "Demo Trained Property 256",
     "brand": "Marriott",
-    "city": "Denver",
-    "state": "CO",
-    "url": "https://www.marriott.com/en-us/hotels/densd-springhill-suites-denver-downtown/",
+    "city": "Demo City 12",
+    "state": "ZD",
+    "url": "https://demo-trained-256.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3922,16 +3922,16 @@
     ]
   },
   {
-    "name": "Hampton Inn by Hilton Dexter",
+    "name": "Demo Trained Property 257",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/cgidxhx-hampton-dexter/",
+    "url": "https://demo-trained-257.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "First call hospitality",
+    "managementGroup": "Demo Management Group 06",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3940,16 +3940,16 @@
     ]
   },
   {
-    "name": "TownePlace Suites by Marriott Sikeston",
+    "name": "Demo Trained Property 258",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/cgist-towneplace-suites-sikeston/overview/",
+    "url": "https://demo-trained-258.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "First call hospitality",
+    "managementGroup": "Demo Management Group 06",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3958,16 +3958,16 @@
     ]
   },
   {
-    "name": "Fairfield by Marriott Inn & Suites Sikeston",
+    "name": "Demo Trained Property 259",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/cgisf-fairfield-inn-and-suites-sikeston",
+    "url": "https://demo-trained-259.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "First call hospitality",
+    "managementGroup": "Demo Management Group 06",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3976,16 +3976,16 @@
     ]
   },
   {
-    "name": "Fairfield by Marriott Inn & Suites Poplar Bluff",
+    "name": "Demo Trained Property 260",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/cgifi-fairfield-inn-and-suites-poplar-bluff/",
+    "url": "https://demo-trained-260.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "First call hospitality",
+    "managementGroup": "Demo Management Group 06",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -3994,16 +3994,16 @@
     ]
   },
   {
-    "name": "The Barnett",
+    "name": "Demo Trained Property 261",
     "brand": "Hyatt",
     "city": "",
     "state": "",
-    "url": "https://www.hyatt.com/jdv-by-hyatt/en-US/msyjd-jdv-the-barnett",
+    "url": "https://demo-trained-261.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HRI Hospitality",
+    "managementGroup": "Demo Management Group 14",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4012,16 +4012,16 @@
     ]
   },
   {
-    "name": "Hyatt House Nashville Downtown / Convention Center",
+    "name": "Demo Trained Property 262",
     "brand": "Hyatt",
-    "city": "Nashville",
-    "state": "TN",
-    "url": "https://www.hyatt.com/hyatt-house/en-US/bnaxd-hyatt-house-nashville-downtown-convention-center",
+    "city": "Demo City 29",
+    "state": "ZV",
+    "url": "https://demo-trained-262.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Schulte Hospitality",
+    "managementGroup": "Demo Management Group 29",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4030,16 +4030,16 @@
     ]
   },
   {
-    "name": "JW Marriott Houston Downtown",
+    "name": "Demo Trained Property 263",
     "brand": "Marriott",
-    "city": "Houston",
-    "state": "TX",
-    "url": "https://www.marriott.com/en-us/hotels/houdj-jw-marriott-houston-downtown/",
+    "city": "Demo City 16",
+    "state": "ZW",
+    "url": "https://demo-trained-263.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HM Alpha Hospitality",
+    "managementGroup": "Demo Management Group 13",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4048,16 +4048,16 @@
     ]
   },
   {
-    "name": "The Benson Hotel and Faculty Club",
+    "name": "Demo Trained Property 264",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://thebensonhotel.com/",
+    "url": "https://demo-trained-264.example.com/",
     "propertyType": "Boutique",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4066,16 +4066,16 @@
     ]
   },
   {
-    "name": "Homewood Suites by Hilton Washington, D.C. Downtown",
+    "name": "Demo Trained Property 265",
     "brand": "Hilton",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.hilton.com/en/hotels/washwhw-homewood-suites-washington-dc-downtown",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-265.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4084,16 +4084,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott San Jose North/Silicon Valley",
+    "name": "Demo Trained Property 266",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/sjcno-courtyard-san-jose-north-silicon-valley/",
+    "url": "https://demo-trained-266.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4102,70 +4102,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Omaha Downtown/Old Market Area",
-    "brand": "Hilton",
-    "city": "",
-    "state": "",
-    "url": "https://www.hilton.com/en/hotels/omadmgi-hilton-garden-inn-omaha-downtown-old-market-area/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM - Group #2",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Residence Inn by Marriott Southington",
-    "brand": "Marriott",
-    "city": "",
-    "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/bdlst-residence-inn-southington",
-    "propertyType": "Extended Stay",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM - Group #3",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Residence Inn by Marriott Houston Westchase on Westheimer",
-    "brand": "Marriott",
-    "city": "Houston",
-    "state": "TX",
-    "url": "https://www.marriott.com/en-us/hotels/houwt-residence-inn-houston-westchase-on-westheimer/",
-    "propertyType": "Extended Stay",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM - Group #3",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Hilton Garden Inn Rockville-Gaithersburg",
+    "name": "Demo Trained Property 267",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/dcarvgi-hilton-garden-inn-rockville-gaithersburg/",
+    "url": "https://demo-trained-267.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 08",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4174,16 +4120,16 @@
     ]
   },
   {
-    "name": "Residence Inn by Marriott Brownsville",
+    "name": "Demo Trained Property 268",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/brori-residence-inn-brownsville/",
+    "url": "https://demo-trained-268.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4192,52 +4138,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Harlingen",
+    "name": "Demo Trained Property 269",
     "brand": "Marriott",
-    "city": "",
-    "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/hrlcy-courtyard-harlingen/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM - Group #3",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "TownePlace Suites by Marriott Sunnyvale Silicon Valley",
-    "brand": "Marriott",
-    "city": "",
-    "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/sjcss-towneplace-suites-sunnyvale-silicon-valley/overview/",
-    "propertyType": "Select Service",
-    "category": "Full Flag Brand",
-    "projectType": "Ongoing",
-    "status": "Paused",
-    "managementGroup": "HHM - Group #3",
-    "platforms": [
-      "ai_mode",
-      "ai_overview",
-      "chatgpt",
-      "gemini"
-    ]
-  },
-  {
-    "name": "Residence Inn by Marriott South Bend Mishawaka",
-    "brand": "Marriott",
-    "city": "",
-    "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/sbnmr-residence-inn-south-bend-mishawaka",
+    "city": "Demo City 16",
+    "state": "ZW",
+    "url": "https://demo-trained-269.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4246,16 +4156,106 @@
     ]
   },
   {
-    "name": "Hyatt House White Plains",
+    "name": "Demo Trained Property 270",
+    "brand": "Hilton",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-270.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 09",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 271",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-271.example.com/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 09",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 272",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-272.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 09",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 273",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-273.example.com/",
+    "propertyType": "Select Service",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 09",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 274",
+    "brand": "Marriott",
+    "city": "",
+    "state": "",
+    "url": "https://demo-trained-274.example.com/",
+    "propertyType": "Extended Stay",
+    "category": "Full Flag Brand",
+    "projectType": "Ongoing",
+    "status": "Paused",
+    "managementGroup": "Demo Management Group 09",
+    "platforms": [
+      "ai_mode",
+      "ai_overview",
+      "chatgpt",
+      "gemini"
+    ]
+  },
+  {
+    "name": "Demo Trained Property 275",
     "brand": "Hyatt",
     "city": "",
     "state": "",
-    "url": "https://www.hyatt.com/hyatt-house/en-US/lgaxw-hyatt-house-white-plains",
+    "url": "https://demo-trained-275.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4264,16 +4264,16 @@
     ]
   },
   {
-    "name": "Residence Inn by Marriott Danbury",
+    "name": "Demo Trained Property 276",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/dxrri-residence-inn-danbury",
+    "url": "https://demo-trained-276.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4282,16 +4282,16 @@
     ]
   },
   {
-    "name": "Holiday Inn Express New York City Times Square",
+    "name": "Demo Trained Property 277",
     "brand": "IHG",
     "city": "",
     "state": "",
-    "url": "https://www.ihg.com/holidayinnexpress/hotels/us/en/new-york/nycws/hoteldetail",
+    "url": "https://demo-trained-277.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4300,16 +4300,16 @@
     ]
   },
   {
-    "name": "Holiday Inn New York City - Wall Street",
+    "name": "Demo Trained Property 278",
     "brand": "IHG",
     "city": "",
     "state": "",
-    "url": "https://www.ihg.com/holidayinn/hotels/us/en/new-york/nycmf/hoteldetail",
+    "url": "https://demo-trained-278.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4318,16 +4318,16 @@
     ]
   },
   {
-    "name": "Residence Inn by Marriott Mystic Groton",
+    "name": "Demo Trained Property 279",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/gonmy-residence-inn-mystic-groton",
+    "url": "https://demo-trained-279.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4336,16 +4336,16 @@
     ]
   },
   {
-    "name": "Holiday Inn Express New York City-Wall Street",
+    "name": "Demo Trained Property 280",
     "brand": "IHG",
     "city": "",
     "state": "",
-    "url": "https://www.ihg.com/holidayinnexpress/hotels/us/en/new-york/nycsf/hoteldetail",
+    "url": "https://demo-trained-280.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4354,16 +4354,16 @@
     ]
   },
   {
-    "name": "Hyatt Place Houston/Sugar Land",
+    "name": "Demo Trained Property 281",
     "brand": "Hyatt",
-    "city": "Houston",
-    "state": "TX",
-    "url": "https://www.hyatt.com/hyatt-place/en-US/houzs-hyatt-place-houston-sugar-land",
+    "city": "Demo City 16",
+    "state": "ZW",
+    "url": "https://demo-trained-281.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4372,16 +4372,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Hartford South/Glastonbury",
+    "name": "Demo Trained Property 282",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/bdlghgi-hilton-garden-inn-hartford-south-glastonbury/",
+    "url": "https://demo-trained-282.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4390,16 +4390,16 @@
     ]
   },
   {
-    "name": "Courtyard by Marriott Houston Westchase",
+    "name": "Demo Trained Property 283",
     "brand": "Marriott",
-    "city": "Houston",
-    "state": "TX",
-    "url": "https://www.marriott.com/en-us/hotels/houwc-courtyard-houston-westchase/",
+    "city": "Demo City 16",
+    "state": "ZW",
+    "url": "https://demo-trained-283.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4408,16 +4408,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Selinsgrove/Shamokin Dam",
+    "name": "Demo Trained Property 284",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/sgvpahx-hampton-selinsgrove-shamokin-dam/",
+    "url": "https://demo-trained-284.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4426,16 +4426,16 @@
     ]
   },
   {
-    "name": "Hilton Garden Inn Merrillville",
+    "name": "Demo Trained Property 285",
     "brand": "Hilton",
-    "city": "Chicago",
-    "state": "IL",
-    "url": "https://www.hilton.com/en/hotels/mdwingi-hilton-garden-inn-merrillville/",
+    "city": "Demo City 10",
+    "state": "ZG",
+    "url": "https://demo-trained-285.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4444,16 +4444,16 @@
     ]
   },
   {
-    "name": "Fairfield by Marriott Inn & Suites South Bend at Notre Dame",
+    "name": "Demo Trained Property 286",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/sbnnd-fairfield-inn-and-suites-south-bend-at-notre-dame/",
+    "url": "https://demo-trained-286.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4462,16 +4462,16 @@
     ]
   },
   {
-    "name": "Home2 Suites by Hilton Chicago River North",
+    "name": "Demo Trained Property 287",
     "brand": "Hilton",
-    "city": "Chicago",
-    "state": "IL",
-    "url": "http://hilton.com/en/hotels/chirnht-home2-suites-chicago-river-north/",
+    "city": "Demo City 10",
+    "state": "ZG",
+    "url": "https://demo-trained-287.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4480,16 +4480,16 @@
     ]
   },
   {
-    "name": "Hampton Inn Danville",
+    "name": "Demo Trained Property 288",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/dankchx-hampton-danville/",
+    "url": "https://demo-trained-288.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4498,16 +4498,16 @@
     ]
   },
   {
-    "name": "SpringHill Suites by Marriott Alexandria Old Town/Southwest",
+    "name": "Demo Trained Property 289",
     "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasva-springhill-suites-alexandria-old-town-southwest/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-289.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4516,16 +4516,16 @@
     ]
   },
   {
-    "name": "Residence Inn by Marriott Chicago Lake Forest/Mettawa",
+    "name": "Demo Trained Property 290",
     "brand": "Marriott",
-    "city": "Chicago",
-    "state": "IL",
-    "url": "https://www.marriott.com/en-us/hotels/chilk-residence-inn-chicago-lake-forest-mettawa/",
+    "city": "Demo City 10",
+    "state": "ZG",
+    "url": "https://demo-trained-290.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4534,16 +4534,16 @@
     ]
   },
   {
-    "name": "The Industrialist Hotel, Pittsburgh, Autograph Collection",
+    "name": "Demo Trained Property 291",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/pitad-the-industrialist-hotel-pittsburgh-autograph-collection/",
+    "url": "https://demo-trained-291.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "30 Points Audit",
     "status": "Paused",
-    "managementGroup": "HRI Hospitality; 30 Points Audit",
+    "managementGroup": "Demo Management Group 15",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4552,16 +4552,16 @@
     ]
   },
   {
-    "name": "Aloft by Marriott New Orleans Downtown",
+    "name": "Demo Trained Property 292",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/msyal-aloft-new-orleans-downtown/",
+    "url": "https://demo-trained-292.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "30 Points Audit",
     "status": "Paused",
-    "managementGroup": "HRI Hospitality; 30 Points Audit",
+    "managementGroup": "Demo Management Group 15",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4570,16 +4570,16 @@
     ]
   },
   {
-    "name": "Residence Inn by Marriott Williamsburg",
+    "name": "Demo Trained Property 293",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/phfrw-residence-inn-williamsburg/",
+    "url": "https://demo-trained-293.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4588,16 +4588,16 @@
     ]
   },
   {
-    "name": "SpringHill Suites by Marriott Williamsburg",
+    "name": "Demo Trained Property 294",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/phfsh-springhill-suites-williamsburg/",
+    "url": "https://demo-trained-294.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3; Chartwell Hospitality",
+    "managementGroup": "Demo Management Group 10",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4606,16 +4606,16 @@
     ]
   },
   {
-    "name": "The Raphael Hotel, Autograph Collection",
+    "name": "Demo Trained Property 295",
     "brand": "Marriott",
-    "city": "Kansas City",
-    "state": "MO",
-    "url": "https://www.marriott.com/en-us/hotels/mciak-the-raphael-hotel-autograph-collection/overview/",
+    "city": "Demo City 18",
+    "state": "ZM",
+    "url": "https://demo-trained-295.example.com/",
     "propertyType": "Full Service",
     "category": "Soft Brand.com",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Bentley Legacy",
+    "managementGroup": "Demo Management Group 03",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4624,16 +4624,16 @@
     ]
   },
   {
-    "name": "Holiday Inn Norwich",
+    "name": "Demo Trained Property 296",
     "brand": "IHG",
     "city": "",
     "state": "",
-    "url": "https://www.ihg.com/holidayinn/hotels/us/en/norwich/nwhct/hoteldetail",
+    "url": "https://demo-trained-296.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4642,16 +4642,16 @@
     ]
   },
   {
-    "name": "Salt Ranch Hotel",
+    "name": "Demo Trained Property 297",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://saltranchhotel.com/",
+    "url": "https://demo-trained-297.example.com/",
     "propertyType": "Boutique",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Remington",
+    "managementGroup": "Demo Management Group 26",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4660,16 +4660,16 @@
     ]
   },
   {
-    "name": "Embassy Suites by Hilton Orlando International Drive ICON Park",
+    "name": "Demo Trained Property 298",
     "brand": "Hilton",
     "city": "",
     "state": "",
-    "url": "https://www.hilton.com/en/hotels/mcoites-embassy-suites-orlando-international-drive-icon-park/",
+    "url": "https://demo-trained-298.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Crestline",
+    "managementGroup": "Demo Management Group 05",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4678,16 +4678,16 @@
     ]
   },
   {
-    "name": "Klondike Cabins",
+    "name": "Demo Trained Property 299",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://www.theklondikecabins.com/",
+    "url": "https://demo-trained-299.example.com/",
     "propertyType": "Boutique",
     "category": "SMB Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "n/a",
+    "managementGroup": "Demo Management Group 31",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4696,16 +4696,16 @@
     ]
   },
   {
-    "name": "Hotel Teatro",
+    "name": "Demo Trained Property 300",
     "brand": "Independent",
     "city": "",
     "state": "",
-    "url": "https://hotelteatro.com/",
+    "url": "https://demo-trained-300.example.com/",
     "propertyType": "Boutique",
     "category": "Large Independent",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Sage Hospitality",
+    "managementGroup": "Demo Management Group 27",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4714,16 +4714,16 @@
     ]
   },
   {
-    "name": "DC/Georgetown/West End",
+    "name": "Demo Trained Property 301",
     "brand": "Hyatt",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.hyatt.com/hyatt-place/en-US/waszm-hyatt-place-washington-dc-georgetown-west-end",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-301.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4732,11 +4732,11 @@
     ]
   },
   {
-    "name": "Fairfield by Marriott Inn & Suites Washington, DC/Downtown",
+    "name": "Demo Trained Property 302",
     "brand": "Marriott",
-    "city": "Washington",
-    "state": "DC",
-    "url": "https://www.marriott.com/en-us/hotels/wasfc-fairfield-inn-and-suites-washington-dc-downtown/",
+    "city": "Demo City 45",
+    "state": "ZE",
+    "url": "https://demo-trained-302.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
@@ -4749,16 +4749,16 @@
     ]
   },
   {
-    "name": "Candlewood Suites New York City- Times Square",
+    "name": "Demo Trained Property 303",
     "brand": "IHG",
     "city": "",
     "state": "",
-    "url": "https://www.ihg.com/candlewood/hotels/us/en/new-york/nyccw/hoteldetail",
+    "url": "https://demo-trained-303.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4767,16 +4767,16 @@
     ]
   },
   {
-    "name": "Fairfield by Marriott Inn & Suites New York Manhattan/Downtown East",
+    "name": "Demo Trained Property 304",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/nycfm-fairfield-inn-and-suites-new-york-manhattan-downtown-east/overview/",
+    "url": "https://demo-trained-304.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4785,16 +4785,16 @@
     ]
   },
   {
-    "name": "Holiday Inn Express NYC Chelsea - NoMad Area",
+    "name": "Demo Trained Property 305",
     "brand": "IHG",
     "city": "",
     "state": "",
-    "url": "https://www.ihg.com/holidayinnexpress/hotels/us/en/new-york/nycny/hoteldetail",
+    "url": "https://demo-trained-305.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4803,16 +4803,16 @@
     ]
   },
   {
-    "name": "Fairfield Inn New York LaGuardia Airport/Flushing",
+    "name": "Demo Trained Property 306",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/lgafi-fairfield-inn-new-york-laguardia-airport-flushing/overview/",
+    "url": "https://demo-trained-306.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4821,16 +4821,16 @@
     ]
   },
   {
-    "name": "Holiday Inn Express & Suites Boston - Cambridge",
+    "name": "Demo Trained Property 307",
     "brand": "IHG",
-    "city": "Cambridge",
-    "state": "MA",
-    "url": "https://www.ihg.com/holidayinnexpress/hotels/us/en/cambridge/boscb/hoteldetail",
+    "city": "Demo City 08",
+    "state": "ZK",
+    "url": "https://demo-trained-307.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4839,16 +4839,16 @@
     ]
   },
   {
-    "name": "Residence Inn by Marriott West Orange",
+    "name": "Demo Trained Property 308",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/ewrog-residence-inn-west-orange/overview/",
+    "url": "https://demo-trained-308.example.com/",
     "propertyType": "Extended Stay",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Paused",
-    "managementGroup": "HHM - Group #3",
+    "managementGroup": "Demo Management Group 09",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4857,16 +4857,16 @@
     ]
   },
   {
-    "name": "Sheraton Fort Worth Downtown Hotel",
+    "name": "Demo Trained Property 309",
     "brand": "Marriott",
     "city": "",
     "state": "",
-    "url": "https://www.marriott.com/en-us/hotels/dfwds-sheraton-fort-worth-downtown-hotel/overview/",
+    "url": "https://demo-trained-309.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "Ongoing",
     "status": "Active",
-    "managementGroup": "Aimbridge Hospitality",
+    "managementGroup": "Demo Management Group 02",
     "platforms": [
       "ai_mode",
       "ai_overview",
@@ -4875,16 +4875,16 @@
     ]
   },
   {
-    "name": "Caption by Hyatt Downtown Nashville",
+    "name": "Demo Trained Property 310",
     "brand": "Hyatt",
-    "city": "Nashville",
-    "state": "TN",
-    "url": "https://www.hyatt.com/caption-by-hyatt/en-US/bnacp-caption-by-hyatt-downtown-nashville",
+    "city": "Demo City 29",
+    "state": "ZV",
+    "url": "https://demo-trained-310.example.com/",
     "propertyType": "Select Service",
     "category": "Full Flag Brand",
     "projectType": "30 Points Audit",
     "status": "Active",
-    "managementGroup": "HRI Hospitality; 30 Points Audit",
+    "managementGroup": "Demo Management Group 15",
     "platforms": [
       "ai_mode",
       "ai_overview",

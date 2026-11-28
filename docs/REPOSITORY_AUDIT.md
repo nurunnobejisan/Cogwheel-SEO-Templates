@@ -190,6 +190,11 @@ Ordered by risk, aligned to the product prompts (and deliberately putting *integ
 - The build uses `chrome-extension/node_modules` binaries, runs both Vite builds, removes stale ZIPs before packaging, and verifies the manifest version against `updates.xml`.
 - Artifact naming is unified on `seo-studio.zip` (site downloads, release workflow, auto-updater, `updates.xml`); the stale root `manifest.json` (2.0.0) was removed.
 
+### Completed — public data hygiene
+
+- `src/config/properties.json` (161 records) and `src/data/trained-properties.json` (310 records) now contain only deterministic synthetic identities: names, URLs, cities, states, management groups, assignees, slide links and notes. Record counts, key presence and taxonomy values are unchanged, and `tests/ts/synthetic-property-data.test.ts` guards against reintroduction.
+- A separate pass is still needed for client-specific values hardcoded in UI presets, tests, fixtures, training data and generated `output/` artifacts.
+
 ### Remaining
 
 - **M11 extension hardening complete**: content-script idempotency guard, tighter permissions (http/https hosts only, no `unlimitedStorage`/`api.github.com`), AES-GCM secret storage for API keys/tokens, OTA pixel limits consumed in the live audit card, and a functional persisted dark/light theme toggle.
