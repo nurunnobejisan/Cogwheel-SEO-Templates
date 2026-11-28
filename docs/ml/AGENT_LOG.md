@@ -34,3 +34,24 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Supports both bare JSON-LD objects/`@graph` and task-wrapped `{ jsonLd }` / `{ rows: [{ proposedTitle, proposedMeta }] }` arrays so real task callers pass without translation glue.
 - **Remaining**: Proceed to WP4 (`ml/wp4-registry-retirement`).
+
+## WP4 — Registry Hygiene (`ml/wp4-registry-retirement`)
+- **Changed**:
+  - Updated `data/models/model_registry.json`: set `"activeModelId": null` and marked both legacy `gemini-1.5-flash-002` entries `"status": "retired"` under D-028.
+  - Updated `ml/serve/registry.py` (`REGISTRY_STATUSES`, explicit refusal of `"retired"` even when `--allow-unverified` is passed).
+  - Added `isRegistryModelSelectable` to `src/core/ai/custom-model.ts`, blocking retired Gemini 1.5 Flash IDs and any registry entry whose status is not `"ready"` in both `isCustomModelConfigured` and `callCustomModel`.
+  - Updated `tests/python/test_model_registry_benchmark_labels.py`, `tests/python/test_ml_serve.py`, and `tests/custom-model-provider.test.ts` with retirement & non-ready refusal tests.
+- **Defaults taken**:
+  - Custom model IDs not listed in `data/models/model_registry.json` (excluding `gemini-1.5-flash*`) remain allowed when explicitly configured by env vars so pre-registration smoke tests keep working.
+- **Remaining**: Proceed to WP5 (`ml/wp5-adapter-modes`).
+
+## WP5 — Adapter Mode Flag & Shadow/Canary Modes (`ml/wp5-adapter-modes`)
+- **Changed**:
+  - Created `src/core/ai/adapter-mode.ts` (`AdapterMode = "off" | "shadow" | "canary" | "on"`, defaulting to `"off"`, plus `getAdapterCanaryPct`, FNV-1a `computeCanaryBucket`, and `shouldRouteCanary`).
+  - Updated `src/core/claude.ts` (`generateClaudeText` accepting optional `propertyId` and `requestId`): implements `off`, `shadow` (concurrent adapter + standard execution via `Promise.allSettled`, always returns standard response, records gate & latency metrics without prompt/output logging), `canary` (deterministic split on `propertyId || requestId || "anonymous"`), and `on`. Updated `isClaudeConfigured` / `getActiveAiProviderLabel` accordingly.
+  - Updated `schema-markup`, `title-meta`, and `heading-structure` tasks to pass `propertyId` and `brand` into `callClaude`.
+  - Documented `AI_ADAPTER_MODE` and `AI_ADAPTER_CANARY_PCT` in `.env.example`, `docs/PLATFORM_RUNTIME.md`, and `D-031` in `docs/ml/DECISIONS.md`.
+  - Updated `tests/custom-model-provider.test.ts` and `tests/output-gates.test.ts` for explicit `AI_ADAPTER_MODE=on` and added full rollout mode coverage (`off`, `shadow`, `canary`, `on`).
+- **Defaults taken**:
+  - Unset/unknown `AI_ADAPTER_MODE` fails conservatively to `"off"` (`D-031`), and missing seed falls back to `"anonymous"` so canary bucketing remains deterministic.
+- **Remaining**: Proceed to WP6 (`ml/wp6-retrieval-isolation`).
