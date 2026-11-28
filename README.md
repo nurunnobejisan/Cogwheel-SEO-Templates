@@ -16,7 +16,7 @@
 [![Chrome MV3](https://img.shields.io/badge/Chrome-Manifest%20V3-4285f4?logo=googlechrome&logoColor=white)](chrome-extension/)
 
 [Live application](https://seo-studio.vercel.app) ·
-[Download extension](https://seo-studio.vercel.app/seo-studio.zip) ·
+[Load the extension (unpacked)](#build-and-load-the-extension) ·
 [Documentation](docs/README.md) ·
 [Changelog](CHANGELOG.md)
 
@@ -26,7 +26,7 @@
 
 ## Overview
 
-SEO Studio is a production-oriented SEO platform for hospitality portfolios. It combines a Next.js operator workspace, a Manifest V3 Chrome extension, a measured audit engine, and a Python analysis layer.
+SEO Studio is an open-source SEO and GEO workspace for hospitality portfolios. It combines a Next.js operator workspace, a Manifest V3 Chrome extension, a measured audit engine, and a Python analysis layer. The extension is currently installed unpacked — there is no Chrome Web Store listing yet.
 
 The core rule is simple: **measure, label, or leave blank.** Rankings, search volumes, AI citations, and competitor positions are never invented. When a data source is not connected, the product says so instead of showing a plausible-looking number.
 
@@ -132,7 +132,7 @@ npm run build:extension
 
 Then open `chrome://extensions`, enable **Developer mode**, choose **Load unpacked**, and select `chrome-extension/dist`.
 
-The same build also produces `public/seo-studio.zip` for release uploads.
+The same build also produces `public/seo-studio.zip` for release uploads. There is no Chrome Web Store listing; use **Load unpacked** as shown above.
 
 ### Production build
 
@@ -151,6 +151,7 @@ npm start
 | `npm run lint` | ESLint via Next.js |
 | `npm test` | Vitest unit and integration suites |
 | `npm run lint:seo` | 10-gate SEO integrity linter |
+| `npm run lint:brands` | Fails if private client identifiers reappear in tracked files |
 | `npm run test:seo` | SEO engine tests |
 | `npm run test:ts` | TypeScript integration tests |
 | `pytest tests/python -q` | Python analyzer and generator tests |
@@ -207,6 +208,7 @@ The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT
 | Document | Description |
 | --- | --- |
 | [Documentation index](docs/README.md) | Start here for the full docs map |
+| [Engineering standards](docs/ENGINEERING_STANDARDS.md) | Semantic HTML5, metadata, and validation rules |
 | [Architecture](docs/ARCHITECTURE.md) | System topology, extension, platform, and data contracts |
 | [Technical specification](docs/SPEC.md) | Detailed behavior and interfaces |
 | [Security](docs/SECURITY.md) | Auth, SSRF, rate limits, local bridges, data integrity |
@@ -226,7 +228,7 @@ The canonical placement rules live in [`docs/PROJECT_STRUCTURE.md`](docs/PROJECT
 - **Web app:** Vercel production at [seo-studio.vercel.app](https://seo-studio.vercel.app).
 - **CI:** [`.github/workflows/ci.yml`](.github/workflows/ci.yml) runs on every push and pull request.
 - **Extension releases:** [`.github/workflows/auto-release.yml`](.github/workflows/auto-release.yml) builds and attaches `seo-studio.zip` when the manifest version changes.
-- **Updates:** `updates.xml` and the packaged ZIP are served from `public/`.
+- **Updates:** the canonical `updates.xml` is at the repository root (the extension's `update_url` points there); `scripts/build-extension.js` copies it to `public/` and `chrome-extension/dist/`.
 
 ## Contributing
 

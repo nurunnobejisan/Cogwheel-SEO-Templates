@@ -33,7 +33,7 @@ flowchart LR
 - [ ] Build reusable enterprise UI components: Header/TopNav, Breadcrumbs, MetricKPI cards, Data tables with pagination & sorting, Alert banners, Status badges.
 - [ ] Refactor `PropertyDashboard.tsx` to cleanly separate sub-views and eradicate oversized inline markup.
 - [ ] Implement robust error boundary, toast notification system, and empty/loading states.
-- [ ] Ensure full compliance with GEMINI.md semantic HTML5 rules (`<header>`, `<nav>`, `<main>`, `<article>`, `<aside>`, `<footer>`).
+- [ ] Ensure full compliance with `ENGINEERING_STANDARDS.md` semantic HTML5 rules (`<header>`, `<nav>`, `<main>`, `<article>`, `<aside>`, `<footer>`).
 
 ### Checkpoint C — Multi-Client Management, Crawling & Keyword Engine
 - [ ] Build Client & Organization layer: `ClientManager` allowing agencies to manage multiple hotel brands and client portfolios.

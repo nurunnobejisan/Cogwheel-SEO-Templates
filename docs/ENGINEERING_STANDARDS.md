@@ -1,4 +1,4 @@
-# SEO & GEO Studio — Engineering & Standards Rules (GEMINI.md)
+# SEO & GEO Studio — Engineering & Standards Rules
 
 This document establishes the mandatory architectural, SEO, markup, and validation rules for **SEO & GEO Studio**. All code, components, and routes authored in this workspace must strictly adhere to these standards.
 

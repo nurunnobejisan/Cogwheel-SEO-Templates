@@ -7,7 +7,7 @@ import { TEMPLATES_DATA } from "../src/data/templates";
 import sitemap from "../src/app/sitemap";
 import robots from "../src/app/robots";
 
-describe("GEMINI.md Rules Enforcement — Route Metadata & SEO Standards", () => {
+describe("Engineering Standards Rules Enforcement — Route Metadata & SEO Standards", () => {
   const routes = [
     { route: "/", meta: homeMeta, name: "Home Dashboard" },
     { route: "/templates", meta: templatesMeta, name: "Templates Catalog" },

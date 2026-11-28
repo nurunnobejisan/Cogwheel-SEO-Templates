@@ -14,9 +14,9 @@
 | **src/core/** | Configuration (`SiteConfig`), detection (`site‑detector` – to be added), template engine (`renderTemplate`), orchestration (`CentralAuditOrchestrator`) and audit tools (SEO, schema, performance, GEO). |
 | **src/modules/universal/** | Mode‑specific adapters (`ecommerce`, `saas`, `local_business`, `editorial`) that implement the actual audit heuristics. |
 | **src/gateway/** | CMS connectors (WordPress, Shopify, universal edge) and the **self‑healing patch** logic (`deploySelfHealingPatch`). |
-| **src/ui/dashboard.html** | Fully‑styled side‑panel UI (header, navigation, main, aside, footer) built with Tailwind, dark‑mode, and semantic HTML5 landmarks (required by `GEMINI.md`). |
-| **scripts/** | `hardcoded-audit.ts` (detects hospitality‑specific literals), `git-auto-push.ts` (CI‑auto‑push), `generate-audit-summary.ts` (summary generation). |
-| **.github/workflows/ci.yml** | CI pipeline – lint (Ruff, Mypy, TypeScript), Vitest, build, generate audit summary, optional auto‑push. |
+| **src/ui/dashboard.html** | Fully‑styled side‑panel UI (header, navigation, main, aside, footer) built with Tailwind, dark‑mode, and semantic HTML5 landmarks (required by `ENGINEERING_STANDARDS.md`). |
+| **scripts/** | `check-brand-hygiene.ts` (blocks private client identifiers), `build-extension.js` (extension packaging), build/export helpers. |
+| **.github/workflows/ci.yml** | CI pipeline – typecheck, lint, brand hygiene, SEO gates, Vitest, integration tests, pytest, production build. Commits are made by intent, never by CI. |
 
 ---
 
@@ -66,7 +66,7 @@
 
 | Category | What to look for | Typical Fixes |
 |---|---|---|
-| **metadata** | Missing or too long `<title>` / `<meta description>` (must obey 50‑60 / 145‑155 char limits from `GEMINI.md`). | Use `renderTemplate` to inject correct values, optionally via the self‑healing patch. |
+| **metadata** | Missing or too long `<title>` / `<meta description>` (must obey 50‑60 / 145‑155 char limits from `ENGINEERING_STANDARDS.md`). | Use `renderTemplate` to inject correct values, optionally via the self‑healing patch. |
 | **schema** | Invalid or missing JSON‑LD (`@type` not matching page content). | Generate a proper schema block using the *template engine* and apply with the CMS connector. |
 | **content** | Low word count, missing H1, duplicate headings, missing alt text on images. | Add missing headings or alt attributes via the patch system; content suggestions appear in the *Recommendation* column. |
 | **performance** | Large CLS, uncompressed images, missing `rel=preload`. | Inject `<link rel="preload">` tags or replace images with WebP/AVIF (detected by `isModernFormat`). |
@@ -123,11 +123,11 @@
 ## 7️⃣ CI / Release Workflow
 
 - **Push** → GitHub Actions runs `ci.yml`:
-  1. Lint (Ruff, Mypy, TypeScript).
-  2. Vitest unit tests.
-  3. Build the extension.
-  4. Run `scripts/hardcoded-audit.ts` to generate `AUDIT_SUMMARY.md` (artifact for code‑quality review).
-  5. If the push is on `main`, `scripts/git-auto-push.ts` automatically commits any generated files (e.g., `AUDIT_SUMMARY.md`) back to the repo.
+  1. TypeScript typecheck and lint.
+  2. Brand hygiene and SEO integrity gates.
+  3. Vitest, `node:test`, and pytest suites.
+  4. Production Next.js build.
+  5. No files are committed back to the repository by CI; generated changes must be committed by a human with an intent-based message.
 - **Release** – Create a tag (e.g., `v2.0.0`) and GitHub Actions can be extended to publish the Chrome‑Web‑Store package.
 
 ---
@@ -141,7 +141,7 @@
 5. **Review the Issues table** – address any `high` severity items first.
 6. **If you have a CMS connector**, enable *Auto‑Pilot* for low‑risk patches or manually approve higher‑risk ones.
 7. **Export the JSON report** for stakeholder sharing.
-8. **Commit any generated artifacts** (`AUDIT_SUMMARY.md`, upgraded templates) – CI will auto‑push.
+8. **Commit any generated artifacts** (upgraded templates, regenerated schemas) with an intent-based message – CI never commits on your behalf.
 
 ---
 
@@ -158,11 +158,8 @@ pytest -q python      # Python tests
 # build & watch (development)
 npm run dev          # Vite dev server for UI components (if you add React/Vite)
 
-# run hard‑coded audit manually
-ts-node scripts/hardcoded-audit.ts
-
-# push changes (CI will also do it automatically on main)
-node scripts/git-auto-push.ts
+# check for private client identifiers before committing
+npm run lint:brands
 ```
 
 ---
@@ -171,6 +168,6 @@ node scripts/git-auto-push.ts
 - **All audit logic lives in TypeScript**, so the extension works entirely client‑side without external services (except optional CMS APIs).  
 - The **visual dashboard** gives you an instant, readable view of every issue across the six core categories.  
 - **Self‑healing patches** let you automatically fix low‑risk SEO problems directly in WordPress/Shopify/etc., while higher‑risk changes stay behind a manual approval gate.  
-- The **CI pipeline** guarantees that every commit passes lint, tests, and generates a hard‑coded‑string audit, ensuring code quality and zero broken links (as required by `GEMINI.md`).
+- The **CI pipeline** guarantees that every commit passes lint, tests, and generates a hard‑coded‑string audit, ensuring code quality and zero broken links (as required by `ENGINEERING_STANDARDS.md`).
 
 Feel free to ask for any additional components (e.g., a React version of the dashboard, more CMS connectors, or custom audit tools) and I’ll scaffold them for you. Happy auditing! 🚀

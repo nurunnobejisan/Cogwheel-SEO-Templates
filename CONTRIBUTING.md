@@ -16,10 +16,10 @@ We welcome contributions! By participating in this project you agree to follow o
 5. **Run the full test suite** locally:
    ```bash
    npm run typecheck && npm run lint && npm test
-   npm run lint:seo && npm run test:seo && npm run test:ts
+   npm run lint:seo && npm run lint:brands && npm run test:seo && npm run test:ts
    pytest tests/python -q
    ```
-6. **Commit with a clear message** and push to your fork.
+6. **Commit with a clear, intent-based message** (Conventional Commits, e.g. `fix(seo): handle missing canonical`) and push to your fork. Timestamp-only auto-commits are not used in this repository.
 7. **Open a Pull Request** targeting the `main` branch of the upstream repo.
    - Include a brief description of the change.
    - Reference any related issue (e.g., `Closes #12`).
@@ -38,13 +38,14 @@ We welcome contributions! By participating in this project you agree to follow o
 - `npm run typecheck` – Runs `tsc --noEmit`.
 - `npm test` – Runs the Vitest suite.
 - `npm run lint:seo` – Runs the 10-gate SEO integrity linter.
+- `npm run lint:brands` – Fails if private client or employer identifiers reappear in tracked files.
 - `npm run test:seo` / `npm run test:ts` – Runs the `node:test` integration suites.
 - `pytest tests/python -q` – Runs Python unit tests.
 
 ## Code Style
 
 - Use **Tailwind** utility classes for styling.
-- Follow the **semantic‑HTML5** guidelines from `GEMINI.md`.
+- Follow the **semantic‑HTML5** guidelines in [`docs/ENGINEERING_STANDARDS.md`](docs/ENGINEERING_STANDARDS.md).
 - Keep TypeScript types strict; avoid `any` where possible.
 
 Happy hacking! 🎉

@@ -57,7 +57,7 @@
 `chrome-extension`'s Vite build (`vite.config.ts:10-27`) emits a code-split ES-module bundle, but `chrome-extension/public/manifest.json:50-55` registers `content.js` as a classic MV3 content script. Verified in the committed `public/seo-studio-chrome-extension.zip`: `content.js` begins `import{...}from"./assets/pixelCalculator-…js"`, which Chrome cannot load. The core DOM-audit feature fails on every page.
 
 **C6 — CI was non-functional (no automated gate).**
-`.github/workflows/ci.yml` began with a `//` line (not valid YAML comment → stray top-level key), referenced a missing `python/requirements.txt`, called `ruff`/`mypy`/`ts-node` which are not dependencies, ran `pytest -q python` (tests live in `tests/python/`), and even ran `scripts/git-auto-push.ts` in CI. `seo-integrity.yml` pointed at `tests/seoLinter.ts` (does not exist). *Resolved — see §4.*
+`.github/workflows/ci.yml` began with a `//` line (not valid YAML comment → stray top-level key), referenced a missing `python/requirements.txt`, called `ruff`/`mypy`/`ts-node` which are not dependencies, ran `pytest -q python` (tests live in `tests/python/`), and even ran `scripts/git-auto-push.ts` in CI. `seo-integrity.yml` pointed at `tests/seoLinter.ts` (does not exist). *Resolved — see §4. The auto-push scripts were removed in Nov 2026; commits are now intent-based.*
 
 ### 🟠 High
 

@@ -37,7 +37,7 @@ All 32 requirements set forth in the master engineering prompt have been systema
 
 ### 2.4 Enterprise Design System & Reusable UI (`src/components/ui.tsx`)
 - Expanded UI component library: Cards, Buttons (6 variants), KPI Metric Stats with trend indicators, Status Badges, Empty States, Notification Banners, Modal Dialogs with keyboard focus traps, Form Inputs, Selects, and Spinners.
-- Strict compliance with `GEMINI.md` semantic HTML5 landmarks (`<header>`, `<nav>`, `<main>`, `<article>`, `<aside>`, `<footer>`).
+- Strict compliance with `ENGINEERING_STANDARDS.md` semantic HTML5 landmarks (`<header>`, `<nav>`, `<main>`, `<article>`, `<aside>`, `<footer>`).
 
 ### 2.5 Security, RBAC & Integration Governance
 - **Role-Based Access Control (`src/core/security/rbac.ts`)**: Implemented 6 enterprise user roles (`Administrator`, `Manager`, `SEO Specialist`, `Content Editor`, `Analyst`, `Read-only Client`) with strict server-side permission assertions.

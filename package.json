@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "lint:brands": "tsx scripts/check-brand-hygiene.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "lint:seo": "tsx tests/ts/seoLinter.ts",

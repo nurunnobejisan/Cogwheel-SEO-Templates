@@ -33,6 +33,8 @@ jobs:
         run: npm run train:validate
       - name: Unit tests (Vitest)
         run: npm test
+      - name: Brand hygiene gate (no private client identifiers)
+        run: npm run lint:brands
       - name: SEO integrity linter (10 gates)
         run: npm run lint:seo
       - name: SEO engine tests (node:test)
