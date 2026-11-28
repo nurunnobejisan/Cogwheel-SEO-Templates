@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import { Button, Card, Spinner } from "./ui";
+import { Button, Spinner } from "@/components/ui/index";
+import { PanelCard as Card } from "@/components/data/index";
 import type { TrainingCaptureResponse } from "@/lib/training-capture";
 
 interface Props {

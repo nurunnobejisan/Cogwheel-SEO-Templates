@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { LegacyLabsRoute } from "@/components/shell/LegacyRouteViews";
+import { LabsPageClient } from "@/components/pages/LabsPageClient";
 
 export const metadata: Metadata = {
   title: "Diagnostic Sandbox — SEO & GEO Studio",
@@ -11,5 +11,5 @@ export default function LabsPage() {
   if (process.env.NODE_ENV === "production") {
     notFound();
   }
-  return <LegacyLabsRoute />;
+  return <LabsPageClient />;
 }

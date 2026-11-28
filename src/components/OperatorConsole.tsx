@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { Badge, Button, Spinner } from "./ui";
+import { Badge, Button, Spinner } from "@/components/ui/index";
 import {
   AuditPanel,
   ApprovalsPanel,
@@ -208,7 +208,7 @@ export function OperatorConsole() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-display text-base font-extrabold text-slate-900 dark:text-white">Operator Console</h1>
-                <Badge variant="brand" size="sm">Phase 5</Badge>
+                <Badge variant="brand">Phase 5</Badge>
               </div>
               <p className="text-tiny text-slate-500 dark:text-slate-400">Governance · approvals · history · audit</p>
             </div>

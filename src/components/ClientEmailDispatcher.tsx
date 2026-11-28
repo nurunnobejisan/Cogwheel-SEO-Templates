@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "./ui";
+import { Button } from "@/components/ui/index";
 
 interface ClientEmailProps {
   propertyName?: string;

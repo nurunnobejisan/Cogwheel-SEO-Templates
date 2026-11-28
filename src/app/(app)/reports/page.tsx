@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { LegacyReportsRoute } from "@/components/shell/LegacyRouteViews";
+import { ReportsGalleryClient } from "@/components/pages/ReportsGalleryClient";
 
 export const metadata: Metadata = {
   title: "Reports & Deliverables — SEO & GEO Studio",
 };
 
 export default function ReportsPage() {
-  return <LegacyReportsRoute initialTab="deck" />;
+  return <ReportsGalleryClient />;
 }

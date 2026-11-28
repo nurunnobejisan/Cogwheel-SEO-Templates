@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { LegacyPropertySettingsRoute } from "@/components/shell/LegacyRouteViews";
+import { PropertySettingsClient } from "@/components/pages/PropertySettingsClient";
 
 export const metadata: Metadata = {
   title: "Property Profile — SEO & GEO Studio",
 };
 
 export default function PropertySettingsPage() {
-  return <LegacyPropertySettingsRoute />;
+  return <PropertySettingsClient />;
 }

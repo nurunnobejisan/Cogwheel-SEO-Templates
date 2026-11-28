@@ -6,8 +6,8 @@ import { buildSchemaGraph, buildLocalBusinessSchema, buildFAQPageSchema, buildBr
 import { exportToHtml, exportToShopifyLiquid, exportToWordPressPhp, exportToWebflowCsv } from "../../exporters";
 import { cleanContent, countWords, generateNgrams, calculateJaccardSimilarity } from "../../validators/uniquenessGate";
 import { normalizeCanonicalUrl } from "../../validators/canonicalNormalizer";
-import { GeoReadinessRadar } from "./GeoReadinessRadar";
-import { CompsetRankingMatrix } from "./CompsetRankingMatrix";
+import { GeoOverviewClient } from "@/components/pages/GeoOverviewClient";
+import { GeoCompsetClient } from "@/components/pages/GeoCompsetClient";
 import { InternalLinkLab } from "./InternalLinkLab";
 import dynamic from "next/dynamic";
 
@@ -474,20 +474,10 @@ export function LabsView({
       </div>
 
       {/* Sub-tab 1: AI & GEO Radar */}
-      {currentTab === "geo" && (
-        <GeoReadinessRadar
-          property={property}
-          onRunDeckGeneration={onRunDeckGeneration}
-        />
-      )}
+      {currentTab === "geo" && <GeoOverviewClient />}
 
       {/* Sub-tab 2: Local Comp-Set Matrix */}
-      {currentTab === "compset" && (
-        <CompsetRankingMatrix
-          property={property}
-          onExportMemo={onExportMemo}
-        />
-      )}
+      {currentTab === "compset" && <GeoCompsetClient />}
 
       {/* Sub-tab: Templates */}
       {currentTab === "templates" && (

@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { LegacyKeywordsRoute } from "@/components/shell/LegacyRouteViews";
+import { KeywordsPageClient } from "@/components/pages/KeywordsPageClient";
 
 export const metadata: Metadata = {
   title: "Keyword Research — SEO & GEO Studio",
 };
 
 export default function KeywordsPage() {
-  return <LegacyKeywordsRoute />;
+  return <KeywordsPageClient />;
 }

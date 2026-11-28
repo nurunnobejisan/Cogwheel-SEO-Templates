@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import { BUCKETS } from "@/lib/engine/bucket";
 import type { BucketSummary, DroppedRow, PoolEntry } from "@/lib/types";
-import { Button, Card, FlagBadge, KdPill } from "./ui";
+import { Button } from "@/components/ui/index";
+import { PanelCard as Card, FlagBadge, KdPill } from "@/components/data/index";
 
 type Tab = "pool" | "bucket-tables" | "reserve" | "buckets" | "dropped";
 
@@ -193,7 +194,7 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
                             <div className="flex justify-end gap-1">
                               <Button variant="ghost" className="px-1.5 py-0.5 text-tiny" onClick={() => startEdit(k)}>Edit</Button>
                               {k.role === "fill" && (
-                                <Button variant="danger" className="px-1.5 py-0.5 text-tiny" onClick={() => onRemove(k.id)}>×</Button>
+                                <Button variant="destructive" className="px-1.5 py-0.5 text-caption" onClick={() => onRemove(k.id)}>×</Button>
                               )}
                             </div>
                           )}
@@ -229,7 +230,7 @@ export function KeywordPool({ pool, reserve, quota, summary, dropped, onRemove, 
                 <div className="flex justify-end gap-1">
                   <Button variant="ghost" className="px-2 py-0.5 text-caption" onClick={() => startEdit(k)}>Edit</Button>
                   {k.role === "fill" && (
-                    <Button variant="danger" className="px-2 py-0.5 text-caption" onClick={() => onRemove(k.id)}>Remove</Button>
+                    <Button variant="destructive" className="px-2 py-0.5 text-caption" onClick={() => onRemove(k.id)}>Remove</Button>
                   )}
                 </div>
               )}

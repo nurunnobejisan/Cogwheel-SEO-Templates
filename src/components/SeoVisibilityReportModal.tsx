@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { downloadBlobWithCountdown } from "@/lib/download-manager";
 import { GenerationProgressModal } from "./GenerationProgressModal";
 import { SlideDeckPreview } from "./SlideDeckPreview";
-import { Card } from "./ui";
+import { PanelCard as Card } from "@/components/data/index";
 
 interface ReportSummary {
   property_name: string;

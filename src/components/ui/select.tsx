@@ -157,6 +157,39 @@ function SelectField({
   );
 }
 
+function NativeSelect({
+  label,
+  error,
+  children,
+  className,
+  id,
+  ...props
+}: React.SelectHTMLAttributes<HTMLSelectElement> & { label?: string; error?: string }) {
+  const reactId = React.useId();
+  const selectId = id || reactId;
+  return (
+    <div className="w-full space-y-1.5">
+      {label && (
+        <label htmlFor={selectId} className="block text-caption font-medium text-text-muted">
+          {label}
+        </label>
+      )}
+      <select
+        id={selectId}
+        className={cn(
+          "flex h-9 w-full rounded-sm border bg-surface px-3 text-body text-text transition-colors focus:outline-none",
+          error ? "border-error focus:border-error" : "border-border-strong focus:border-brand",
+          className
+        )}
+        {...props}
+      >
+        {children}
+      </select>
+      {error && <p className="text-caption text-error-fg">{error}</p>}
+    </div>
+  );
+}
+
 export {
   Select,
   SelectGroup,
@@ -167,4 +200,5 @@ export {
   SelectItem,
   SelectSeparator,
   SelectField,
+  NativeSelect,
 };
