@@ -23,6 +23,14 @@ We welcome contributions! By participating in this project you agree to follow o
 7. **Open a Pull Request** targeting the `main` branch of the upstream repo.
    - Include a brief description of the change.
    - Reference any related issue (e.g., `Closes #12`).
+   - Use a conventional-commit title (`feat:`, `fix:`, `docs:`, `test:`, `ci:`).
+   - Fill in the pull request template and tick its verification checklist.
+
+## Adding documentation
+
+Link docs with repository-relative paths (for example, `docs/GEMINI.md`) or
+root-absolute app routes (for example, `/daily-session`). `pytest tests/python -q`
+includes a link-health check so a stale link fails CI.
 
 ## Review Process
 
@@ -44,7 +52,7 @@ We welcome contributions! By participating in this project you agree to follow o
 ## Code Style
 
 - Use **Tailwind** utility classes for styling.
-- Follow the **semantic‑HTML5** guidelines from `GEMINI.md`.
+- Follow the **semantic‑HTML5** guidelines in [docs/GEMINI.md](docs/GEMINI.md).
 - Keep TypeScript types strict; avoid `any` where possible.
 
 Happy hacking! 🎉

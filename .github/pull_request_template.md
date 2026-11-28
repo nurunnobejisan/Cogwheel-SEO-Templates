@@ -27,6 +27,7 @@
 - [ ] **TypeScript / Zod**: Matching Zod schemas created in `src/types/` using `.strict()` with zero `any` types.
 - [ ] **Python / Pydantic v2**: Matching Pydantic v2 models created in `python/models/` using `ConfigDict(extra="forbid", strict=True)`.
 - [ ] **Zero `any` Types**: `eslint src/ tests/` passes with zero errors and no `@ts-ignore` / `@ts-expect-error`.
+- [ ] **Documentation links**: relative doc links resolve and `/app` routes exist (checked by `pytest tests/python -q`).
 
 ## Empirical Verification
 <!-- Run all local verification steps before opening the PR. -->
@@ -35,7 +36,7 @@
 - [ ] ESLint passed cleanly: `npx eslint src/ tests/`
 - [ ] SEO 10-Gate Linter passed: `npm run lint:seo`
 - [ ] TypeScript & Node test suite passed: `npm run test:seo`
-- [ ] Python test suite passed: `python3 tests/python/run_tests.py`
+- [ ] Python test suite passed: `pytest tests/python -q` (or `python3 tests/python/run_tests.py` for the legacy runner)
 - [ ] Schema validation passed: `python3 -m python.scripts.validate_schemas`
 - [ ] Production build passed: `npm run build`
 
