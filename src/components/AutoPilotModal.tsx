@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { downloadBase64WithCountdown, downloadTextWithCountdown } from "@/lib/download-manager";
-import { Button, Card } from "./ui";
+import { Button } from "@/components/ui/index";
+import { PanelCard as Card } from "@/components/data/index";
 
 interface PropertyInput {
   name: string;

@@ -24,7 +24,8 @@ import { TemplateSelector } from "./TemplateSelector";
 import { GenerationProgressModal } from "./GenerationProgressModal";
 import { buildMatrixCapture, captureTrainingTriple, type MatrixCaptureRow } from "@/lib/training-capture";
 import { TrainingCaptureCard } from "./TrainingCaptureCard";
-import { Button, Card, Spinner, Stat } from "./ui";
+import { Button, Spinner } from "@/components/ui/index";
+import { PanelCard as Card, KpiTile } from "@/components/data/index";
 
 type Step = 1 | 2 | 3 | 4;
 
@@ -577,17 +578,16 @@ export default function Studio({
         {step === 3 && state && ingest && (
           <>
             <div className="grid grid-cols-2 gap-3 md:grid-cols-4 lg:grid-cols-8">
-              <Stat label="Files" value={ingest.stats.files} />
-              <Stat label="Raw rows" value={ingest.stats.rawRows.toLocaleString()} />
-              <Stat label="Dupes merged" value={ingest.stats.duplicatesMerged.toLocaleString()} />
-              <Stat label="KD N/A cleaned" value={ingest.stats.kdCleaned} />
-              <Stat label="Geo dropped" value={ingest.stats.dropped.geo} tone="warn" />
-              <Stat label="Low-SV dropped" value={ingest.stats.dropped["low-volume"]} tone="warn" />
-              <Stat label="Eligible" value={bucketed.length.toLocaleString()} />
-              <Stat
+              <KpiTile label="Files" value={ingest.stats.files} />
+              <KpiTile label="Raw rows" value={ingest.stats.rawRows.toLocaleString()} />
+              <KpiTile label="Dupes merged" value={ingest.stats.duplicatesMerged.toLocaleString()} />
+              <KpiTile label="KD N/A cleaned" value={ingest.stats.kdCleaned} />
+              <KpiTile label="Geo dropped" value={ingest.stats.dropped.geo} />
+              <KpiTile label="Low-SV dropped" value={ingest.stats.dropped["low-volume"]} />
+              <KpiTile label="Eligible" value={bucketed.length.toLocaleString()} />
+              <KpiTile
                 label="Pool"
                 value={`${state.allocation.pool.length}/${state.allocation.quota}`}
-                tone={state.allocation.pool.length === state.allocation.quota ? "good" : "warn"}
               />
             </div>
 

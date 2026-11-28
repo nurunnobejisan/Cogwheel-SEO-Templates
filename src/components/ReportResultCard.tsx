@@ -4,7 +4,7 @@ import { TEMPLATES } from "@/config/templates";
 import type { DocumentQualityReport } from "@/lib/doc-quality";
 import type { GeoSeoInsights } from "@/lib/engine/geo-seo";
 import type { MatrixRow, Property, TemplateId } from "@/lib/types";
-import { Card } from "./ui";
+import { PanelCard as Card } from "@/components/data/index";
 
 export interface ReportDocResult {
   docId: string;

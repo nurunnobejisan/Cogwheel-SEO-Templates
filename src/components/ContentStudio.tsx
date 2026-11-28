@@ -15,7 +15,8 @@ import {
   type StudioCaptureSection,
 } from "@/lib/training-capture";
 import type { MatrixRow, Property } from "@/lib/types";
-import { Button, Card, Spinner } from "./ui";
+import { Button, Spinner } from "@/components/ui/index";
+import { PanelCard as Card } from "@/components/data/index";
 import { TrainingCaptureCard } from "./TrainingCaptureCard";
 
 const EDITABLE_SECTIONS: HiltonSectionId[] = [

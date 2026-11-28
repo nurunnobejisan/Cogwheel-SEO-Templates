@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 import type { MatrixRow, PoolEntry, SitemapPage, TemplateId } from "@/lib/types";
-import { Button, Card, FlagBadge, KdPill } from "./ui";
+import { Button } from "@/components/ui/index";
+import { PanelCard as Card, FlagBadge, KdPill } from "@/components/data/index";
 
 interface Props {
   matrix: MatrixRow[];

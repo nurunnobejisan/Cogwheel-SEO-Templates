@@ -4,7 +4,8 @@ import { useState } from "react";
 import { TEMPLATES } from "@/config/templates";
 import { postJson } from "@/lib/api";
 import type { TemplateId } from "@/lib/types";
-import { Button, Card, Spinner } from "./ui";
+import { Button, Spinner } from "@/components/ui/index";
+import { PanelCard as Card } from "@/components/data/index";
 
 interface InspectedDoc {
   docId: string;

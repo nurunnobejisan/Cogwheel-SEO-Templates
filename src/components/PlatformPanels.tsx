@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
-import { Badge, Button, Card, EmptyState, Input, Select, Stat } from "./ui";
+import { Badge, Button, Input, NativeSelect as Select } from "@/components/ui/index";
+import { EmptyState, KpiTile, PanelCard as Card } from "@/components/data/index";
 import type {
   ApprovalRequest,
   AuditLogEntry,
@@ -46,22 +47,22 @@ export function canApprove(role: Role, risk: RiskTier): boolean {
 }
 
 function riskBadge(risk: RiskTier) {
-  const variant = risk === "high" ? "danger" : risk === "medium" ? "warning" : "success";
-  return <Badge variant={variant} size="sm">{risk}</Badge>;
+  const variant = risk === "high" ? "error" : risk === "medium" ? "warning" : "success";
+  return <Badge variant={variant}>{risk}</Badge>;
 }
 
 export function statusBadge(status: string) {
-  const map: Record<string, "success" | "warning" | "danger" | "info" | "neutral"> = {
+  const map: Record<string, "success" | "warning" | "error" | "notice" | "neutral"> = {
     deployed: "success",
     auto_approved: "success",
     approved: "success",
     queued: "warning",
     pending: "warning",
-    rolled_back: "danger",
-    rejected: "danger",
-    failed: "danger",
+    rolled_back: "error",
+    rejected: "error",
+    failed: "error",
   };
-  return <Badge variant={map[status] ?? "neutral"} size="sm">{status.replace(/_/g, " ")}</Badge>;
+  return <Badge variant={map[status] ?? "neutral"}>{status.replace(/_/g, " ")}</Badge>;
 }
 
 function time(iso?: string | null): string {
@@ -115,15 +116,14 @@ export function OverviewPanel({ data, onRefresh }: { data: ConsoleData; onRefres
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Pending approvals" value={pending} tone={pending > 0 ? "warn" : "good"} subtext="awaiting an operator" />
-        <Stat label="Undoable changes" value={undoable} tone={undoable > 0 ? "brand" : "default"} subtext="snapshot available" />
-        <Stat
+        <KpiTile label="Pending approvals" value={pending} caption="awaiting an operator" />
+        <KpiTile label="Undoable changes" value={undoable} caption="snapshot available" />
+        <KpiTile
           label="Audit integrity"
           value={integrity ? (integrity.valid ? "Verified" : "Broken") : "—"}
-          tone={integrity?.valid ? "good" : "danger"}
-          subtext={integrity ? `${integrity.entries} entries` : undefined}
+          caption={integrity ? `${integrity.entries} entries` : undefined}
         />
-        <Stat label="Connected targets" value={data.connectors.length} subtext={`${data.schedules.length} schedules`} />
+        <KpiTile label="Connected targets" value={data.connectors.length} caption={`${data.schedules.length} schedules`} />
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
@@ -144,7 +144,7 @@ export function OverviewPanel({ data, onRefresh }: { data: ConsoleData; onRefres
               </div>
               <div>
                 <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Status</dt>
-                <dd className="mt-0.5"><Badge variant={data.health.ok ? "success" : "danger"} size="sm">{data.health.ok ? "online" : "offline"}</Badge></dd>
+                <dd className="mt-0.5"><Badge variant={data.health.ok ? "success" : "error"}>{data.health.ok ? "online" : "offline"}</Badge></dd>
               </div>
               <div>
                 <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Audit log</dt>
@@ -212,7 +212,7 @@ export function ApprovalsPanel({
             subtitle={`Patch ${approval.patchId} · requested ${time(approval.createdAt)}`}
             actions={
               <>
-                <Button size="sm" variant="danger" disabled={busy} onClick={() => onReject(approval.id)}>Reject</Button>
+                <Button size="sm" variant="destructive" disabled={busy} onClick={() => onReject(approval.id)}>Reject</Button>
                 <Button
                   size="sm"
                   disabled={busy || !allowed}
@@ -278,7 +278,7 @@ export function HistoryPanel({
                   <td className="px-2 py-3">
                     <span className="flex items-center gap-1.5">
                       {statusBadge(entry.status)}
-                      {entry.undone && <Badge variant="neutral" size="sm">undone</Badge>}
+                      {entry.undone && <Badge variant="neutral">undone</Badge>}
                     </span>
                   </td>
                   <td className="px-2 py-3 capitalize text-slate-600 dark:text-slate-400">{entry.platform}</td>
@@ -288,7 +288,7 @@ export function HistoryPanel({
                   <td className="px-2 py-3 text-right">
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="secondary"
                       disabled={!undoable || busyId === entry.id}
                       title={undoable ? "Restore the pre-change snapshot" : entry.undone ? "Already undone" : "No snapshot stored"}
                       onClick={() => onUndo(entry.id)}
@@ -502,7 +502,7 @@ function SchedulesCard({
             <li key={schedule.id} className="flex items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2 text-caption dark:bg-slate-800/60">
               <span className="truncate font-mono text-slate-700 dark:text-slate-300">{shortUrl(schedule.targetUrl)}</span>
               <span className="flex items-center gap-2">
-                <Badge variant={schedule.enabled ? "success" : "neutral"} size="sm">{schedule.enabled ? "on" : "off"}</Badge>
+                <Badge variant={schedule.enabled ? "success" : "neutral"}>{schedule.enabled ? "on" : "off"}</Badge>
                 <code className="text-slate-500">{schedule.cron}</code>
               </span>
             </li>
@@ -592,7 +592,7 @@ function CredentialsCard({
                 <span className="block truncate font-medium text-slate-700 dark:text-slate-200">{credential.label}</span>
                 <span className="font-mono text-tiny text-slate-400">{credential.fingerprint}</span>
               </span>
-              <Badge variant="info" size="sm">{credential.platform}</Badge>
+              <Badge variant="notice">{credential.platform}</Badge>
             </li>
           ))}
         </ul>
@@ -689,7 +689,7 @@ export function HealPanel({
         <Card
           title="Audit result"
           subtitle={`${report.domain} · ${report.mode} mode · ${report.summary.totalIssues} issues`}
-          actions={<Badge variant={report.summary.score >= 80 ? "success" : report.summary.score >= 60 ? "warning" : "danger"}>score {report.summary.score}</Badge>}
+          actions={<Badge variant={report.summary.score >= 80 ? "success" : report.summary.score >= 60 ? "warning" : "error"}>score {report.summary.score}</Badge>}
         >
           <div className="grid gap-2 sm:grid-cols-5">
             {(["critical", "high", "medium", "low", "info"] as const).map((severity) => (
@@ -707,7 +707,7 @@ export function HealPanel({
                   <span className="truncate text-slate-700 dark:text-slate-300">{issue.issueId}</span>
                   <span className="flex shrink-0 items-center gap-2">
                     <span className="text-slate-400">{issue.category}</span>
-                    <Badge variant={issue.severity === "critical" || issue.severity === "high" ? "danger" : issue.severity === "medium" ? "warning" : "neutral"} size="sm">{issue.severity}</Badge>
+                    <Badge variant={issue.severity === "critical" || issue.severity === "high" ? "error" : issue.severity === "medium" ? "warning" : "neutral"}>{issue.severity}</Badge>
                   </span>
                 </li>
               ))}
@@ -723,7 +723,7 @@ export function HealPanel({
             </Button>
             <Button
               size="sm"
-              variant="outline"
+              variant="secondary"
               disabled={working || busy || role !== "admin"}
               title={role === "admin" ? undefined : "Force-approve requires admin"}
               onClick={() => heal({ approveAll: true })}
@@ -754,7 +754,7 @@ export function HealPanel({
             </div>
             <div>
               <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Verified</dt>
-              <dd className="mt-0.5">{run.verification ? <Badge variant={run.verification.domMatches ? "success" : "danger"} size="sm">{run.verification.domMatches ? "dom match" : "mismatch"}</Badge> : "—"}</dd>
+              <dd className="mt-0.5">{run.verification ? <Badge variant={run.verification.domMatches ? "success" : "error"}>{run.verification.domMatches ? "dom match" : "mismatch"}</Badge> : "—"}</dd>
             </div>
             <div>
               <dt className="text-caption font-semibold uppercase tracking-wide text-slate-400">Snapshot</dt>
@@ -777,13 +777,13 @@ export function HealPanel({
 /* ------------------------------------------------------------ outcomes -- */
 
 function provenanceBadge(provenance: string) {
-  const variant = provenance === "measured" ? "success" : provenance === "estimated" ? "info" : "neutral";
-  return <Badge variant={variant} size="sm" title={provenance === "measured" ? "From Search Console rows" : "Not measured"}>{provenance}</Badge>;
+  const variant = provenance === "measured" ? "success" : provenance === "estimated" ? "notice" : "neutral";
+  return <Badge variant={variant} title={provenance === "measured" ? "From Search Console rows" : "Not measured"}>{provenance}</Badge>;
 }
 
 function confidenceBadge(confidence: string) {
   const variant = confidence === "high" ? "success" : confidence === "medium" ? "warning" : "neutral";
-  return <Badge variant={variant} size="sm">{confidence} confidence</Badge>;
+  return <Badge variant={variant}>{confidence} confidence</Badge>;
 }
 
 function signed(value: number | null | undefined, unit = ""): string {
@@ -813,8 +813,8 @@ function ChangeRow({ change, outcome }: { change: ChangeEvent; outcome: OutcomeR
           </p>
         </div>
         <div className="flex shrink-0 items-center gap-2">
-          {outcome ? provenanceBadge(outcome.provenance) : <Badge variant="neutral" size="sm">not measured</Badge>}
-          {outcome?.afterComplete === false && <Badge variant="warning" size="sm">filling</Badge>}
+          {outcome ? provenanceBadge(outcome.provenance) : <Badge variant="neutral">not measured</Badge>}
+          {outcome?.afterComplete === false && <Badge variant="warning">filling</Badge>}
         </div>
       </div>
 
@@ -876,20 +876,18 @@ export function OutcomesPanel({
   return (
     <div className="space-y-5">
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Stat label="Tracked changes" value={overview?.counts.changes ?? 0} subtext="every applied fix" />
-        <Stat
+        <KpiTile label="Tracked changes" value={overview?.counts.changes ?? 0} caption="every applied fix" />
+        <KpiTile
           label="Measured"
           value={overview?.counts.measured ?? 0}
-          tone={overview && overview.counts.measured > 0 ? "good" : "default"}
-          subtext="real Search Console rows"
+          caption="real Search Console rows"
         />
-        <Stat
+        <KpiTile
           label="Unavailable"
           value={overview?.counts.unavailable ?? 0}
-          tone={overview && overview.counts.unavailable > 0 ? "warn" : "default"}
-          subtext="no GSC / no rows / filling"
+          caption="no GSC / no rows / filling"
         />
-        <Stat label="Effect kinds" value={report?.kinds.length ?? 0} subtext="with evidence" />
+        <KpiTile label="Effect kinds" value={report?.kinds.length ?? 0} caption="with evidence" />
       </div>
 
       <Card

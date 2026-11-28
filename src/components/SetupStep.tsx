@@ -6,7 +6,8 @@ import portfolioProperties from "@/data/trained-properties.json";
 import { DEFAULT_RULES } from "@/config/rules";
 import { BUCKETS } from "@/lib/engine/bucket";
 import type { Property, SitemapPage, TemplateId } from "@/lib/types";
-import { Button, Card } from "./ui";
+import { Button } from "@/components/ui/index";
+import { PanelCard as Card } from "@/components/data/index";
 
 const splitList = (s: string) => s.split(/[,\n]/).map((x) => x.trim()).filter(Boolean);
 

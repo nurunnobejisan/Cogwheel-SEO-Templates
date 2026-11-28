@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { GenerationProgressModal } from "./GenerationProgressModal";
-import { Button, Card } from "./ui";
+import { Button } from "@/components/ui/index";
+import { PanelCard as Card } from "@/components/data/index";
 
 interface SlidePreview {
   slideNumber: number;
