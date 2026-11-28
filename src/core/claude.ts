@@ -7,6 +7,10 @@ import {
   getCustomModelSettings,
   isCustomModelConfigured,
 } from "@/core/ai/custom-model";
+import { classifyTask, V1_ADAPTER_TASKS } from "../../ai/router";
+import type { TaskKind } from "../../ai/types";
+
+export { V1_ADAPTER_TASKS };
 
 /** Pinned temperature for all grounded SEO/GEO drafting calls. */
 export const CLAUDE_TEMPERATURE = 0.2 as const;
@@ -143,16 +147,23 @@ export async function generateClaudeText(opts: {
   prompt: string;
   maxTokens?: number;
   taskId?: string;
+  task?: TaskKind;
 }): Promise<string> {
   const trainingAppendix = await formatTrainingContext(opts.taskId);
   const fullSystem = `${opts.system}${trainingAppendix}`;
   const maxTokens = opts.maxTokens ?? 2048;
   const errors: string[] = [];
 
-  // Phase 4 — the SEO Studio fine-tuned model goes first when configured.
-  // Any failure (guard, transport, shape) falls through to the providers
-  // below, so an unset or unreachable endpoint never breaks drafting.
-  if (isCustomModelConfigured()) {
+  // WP2 — the v1 fine-tuned adapter handles ONLY allow-listed Tier 1 tasks
+  // (`schema_generation`, `metadata_generation`). Calls without `task` or on
+  // non-v1 / Tier 2 tasks skip the custom adapter and stay on the main chain.
+  const canTryCustomModel =
+    opts.task !== undefined &&
+    V1_ADAPTER_TASKS.includes(opts.task) &&
+    classifyTask(opts.task) === "tier1" &&
+    isCustomModelConfigured();
+
+  if (canTryCustomModel) {
     try {
       return await callCustomModel({
         system: fullSystem,

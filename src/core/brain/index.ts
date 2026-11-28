@@ -182,6 +182,7 @@ export async function runBrain(request: BrainRequest): Promise<BrainResult> {
           prompt,
           maxTokens: 1200,
           taskId: "brain-interpret",
+          task: "rag_synthesis",
         });
         await recordLlmUsage();
         provider = "llm";

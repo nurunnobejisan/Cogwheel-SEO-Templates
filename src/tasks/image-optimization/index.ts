@@ -1,4 +1,5 @@
 import { generateClaudeText, isClaudeConfigured } from "@/core/claude";
+import type { TaskKind } from "../../../ai/types";
 import { getCrawlPages } from "@/core/crawler";
 import { runTaskPipeline, type PipelineResult } from "@/core/pipeline";
 import type { TaskRunFlag } from "@/core/runs";
@@ -31,7 +32,7 @@ interface ImageOptimizationDataBundle {
 }
 
 export interface ImageOptimizationDeps {
-  callClaude?: (opts: { system: string; prompt: string; maxTokens?: number; taskId?: string }) => Promise<string>;
+  callClaude?: (opts: { system: string; prompt: string; maxTokens?: number; taskId?: string; task?: TaskKind }) => Promise<string>;
 }
 
 export async function runImageOptimizationTask(
@@ -111,7 +112,13 @@ export async function runImageOptimizationTask(
         candidates: data.candidates,
         feedback,
       });
-      const text = await callClaude({ system, prompt, maxTokens: 4096, taskId: "image-optimization" });
+      const text = await callClaude({
+        system,
+        prompt,
+        maxTokens: 4096,
+        taskId: "image-optimization",
+        task: "alt_text_generation",
+      });
       return parseImageOptimizationDraft(text);
     },
     validate: ({ data, draft }) => {
