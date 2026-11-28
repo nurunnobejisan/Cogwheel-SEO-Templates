@@ -12,6 +12,7 @@
 import type { BuyerPrompt, CitationType, PromptSet, ProviderAnswer, ProviderId } from "./types.ts";
 import { modelFor } from "../ai/models.ts";
 import { analyzeAnswer, unavailableAnswer } from "./analyze.ts";
+import { buildVisibilityPrompt } from "./prompts.ts";
 import { canUseVisibilityProvider, recordVisibilityUsage, refundVisibilityToken } from "./budget.ts";
 
 export interface QueryContext {
@@ -53,7 +54,7 @@ async function guardedQuery(
   context: QueryContext,
   model: string,
   call: () => Promise<{ answer: string; citations: Array<{ url: string; title?: string }> }>,
-  citationType?: CitationType
+  citationType?: CitationType | ((result: { citations: Array<{ url: string; title?: string }> }) => CitationType)
 ): Promise<ProviderAnswer> {
   if (!isConfigured) {
     return unavailableAnswer(id, context.prompt.id, unavailableReason, model);
@@ -68,6 +69,8 @@ async function guardedQuery(
   try {
     const result = await call();
     await recordVisibilityUsage(cost, id);
+    const resolvedCitationType =
+      typeof citationType === "function" ? citationType(result) : citationType;
     return analyzeAnswer({
       provider: id,
       promptId: context.prompt.id,
@@ -78,7 +81,7 @@ async function guardedQuery(
       answer: result.answer,
       providerCitations: result.citations,
       estimatedCostUsd: cost,
-      citationType,
+      citationType: resolvedCitationType,
     });
   } catch (error) {
     if (reserved) await refundVisibilityToken(id);
@@ -379,11 +382,225 @@ export function createAiOverviewsAdapter(): ProviderAdapter {
   };
 }
 
+/* -------------------------------------------------------------------------- */
+/* Free-tier adapters (opt-in)                                                */
+/* -------------------------------------------------------------------------- */
+
+/**
+ * These adapters are default-off. Enabling them is an explicit operator
+ * choice, and only free tiers / keyless endpoints are used. The legacy BYOK
+ * adapters above keep their original configuration contract.
+ */
+function freeVisibilityEnabled(): boolean {
+  return process.env.VISIBILITY_FREE_PROVIDERS_ENABLED === "true" || process.env.VISIBILITY_FREE_PROVIDERS_ENABLED === "1";
+}
+
+const FREE_OPT_IN_REASON = "Opt in by setting VISIBILITY_FREE_PROVIDERS_ENABLED=true";
+
+interface ChatCompletionOutput {
+  choices?: Array<{ message?: { content?: string } }>;
+  error?: { message?: string };
+}
+
+function chatCompletionText(data: ChatCompletionOutput): string {
+  const text = data.choices?.[0]?.message?.content?.trim() ?? "";
+  if (!text) throw new Error(data.error?.message || "empty answer");
+  return text;
+}
+
+export function createGeminiGroundedAdapter(): ProviderAdapter {
+  const model = process.env.GEMINI_VISIBILITY_MODEL || "gemini-2.5-flash";
+  const configured = () => freeVisibilityEnabled() && Boolean(process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY);
+  const reason = () => (freeVisibilityEnabled() ? missing(["GEMINI_API_KEY", "GOOGLE_AI_API_KEY"]) : FREE_OPT_IN_REASON);
+  return {
+    id: "gemini_grounded",
+    label: "Gemini 2.x (grounded)",
+    requires: ["VISIBILITY_FREE_PROVIDERS_ENABLED", "GEMINI_API_KEY or GOOGLE_AI_API_KEY"],
+    isConfigured: configured,
+    unavailableReason: reason,
+    estimatedCostUsd: () => envCost("GEMINI_VISIBILITY_COST_USD", 0),
+    query: (context) =>
+      guardedQuery(
+        "gemini_grounded",
+        envCost("GEMINI_VISIBILITY_COST_USD", 0),
+        configured(),
+        reason(),
+        context,
+        model,
+        async () => {
+          const response = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(
+              process.env.GEMINI_API_KEY || process.env.GOOGLE_AI_API_KEY || ""
+            )}`,
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              signal: AbortSignal.timeout(TIMEOUT_MS),
+              body: JSON.stringify({
+                contents: [{ role: "user", parts: [{ text: buildVisibilityPrompt(context.prompt.text, true) }] }],
+                tools: [{ google_search: {} }],
+                generationConfig: { temperature: 0.2, maxOutputTokens: 900 },
+              }),
+            }
+          );
+          const data = (await response.json().catch(() => ({}))) as GeminiResponse;
+          if (!response.ok) throw new Error(data.error?.message || `HTTP ${response.status}`);
+          const candidate = data.candidates?.[0];
+          const text = (candidate?.content?.parts ?? []).map((part) => part.text ?? "").join("").trim();
+          if (!text) throw new Error("empty answer");
+          const citations = (candidate?.groundingMetadata?.groundingChunks ?? [])
+            .filter((chunk) => chunk.web?.uri)
+            .map((chunk) => ({ url: chunk.web!.uri!, title: chunk.web!.title }));
+          return { answer: text, citations };
+        },
+        // No grounding chunks means the answer is model memory, not a web citation.
+        (result) => (result.citations.length > 0 ? "web_grounded" : "model_memory")
+      ),
+  };
+}
+
+export function createGroqLlamaAdapter(): ProviderAdapter {
+  const model = process.env.GROQ_VISIBILITY_MODEL || process.env.GROQ_MODEL || "llama-3.3-70b-versatile";
+  const configured = () => freeVisibilityEnabled() && Boolean(process.env.GROQ_API_KEY);
+  const reason = () => (freeVisibilityEnabled() ? missing(["GROQ_API_KEY"]) : FREE_OPT_IN_REASON);
+  return {
+    id: "groq_llama",
+    label: "Llama 3.3 (Groq)",
+    requires: ["VISIBILITY_FREE_PROVIDERS_ENABLED", "GROQ_API_KEY"],
+    isConfigured: configured,
+    unavailableReason: reason,
+    estimatedCostUsd: () => envCost("GROQ_VISIBILITY_COST_USD", 0),
+    query: (context) =>
+      guardedQuery(
+        "groq_llama",
+        envCost("GROQ_VISIBILITY_COST_USD", 0),
+        configured(),
+        reason(),
+        context,
+        model,
+        async () => {
+          const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.GROQ_API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            signal: AbortSignal.timeout(TIMEOUT_MS),
+            body: JSON.stringify({
+              model,
+              messages: [{ role: "user", content: buildVisibilityPrompt(context.prompt.text, false) }],
+              temperature: 0.2,
+              max_tokens: 900,
+            }),
+          });
+          const data = (await response.json().catch(() => ({}))) as ChatCompletionOutput;
+          if (!response.ok) throw new Error(data.error?.message || `HTTP ${response.status}`);
+          return { answer: chatCompletionText(data), citations: [] };
+        },
+        "model_memory"
+      ),
+  };
+}
+
+export function createOpenRouterFreeAdapter(): ProviderAdapter {
+  const model = process.env.OPENROUTER_VISIBILITY_MODEL || process.env.OPENROUTER_MODEL || "meta-llama/llama-3.3-70b-instruct:free";
+  const configured = () =>
+    freeVisibilityEnabled() && Boolean(process.env.OPENROUTER_API_KEY) && model.endsWith(":free");
+  const reason = () => {
+    if (!freeVisibilityEnabled()) return FREE_OPT_IN_REASON;
+    if (!process.env.OPENROUTER_API_KEY) return missing(["OPENROUTER_API_KEY"]);
+    return "Only OpenRouter models ending in :free are enabled; set OPENROUTER_VISIBILITY_MODEL to a free model id.";
+  };
+  return {
+    id: "openrouter_free",
+    label: "OpenRouter free tier",
+    requires: ["VISIBILITY_FREE_PROVIDERS_ENABLED", "OPENROUTER_API_KEY", "OPENROUTER_VISIBILITY_MODEL (:free)"],
+    isConfigured: configured,
+    unavailableReason: reason,
+    estimatedCostUsd: () => envCost("OPENROUTER_VISIBILITY_COST_USD", 0),
+    query: (context) =>
+      guardedQuery(
+        "openrouter_free",
+        envCost("OPENROUTER_VISIBILITY_COST_USD", 0),
+        configured(),
+        reason(),
+        context,
+        model,
+        async () => {
+          const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
+              "Content-Type": "application/json",
+              "HTTP-Referer": process.env.OPENROUTER_SITE_URL || "http://localhost:3000",
+              "X-Title": "SEO & GEO Studio",
+            },
+            signal: AbortSignal.timeout(TIMEOUT_MS),
+            body: JSON.stringify({
+              model,
+              messages: [{ role: "user", content: buildVisibilityPrompt(context.prompt.text, false) }],
+              temperature: 0.2,
+              max_tokens: 900,
+            }),
+          });
+          const data = (await response.json().catch(() => ({}))) as ChatCompletionOutput;
+          if (!response.ok) throw new Error(data.error?.message || `HTTP ${response.status}`);
+          return { answer: chatCompletionText(data), citations: [] };
+        },
+        "model_memory"
+      ),
+  };
+}
+
+export function createPollinationsAdapter(): ProviderAdapter {
+  const model = process.env.POLLINATIONS_MODEL || "openai";
+  const configured = () => process.env.POLLINATIONS_ENABLED === "true";
+  const reason = () => "Opt in by setting POLLINATIONS_ENABLED=true (keyless, model-memory answers only)";
+  return {
+    id: "pollinations",
+    label: "Pollinations (keyless, model memory)",
+    requires: ["POLLINATIONS_ENABLED"],
+    isConfigured: configured,
+    unavailableReason: reason,
+    estimatedCostUsd: () => 0,
+    query: (context) =>
+      guardedQuery(
+        "pollinations",
+        0,
+        configured(),
+        reason(),
+        context,
+        model,
+        async () => {
+          const response = await fetch("https://text.pollinations.ai/openai", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            signal: AbortSignal.timeout(TIMEOUT_MS),
+            body: JSON.stringify({
+              model,
+              messages: [{ role: "user", content: buildVisibilityPrompt(context.prompt.text, false) }],
+              temperature: 0.2,
+              max_tokens: 900,
+            }),
+          });
+          const data = (await response.json().catch(() => ({}))) as ChatCompletionOutput;
+          if (!response.ok) throw new Error(data.error?.message || `HTTP ${response.status}`);
+          return { answer: chatCompletionText(data), citations: [] };
+        },
+        "model_memory"
+      ),
+  };
+}
+
 const ADAPTERS: ProviderAdapter[] = [
   createChatGptAdapter(),
   createClaudeAdapter(),
   createPerplexityAdapter(),
   createGeminiAdapter(),
+  createGeminiGroundedAdapter(),
+  createGroqLlamaAdapter(),
+  createOpenRouterFreeAdapter(),
+  createPollinationsAdapter(),
   createAiOverviewsAdapter(),
 ];
 

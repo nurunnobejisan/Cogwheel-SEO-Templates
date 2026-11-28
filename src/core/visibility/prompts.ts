@@ -20,6 +20,17 @@ export interface PromptSetInput {
   maxPrompts?: number;
 }
 
+/**
+ * Adds only neutral answering instructions. The buyer prompt text is never
+ * rewritten and the brand is never injected — that would fabricate mentions.
+ */
+export function buildVisibilityPrompt(text: string, grounded: boolean): string {
+  const suffix = grounded
+    ? "Answer concisely. Include source links only for statements supported by the web sources you actually used; say when a source was not available."
+    : "Answer concisely. If a name comes from model memory rather than a live source, say so. Do not invent URLs.";
+  return `${text}\n\n${suffix}`;
+}
+
 function slug(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 48) || "prompt";
 }

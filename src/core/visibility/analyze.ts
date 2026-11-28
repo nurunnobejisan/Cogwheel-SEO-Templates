@@ -125,9 +125,11 @@ export interface AnalyzeAnswerInput {
 
 export function analyzeAnswer(input: AnalyzeAnswerInput): ProviderAnswer {
   const { mentioned, snippets } = findMentions(input.answer, input.brand, input.targetDomain);
+  // Memory-only answers can name URLs without having opened them. Those are
+  // not web-grounded citations, so they are excluded from citation counts.
   const urls = [
     ...(input.providerCitations ?? []).map((citation) => citation.url),
-    ...extractUrls(input.answer),
+    ...(input.citationType === "model_memory" ? [] : extractUrls(input.answer)),
   ];
   const citations = [...new Set(urls)]
     .map((url) => classifyCitation(url, input.targetDomain, input.competitorDomains))
