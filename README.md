@@ -124,14 +124,28 @@ npm run dev                    # http://localhost:3000
 
 The app starts without third-party credentials. Provider-backed sections declare themselves unavailable until configured.
 
-### Run the Python tools
+### Python quickstart
+
+The Python layer powers analyzers, generators, report exporters, and the
+FastAPI bridge (`api/server.py`). It requires Python 3.11+.
 
 ```bash
 python3.11 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
+
+# lint (same gate as CI)
+ruff check python/
+
+# tests
 pytest tests/python -q
+
+# optional: run the HTTP bridge locally
+uvicorn api.server:app --reload --port 8000
 ```
+
+If you change `schemas/*.json`, regenerate the Python mirror with
+`npm run export:schemas`.
 
 ### Build and load the extension
 

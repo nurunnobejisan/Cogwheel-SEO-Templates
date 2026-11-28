@@ -1,0 +1,18 @@
+# Default owner for repository review.
+* @nurunnobejisan
+
+# CI and release infrastructure
+/.github/ @nurunnobejisan
+
+# Core audit and pack logic
+/src/packs/ @nurunnobejisan
+/src/rules/ @nurunnobejisan
+/src/engine/ @nurunnobejisan
+/schemas/ @nurunnobejisan
+
+# Python services and analyzers
+/python/ @nurunnobejisan
+/api/ @nurunnobejisan
+
+# Chrome extension
+/chrome-extension/ @nurunnobejisan
