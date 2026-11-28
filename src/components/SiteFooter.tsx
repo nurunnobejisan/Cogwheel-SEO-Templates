@@ -40,7 +40,7 @@ export function SiteFooter() {
               Architecture
             </Link>
             <a
-              href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates"
+              href="https://github.com/nurunnobejisan/SEO-Studio"
               target="_blank"
               rel="noopener noreferrer"
               className="text-slate-500 transition hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -54,7 +54,7 @@ export function SiteFooter() {
           <p>
             &copy; {new Date().getFullYear()} Cogwheel Marketing &amp;{" "}
             <a
-              href="https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/graphs/contributors"
+              href="https://github.com/nurunnobejisan/SEO-Studio/graphs/contributors"
               target="_blank"
               rel="noopener noreferrer"
               className="underline decoration-slate-400 hover:text-slate-900 dark:hover:text-white"
@@ -63,7 +63,7 @@ export function SiteFooter() {
             </a>
             . Architected by{" "}
             <a
-              href="https://github.com/jisan-razibmarketing"
+              href="https://github.com/nurunnobejisan"
               target="_blank"
               rel="noopener noreferrer"
               className="font-medium text-slate-700 underline decoration-slate-400 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white"

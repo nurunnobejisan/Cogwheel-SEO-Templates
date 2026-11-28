@@ -6,7 +6,7 @@
 
 - **rifonix** — 4 repos: `visibility-suites-docs`, `nextbetter-auth-starter`, `stagehand-example`, `cloudflare-saas-stack`
 - **mdrifatcom** — 29 repos (see reject list)
-- **Razib-Marketing** — 5 repos: `gtm-automation-saas`, `AI-Search-Resources`, `rm-smart-redirects`, `marriott-scraper`, `email-template-builder`
+- **Archived external account** — 5 repos: `gtm-automation-saas`, `AI-Search-Resources`, `rm-smart-redirects`, `marriott-scraper`, `email-template-builder`
 
 **No repository in any account could not be accessed.** All inspected repos are public. `mdrifatcom/aiapps` reports an empty git tree ("Git Repository is empty").
 
@@ -40,10 +40,9 @@
 | License | **No LICENSE file in the repo** (package.json `"license": "ISC"` but no resolvable license text; the code is a mirror of the Cloudflare playwright example). Cannot adapt code without a clear license. |
 | Decision | **Ideas only.** Adopt the *pattern* (rendered-page capture feeding a schema-validated extractor); do not copy code. |
 
-### A3. `Razib-Marketing/gtm-automation-saas`
+### A3. `Archived external account/gtm-automation-saas`
 | Field | Detail |
 | --- | --- |
-| Repository | `https://github.com/Razib-Marketing/gtm-automation-saas` (branch `main`; pushed same day as inspection) |
 | Feature | Edge SaaS (React/Vite + Hono + Cloudflare Workers + D1 + Clerk): GTM automation recipes across several hotel booking engines; GTM Workspace Health Audit (duplicate tags, shared/orphaned triggers/variables); 22-point GA4 property audit; cron-driven anomaly monitoring (14 metrics / 6 operators); server-rendered A4 PDF reports via Browser Rendering. |
 | Source files | `functions/api/_security.ts` — manual Clerk **RS256 JWKS verification** with key cache + rotation fallback, `timingSafeEqualStr`; `functions/api/gtm/_utils.ts`, `functions/api/gtm/audit.ts`, `functions/api/ga4/_auditEngine.ts`; `functions/api/gtm/templates/{basic,ihotelier,mews,synxis,windsurfer,safara,woocommerce}.ts`; `wrangler.jsonc` (D1 binding, `crons: ["*/15 * * * *"]`); `schema.sql`. |
 | Cogwheel equivalent | Auth is session/operator-token based (`src/lib/platform/auth.ts`, `src/middleware.ts`) without JWT/JWKS. No cron monitoring. No server-rendered PDF (reports exist via `exporters/`, `src/lib/export.ts`). No GTM/GA4 modules. |
@@ -53,10 +52,9 @@
 | License | **No LICENSE file** → no reuse rights. |
 | Decision | **Ideas/patterns only** (auth-hardening checklist; cron design). No code reuse (no license). GTM/GA4 not in scope now. |
 
-### A4. `Razib-Marketing/rm-smart-redirects`
+### A4. `Archived external account/rm-smart-redirects`
 | Field | Detail |
 | --- | --- |
-| Repository | `https://github.com/Razib-Marketing/rm-smart-redirects` (branch `main`) |
 | Feature | WordPress redirect manager: forced/exact/regex layers, **hierarchical fallback** to parent URLs, 404 logging with hit counts, and a **review queue** for suggested redirects, plus slug-change watching. |
 | Source files | `includes/class-interceptor.php` (`check_for_redirect`, `find_match`, forced-only layer, `log_404`), `includes/class-watcher.php`, `includes/class-health.php`, `admin/class-ajax.php`. |
 | Cogwheel equivalent | Redirect chains are captured per fetch (`src/core/crawler/fetcher.ts`); there is **no loop detection and no broken-link/redirect suggestion queue**. |
@@ -79,10 +77,9 @@
 | License | MIT. |
 | Decision | **Ideas only (reference checklist).** Do **not** copy the competitor's marketing prose into Cogwheel's corpus; if used, it must be rewritten in Cogwheel's own voice and attributed. |
 
-### A6. `Razib-Marketing/AI-Search-Resources`
+### A6. `Archived external account/AI-Search-Resources`
 | Field | Detail |
 | --- | --- |
-| Repository | `https://github.com/Razib-Marketing/AI-Search-Resources` (branch `main`) |
 | Feature | A single curated `robots.txt` (plus a one-line README) that explicitly allow-lists major search and AI crawlers and documents them: `Google-Extended`, `GPTBot`, `ChatGPT-User`, `ClaudeBot`, `PerplexityBot`, `Applebot-Extended`, `meta-externalagent`, `CCBot`, `Cohere-ai`, `aiHitBot`, `Bytespider`, `FirecrawlAgent`, `Applebot`, `Amazonbot`, `TikTokSpider`, and others. |
 | Source files | `robots.txt` (the only substantive file). |
 | Cogwheel equivalent | `rules/geo/ai-crawlers.ts` already analyses robots for a set of AI bots. |
@@ -104,10 +101,10 @@
 | `mdrifatcom/hotels-nearby` | `create-next-app` scaffold | `app/page.tsx` is the default Next scaffold; no data code | No hotel logic; empty scaffold. |
 | `mdrifatcom/formflow`, `wonderlust`, `probad`, `t3stack` | AI/form/travel scaffolds (Firebase AI, Prisma) | trees + manifests | **No LICENSE**; no SEO/crawl value. |
 | `mdrifatcom/aiwebapp`, `aiapp`, `aiapps`(empty), `cfworker-test` | Empty/skeleton | 1 file / empty tree | No code. |
-| `mdrifatcom/razibmarketing-hf-dnr`, `email-templates` | Single PHP/HTML file | 1 file each | Trivial, not reusable. |
+| `mdrifatcom/email-templates` | Single PHP/HTML file | 1 file | Trivial, not reusable. |
 | `mdrifatcom` licensed forks (`v1`/Midday MIT, `scrapyd-cluster` GPL-3.0, `pa11y-dashboard` GPL-3.0, `BLIP` BSD, `stablediffusion` MIT, `webiny-js`, `Darkmode.js`, `AccessibilityWebsiteComponents`, `acc_toolbar`, `necessary-public-apis`, `scrapyd`, `woocommerce`, `webiny-test`, `mdrifat.com`, `ResposiveBackgroundVideo`) | Forks of third-party projects | `fork=True` | Forks (not original); some copyleft. Reuse the upstream project directly if ever needed. |
-| `Razib-Marketing/marriott-scraper` | Node scaffold | root tree = README + `package.json` (only `puppeteer`); the rest is `node_modules` committed | No scraper code committed. |
-| `Razib-Marketing/email-template-builder` | Fork (MIT) of a DnD email editor | `fork=True` | Fork; irrelevant domain. |
+| `Archived external account/marriott-scraper` | Node scaffold | root tree = README + `package.json` (only `puppeteer`); the rest is `node_modules` committed | No scraper code committed. |
+| `Archived external account/email-template-builder` | Fork (MIT) of a DnD email editor | `fork=True` | Fork; irrelevant domain. |
 
 **Not inspected further (out of scope, non-SEO):** the remainder of the `mdrifatcom` list is email templates, profile config, or the forks above.
 

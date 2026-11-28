@@ -21,8 +21,8 @@ sys.path.insert(0, str(ROOT_DIR))
 
 from python.scripts.models import KeywordStrategyMatrix, OtaConfig
 
-REPO_OWNER = "jisan-razibmarketing"
-REPO_NAME = "Cogwheel-SEO-Templates"
+REPO_OWNER = "nurunnobejisan"
+REPO_NAME = "SEO-Studio"
 RAW_BASE = f"https://raw.githubusercontent.com/{REPO_OWNER}/{REPO_NAME}/main"
 REMOTE_MATRIX_URL = f"{RAW_BASE}/data/78-keyword-strategy-matrix.json"
 REMOTE_OTA_URL = f"{RAW_BASE}/data/ota-config.json"

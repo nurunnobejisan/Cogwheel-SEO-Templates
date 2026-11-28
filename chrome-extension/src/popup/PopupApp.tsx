@@ -185,7 +185,7 @@ export function PopupApp() {
         <div className="flex items-center gap-2">
           <div className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-[0_0_10px_#10b981]" />
           <span className="font-display text-xs font-black tracking-wider text-white uppercase">
-            RAZIB MARKETING
+            SEO
           </span>
           <span className="text-[10px] text-slate-500">|</span>
           <span className="text-[10px] font-bold text-slate-400">STUDIO</span>

@@ -351,7 +351,7 @@ def main() -> int:
         "--urls",
         nargs="+",
         default=[
-            "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+            "https://github.com/nurunnobejisan/SEO-Studio",
             "https://www.marriott.com/hotels/travel/ecpsb-springhill-suites-panama-city-beachfront/",
             "https://www.hilton.com/en/hotels/miaapdt-doubletree-miami-airport-convention-center/",
         ],

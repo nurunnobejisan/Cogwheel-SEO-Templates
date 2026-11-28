@@ -307,7 +307,7 @@ export const COGWHEEL_TEMPLATES: CogwheelTemplate[] = [
     format: "markdown",
     description: "Claude & ChatGPT prompt for allocating Semrush hospitality keyword pools across hotel landing pages using the 3-step Cogwheel rationale.",
     tags: ["Claude", "ChatGPT", "Semrush", "Keyword Research"],
-    content: `You are the Lead Hospitality SEO Strategist at Razib Marketing following Cogwheel SEO standards.
+    content: `You are the Lead Hospitality SEO Strategist following Cogwheel SEO standards.
 
 Analyze the following property and allocate target keywords across landing pages:
 PROPERTY: {{hotelName}}
@@ -1278,16 +1278,16 @@ export function calculateSeoScores(data: PageAuditData): ScoreBreakdown {
 }
 
 export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
-  url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
-  origin: "https://github.com",
-  pathname: "/jisan-razibmarketing/Cogwheel-SEO-Templates",
+  url: "{{SITE_URL}}",
+  origin: "{{SITE_URL}}",
+  pathname: "/",
   protocol: "https:",
-  hostname: "github.com",
+  hostname: "{{SITE_HOSTNAME}}",
   title: "Cogwheel SEO & Hospitality Templates Studio | Official Site",
   titlePixelWidth: 465,
-  metaDesc: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.",
+  metaDesc: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties.",
   metaDescPixelWidth: 880,
-  canonical: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+  canonical: "{{SITE_URL}}",
   metaRobots: "index, follow",
   language: "en",
   siteCategory: "saas",
@@ -1376,7 +1376,7 @@ export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
       "@type": "Hotel",
       name: "Cogwheel Luxury Resort & Studio",
       description: "Premier hospitality SEO and Generative Engine Optimization platform.",
-      url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates",
+      url: "{{SITE_URL}}",
     },
     {
       "@context": "https://schema.org",
@@ -1407,29 +1407,29 @@ export const COGWHEEL_OPTIMAL_AUDIT_DATA: PageAuditData = {
     nofollow: 0,
   },
   internalUrls: [
-    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/brand-compliant-hotel-onpage.md",
-    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/hotel-geo-ai-visibility.md",
-    "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates/blob/main/templates/hotel-lodging-schema.md",
+    "{{SITE_URL}}/templates/brand-compliant-hotel-onpage.md",
+    "{{SITE_URL}}/templates/hotel-geo-ai-visibility.md",
+    "{{SITE_URL}}/templates/hotel-lodging-schema.md",
   ],
   hasViewport: true,
   hasOgTitle: true,
   hasOgImage: true,
   ogTitle: "Cogwheel SEO & Hospitality Templates Studio | Official Site",
-  ogDescription: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties by Razib Marketing.",
-  ogImage: "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/assets/banner.png",
+  ogDescription: "Production-grade, spec-driven SEO and Generative Engine Optimization (GEO) platform for independent and enterprise hotel properties.",
+  ogImage: "{{SITE_URL}}/assets/banner.png",
   twitterTags: {
     card: "summary_large_image",
     title: "Cogwheel SEO & Hospitality Templates Studio",
     description: "Production-grade hospitality SEO & GEO platform.",
-    image: "https://raw.githubusercontent.com/jisan-razibmarketing/Cogwheel-SEO-Templates/main/assets/banner.png",
+    image: "{{SITE_URL}}/assets/banner.png",
   },
   detectedNap: {
     phone: "+1-800-555-0199",
     address: "Panama City Beachfront, FL 32413",
-    email: "contact@razibmarketing.com",
+    email: "{{CONTACT_EMAIL}}",
   },
   socialLinks: [
-    { platform: "GitHub", url: "https://github.com/jisan-razibmarketing/Cogwheel-SEO-Templates" },
+    { platform: "GitHub", url: "https://github.com/nurunnobejisan/SEO-Studio" },
   ],
   loadTimeMs: 240,
 };

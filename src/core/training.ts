@@ -37,7 +37,7 @@ const DEFAULT_SEED_RULES: AiTrainingRule[] = [
   {
     id: "seed-rm-property-taxonomy",
     taskId: null,
-    title: "Razib Marketing Property Taxonomy (2026 Portfolio)",
+    title: "Property Taxonomy (2026 Portfolio)",
     ruleText:
       "Classify properties accurately using the agency portfolio taxonomy: Full Flag Brand (e.g. Embassy Suites, Courtyard, Hilton Garden Inn, Fairfield, Residence Inn, Hyatt Place), Soft Brand.com (brand-hosted soft-brand URL), Soft Vanity / Vanity Site (standalone domain such as thenines.com, thecurtis.com, morrisonhouse.com, thealexandrian.com, grand1847.com, hotellajolla.com), Large/SMB Independent (e.g. Arrive Hotels, Senza, La Fonda, Coachman), and Restaurant.",
     exampleGood: "Treat The Nines Portland (Soft Vanity: thenines.com) separately from The Nines Portland (Branded: Soft Brand.com).",

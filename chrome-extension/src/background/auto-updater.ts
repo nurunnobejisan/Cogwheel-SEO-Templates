@@ -7,8 +7,8 @@ import {
 
 export * from "../types/updater.types";
 
-const REPO_OWNER = "jisan-razibmarketing";
-const REPO_NAME = "Cogwheel-SEO-Templates";
+const REPO_OWNER = "nurunnobejisan";
+const REPO_NAME = "SEO-Studio";
 const RAW_BASE = `https://raw.githubusercontent.com/${REPO_OWNER}/${REPO_NAME}/main`;
 const RELEASE_ZIP_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest/download/cogwheel-seo-studio.zip`;
 const RELEASES_PAGE_URL = `https://github.com/${REPO_OWNER}/${REPO_NAME}/releases/latest`;

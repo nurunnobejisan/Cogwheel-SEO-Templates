@@ -1,0 +1,59 @@
+{
+  "artifacts": {
+    "adapter": null,
+    "weightsCommitted": false
+  },
+  "baseModel": {
+    "id": "Qwen/Qwen3-4B",
+    "licence": "Apache-2.0"
+  },
+  "config": {
+    "baseModelLicence": "Apache-2.0",
+    "base_model": "Qwen/Qwen3-4B",
+    "batch_size": 1,
+    "beta": 0.1,
+    "epochs": 1.0,
+    "gradient_accumulation": 8,
+    "learning_rate": 5e-05,
+    "load_in_4bit": true,
+    "lora_alpha": 32,
+    "lora_dropout": 0.05,
+    "lora_r": 16,
+    "max_len": 2048,
+    "max_prompt_len": 1024,
+    "out_dir": "ml/train/outputs",
+    "seed": 1795487332,
+    "target_modules": [
+      "q_proj",
+      "k_proj",
+      "v_proj",
+      "o_proj",
+      "gate_proj",
+      "up_proj",
+      "down_proj"
+    ],
+    "trust_remote_code": false
+  },
+  "data": {
+    "gate": {
+      "clientDerivedPairs": 0,
+      "minimum": 2000,
+      "status": "ready"
+    },
+    "path": "/private/var/folders/fp/bvdxl_rn5577g38p8h4mypyc0000gn/T/pytest-of-jisanjomadder/pytest-210/test_dpo_cli_dry_run_and_requi0/repo.jsonl",
+    "sha256": "ef9ef7f0d41d3aa6e50bc5a8a71da4efd575860e8a36b43896e2b7c72ea9780f",
+    "source": "repo-synthetic"
+  },
+  "eligiblePairs": 1,
+  "evalCommand": "python3 ml/eval/run_eval.py --outputs <run>-outputs.jsonl",
+  "generatedAt": "2026-11-28T10:47:44Z",
+  "golden": {
+    "note": "scores are only ever produced by ml/eval/run_eval.py",
+    "path": "/Users/jisanjomadder/Documents/Default Project/ml/eval/golden/cases.jsonl",
+    "sha256": "3d9514129d6a694fed90fa9a52039806bfa687e6b51c757998b4e05bcd6a3a84"
+  },
+  "kind": "dpo",
+  "mode": "dry-run",
+  "runId": "dpo-20261128T104744Z",
+  "trainingStarted": false
+}

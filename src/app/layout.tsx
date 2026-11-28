@@ -21,7 +21,7 @@ export const metadata: Metadata = {
   description:
     "Automated hospitality search and generative engine optimization suite with physical pixel budgeting, brand guardrails, and client-ready reporting.",
   icons: {
-    icon: "/razib-marketing-logo.png",
+    icon: "/nurunnobe-logo.png",
   },
   openGraph: {
     title: "Cogwheel SEO & GEO Studio — Hotel Search Engine Suite",

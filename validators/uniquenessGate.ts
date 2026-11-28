@@ -25,7 +25,7 @@ export const DEFAULT_UNIQUENESS_CONFIG: UniquenessGateConfig = {
     "privacy policy",
     "terms and conditions",
     "cookie policy",
-    "powered by razib marketing",
+    "powered by seo studio",
     "check-in time is",
     "contact us today",
     "book direct and save"
