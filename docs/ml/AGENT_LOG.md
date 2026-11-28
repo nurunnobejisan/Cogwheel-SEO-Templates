@@ -106,3 +106,39 @@ Running work-package log for v1 adapter readiness.
 - **Defaults taken**:
   - Aligned config paths cleanly to `ml/train/config.py`'s real defaults (`ml/train/outputs/<runId>/adapter`, `data/build/sft-v2.jsonl`, `data/build/sft-v2.report.json`).
 - **Remaining**: Proceed to WP11 (`ml/wp11-progress-docs`).
+
+## WP11 — Progress Docs & Final Readiness Summary (`ml/wp11-progress-docs`)
+- **Changed**:
+  - Updated `docs/ml/PROGRESS.md` with Phases 6–12 tracking (`in progress` for pending stacked PRs `WP1`–`WP11`, `not started` for operator GPU training and production rollout; no fabricated score numbers).
+  - Finalized `docs/ml/AGENT_LOG.md` with the 5 readiness summary blocks below.
+
+### 1. What Changed Across WP1–WP11
+- `ml/wp1-operator-auth`: Edge + Node Web Crypto constant-time bearer auth (`src/lib/security/operator.ts`), middleware protection on all API writes + costly GET routes (`src/middleware.ts`), redacted unauthenticated GET `/api/ai-training`, client + Chrome extension bearer forwarding.
+- `ml/wp2-task-routing`: Strict v1 adapter scope (`V1_ADAPTER_TASKS = ["schema_generation", "metadata_generation"]` in `ai/router.ts`), optional `task` wiring in `generateClaudeText` and 7 obvious task callers; Tier 2 and untagged prompts stay off the adapter.
+- `ml/wp3-output-gates`: Canonical `schemas/known-schema-types.json` shared between `ml/eval/run_eval.py` and `src/core/ai/output-gates.ts` (`gateOutput`), single retry fallback on standard/free chain, counter metrics without prompt/output logging.
+- `ml/wp4-registry-retirement`: Retired Gemini 1.5 Flash entries (`activeModelId: null`, `"status": "retired"` in `data/models/model_registry.json`), enforced non-servable rejection in `ml/serve/registry.py` and `isRegistryModelSelectable` in `src/core/ai/custom-model.ts`.
+- `ml/wp5-adapter-modes`: Added `AI_ADAPTER_MODE=off|shadow|canary|on` (default `off`) and `AI_ADAPTER_CANARY_PCT` (default `0`) in `src/core/ai/adapter-mode.ts` and `src/core/claude.ts` (concurrent shadow evaluation, deterministic FNV-1a bucketing by `propertyId`/`requestId`), documented in `.env.example`, `docs/PLATFORM_RUNTIME.md`, and `D-031`.
+- `ml/wp6-retrieval-isolation`: Enforced optional `propertyId` tenant scoping across TypeScript (`ai/types.ts`, `ai/rag/knowledge-base.ts`, `src/core/brain/index.ts`, `/api/brain`) and Python (`ml/retrieve/chunk.py`, `ml/retrieve/corpus.py`, `ml/retrieve/store.py` including `PGVECTOR_DDL` + `pgvector_where_clause`).
+- `ml/wp7-constrained-decoding`: Added `schemas/ml-v1-outputs.ts` exported to `ml-schema-generation.schema.json` and `ml-metadata-generation.schema.json`, lazy-`outlines` `ml/generate/constrained.py`, and `ml/serve/server.py` `task` integration.
+- `ml/wp8-dataset-v2`: Created `ml/train/build_sft.py` producing gitignored `data/build/sft-v2.jsonl` + `data/build/sft-v2.report.json` with source allow-lists per v1 job, D-026 human-review checks, deterministic 90/10 host-hash isolation, golden-host exclusion, `sft.py` default update, and `validate-training-data.mjs` v2 support.
+- `ml/wp9-golden-v2`: Preserved frozen v1 golden set; scaffolded `ml/eval/golden_v2/` (`75` schema + `75` metadata target), `scripts/check-golden-v2.ts` (`--allow-partial` / `--strict`), and `ml/eval/propose_golden_v2.py` (`humanReviewed: false` candidate generator).
+- `ml/wp10-gpu-runbook`: Updated `docs/ml/GPU_RUNBOOK.md` with Steps 1–7 commands and temperature-0 ship gates.
+- `ml/wp11-progress-docs`: Updated `docs/ml/PROGRESS.md` Phases 6–12 and finalized this log.
+
+### 2. Defaults & Architectural Decisions
+- Recorded `D-025` through `D-031` in `docs/ml/DECISIONS.md` (strict `V1_ADAPTER_TASKS`, D-026 human review requirement for synthetic rows, Qwen3 0.6B->1.7B->4B progression, Gemini 1.5 Flash retirement, schema-first rollout order, Web Crypto Edge+Node operator guard, and `AI_ADAPTER_MODE=off` safe default).
+
+### 3. Human Operator Action Items (Before Shipping v1 Model)
+1. Review and merge stacked PRs `ml/wp1`..`ml/wp11` in exact branch order (`main <- wp1 <- wp2 ... <- wp11`).
+2. Configure `SEO_STUDIO_API_BEARER_TOKEN` in Vercel production env (and operator browser/extension storage) plus confirm Vercel Deployment Protection settings on preview deployments.
+3. Populate and manually review `ml/eval/golden_v2/cases.jsonl` (`humanReviewed: true`, `>= 75` schema + `>= 75` metadata on held-out hosts) and verify with `npx tsx scripts/check-golden-v2.ts --strict`.
+4. Follow `docs/ml/GPU_RUNBOOK.md` Steps 1–5 on Kaggle/Colab (`ml.train.build_sft`, baseline `evaluate --endpoint`, QLoRA training `< 9h`, private HF upload, `run_eval.py` ship gates, `ml.serve.register --active`).
+5. Enable `CUSTOM_MODEL_*` + start with `AI_ADAPTER_MODE=shadow`, verify gate telemetry, then progress `canary` -> `on` (`schema_generation` first).
+
+### 4. Known Scope Boundaries
+- No GPU training (`torch`, `transformers`, `peft`, `trl`, `unsloth`, `outlines`, `psycopg`) ran locally; heavy ML paths remain cleanly gated behind `HeavyDepsError` / `RuntimeError`.
+- `ruff` CLI is unavailable in local PATH; Python modules conform to stdlib-only CI constraints (`D-014`).
+- Frozen `ml/eval/golden/cases.jsonl` (`52` cases) and `ml/sources.yaml` (`use:` / `feeds:`) remain completely untouched.
+
+### 5. Status
+- **Ready for stacked GitHub PR creation (`ml/wp1-operator-auth`..`ml/wp11-progress-docs`) and final full-suite verification.**
