@@ -3,9 +3,9 @@ import Link from "next/link";
 import { TemplatesHubClient } from "./TemplatesHubClient";
 
 export const metadata: Metadata = {
-  title: "Hospitality SEO & GEO Templates — Razib Marketing",
+  title: "Hospitality SEO & GEO Template Library — Razib Marketing",
   description:
-    "Production-ready on-page, lodging schema, GEO AI visibility, and GBP UNAP audit templates tailored for Marriott, Hilton, IHG, Hyatt, and luxury hotels.",
+    "Razib Marketing's production-ready on-page, lodging schema, GEO visibility, and GBP NAP audit templates for Marriott, Hilton, IHG, Hyatt, and luxury stays.",
 };
 
 export default function TemplatesPage() {

@@ -92,7 +92,7 @@ export const TEMPLATES_DATA: SeoTemplate[] = [
     categorySlug: "technical-seo",
     category: "Technical SEO Audits",
     title: "Core Web Vitals & PageSpeed Technical Audit",
-    metaTitle: "Core Web Vitals Technical SEO Audit — SEO Studio", // 53
+    metaTitle: "Core Web Vitals Technical SEO Audit — Razib Marketing", // 53
     metaDescription: "Master Core Web Vitals audit for hospitality sites: optimize LCP under 2.5s, achieve zero CLS, streamline TTFB, and fix render-blocking script execution.", // 153
     directAnswer: "A Core Web Vitals audit identifies bottlenecks affecting Largest Contentful Paint (LCP), Interaction to Next Paint (INP), and Cumulative Layout Shift (CLS). By optimizing hero images, deferring non-critical JavaScript, and establishing explicit container dimensions, websites achieve a 100% green assessment in Google PageSpeed Insights.",
     difficulty: "Advanced",
@@ -147,7 +147,7 @@ export const TEMPLATES_DATA: SeoTemplate[] = [
     categorySlug: "technical-seo",
     category: "Technical SEO Audits",
     title: "JavaScript SEO & Hydration Diagnostic Framework",
-    metaTitle: "JavaScript SEO Hydration Audit — SEO Studio", // 52
+    metaTitle: "JavaScript SEO & Rendering Hydration Audit — SEO Studio", // 55
     metaDescription: "Diagnose client-side JavaScript rendering, DOM hydration stalls, crawler timeouts, and dynamic internal link visibility for modern React and Next.js sites.", // 154
     directAnswer: "JavaScript SEO ensures search engine bots seamlessly crawl, render, and index dynamic single-page and server-hydrated applications. By inspecting raw HTML against the rendered DOM, resolving hydration mismatches, and utilizing native HTML anchor tags, websites eliminate indexation lag and crawl budget waste.",
     difficulty: "Advanced",
@@ -196,7 +196,7 @@ curl -A "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/5
     categorySlug: "on-page-seo",
     category: "On-Page Content Briefs",
     title: "High-Conversion Hotel Landing Page Content Brief",
-    metaTitle: "Hotel Landing Page Content Brief — SEO Studio", // 53
+    metaTitle: "Hotel Landing Page Content Brief — Razib Marketing", // 50
     metaDescription: "Comprehensive on-page content architecture for hotel landing pages: pixel-budgeted meta tags, single H1 formula, structured amenities, and FAQ integration.", // 153
     directAnswer: "A hotel landing page content brief maps high-intent reservation keywords directly to page copy, heading architecture, and trust signals. By combining a 580px title tag, single H1 entity anchor, detailed amenity features, and verified FAQ structured data, hotels maximize organic conversion and SERP snippet presence.",
     difficulty: "Intermediate",
@@ -243,7 +243,7 @@ curl -A "Mozilla/5.0 (Linux; Android 6.0.1; Nexus 5X Build/MMB29P) AppleWebKit/5
     categorySlug: "on-page-seo",
     category: "On-Page Content Briefs",
     title: "Multi-Page Keyword Cannibalization Remediation Matrix",
-    metaTitle: "Keyword Cannibalization Audit Matrix — SEO Studio", // 54
+    metaTitle: "Keyword Cannibalization Audit Matrix — Razib Marketing", // 54
     metaDescription: "Resolve organic search cannibalization across competing portfolio pages: consolidate duplicate URLs, establish canonical anchors, and map unique intents.", // 153
     directAnswer: "Keyword cannibalization occurs when multiple pages on the same domain compete for identical search intents, splitting organic ranking signals and confusing search algorithms. Resolving cannibalization requires mapping distinct search intents, merging redundant content, establishing 301 redirects, and updating internal anchor links.",
     difficulty: "Advanced",
@@ -291,7 +291,7 @@ Redirect lower-converting secondary URLs with 301 permanently to the designated 
     categorySlug: "local-seo",
     category: "Local SEO & GBP Checklists",
     title: "30-Day Multi-Property Google Business Profile Plan",
-    metaTitle: "30-Day Hotel Google Business Profile Plan — SEO Studio", // 51
+    metaTitle: "30-Day Hotel Google Business Profile Plan — Razib Marketing", // 59
     metaDescription: "Step-by-step 30-day Google Business Profile optimization schedule for hotels: categories, photo cadence, review sentiment, and local map pack dominance.", // 152
     directAnswer: "A 30-day Google Business Profile roadmap systematically optimizes local listing signals for hotel properties. By configuring precise primary categories, uploading geocoded high-resolution property imagery, maintaining a 24-hour review response rhythm, and publishing weekly promotional updates, properties capture maximum local 3-pack visibility.",
     difficulty: "Beginner",
@@ -338,7 +338,7 @@ Respond to all reviews with customized brand voice mentioning [Primary Keyword] 
     categorySlug: "local-seo",
     category: "Local SEO & GBP Checklists",
     title: "Universal NAP Citation & Directory Cleanliness Audit",
-    metaTitle: "Universal NAP Citation Cleanliness Audit — SEO Studio", // 51
+    metaTitle: "Universal NAP Citation Cleanliness Audit — Razib Marketing", // 58
     metaDescription: "Audit and clean up local NAP citations across Google, Apple Maps, Bing, TripAdvisor, and OTAs to establish trusted local proximity ranking authority.", // 150
     directAnswer: "Universal Name, Address, and Phone (UNAP) consistency is a primary local ranking factor for hospitality businesses. Mismatched suite numbers, outdated phone numbers, or duplicated listings confuse search engines and erode map pack authority. Regular citation auditing guarantees 100% data cleanliness across core data aggregators.",
     difficulty: "Intermediate",
@@ -388,7 +388,7 @@ Respond to all reviews with customized brand voice mentioning [Primary Keyword] 
     categorySlug: "programmatic-seo",
     category: "Programmatic SEO Blueprints",
     title: "Programmatic Multi-Location Landing Page Architecture",
-    metaTitle: "Programmatic Location Landing Page Blueprint — SEO Studio", // 56
+    metaTitle: "Programmatic Location Page Blueprint — Razib Marketing", // 54
     metaDescription: "Scale hundreds of location and neighborhood hotel landing pages without thin-content penalties: dynamic data schemas, unique FAQs, and internal links.", // 151
     directAnswer: "A programmatic SEO architecture generates dozens or hundreds of indexable landing pages targeting long-tail geographic searches. By pairing relational database records with unique local content blocks, neighborhood travel times, custom FAQ schemas, and self-referencing canonicals, pages rank without thin content penalties.",
     difficulty: "Advanced",
@@ -437,7 +437,7 @@ Respond to all reviews with customized brand voice mentioning [Primary Keyword] 
     categorySlug: "programmatic-seo",
     category: "Programmatic SEO Blueprints",
     title: "Hotel Amenities & Neighborhood Indexing Blueprint",
-    metaTitle: "Hotel Amenities Programmatic Indexing Blueprint — CW", // 53
+    metaTitle: "Hotel Amenities Indexing Blueprint — Razib Marketing", // 52
     metaDescription: "Programmatic framework for indexing hotel amenities: pet-friendly filters, EV charging, rooftop pools, and meeting venues with structured data graphs.", // 153
     directAnswer: "An amenities indexing blueprint captures high-intent non-branded hospitality queries like 'hotels with EV chargers' or 'dog friendly beachfront suites'. By generating dedicated, schema-verified sub-pages linked from the primary property domain, hotels capture qualified traveler demand with high direct booking conversion.",
     difficulty: "Intermediate",
@@ -480,7 +480,7 @@ Respond to all reviews with customized brand voice mentioning [Primary Keyword] 
     categorySlug: "link-building",
     category: "Link Building & Digital PR Outreach",
     title: "Hospitality Destination Media & Digital PR Pitch Kit",
-    metaTitle: "Hospitality Digital PR Pitch Kit — SEO Studio", // 51
+    metaTitle: "Hospitality Digital PR Pitch Kit — Razib Marketing", // 50
     metaDescription: "High-yield digital PR outreach kit for hotels: pitch travel journalists, secure editorial inclusions in top lifestyle magazines, and earn authority links.", // 154
     directAnswer: "A digital PR pitch kit equips hospitality brands to secure high-authority editorial links from tier-1 travel publications. By offering verified destination angles, exclusive culinary or wellness data, and immediate press kit assets, hotels earn authoritative do-follow backlinks that enhance domain authority.",
     difficulty: "Intermediate",
@@ -524,7 +524,7 @@ With traveler demand for [Primary Keyword] soaring across [LocationNiche], I wan
     categorySlug: "link-building",
     category: "Link Building & Digital PR Outreach",
     title: "Unlinked Brand Mention & Citation Reclamation Guide",
-    metaTitle: "Unlinked Brand Mention Reclamation Guide — SEO Studio", // 52
+    metaTitle: "Unlinked Brand Mention Reclamation Guide — Razib Marketing", // 58
     metaDescription: "Recover unlinked hotel brand mentions across travel blogs, news outlets, and meeting guides: proven outreach scripts with a 45% link conversion rate.", // 152
     directAnswer: "Unlinked brand mention reclamation is the highest-ROI link acquisition strategy in hospitality SEO. By monitoring online mentions of the property name or executive staff that omit a hyperlink, teams send courteous value-add outreach to webmasters, successfully converting mentions into high-value do-follow backlinks.",
     difficulty: "Beginner",
@@ -574,7 +574,7 @@ Thank you so much for featuring [Brand Name] in your recent guide to [LocationNi
     categorySlug: "ai-search-geo",
     category: "AI Search / GEO Optimization",
     title: "Generative Engine Optimization (GEO) AI Playbook",
-    metaTitle: "Generative Engine Optimization GEO Playbook — SEO Studio", // 54
+    metaTitle: "Generative Engine Optimization Playbook — Razib Marketing", // 57
     metaDescription: "Master Generative Engine Optimization: position your property as the trusted citation in Google Gemini Overviews, ChatGPT Search, and Perplexity Pro.", // 152
     directAnswer: "Generative Engine Optimization (GEO) structures website content to be selected as a cited source by Large Language Models (LLMs) like Google Gemini, ChatGPT, and Perplexity. By incorporating high-density factual definitions, structured entity graphs, concise direct answer summaries, and verified FAQs, brands dominate generative AI results.",
     difficulty: "Intermediate",
@@ -616,7 +616,7 @@ Thank you so much for featuring [Brand Name] in your recent guide to [LocationNi
     categorySlug: "ai-search-geo",
     category: "AI Search / GEO Optimization",
     title: "FAQPage Structured Entity & Direct Answer Framework",
-    metaTitle: "FAQPage Schema & Direct Answer Framework — SEO Studio", // 52
+    metaTitle: "FAQPage Schema & Direct Answer Framework — Razib Marketing", // 58
     metaDescription: "Implement Schema.org FAQPage structured data paired with high-intent traveler answers to dominate Google People Also Ask and generative AI citations.", // 152
     directAnswer: "The FAQPage structured entity framework pairs machine-readable Schema.org markup with conversational question-and-answer pairs. When structured with concise 40-word answers, verified facts, and zero placeholder tokens, FAQ blocks capture Google People Also Ask snippets and conversational LLM citations effortlessly.",
     difficulty: "Beginner",

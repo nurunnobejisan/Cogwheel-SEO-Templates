@@ -22,7 +22,7 @@ export function SiteFooter() {
               </span>
             </div>
             <p className="mt-1 text-caption text-slate-500 dark:text-slate-400">
-              Razib Marketing's hospitality search, pixel budgeting &amp; generative engine optimization suite.
+              Razib Marketing&apos;s hospitality search, pixel budgeting &amp; generative engine optimization suite.
             </p>
           </div>
 
