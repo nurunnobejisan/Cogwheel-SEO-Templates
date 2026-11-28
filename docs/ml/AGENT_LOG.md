@@ -336,3 +336,26 @@ Built this run (decision D-037):
   secrets. `tests/custom-model-client.test.ts` rewritten to the proxy
   contract (15 passing) — assertions now pin that the ONLY network target is
   `/api/extension/infer` and the model key never appears in headers.
+## WP9 — Weekly dataset refresh workflow (branch `ml/v2-wp9-weekly-refresh`)
+
+Built this run:
+
+- **Workflow** `.github/workflows/ml-weekly-dataset-refresh.yml` — weekly
+  cron (Mondays 06:00 UTC) + `workflow_dispatch`. Least privilege: only
+  `contents: read` + `pull-requests: write`. Steps: optional pull of raw
+  sources from the private dataset repo (`ML_PRIVATE_DATASET_REPO`/`_TOKEN`
+  secrets; skipped with a notice when unset), `ml.train.build_sft`,
+  `ml.train.build_dpo`, `npm run train:validate`, then a **reports-only PR**
+  (`ml/weekly-refresh/<date>`) carrying only the build reports (counts,
+  sha256s, refusal reasons) — dataset rows stay in gitignored `data/build/`
+  and on the private repo. The staging step strips any row-bearing keys
+  (`rows`/`samples`/`cases`/`data`/`results`) belt-and-braces. The job never
+  merges, never pushes to main, never promotes, never calls a live LLM.
+- **Builder tweak** `ml/train/build_sft.py` — `--in` is now optional: a
+  scheduled build with zero available sources writes a truthful zero-row
+  report instead of failing (v1 behaviour unchanged when inputs are given;
+  all 3 existing build_sft tests still pass).
+
+Verified locally: zero-source SFT + DPO builds produce truthful zero reports,
+report staging prints `0 rows kept/exported`, `train:validate` green, 472
+pytest green. The PR itself can only be exercised on GitHub after merge.

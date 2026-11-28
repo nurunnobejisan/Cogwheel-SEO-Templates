@@ -459,9 +459,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         "--in",
         dest="inputs",
         action="append",
-        required=True,
+        default=None,
         metavar="PATH[=SOURCE_ID]",
-        help="Input JSONL file (repeatable); optional =SOURCE_ID default",
+        help="Input JSONL file (repeatable); optional =SOURCE_ID default. "
+        "Optional since v2 WP9: a scheduled build with no sources writes a "
+        "truthful zero-row report instead of failing",
     )
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
     parser.add_argument("--report", type=Path, default=DEFAULT_REPORT)
@@ -475,7 +477,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     args = parser.parse_args(list(argv) if argv is not None else None)
 
     try:
-        items = _load_input_rows(args.inputs)
+        items = _load_input_rows(args.inputs or [])
         validator = None if args.no_verify_html else run_ml_label_cli
         kept_rows, report = build_sft_v2(
             [row for row, _ in items],
