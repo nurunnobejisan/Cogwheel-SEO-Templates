@@ -1,164 +1,210 @@
-# GPU Runbook — the first adapter (Phase 5)
+# GPU Runbook — SEO-Studio AI SEO Model (v1)
 
-End-to-end path from "repo checked out" to "the app is using a promoted
-adapter", on free-tier GPUs. Every number this produces comes from
-`ml/eval/run_eval.py` and nowhere else.
+End-to-end operator guide from checked-out repo to progressive v1 rollout on free-tier GPUs (Kaggle T4/P100 `< 9 h` or Colab). Every reported metric MUST come directly from `ml/eval/run_eval.py` at temperature `0`.
+
+In **v1**, the fine-tuned QLoRA Qwen3 adapter serves **only** `schema_generation` and `metadata_generation` (`D-025`, `D-029`). All other tasks (`rag_synthesis`, `entity_gap_analysis`, `page_classification`, untagged prompts) remain on the existing provider chain.
 
 ```
-build dataset ─▶ GPU session (dry-run → --train) ─▶ adapter to private store
-                                                            │
-app ◀─ promote (11 gates) ◀─ run_eval report ◀─ generate ◀───┘ (endpoint mode)
+build_sft (v2) ─▶ measure baselines ─▶ QLoRA (0.6B → 1.7B → 4B) ─▶ private HF push
+                                                                       │
+app (shadow→canary→on) ◀─ promote (11 gates) ◀─ run_eval (temp 0) ◀────┘
 ```
 
-## 0. TL;DR
+## Prerequisites & Safety Rules
 
-```bash
-# any machine — data + gates
-npm run train:validate
-python3 -m ml.train.dataset                       # licence/consent gates, 2000-pair rule
-
-# GPU session (Kaggle/Colab, < 9 h) — see §2
-python3 -m ml.train.sft                           # dry-run: manifests, no weights
-python3 -m ml.train.sft --train                   # the real run
-
-# any machine with the served adapter — see §3
-python3 -m ml.serve.server --upstream <vLLM URL> &
-python3 -m ml.train.evaluate --endpoint "$CUSTOM_MODEL_ENDPOINT" \
-    --out <run>-outputs.jsonl
-python3 ml/eval/run_eval.py --outputs <run>-outputs.jsonl --out <run>-report.json
-
-# promote + wire up — see §4/§5
-python3 -m ml.serve.register --manifest <run>.manifest.json \
-    --report <run>-report.json --dry-run
-python3 -m ml.serve.register --manifest <run>.manifest.json \
-    --report <run>-report.json --active
-```
-
-## 1. Prerequisites
-
-- **Kaggle** (~30 free GPU-hours/week, T4/P100) or Colab free tier as
-  backup. Keep each session **under 9 hours**.
-- ML deps in an isolated venv — never the app venv, never the Vercel build
-  (rule 11):
-
+- **Isolated Python ML venv** — NEVER install GPU packages into the app venv or Vercel build (`ml/requirements-ml.txt`, `D-014`):
   ```bash
   python3 -m venv .venv-ml && source .venv-ml/bin/activate
-  pip install --dry-run -r ml/requirements-ml.txt   # verify the pins first
+  pip install --dry-run -r ml/requirements-ml.txt   # verify pins first
   pip install -r ml/requirements-ml.txt             # install unsloth LAST
   ```
+- **Licence-clean sources & no client leakage** — only sources declared trainable in `ml/sources.yaml` (without editing `use:` or `feeds:`). Never commit weights (`*.safetensors`, `*.gguf`, `*.bin`), `data/raw/`, `data/build/`, or client-specific vault/GSC data.
+- **Frozen v1 golden set untouched** — verify `ml/eval/golden/cases.jsonl` matches its frozen sha256 (`npm run ml:golden:check`), and populate `ml/eval/golden_v2/cases.jsonl` (`>= 75` schema + `>= 75` metadata human-reviewed cases) before shipping v1.
 
-- Licence-clean only: base models from the `BASE_MODELS` allow-list in
-  `ml/train/config.py` (Apache-2.0 Qwen3/Qwen3.5), training data only via
-  `ml/sources.yaml`. Never MS MARCO/ORCAS/HotelRec/GEO-bench as train.
-- **No weights in this repo.** Adapters live in `ML_PRIVATE_DATASET_REPO`
-  (private HF) or on the serve host. `.gitignore` already excludes
-  `*.safetensors`, `*.gguf`, `*.bin`, `data/raw/`, `data/build/`,
-  `data/sft-dataset.jsonl`.
+---
 
-## 2. GPU session
+## Step 1 — Build v1 Host-Split Dataset (`sft-v2.jsonl`)
+
+Generate the v2 SFT dataset (scoped to `schema_generation` and `metadata_generation` with deterministic 90/10 domain-host isolation and golden host exclusion) and inspect its build report:
 
 ```bash
-git clone <repo> && cd SEO-Studio
-python3 -m venv .venv-ml && source .venv-ml/bin/activate
-pip install -r ml/requirements-ml.txt
+# 1a. Verify repo governance & check golden v2 status
+npm run train:validate
+npx tsx scripts/check-golden-v2.ts --strict --train-file data/build/sft-v2.jsonl
 
-# 1) dry-run first (D-020): validates config + dataset gates, writes a
-#    provenance manifest, imports no GPU stack, trains nothing
-python3 -m ml.train.sft
-python3 -m ml.train.dpo            # only if data/patch-pairs.jsonl ≥ 2000 pairs
+# 1b. Build data/build/sft-v2.jsonl + data/build/sft-v2.report.json (gitignored)
+python3 -m ml.train.build_sft \
+  --in data/raw/wdc-2024.jsonl=wdc-2024 \
+  --in data/raw/wdc-tables-2023.jsonl=wdc-tables-2023 \
+  --in data/raw/vault.jsonl=vault \
+  --in data/raw/patches.jsonl=patches \
+  --in data/raw/triples.jsonl=triples \
+  --out data/build/sft-v2.jsonl \
+  --report data/build/sft-v2.report.json
 
-# 2) the real run — explicit, opt-in
-python3 -m ml.train.sft --train
-#    → data/out/<runId>/<runId>.manifest.json
-#    → data/out/<runId>/adapter/   (adapter weights)
-
-# 3) ship the adapter OFF the GPU box (never into git)
-huggingface-cli upload <your-private-repo> data/out/<runId>/adapter adapter
-#    or download the folder to the serve host directly
+# 1c. Confirm zero host leakage and valid schema/governance gates
+cat data/build/sft-v2.report.json
+npm run train:validate
 ```
 
-The manifest records base model + allow-listed licence, data sha256, frozen
-golden sha256, git sha and (for real runs) the adapter path, train loss and
-step count. `mode: train` + `trainingStarted: true` is what promotion later
-requires — a dry-run manifest can never become `ready`.
+Confirm `"hostOverlapCount": 0` and `"goldenHostOverlapCount": 0` in `data/build/sft-v2.report.json` before moving to Step 2.
 
-## 3. Evaluate — no GPU needed on the eval host (Phase 5)
+---
 
-Serve the adapter, then generate through the endpoint:
+## Step 2 — Baseline Evals BEFORE Training (`temperature=0`)
+
+Measure both the untuned base model (`Qwen/Qwen3-1.7B`) and the current free provider on the **exact same evaluation cases** at temperature `0` (`D-024`):
 
 ```bash
-# serve host: vLLM/SGLang in front of the adapter (OpenAI-compatible), then
-python3 -m ml.serve.server --upstream http://127.0.0.1:8000/v1 --port 8000
-# or, with ml/requirements-ml.txt on that host:
-python3 -m ml.serve.server --adapter /path/to/adapter --port 8000
+# 2a. Baseline 1: Untuned Qwen/Qwen3-1.7B behind an OpenAI-compatible server
+export SERVE_API_KEY="<operator-serve-key>"
+python3 -m ml.train.evaluate \
+  --golden ml/eval/golden_v2/cases.jsonl \
+  --endpoint "https://<base-model-host>/v1/chat/completions" \
+  --api-key "$SERVE_API_KEY" \
+  --out data/build/baseline-qwen3-1.7b-v2-outputs.jsonl
+python3 ml/eval/run_eval.py \
+  --golden ml/eval/golden_v2/cases.jsonl \
+  --outputs data/build/baseline-qwen3-1.7b-v2-outputs.jsonl \
+  --out data/build/baseline-qwen3-1.7b-v2-report.json
 
-# eval host — stdlib only
-export CUSTOM_MODEL_ENDPOINT=https://<public-host>/v1/chat/completions   # SSRF guard: public address
-python3 -m ml.train.evaluate --endpoint "$CUSTOM_MODEL_ENDPOINT" \
-    --out <run>-outputs.jsonl
-python3 ml/eval/run_eval.py --outputs <run>-outputs.jsonl --out <run>-report.json
+# 2b. Baseline 2: Current free provider (Groq/Gemini OpenAI-compatible shim)
+python3 -m ml.train.evaluate \
+  --golden ml/eval/golden_v2/cases.jsonl \
+  --endpoint "https://<free-provider-shim>/v1/chat/completions" \
+  --api-key "<free-provider-key>" \
+  --out data/build/baseline-free-provider-v2-outputs.jsonl
+python3 ml/eval/run_eval.py \
+  --golden ml/eval/golden_v2/cases.jsonl \
+  --outputs data/build/baseline-free-provider-v2-outputs.jsonl \
+  --out data/build/baseline-free-provider-v2-report.json
 ```
 
-Before/after: run the same three commands with the **base** model only
-(endpoint in front of the base, or `--generate --base …` on the GPU box) so
-the score log gets both rows. Template changes bump `TEMPLATE_VERSION` —
-rows from different template versions are not comparable.
+(Also run the same pair against the frozen 52-case `ml/eval/golden/cases.jsonl` by omitting `--golden`.)
 
-Fail-closed: an HTTP error, bad body or empty content aborts with the case
-id and **no output file is written**; a case that could not be generated is
-never filled in.
+---
 
-## 4. Promote — `ready` is earned (D-023)
+## Step 3 — GPU QLoRA Training Progression (`0.6B` -> `1.7B` -> `4B`, `< 9 h`)
+
+Use Apache-2.0 allow-listed Qwen3 checkpoints (`D-019`, `D-027`). Keep every Kaggle session strictly under **9 hours** and save per-epoch checkpoints so interrupted runs never lose work:
 
 ```bash
-python3 -m ml.serve.register --manifest <run>.manifest.json \
-    --report <run>-report.json --dry-run      # inspect the 11 gates
-python3 -m ml.serve.register --manifest <run>.manifest.json \
-    --report <run>-report.json --active
+# Dry-run first (D-020): validates config, dataset sha256, golden sha256; no GPU needed
+python3 -m ml.train.sft --data data/build/sft-v2.jsonl
+
+# 3a. Stage 1 — 0.6B pipeline smoke test (1 epoch)
+python3 -c 'import json; from pathlib import Path; Path("data/build/cfg-0.6b.json").write_text(json.dumps({"base_model": "Qwen/Qwen3-0.6B", "epochs": 1.0}))'
+python3 -m ml.train.sft --data data/build/sft-v2.jsonl --config data/build/cfg-0.6b.json --train
+
+# 3b. Stage 2 — 1.7B baseline adapter (default CPU/GGUF serving target, D-027)
+python3 -c 'import json; from pathlib import Path; Path("data/build/cfg-1.7b.json").write_text(json.dumps({"base_model": "Qwen/Qwen3-1.7B", "epochs": 3.0}))'
+python3 -m ml.train.sft --data data/build/sft-v2.jsonl --config data/build/cfg-1.7b.json --train
+
+# 3c. Stage 3 — 4B scale-up candidate (default SftConfig)
+python3 -m ml.train.sft --data data/build/sft-v2.jsonl --train
 ```
 
-Gates: real train run · allow-listed base model with matching licence ·
-manifest/report/on-disk golden sha all equal · data sha + rows recorded ·
-adapter named with `weightsCommitted: false` · git sha · complete outputs
-coverage (52/52 — skips are not passes) · zero failures unless
-`--allow-failures N` (recorded in `statusReason`) · `outputsMeta`
-cross-check. The registry write is atomic, keeps a `.bak`, and never
-touches legacy `unverified` entries.
+Outputs land in `ml/train/outputs/<runId>/adapter/` alongside `ml/train/outputs/<runId>.manifest.json`. Always copy checkpoints/adapters off the GPU instance before the 9 h timeout.
 
-## 5. Wire the app
+---
+
+## Step 4 — Upload Adapter to Private Repo (`ML_PRIVATE_DATASET_REPO`)
+
+Never commit weights into Git (`D-004`). Push the trained adapter directory to your private Hugging Face repo:
 
 ```bash
+huggingface-cli login
+export ML_PRIVATE_DATASET_REPO="<owner>/<private-repo>"
+huggingface-cli upload "$ML_PRIVATE_DATASET_REPO" \
+  ml/train/outputs/<runId>/adapter \
+  adapters/v1/<runId> \
+  --repo-type dataset --private
+```
+
+---
+
+## Step 5 — Serve Constrained Adapter, Evaluate & Check Ship Gates
+
+Serve the adapter behind `ml/serve/server.py` (with constrained schema enforcement from `ml/generate/` when `task` is passed) and score against **both** the frozen 52-case golden set and `ml/eval/golden_v2/cases.jsonl` at temperature `0`:
+
+```bash
+# Serve host (vLLM/SGLang upstream or --adapter on GPU box)
+export SERVE_API_KEY="<operator-serve-key>"
+python3 -m ml.serve.server --upstream http://127.0.0.1:8001/v1 --port 8000 --api-key "$SERVE_API_KEY"
+
+# Eval host (stdlib-only; public HTTPS endpoint passing the SSRF guard)
+export CUSTOM_MODEL_ENDPOINT=https://<public-host>/v1/chat/completions
+export CUSTOM_MODEL_ID=seo-studio-<runId>
+
+# Score frozen v1 golden set (required for ml.serve.register 11-gate check)
+python3 -m ml.train.evaluate \
+  --endpoint "$CUSTOM_MODEL_ENDPOINT" \
+  --api-key "$SERVE_API_KEY" \
+  --out data/build/<runId>-v1-outputs.jsonl
+python3 ml/eval/run_eval.py \
+  --outputs data/build/<runId>-v1-outputs.jsonl \
+  --out data/build/<runId>-v1-report.json
+
+# Score expanded v2 golden set (>= 75 schema + >= 75 metadata)
+python3 -m ml.train.evaluate \
+  --golden ml/eval/golden_v2/cases.jsonl \
+  --endpoint "$CUSTOM_MODEL_ENDPOINT" \
+  --api-key "$SERVE_API_KEY" \
+  --out data/build/<runId>-v2-outputs.jsonl
+python3 ml/eval/run_eval.py \
+  --golden ml/eval/golden_v2/cases.jsonl \
+  --outputs data/build/<runId>-v2-outputs.jsonl \
+  --out data/build/<runId>-v2-report.json
+```
+
+### Mandatory v1 Ship Gates (temperature `0`)
+
+Do **not** promote unless **every** condition below passes on the `run_eval.py` reports:
+
+1. **`schema_generation`**: `jsonld_valid >= 95%`, `invented_metrics = 0`, zero grounding failures.
+2. **`metadata_generation`**: `title_budget >= 90%`, zero invented metrics.
+3. **Comparative lift**: tuned adapter scores **strictly higher** than **both** the untuned `Qwen/Qwen3-1.7B` baseline AND the current free provider on the exact same held-out cases (`golden_v2` + frozen `golden`).
+4. **Registry 11-gate promotion (`D-023`)**:
+   ```bash
+   python3 -m ml.serve.register \
+     --manifest ml/train/outputs/<runId>.manifest.json \
+     --report data/build/<runId>-v1-report.json \
+     --dry-run
+   python3 -m ml.serve.register \
+     --manifest ml/train/outputs/<runId>.manifest.json \
+     --report data/build/<runId>-v1-report.json \
+     --active
+   ```
+
+---
+
+## Step 6 — App Rollout (`shadow` -> `canary` -> `on`)
+
+Ship `schema_generation` first (`D-029`). Configure Vercel / runtime environment variables cleanly:
+
+```env
 CUSTOM_MODEL_ENDPOINT=https://<public-host>/v1/chat/completions
 CUSTOM_MODEL_ID=seo-studio-<runId>
-CUSTOM_MODEL_API_KEY=…            # bearer the gateway requires (SERVE_API_KEY)
+CUSTOM_MODEL_API_KEY=<SERVE_API_KEY>
+
+# Phase A: dark launch — evaluates adapter concurrently + checks WP3 gate + records
+# latency/pass counters, while 100% of responses still come from standard providers.
+AI_ADAPTER_MODE=shadow
+AI_ADAPTER_CANARY_PCT=0
 ```
 
-Verify: `getActiveAiProviderLabel()` returns
-`SEO Studio fine-tuned (<id>)`, and `/health` on the gateway shows the
-entry under `servableModels`. Unset any of the three and the router falls
-back to the existing providers — nothing breaks.
+After verifying zero unexpected gate failures and healthy latency in shadow telemetry:
 
-## 6. Record honestly
+1. **Canary (`AI_ADAPTER_MODE=canary`)**: deterministic per-`propertyId` / `requestId` routing:
+   `AI_ADAPTER_CANARY_PCT=10` -> monitor error/fallback rate -> `25` -> `50`.
+2. **Full v1 rollout (`AI_ADAPTER_MODE=on`)**: active serving for `schema_generation` and `metadata_generation` with WP3 deterministic gate fallback on every call.
 
-- Add a score-log row in `docs/ml/PROGRESS.md`: date, phase, model id, and
-  per-task numbers **copied from the run_eval report** — or an explicit
-  "n/a" with the reason. No other source may produce a number.
-- The registry entry's `statusReason` / `provenance` already carry run id,
-  git sha and shas; do not hand-edit them.
+Verify `/health` on `ml/serve/server.py` shows `seo-studio-<runId>` under `servableModels`, and `getActiveAiProviderLabel()` returns `SEO Studio fine-tuned (seo-studio-<runId>)` when `AI_ADAPTER_MODE=on`.
 
-## 7. Rollback
+---
 
-- Set the entry's `status` back to `unverified` (registry edit, one line)
-  or unset `CUSTOM_MODEL_ENDPOINT` — the gateway then refuses the model and
-  the router falls back automatically.
-- Delete the adapter from the private repo/host if the run is discarded.
+## Step 7 — Instant Rollback & Record Keeping
 
-## Never
-
-- Never commit adapter weights, crawled HTML, client data or embeddings.
-- Never report a ranking/volume/CPC/traffic/citation number that run_eval
-  did not produce.
-- Never train on licence-blocked sources; `ml/sources.yaml` is the only
-  intake.
-- Never leave a session running past 9 h on Kaggle — copy the adapter out
-  first.
+- **Instant zero-deploy rollback**: set `AI_ADAPTER_MODE=off` in Vercel/env (all traffic returns immediately to the standard/free provider chain).
+- **Server-side registry rollback**: set the model's `"status"` back to `"retired"` or `"unverified"` (and `"activeModelId": null`) in `data/models/model_registry.json`, or unset `CUSTOM_MODEL_ENDPOINT` (`ml/serve` refuses non-`ready` entries per `D-028`).
+- **Record scores honestly (`docs/ml/PROGRESS.md`)**: copy per-task metrics verbatim from `data/build/<runId>-*-report.json` (`ml/eval/run_eval.py`). Never extrapolate or invent unmeasured numbers.
