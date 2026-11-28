@@ -375,10 +375,11 @@ export function SidePanelApp() {
   const handleFixIssue = async (win: QuickWinItem) => {
     // Sourced values only: page H1 → hostname → profile name. With no source
     // the rules engine returns a blank suggestion and the UI reports that.
-    const hotelName =
+    const siteName =
       pageData.h1Elements[0] ||
       (pageData.hostname ? pageData.hostname.replace(/^www\./, "") : activeProfile.name) ||
       "";
+    const hotelName = siteName;
     const brand = activeProfile.brand || "Independent";
     const canonicalUrl = pageData.canonical || pageData.url || "";
 
