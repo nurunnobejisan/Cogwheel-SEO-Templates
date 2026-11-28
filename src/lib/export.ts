@@ -12,6 +12,49 @@ function toCsv(rows: unknown[][]): string {
   return rows.map((r) => r.map(cell).join(",")).join("\n");
 }
 
+export interface RosterCsvRow {
+  name?: string;
+  brand?: string;
+  city?: string;
+  state?: string;
+  url?: string;
+  propertyType?: string;
+  category?: string;
+  projectType?: string;
+  status?: string;
+  managementGroup?: string;
+  platforms?: string[];
+  notes?: string;
+}
+
+const ROSTER_COLUMNS: ReadonlyArray<keyof RosterCsvRow> = [
+  "name",
+  "brand",
+  "city",
+  "state",
+  "url",
+  "propertyType",
+  "category",
+  "projectType",
+  "status",
+  "managementGroup",
+  "platforms",
+  "notes",
+];
+
+/** Non-destructive export: preserves row order and every field, with no dedupe. */
+export function rosterToCsv(rows: readonly RosterCsvRow[]): string {
+  return toCsv([
+    [...ROSTER_COLUMNS],
+    ...rows.map((row) =>
+      ROSTER_COLUMNS.map((key) => {
+        const value = row[key];
+        return Array.isArray(value) ? value.join(" | ") : value ?? "";
+      }),
+    ),
+  ]);
+}
+
 export function matrixToCsv(matrix: MatrixRow[], template: TemplateId): string {
   const header = ["Page", "Path", "Keyword", "Volume", "KD"];
   if (template === "B") header.push("Secondary", "Secondary Volume", "Secondary KD");

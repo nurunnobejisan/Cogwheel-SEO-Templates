@@ -19,12 +19,28 @@ const SECURITY_HEADERS: Record<string, string> = {
 
 const HSTS = "max-age=63072000; includeSubDomains; preload";
 
+// Production-gated: Next.js/Vercel still needs inline bootstrap and font styles.
+// Dev HMR needs eval/ws, so the stricter policy only applies to deployments.
+const CSP = [
+  "default-src 'self'",
+  "script-src 'self' 'unsafe-inline' https://va.vercel-scripts.com",
+  "style-src 'self' 'unsafe-inline'",
+  "font-src 'self' data:",
+  "img-src 'self' data: https:",
+  "connect-src 'self' https://va.vercel-scripts.com",
+  "object-src 'none'",
+  "base-uri 'none'",
+  "frame-ancestors 'none'",
+  "form-action 'self'",
+].join("; ");
+
 function applySecurityHeaders(response: NextResponse): NextResponse {
   for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
     response.headers.set(name, value);
   }
   if (process.env.NODE_ENV === "production") {
     response.headers.set("Strict-Transport-Security", HSTS);
+    response.headers.set("Content-Security-Policy", CSP);
   }
   return response;
 }

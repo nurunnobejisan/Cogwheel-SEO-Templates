@@ -62,7 +62,8 @@ The following controls are enforced by the Next.js app (`src/middleware.ts`, `sr
 
 - `src/middleware.ts` rate-limits all `/api/*` traffic per client IP: 240 reads/min, 30 writes/min, 10/min for crawl/audit endpoints. Limits are per server instance; use a shared store for hard global quotas.
 - State-changing API requests with a mismatched `Origin` are rejected (`403`).
-- Responses set `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, COOP and (in production) HSTS. `/api/*` and `/platform` are `noindex`.
+- Responses set `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`, `Permissions-Policy`, COOP and (in production) HSTS + a production `Content-Security-Policy` (`default-src 'self'`, no objects/frames, self-only forms). `/api/*` and `/platform` are `noindex`.
+- The root `api/` Python bridge is excluded from Vercel uploads via `.vercelignore`; it is only for opt-in self-hosted runs and is never available serverless.
 
 ### Host process execution
 

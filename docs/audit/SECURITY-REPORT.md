@@ -23,7 +23,7 @@
 - **Vulnerability**: Unsanitized user inputs or extracted webpage titles injected into SERP simulators or template previews.
 - **Mitigation Implemented (`validators/xssProtection.ts`)**:
   - Context-aware HTML entity escaper replacing `&`, `<`, `>`, `"`, `'`, and `/`.
-  - Content Security Policy (CSP) headers configured on all public routes.
+  - Production-only Content Security Policy headers configured in `src/middleware.ts` (dev HMR is exempt).
   - Safe text node binding in React rendering.
 
 ### 1.3 Role-Based Access Control (RBAC) & Tenant Isolation

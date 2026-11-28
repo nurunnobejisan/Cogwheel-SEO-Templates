@@ -1,0 +1,4 @@
+# Local-only Python bridge and Pydantic models. Next.js API routes live in
+# src/app/api/ and remain deployed; the opt-in execFile bridge returns 501 on
+# Vercel, so these files must not be uploaded with the serverless bundle.
+api/
