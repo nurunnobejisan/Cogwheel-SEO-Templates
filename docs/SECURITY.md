@@ -6,9 +6,9 @@ The following versions of SEO Studio are currently supported with security updat
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 2.7.x   | Yes                |
-| 2.6.x   | Critical Fixes Only|
-| < 2.6.0 | No                 |
+| 3.0.x   | Yes                |
+| 2.x     | Critical Fixes Only|
+| < 2.0.0 | No                 |
 
 ---
 

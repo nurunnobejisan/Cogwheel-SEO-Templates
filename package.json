@@ -26,6 +26,10 @@
     "ml:cards": "python3 ml/dataset/cards.py",
     "ml:cards:check": "python3 ml/dataset/cards.py --check",
     "train:clean": "python3 scripts/clean-training-data.py",
+    "sync:ota": "python3 python/scripts/sync_ota_rules.py",
+    "icons:generate": "python3 python/scripts/generate_extension_icons.py",
+    "gsc:mcp": "python3 api/gsc_server.py",
+    "prepare": "husky",
     "geo:drift": "tsx scripts/geo-drift.ts"
   },
   "dependencies": {
@@ -50,6 +54,8 @@
     "@types/papaparse": "^5.3.14",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@typescript-eslint/eslint-plugin": "8.72.2",
+    "@typescript-eslint/parser": "8.72.2",
     "autoprefixer": "^10.4.19",
     "eslint": "^8.57.0",
     "eslint-config-next": "^14.2.25",
