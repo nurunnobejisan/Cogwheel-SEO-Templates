@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { AlertCircle, Globe, Info, RefreshCw } from "lucide-react";
+import { loadExtensionOptions } from "../utils/extensionOptions";
 
 type Provenance = "measured" | "estimated" | "unavailable";
 
@@ -104,10 +105,16 @@ export function GeoVisibilityCard({ url }: { url: string }) {
     setLoading(true);
     setError("");
     try {
+      const extOptions = await loadExtensionOptions();
+      const bearer = extOptions.apiToken?.trim();
+      const headers: Record<string, string> = { "Content-Type": "application/json" };
+      if (bearer) {
+        headers.Authorization = `Bearer ${bearer}`;
+      }
       const res = await fetch(`${API_BASE}/api/geo/check`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ targetUrl, persist: true }),
       });
       const data = await res.json().catch(() => ({}));

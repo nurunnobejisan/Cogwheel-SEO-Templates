@@ -427,3 +427,56 @@ model produced a report.
 
 **Reverse.** Delete the `--endpoint` branch and `OUTPUT_META_FIELDS`;
 `--generate` and plain `run_eval --outputs` behave exactly as before.
+
+
+---
+
+## 2026-11-28 — AI SEO Model (v1) Readiness
+
+### D-025 — v1 adapter scope locked to Tier 1 `schema_generation` and `metadata_generation`
+
+**Decision.** Only Tier 1 `schema_generation` and `metadata_generation` route to the fine-tuned adapter. `rag_synthesis` and `entity_gap_analysis` stay on the Tier 2 frontier/free provider chain until a fine-tuned adapter beats Tier 2 on the frozen golden set.
+
+**Reason.** Narrowing v1 to the two strictly structured, objectively gateable tasks minimizes hallucination blast radius while validating end-to-end training and serving.
+
+**Reverse.** Expand `V1_ADAPTER_TASKS` in `src/core/claude.ts` once golden-set metrics show net improvement over Tier 2.
+
+### D-026 — Teacher-model synthetic drafts require human review marks before training
+
+**Decision.** Teacher-model synthetic outputs may enter training only after human review as `TrainingTriple` records; `ml/train/build_sft.py` excludes `repo-synthetic` (and `synthetic: true`) rows unless they carry an explicit human review mark, without editing `ml/sources.yaml`.
+
+**Reason.** Preserves the immutability contract on `ml/sources.yaml` while preventing unreviewed synthetic contamination from entering weights.
+
+**Reverse.** Pass an explicit reviewed flag on curated triples or adjust `is_human_reviewed` filter rules in `ml/train/build_sft.py`.
+
+### D-027 — Qwen3 Apache-2.0 progression with 1.7B GGUF default serving target
+
+**Decision.** Standardize v1 training progression on `Qwen/Qwen3-0.6B` (smoke test) -> `Qwen/Qwen3-1.7B` (baseline) -> `Qwen/Qwen3-4B` (candidate, all Apache-2.0 allow-listed). Default CPU/low-budget serving target is Qwen3-1.7B quantized to GGUF behind `ml/serve/server.py`.
+
+**Reason.** Zero paid GPU serving budget means CPU/GGUF inference on 1.7B gives predictable latency and cost while preserving Apache-2.0 commercial safety.
+
+**Reverse.** Update `ml/train/config.py` / `docs/ml/GPU_RUNBOOK.md` and `CUSTOM_MODEL_ID` after provisioning dedicated GPU serving.
+
+### D-028 — Retire legacy Gemini 1.5 Flash registry entry
+
+**Decision.** Retire the unverified `gemini-1.5-flash` entry in `data/models/model_registry.json` (`status: "retired"`, `activeModelId: null`) and refuse non-`ready` entries in both the app and `ml/serve/`.
+
+**Reason.** Gemini 1.5 Flash is deprecated and was never verified on the golden set; leaving an unverified entry selectable risks silent misrouting.
+
+**Reverse.** Only a newly trained model passing `python3 -m ml.serve.register` can earn `status: "ready"` and become `activeModelId`.
+
+### D-029 — Ship `schema_generation` before `metadata_generation`
+
+**Decision.** Ship and roll out `schema_generation` first (strictly machine-checkable JSON-LD `@type` and zero invented metrics), followed by `metadata_generation` (SERP pixel budgets + brand presence).
+
+**Reason.** Objective deterministic verification makes schema quality regressions immediately catchable before broader copy rollout.
+
+**Reverse.** Toggle `V1_ADAPTER_TASKS` or adapter mode gates per task.
+
+### D-030 — Operator bearer token guard uses Web Crypto for Edge + Node parity
+
+**Decision.** Implement `requireOperator(req)` in `src/lib/security/operator.ts` using `globalThis.crypto.subtle` SHA-256 digest normalization + constant-time XOR comparison. Unset `SEO_STUDIO_API_BEARER_TOKEN` allows with a one-line warning only when `NODE_ENV === "development"` and fails closed (`401`) otherwise; `GET /api/ai-training` returns counts + safe provider metadata unless a valid token is present.
+
+**Reason.** Next.js Edge Middleware cannot reliably import `node:crypto`, and failing closed in every non-development environment prevents test/production bypasses.
+
+**Reverse.** Swap `operatorAuthHeaders` / `requireOperator` for upstream SSO/JWT verification at the edge proxy.
