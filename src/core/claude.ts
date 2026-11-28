@@ -7,10 +7,40 @@ import {
   getCustomModelSettings,
   isCustomModelConfigured,
 } from "@/core/ai/custom-model";
+import { gateOutput } from "@/core/ai/output-gates";
 import { classifyTask, V1_ADAPTER_TASKS } from "../../ai/router";
 import type { TaskKind } from "../../ai/types";
 
 export { V1_ADAPTER_TASKS };
+
+const gateCounters = new Map<string, number>();
+
+function incrementGateCounter(key: string): void {
+  gateCounters.set(key, (gateCounters.get(key) ?? 0) + 1);
+}
+
+export function getAdapterGateCounters(): Record<string, number> {
+  return Object.fromEntries(gateCounters.entries());
+}
+
+export function resetAdapterGateCounters(): void {
+  gateCounters.clear();
+}
+
+function recordGateCounters(
+  task: TaskKind,
+  provider: string,
+  failures: readonly string[],
+): void {
+  if (failures.length === 0) {
+    incrementGateCounter(`${task}|${provider}|pass`);
+    return;
+  }
+  incrementGateCounter(`${task}|${provider}|fail`);
+  for (const code of failures) {
+    incrementGateCounter(`${task}|${provider}|code:${code}`);
+  }
+}
 
 /** Pinned temperature for all grounded SEO/GEO drafting calls. */
 export const CLAUDE_TEMPERATURE = 0.2 as const;
@@ -148,30 +178,43 @@ export async function generateClaudeText(opts: {
   maxTokens?: number;
   taskId?: string;
   task?: TaskKind;
+  brand?: string;
 }): Promise<string> {
   const trainingAppendix = await formatTrainingContext(opts.taskId);
   const fullSystem = `${opts.system}${trainingAppendix}`;
   const maxTokens = opts.maxTokens ?? 2048;
   const errors: string[] = [];
 
-  // WP2 — the v1 fine-tuned adapter handles ONLY allow-listed Tier 1 tasks
-  // (`schema_generation`, `metadata_generation`). Calls without `task` or on
-  // non-v1 / Tier 2 tasks skip the custom adapter and stay on the main chain.
+  // WP2 & WP3 — the v1 fine-tuned adapter handles ONLY allow-listed Tier 1
+  // tasks (`schema_generation`, `metadata_generation`). Its completion is
+  // checked deterministically by `gateOutput`; failures retry once on the free/main
+  // provider chain and record counter metrics without logging prompts/outputs.
   const canTryCustomModel =
     opts.task !== undefined &&
     V1_ADAPTER_TASKS.includes(opts.task) &&
     classifyTask(opts.task) === "tier1" &&
     isCustomModelConfigured();
 
-  if (canTryCustomModel) {
+  if (canTryCustomModel && opts.task) {
+    const { model } = getCustomModelSettings();
+    const providerName = `seo-studio-tuned:${model}`;
     try {
-      return await callCustomModel({
+      const adapterText = await callCustomModel({
         system: fullSystem,
         prompt: opts.prompt,
         maxTokens,
       });
+      const gate = gateOutput(opts.task, adapterText, {
+        prompt: opts.prompt,
+        brand: opts.brand,
+      });
+      recordGateCounters(opts.task, providerName, gate.failures);
+      if (gate.ok) {
+        return adapterText;
+      }
+      errors.push(`Fine-tuned (${model}) gate failed: ${gate.failures.join(", ")}`);
     } catch (err) {
-      const { model } = getCustomModelSettings();
+      recordGateCounters(opts.task, providerName, ["transport_error"]);
       errors.push(`Fine-tuned (${model}): ${(err as Error).message}`);
     }
   }

@@ -203,24 +203,37 @@ describe("Phase 4 / WP2 — generateClaudeText task routing", () => {
   it("uses the custom adapter first for v1 Tier 1 tasks (schema_generation, metadata_generation)", async () => {
     snapshotEnv();
     setEnv({ CUSTOM_MODEL_ENDPOINT: SAFE_ENDPOINT, CUSTOM_MODEL_ID: "seo-studio-tuned-v1" });
-    const fetchMock = vi.fn(async (..._args: unknown[]) =>
-      jsonResponse({ choices: [{ message: { content: "from the tuned model" } }] }),
-    );
+    const schemaReply = JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Hotel",
+      name: "Tuned Hotel",
+    });
+    const metaReply = JSON.stringify({
+      title: "Tuned Hotel — Boutique Stay",
+      metaDescription: "Book direct at Tuned Hotel for waterfront suites, dining, and flexible member rates.",
+    });
+    const fetchMock = vi.fn(async (url: unknown, init?: RequestInit) => {
+      void url;
+      const body = JSON.parse(String(init?.body ?? "{}")) as { messages?: Array<{ content?: string }> };
+      const userPrompt = body.messages?.[1]?.content ?? "";
+      const content = userPrompt.includes("schema_req") ? schemaReply : metaReply;
+      return jsonResponse({ choices: [{ message: { content } }] });
+    });
     vi.stubGlobal("fetch", fetchMock);
 
     const schemaText = await generateClaudeText({
       system: "sys",
-      prompt: "q",
+      prompt: "schema_req for Tuned Hotel",
       task: "schema_generation",
     });
-    expect(schemaText).toBe("from the tuned model");
+    expect(schemaText).toBe(schemaReply);
 
     const metaText = await generateClaudeText({
       system: "sys",
-      prompt: "q",
+      prompt: "meta_req for Tuned Hotel",
       task: "metadata_generation",
     });
-    expect(metaText).toBe("from the tuned model");
+    expect(metaText).toBe(metaReply);
     expect(fetchMock).toHaveBeenCalledTimes(2);
     expect(String(fetchMock.mock.calls[0]?.[0])).toBe(SAFE_ENDPOINT);
     expect(String(fetchMock.mock.calls[1]?.[0])).toBe(SAFE_ENDPOINT);
