@@ -31,7 +31,7 @@ The brain is a thin interpretation layer over the **measured** audit engine.
 - `GET /api/brain?targetUrl=...` → same, without a question.
 - `POST /api/geo/check` `{ targetUrl, persist? }` → llms.txt, AI-crawler, citability, drift.
 - `GET /api/geo/check?url=...` → same via query string.
-- `POST /api/visibility` `{ targetUrl, brand?, mode, city?, category?, competitorDomains?, maxPrompts?, providers? }` → run + gaps + reviewable `pending_approval` patch plans.
+- `POST /api/visibility` `{ targetUrl, brand?, mode, city?, category?, competitorDomains?, maxPrompts? (1–4), providers? }` → bounded run batch + gaps + reviewable `pending_approval` patch plans. The UI calls one provider per request and shows progress.
 - `GET /api/visibility?targetUrl=...` → adapter status and recent runs.
 - `GET/POST /api/visibility/gaps` `{ targetUrl }` → gaps and patch plans for the latest run.
 - `POST /api/training-triples` `{ url, audit, expertFix, consent, tosAccepted }` → append a raw training triple (JSONL).

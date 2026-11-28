@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { FullWebsiteAuditReport, ActionItem } from "@/core/full-audit/types";
 import GscPerformancePanel from "./GscPerformancePanel.tsx";
+import VisibilityMonitorPanel from "./VisibilityMonitorPanel.tsx";
 import type { GscPanelPayload } from "@/core/gsc/panel-types.ts";
 
 interface UnifiedSeoSuiteViewProps {
@@ -715,20 +716,8 @@ export function UnifiedSeoSuiteView({
           <h2 className="font-display text-base font-bold text-slate-900 dark:text-white">
             Generative Engine Optimization (GEO) &amp; AI Citation Monitor
           </h2>
-          <p className="mt-1 text-caption text-slate-500">
-            On-page readiness signals for generative engines. AI citation counts require a live engine
-            data source, which is not connected — no citation rates are shown or invented.
-          </p>
-
-          <div className="mt-6 rounded-xl border border-dashed border-purple-300 bg-purple-50/40 p-6 text-body text-slate-600 dark:border-purple-900/60 dark:bg-purple-950/20 dark:text-slate-400">
-            <p className="font-semibold text-slate-800 dark:text-slate-200">
-              AI citation rates are not measured
-            </p>
-            <p className="mt-1 text-caption">
-              Reporting per-engine citation share (ChatGPT, Perplexity, Claude, Google AI Overviews)
-              requires querying those engines or a licensed visibility provider. Neither is connected,
-              so this panel intentionally shows no scores rather than estimated ones.
-            </p>
+          <div className="mt-4">
+            <VisibilityMonitorPanel property={property} />
           </div>
         </div>
       )}

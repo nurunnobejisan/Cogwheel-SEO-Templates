@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateTargetUrl } from "@/core/crawler/url";
+import { z } from "zod";
+import { validateTargetUrl, UrlValidationError } from "@/core/crawler/url";
 import { adapterStatus } from "@/core/visibility/adapters";
 import { detectGaps } from "@/core/visibility/gap-detector";
 import { runVisibilityTracker } from "@/core/visibility/tracker";
@@ -9,8 +10,34 @@ import { isAuthenticatedPrincipal, principalFromRequest } from "@/lib/platform/a
 import type { ProviderId, VisibilityMode } from "@/core/visibility/types";
 
 export const dynamic = "force-dynamic";
+export const maxDuration = 60;
 
-const PROVIDER_IDS: ProviderId[] = ["chatgpt", "claude", "perplexity", "gemini", "ai_overviews"];
+const PROVIDER_IDS = [
+  "chatgpt",
+  "claude",
+  "perplexity",
+  "gemini",
+  "gemini_grounded",
+  "groq_llama",
+  "openrouter_free",
+  "pollinations",
+  "ai_overviews",
+] as const satisfies readonly ProviderId[];
+
+const requestSchema = z.object({
+  targetUrl: z.string().trim().min(3).max(2048),
+  brand: z.string().trim().max(160).optional(),
+  mode: z.enum(["hotel", "universal"]).default("hotel"),
+  city: z.string().trim().max(120).optional(),
+  category: z.string().trim().max(160).optional(),
+  audience: z.string().trim().max(160).optional(),
+  features: z.array(z.string().trim().max(120)).max(20).optional(),
+  competitorDomains: z.array(z.string().trim().max(200)).max(20).optional(),
+  // Bounded so one request fits inside the Vercel 60s function window. The UI
+  // calls this route once per provider and shows progress between batches.
+  maxPrompts: z.number().int().min(1).max(4).default(4),
+  providers: z.array(z.enum(PROVIDER_IDS)).min(1).max(PROVIDER_IDS.length).optional(),
+});
 
 export async function GET(req: NextRequest) {
   const principal = await principalFromRequest({ header: (name: string) => req.headers.get(name) });
@@ -38,32 +65,31 @@ export async function POST(req: NextRequest) {
   if (!isAuthenticatedPrincipal(principal)) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  const body = await req.json().catch(() => ({}));
-  const targetUrl = typeof body.targetUrl === "string" ? body.targetUrl.trim() : "";
-  if (!targetUrl) return NextResponse.json({ error: "targetUrl is required" }, { status: 400 });
-  if (!validateTargetUrl(targetUrl)) {
-    return NextResponse.json({ error: "targetUrl must be a public http(s) URL" }, { status: 400 });
+
+  const parsed = requestSchema.safeParse(await req.json().catch(() => null));
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid visibility request", details: parsed.error.issues.slice(0, 8) },
+      { status: 400 }
+    );
   }
 
-  const providers = Array.isArray(body.providers)
-    ? (body.providers as string[]).filter((value): value is ProviderId => PROVIDER_IDS.includes(value as ProviderId))
-    : undefined;
-  const mode: VisibilityMode = body.mode === "universal" ? "universal" : "hotel";
+  let targetUrl: string;
+  try {
+    targetUrl = validateTargetUrl(parsed.data.targetUrl);
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof UrlValidationError ? error.message : "targetUrl must be a public http(s) URL" },
+      { status: 400 }
+    );
+  }
 
   try {
     const run = await runVisibilityTracker({
+      ...parsed.data,
       targetUrl,
-      brand: typeof body.brand === "string" ? body.brand : undefined,
-      mode,
-      city: typeof body.city === "string" ? body.city : undefined,
-      category: typeof body.category === "string" ? body.category : undefined,
-      audience: typeof body.audience === "string" ? body.audience : undefined,
-      features: Array.isArray(body.features) ? body.features.filter((f: unknown) => typeof f === "string") : undefined,
-      competitorDomains: Array.isArray(body.competitorDomains)
-        ? body.competitorDomains.filter((value: unknown) => typeof value === "string")
-        : undefined,
-      maxPrompts: typeof body.maxPrompts === "number" ? body.maxPrompts : undefined,
-      providers,
+      mode: parsed.data.mode as VisibilityMode,
+      providers: parsed.data.providers as ProviderId[] | undefined,
     });
     await saveVisibilityRun(run);
     const gaps = detectGaps(run);
