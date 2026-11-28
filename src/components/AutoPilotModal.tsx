@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { apiFetch } from "@/lib/api";
 import { downloadBase64WithCountdown, downloadTextWithCountdown } from "@/lib/download-manager";
 import { Button } from "@/components/ui/index";
 import { PanelCard as Card } from "@/components/data/index";
@@ -77,7 +78,7 @@ export function AutoPilotModal({
 
   async function runSiteCrawlLoop(): Promise<string> {
     updateStep("site-crawl", { status: "running", detail: "Starting crawl..." });
-    const startRes = await fetch("/api/tasks/site-crawl/run", {
+    const startRes = await apiFetch("/api/tasks/site-crawl/run", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -106,7 +107,7 @@ export function AutoPilotModal({
     });
 
     while (current.status === "running") {
-      const stepRes = await fetch("/api/tasks/site-crawl/run", {
+      const stepRes = await apiFetch("/api/tasks/site-crawl/run", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -177,7 +178,7 @@ export function AutoPilotModal({
 
         updateStep(step.id, { status: "running", detail: "Running grounded AI + validation..." });
         try {
-          const res = await fetch(`/api/tasks/${step.id}/run`, {
+          const res = await apiFetch(`/api/tasks/${step.id}/run`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

@@ -19,6 +19,7 @@ import type { CmsPlatform, CmsTarget, DeploymentResult } from "../../../cms/inde
 import type { AuditLogEntry, DeploymentHistoryEntry, HealthResponse, Role } from "../../../platform/index.ts";
 import type { ChangeEvent, OutcomeRecord } from "../../core/outcomes/types.ts";
 import type { JudgmentReport } from "../../core/judgment/types.ts";
+import { operatorAuthHeaders } from "../api.ts";
 
 export const PLATFORM_API_BASE = "/api/platform/v1";
 /** Outcome logging lives on its own route, not under the platform gateway. */
@@ -87,9 +88,12 @@ async function requestUrl<T>(
   method: "GET" | "POST" | "PATCH" | "DELETE",
   body?: unknown
 ): Promise<T> {
+  const headers = operatorAuthHeaders(
+    body === undefined ? undefined : { "content-type": "application/json" }
+  );
   const response = await fetchImpl(url, {
     method,
-    headers: body === undefined ? undefined : { "content-type": "application/json" },
+    headers: Array.from(headers.keys()).length > 0 ? headers : undefined,
     body: body === undefined ? undefined : JSON.stringify(body),
   });
 

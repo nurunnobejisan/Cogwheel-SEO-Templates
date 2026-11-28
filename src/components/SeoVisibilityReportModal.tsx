@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { apiFetch } from "@/lib/api";
 import { downloadBlobWithCountdown } from "@/lib/download-manager";
 import { GenerationProgressModal } from "./GenerationProgressModal";
 import { SlideDeckPreview } from "./SlideDeckPreview";
@@ -108,7 +109,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
         const prepared = await slimWorkbookIfNeeded(xlsxFile);
         form.append("xlsx", prepared);
       }
-      const res = await fetch("/api/seo-visibility-report?action=crawl", {
+      const res = await apiFetch("/api/seo-visibility-report?action=crawl", {
         method: "POST",
         body: form,
       });
@@ -145,7 +146,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
       if (vanityMode === "vanity") form.append("has_vanity_site", "true");
       if (vanityMode === "brand") form.append("has_vanity_site", "false");
 
-      const res = await fetch("/api/seo-visibility-report", {
+      const res = await apiFetch("/api/seo-visibility-report", {
         method: "POST",
         body: form,
       });
@@ -175,7 +176,7 @@ export function SeoVisibilityReportModal({ defaultProperty, onClose, onCompleted
       downloadBlobWithCountdown(blob, downloadName);
 
       if (parsedSummary) {
-        const taskRes = await fetch("/api/tasks/seo-only-visibility-report/run", {
+        const taskRes = await apiFetch("/api/tasks/seo-only-visibility-report/run", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
