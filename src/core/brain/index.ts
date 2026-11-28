@@ -66,7 +66,7 @@ export interface BrainResult {
 }
 
 let cachedPipeline: RagPipeline | null = null;
-async function getPipeline(): Promise<RagPipeline> {
+export async function getPipeline(): Promise<RagPipeline> {
   if (cachedPipeline) return cachedPipeline;
   let extra: Awaited<ReturnType<typeof loadRepoCorpus>> = [];
   try {
