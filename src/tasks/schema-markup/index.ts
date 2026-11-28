@@ -22,7 +22,15 @@ interface SchemaMarkupDataBundle {
 }
 
 export interface SchemaMarkupDeps {
-  callClaude?: (opts: { system: string; prompt: string; maxTokens?: number; taskId?: string; task?: TaskKind }) => Promise<string>;
+  callClaude?: (opts: {
+    system: string;
+    prompt: string;
+    maxTokens?: number;
+    taskId?: string;
+    task?: TaskKind;
+    propertyId?: string;
+    brand?: string;
+  }) => Promise<string>;
 }
 
 export async function runSchemaMarkupTask(
@@ -97,6 +105,8 @@ export async function runSchemaMarkupTask(
         maxTokens: 4096,
         taskId: "schema-markup",
         task: "schema_generation",
+        ...(propertyId ? { propertyId } : {}),
+        ...(data.property.brand ? { brand: data.property.brand } : {}),
       });
       return parseSchemaMarkupDraft(text);
     },
