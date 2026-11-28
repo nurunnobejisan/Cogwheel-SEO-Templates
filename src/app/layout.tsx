@@ -14,19 +14,16 @@ const jakarta = Plus_Jakarta_Sans({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://seo-studio.vercel.app"),
-  title: {
-    default: "SEO & GEO Studio — Hotel Search & AI Visibility Suite",
-    template: "%s",
-  },
+  title: "SEO & GEO Studio",
   description:
-    "SEO Studio's hospitality SEO and GEO workspace brings precise SERP pixel budgeting, brand guardrails, and client-ready reporting to hotel teams worldwide.",
+    "Technical, On-Page, Off-Page, Local & AI-search (GEO) workflows in one free-first workspace.",
   icons: {
-    icon: "/seo-studio-logo.png",
+    icon: "/icon.svg",
   },
   openGraph: {
-    title: "SEO & GEO Studio — Hotel Search & AI Visibility Suite",
+    title: "SEO & GEO Studio",
     description:
-      "SEO Studio's hospitality SEO and GEO workspace brings precise SERP pixel budgeting, brand guardrails, and client-ready reporting to hotel teams worldwide.",
+      "Technical, On-Page, Off-Page, Local & AI-search (GEO) workflows in one free-first workspace.",
     type: "website",
     siteName: "SEO & GEO Studio",
   },

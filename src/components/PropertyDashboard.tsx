@@ -155,6 +155,7 @@ export default function PropertyDashboard() {
   const [isDark, setIsDark] = useState(false);
   const [showAutoPilot, setShowAutoPilot] = useState(false);
   const [showVisibilitySuite, setShowVisibilitySuite] = useState(false);
+  const [aiProvidersConfigured, setAiProvidersConfigured] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showSitemapAudit, setShowSitemapAudit] = useState(false);
   const [showImageAudit, setShowImageAudit] = useState(false);
@@ -197,6 +198,26 @@ export default function PropertyDashboard() {
     } catch {
       // ignore localStorage
     }
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/visibility")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (cancelled || !data) return;
+        setAiProvidersConfigured(
+          Array.isArray(data.providers) &&
+            data.providers.some(
+              (provider: { id?: string; configured?: boolean }) =>
+                provider.configured && provider.id !== "ai_overviews"
+            )
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setAiProvidersConfigured(false);
+      });
+    return () => { cancelled = true; };
   }, []);
 
   const toggleTheme = () => {
@@ -426,25 +447,24 @@ export default function PropertyDashboard() {
       <header className="sticky top-0 z-30 border-b border-slate-200/70 bg-white/85 backdrop-blur-xl dark:border-slate-800/70 dark:bg-slate-950/80">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-5 py-3 sm:px-6">
           <div className="flex min-w-0 items-center gap-3.5">
-            <div className="hidden min-w-0 sm:block">
+            <div className="min-w-0">
               <div className="flex flex-wrap items-center gap-2">
                 <h1 className="font-display text-h3 font-bold tracking-tight text-slate-900 dark:text-white">
-                  Hotel SEO &amp; GEO Studio
+                  SEO &amp; GEO Studio
                 </h1>
                 <span className="inline-flex items-center gap-1.5 rounded-full border border-brand/40 bg-brand-50 px-2 py-0.5 text-eyebrow font-semibold text-brand-800 dark:border-brand/30 dark:bg-brand-950/50 dark:text-brand-light">
                   <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
                   v3.0.0
                 </span>
-                <span className="hidden rounded-full border border-slate-200 bg-slate-50 px-2 py-0.5 text-eyebrow font-medium text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 md:inline-block">
-                  Hospitality Automation
-                </span>
-                <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-2 py-0.5 text-eyebrow font-semibold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/40 dark:text-emerald-300 lg:inline-flex">
-                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Unified AI Engine Live
-                </span>
+                {aiProvidersConfigured && (
+                  <span className="hidden items-center gap-1.5 rounded-full border border-emerald-200/70 bg-emerald-50/80 px-2 py-0.5 text-eyebrow font-semibold text-emerald-700 dark:border-emerald-800/50 dark:bg-emerald-950/40 dark:text-emerald-300 lg:inline-flex">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    Unified AI Engine Live
+                  </span>
+                )}
               </div>
               <p className="mt-0.5 truncate text-caption text-slate-500 dark:text-slate-400">
-                Direct-booking growth workflows across On-Page, Technical, Off-Page, Local &amp; Reporting
+                Technical, On-Page, Off-Page, Local &amp; AI-search (GEO) workflows.
               </p>
             </div>
           </div>

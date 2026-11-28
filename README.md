@@ -2,7 +2,7 @@
 
 # SEO & GEO Studio
 
-**Hospitality SEO auditing, Generative Engine Optimization readiness, and client-ready reporting — in one workspace.**
+**Technical, On-Page, Off-Page, Local & AI-search (GEO) workflows — in one free-first workspace.**
 
 [![CI](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml/badge.svg)](https://github.com/nurunnobejisan/SEO-Studio/actions/workflows/ci.yml)
 [![Live](https://img.shields.io/badge/live-seo--studio.vercel.app-0f172a?logo=vercel)](https://seo-studio.vercel.app)
