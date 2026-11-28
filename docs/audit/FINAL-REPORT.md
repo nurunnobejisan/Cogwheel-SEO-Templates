@@ -54,7 +54,7 @@ All 32 requirements set forth in the master engineering prompt have been systema
 | **Vitest Test Suite** | **193 / 193 Passed (100%)** | 47 test files passed in 4.65s |
 | **Master 10-Gate SEO Integrity Linter** | **10 / 10 Passed (100%)** | `tests/seoLinter.ts` passed |
 | **Python Layer Master Tests** | **16 / 16 Passed (100%)** | `tests/python/run_tests.py` passed |
-| **Single Source of Truth Schema Validator** | **100% Passed** | `scripts/python/validate_schemas.py` passed |
+| **Single Source of Truth Schema Validator** | **100% Passed** | `python/scripts/validate_schemas.py` passed |
 | **Next.js Production Build** | **38 / 38 Static Routes Built** | `npm run build` compiled with 0 warnings |
 
 ---
@@ -71,7 +71,7 @@ All 32 requirements set forth in the master engineering prompt have been systema
    npm test          # Runs all 193 Vitest unit & integration tests
    npm run test:seo  # Runs 10 master SEO integrity gates
    python3 tests/python/run_tests.py # Runs master Python analytical tests
-   python3 scripts/python/validate_schemas.py # Validates SSOT schemas
+   python3 python/scripts/validate_schemas.py # Validates SSOT schemas
    ```
 3. **Building for Production**:
    ```bash

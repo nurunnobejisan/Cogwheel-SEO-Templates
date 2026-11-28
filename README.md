@@ -67,7 +67,7 @@ The core rule is simple: **measure, label, or leave blank.** Rankings, search vo
 - Per-instance rate limits, CSRF origin checks, and security headers.
 - Signed `cw_session` cookies; platform APIs return `401` without a valid session.
 - Synthetic data is gated behind `ALLOW_SIMULATED_DATA` and **off by default**.
-- CI runs typecheck, lint, Vitest, SEO gates, integration tests, pytest, ruff, and a production build.
+- CI runs typecheck, lint, `train:validate`, Vitest, the SEO linter and SEO/TypeScript test gates, `brain:eval`, and a production build; a second job runs Python ruff + pytest, and a secret scan runs on every push (`.github/workflows/ci.yml`).
 
 ## Architecture
 
