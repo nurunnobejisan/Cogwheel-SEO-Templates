@@ -40,6 +40,7 @@ import logging
 import os
 import re
 import secrets
+import json
 import sys
 import tempfile
 from pathlib import Path
@@ -63,6 +64,16 @@ from api.models import (
     SiteManifestItemModel,
 )
 from api.seo_visibility_report import build as build_report
+
+# Lazy import helper for geo_visibility (keeps startup light).
+def _geo_visibility():
+    from python.geo_visibility import (  # type: ignore
+        normalize_text,  # noqa: F401
+    )
+    import python.geo_visibility.providers as providers  # type: ignore
+    import python.geo_visibility.runner as runner  # type: ignore
+    import python.geo_visibility.metrics as metrics  # type: ignore
+    return providers, runner, metrics
 
 logger = logging.getLogger("seo-studio.python")
 
@@ -133,6 +144,19 @@ class ContentModelValidationRequest(BaseModel):
         "site-manifest-item",
     ]
     payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class GeoVisibilityRunRequest(BaseModel):
+    provider: Literal["recorded", "openai", "perplexity", "gemini"] = "recorded"
+    n_runs: int = Field(default=3, ge=1, le=10)
+    intents: Optional[list[str]] = None  # intent ids; None = all in pack
+    include_all_intents: bool = False
+
+
+class GeoVisibilityMetricsQuery(BaseModel):
+    provider: Optional[str] = None
+    entity: Optional[str] = None
+    week: Optional[str] = None
 
 
 CONTENT_MODELS: dict[str, type[BaseModel]] = {
@@ -306,6 +330,90 @@ async def seo_visibility_report(
             "Content-Disposition": f'attachment; filename="seo_visibility_report_{safe}.pptx"'
         },
     )
+
+
+import yaml as _yaml
+
+GEO_VISIBILITY_LAST_RUN = Path("data/geo_visibility/last_run.json")
+GEO_VISIBILITY_RUNS_DIR = Path("data/geo_visibility/runs")
+
+
+@app.post("/v1/geo-visibility/run")
+def geo_visibility_run(
+    payload: GeoVisibilityRunRequest,
+    _auth: None = Depends(require_bearer),
+) -> dict:
+    """Run an AI visibility pass and return aggregated metrics.
+
+    Uses recorded answers when provider="recorded" (no API key needed);
+    real providers require their respective env keys.
+    """
+    providers, runner, metrics_mod = _geo_visibility()
+
+    root = Path(__file__).resolve().parent.parent
+    intents_path = root / "src" / "packs" / "bangladesh-hotels" / "queries.yaml"
+    entities_path = root / "src" / "packs" / "bangladesh-hotels" / "entities.yaml"
+    all_intents = _yaml.safe_load(intents_path.read_text())["intents"]
+    all_entities = _yaml.safe_load(entities_path.read_text())["entities"]
+
+    if payload.intents:
+        want = set(payload.intents)
+        intents = [i for i in all_intents if i["id"] in want]
+    elif payload.include_all_intents:
+        intents = all_intents
+    else:
+        intents = all_intents[:5]
+
+    # Provider selection.
+    if payload.provider == "recorded":
+        fixture_path = root / "data" / "geo_visibility" / "recorded_answers.json"
+        fixture = json.loads(fixture_path.read_text()) if fixture_path.exists() else {}
+        provider = providers.RecordedProvider(name="recorded", fixture=fixture)
+    elif payload.provider == "openai":
+        provider = providers.OpenAIProvider()
+    elif payload.provider == "perplexity":
+        provider = providers.PerplexityProvider()
+    else:
+        provider = providers.GeminiProvider()
+
+    out_dir = root / "data" / "geo_visibility" / "runs"
+    results = runner.run_visibility(provider, intents, all_entities, n=payload.n_runs,
+                                    out_dir=out_dir)
+    agg = metrics_mod.aggregate(results)
+
+    import datetime as _dt
+    run_id = _dt.datetime.now(_dt.timezone.utc).isoformat()
+    GEO_VISIBILITY_LAST_RUN.parent.mkdir(parents=True, exist_ok=True)
+    GEO_VISIBILITY_LAST_RUN.write_text(
+        json.dumps({"run_id": run_id, "provider": payload.provider,
+                    "metrics": agg, "n_results": len(results)}, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
+    return {"run_id": run_id, "provider": payload.provider,
+            "n_results": len(results), "metrics": agg}
+
+
+@app.get("/v1/geo-visibility/metrics")
+def geo_visibility_metrics(
+    provider: Optional[str] = None,
+    entity: Optional[str] = None,
+    week: Optional[str] = None,
+    _auth: None = Depends(require_bearer),
+) -> dict:
+    """Return aggregated metrics from the last run."""
+    root = Path(__file__).resolve().parent.parent
+    last_path = root / "data" / "geo_visibility" / "last_run.json"
+    if not last_path.exists():
+        return {"metrics": [], "note": "no run yet"}
+    data = json.loads(last_path.read_text())
+    metrics = data.get("metrics", [])
+    if provider:
+        metrics = [m for m in metrics if m.get("provider") == provider]
+    if entity:
+        metrics = [m for m in metrics if m.get("entity") == entity]
+    if week:
+        metrics = [m for m in metrics if m.get("week") == week]
+    return {"run_id": data.get("run_id"), "metrics": metrics}
 
 
 def run(argv: Optional[list[str]] = None) -> None:
